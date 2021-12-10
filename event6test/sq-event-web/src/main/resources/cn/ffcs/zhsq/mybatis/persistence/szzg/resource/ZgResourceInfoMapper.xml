@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.resource.ZgResourceInfoMapper">
+	<resultMap id="zgResourceInfo" type="cn.ffcs.zhsq.mybatis.domain.szzg.resource.ZgResourceInfo">
+		<id column="RES_ID" property="resId" jdbcType="DECIMAL" /> <!--RES_ID-->
+		<result column="RES_TYPE_CODE" property="resTypeCode" jdbcType="VARCHAR" /> <!--RES_TYPE_CODE-->
+		<result column="RES_TABLE_ID" property="resTableId" jdbcType="DECIMAL" /> <!--RES_TABLE_ID-->
+		<result column="RES_NAME" property="resName" jdbcType="VARCHAR" /> <!--RES_NAME-->
+		<result column="LNG" property="lng" jdbcType="DECIMAL" /> <!--LNG-->
+		<result column="LAT" property="lat" jdbcType="DECIMAL" /> <!--LAT-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--ORG_CODE-->
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" /> <!--ORG_CODE-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--STATUS-->
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" /> <!--CREATE_USER_ID-->
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" /> <!--CREATE_DATE-->
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" /> <!--UPDATE_USER_ID-->
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" /> <!--UPDATE_DATE-->
+	</resultMap>
+	
+	<select id="findByTypeCode" resultType="int" parameterType="map">
+	SELECT COUNT(1) FROM ${dbuser.zhsq_szzg}.zg_resource_type t WHERE t.type_code=#{resTypeCode} AND t.status='1'
+	</select>
+	<!-- 查询资源 -->
+	<select id="findResource" resultType="map">
+	SELECT g.grid_name,t.res_name,t.x,t.y,t.remark,t.addr_,t.photo_path FROM T_ZY_RES_INFO t JOIN t_dc_grid g ON t.grid_id=g.grid_id  WHERE t.res_id=#{id} 
+	</select>
+	
+		<!-- 资源列表 -->	
+	<select id="findByParam"  resultMap="zgResourceInfo">
+		SELECT t.RES_ID,t.LNG,t.LAT,t.ORG_CODE ,t.RES_TYPE_CODE ,t.RES_TABLE_ID,t.RES_NAME  
+  FROM ${dbuser.zhsq_szzg}.zg_resource_info t
+ WHERE T.STATUS = '1' AND t.ORG_CODE LIKE #{orgCode}||'%' AND t.RES_TYPE_CODE IN (${typeCodes}) AND t.LNG BETWEEN #{xmin} AND #{xmax} and 
+		t.LAT BETWEEN #{ymin} and #{ymax}
+	</select>
+	
+		<select id="findCountByCriteria" parameterType="map"  resultType="int">
+		SELECT count(*) FROM ${dbuser.zhsq_szzg}.zg_resource_info t WHERE t.status='1'  AND t.org_code LIKE #{orgCode} ||'%' 
+			AND t.RES_TYPE_CODE=#{typeCode} <if test="name != null ">AND t.res_name='%'||#{name}||'%'</if>
+	</select>
+	<select id="findPageListByCriteria"  parameterType="map"  resultMap="zgResourceInfo">
+	SELECT t.*,g.grid_path AS ORG_NAME FROM ${dbuser.zhsq_szzg}.zg_resource_info t JOIN t_dc_grid g ON 
+t.org_code=g.info_org_code WHERE t.status='1'  AND t.org_code LIKE #{orgCode} ||'%'
+			AND t.RES_TYPE_CODE=#{typeCode} <if test="name != null ">AND t.res_name='%'||#{name}||'%'</if>
+	</select>
+
+	<!-- 新增 -->
+	<insert id="insertByList" databaseId="oracle">
+		INSERT INTO ${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO(
+		RES_ID,RES_TYPE_CODE,RES_TABLE_ID,RES_NAME,LNG,LAT,ORG_CODE,STATUS,CREATE_USER_ID,CREATE_DATE,<![CDATA[SDO]]>)
+		SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_RESOURCE_INFO.NEXTVAL,t.* from (
+		<foreach collection="list" item="item" index="index" separator="union all" >
+			select
+			#{resId,jdbcType=DECIMAL},#{resTypeCode,jdbcType=VARCHAR},#{resTableId,jdbcType=DECIMAL},
+			#{resName,jdbcType=VARCHAR},#{lng,jdbcType=DECIMAL},#{lat,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'1',
+			#{createUserId,jdbcType=DECIMAL},sysdate ,MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(#{lng,jdbcType=VARCHAR},#{lat,jdbcType=VARCHAR}, NULL), NULL, NULL)
+			from dual
+		</foreach>)t
+	</insert>
+
+	<!-- 新增 -->
+	<insert id="insertByList"  databaseId="dm">
+		INSERT INTO ${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO(
+		RES_ID,RES_TYPE_CODE,RES_TABLE_ID,RES_NAME,LNG,LAT,ORG_CODE,STATUS,CREATE_USER_ID,CREATE_DATE,<![CDATA[SDO]]>)
+		SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_RESOURCE_INFO.NEXTVAL,t.* from (
+		<foreach collection="list" item="item" index="index" separator="union all" >
+			select
+			#{resId,jdbcType=DECIMAL},#{resTypeCode,jdbcType=VARCHAR},#{resTableId,jdbcType=DECIMAL},
+			#{resName,jdbcType=VARCHAR},#{lng,jdbcType=DECIMAL},#{lat,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'1',
+			#{createUserId,jdbcType=DECIMAL},sysdate
+			,DMGEO.ST_POINTFROMTEXT('point('|| #{lng,jdbcType=VARCHAR} ||' '|| #{lat,jdbcType=VARCHAR} ||')', 4326)
+			from dual
+		</foreach>)t
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updateByList" databaseId="oracle" >
+		<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+			UPDATE	${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO t
+			<set>
+				UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},	UPDATE_DATE=sysdate,
+				<if test="resName != null " >
+					RES_NAME=#{resName,jdbcType=VARCHAR},
+				</if>
+				<if test="lng != null and lat != null" >
+					LNG=#{lng,jdbcType=DECIMAL},
+					LAT=#{lat,jdbcType=DECIMAL},
+					<![CDATA[SDO]]> = MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(#{lng,jdbcType=VARCHAR},#{lat,jdbcType=VARCHAR}, NULL), NULL, NULL)
+				</if>
+				<if test="status != null " >
+					STATUS=#{status,jdbcType=VARCHAR},
+				</if>
+				<if test="orgCode != null " >
+					ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+				</if>
+			</set>
+			WHERE
+			RES_TABLE_ID= #{resTableId,jdbcType=DECIMAL} and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+	<!-- 修改 -->
+	<update id="updateByList" databaseId="dm">
+		<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+			UPDATE	${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO t
+			<set>
+				UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},	UPDATE_DATE=sysdate,
+				<if test="resName != null " >
+					RES_NAME=#{resName,jdbcType=VARCHAR},
+				</if>
+				<if test="lng != null and lat != null" >
+					LNG=#{lng,jdbcType=DECIMAL},
+					LAT=#{lat,jdbcType=DECIMAL},
+					<![CDATA[SDO]]> = DMGEO.ST_POINTFROMTEXT('point('|| #{lng,jdbcType=VARCHAR} ||' '|| #{lat,jdbcType=VARCHAR} ||')', 4326)
+				</if>
+				<if test="status != null " >
+					STATUS=#{status,jdbcType=VARCHAR},
+				</if>
+				<if test="orgCode != null " >
+					ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+				</if>
+			</set>
+			WHERE
+			RES_TABLE_ID= #{resTableId,jdbcType=DECIMAL} and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+	<!-- 删除 -->	
+	<delete id="deleteByList" >
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO
+		SET
+			STATUS='0',UPDATE_USER_ID=#{updateUserId},UPDATE_DATE=sysdate 
+		WHERE
+			RES_TABLE_ID in (${resTableIds})  and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 新增 -->
+	<insert id="insert" databaseId="oracle"  >
+		<selectKey keyProperty="resId" resultType="long" order="BEFORE">
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_RESOURCE_INFO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO	${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO (RES_ID,RES_TYPE_CODE,RES_TABLE_ID,RES_NAME,LNG,LAT,ORG_CODE,STATUS,CREATE_USER_ID,CREATE_DATE,<![CDATA[SDO]]>) VALUES (
+		#{resId,jdbcType=DECIMAL},#{resTypeCode,jdbcType=VARCHAR},#{resTableId,jdbcType=DECIMAL},
+		#{resName,jdbcType=VARCHAR},#{lng,jdbcType=DECIMAL},#{lat,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'1',
+		#{createUserId,jdbcType=DECIMAL},sysdate,MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(#{lng,jdbcType=VARCHAR},#{lat,jdbcType=VARCHAR}, NULL), NULL, NULL)
+		)
+	</insert>
+	<!-- 新增 -->
+	<insert id="insert" databaseId="dm">
+		<selectKey keyProperty="resId" resultType="long" order="BEFORE">
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_RESOURCE_INFO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO	${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO (RES_ID,RES_TYPE_CODE,RES_TABLE_ID,RES_NAME,LNG,LAT,ORG_CODE,STATUS,CREATE_USER_ID,CREATE_DATE,<![CDATA[SDO]]>) VALUES (
+		#{resId,jdbcType=DECIMAL},#{resTypeCode,jdbcType=VARCHAR},#{resTableId,jdbcType=DECIMAL},
+		#{resName,jdbcType=VARCHAR},#{lng,jdbcType=DECIMAL},#{lat,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'1',
+		#{createUserId,jdbcType=DECIMAL},sysdate,DMGEO.ST_POINTFROMTEXT('point('|| #{lng,jdbcType=VARCHAR} ||' '|| #{lat,jdbcType=VARCHAR} ||')', 4326)
+		)
+	</insert>
+
+	<!-- 修改 -->
+	<update id="update"  databaseId="oracle" >
+		UPDATE
+		${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO
+		<set>
+			UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},
+			UPDATE_DATE=sysdate,
+			<if test="resName != null " >
+				RES_NAME=#{resName,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null and lat != null" >
+				LNG=#{lng,jdbcType=DECIMAL},
+				LAT=#{lat,jdbcType=DECIMAL},
+				<![CDATA[SDO]]> = MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(#{lng,jdbcType=VARCHAR},#{lat,jdbcType=VARCHAR}, NULL), NULL, NULL),
+			</if>
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+		RES_TABLE_ID= #{resTableId,jdbcType=DECIMAL} and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+	</update>
+
+	<!-- 修改 -->
+	<update id="update" databaseId="dm">
+		UPDATE
+		${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO
+		<set>
+			UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},
+			UPDATE_DATE=sysdate,
+			<if test="resName != null " >
+				RES_NAME=#{resName,jdbcType=VARCHAR},
+			</if>
+
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="lng != null and lat != null" >
+				LNG=#{lng,jdbcType=DECIMAL},
+				LAT=#{lat,jdbcType=DECIMAL},
+				<![CDATA[SDO]]> = DMGEO.ST_POINTFROMTEXT('point('|| #{lng,jdbcType=VARCHAR} ||' '|| #{lat,jdbcType=VARCHAR} ||')', 4326),
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+		RES_TABLE_ID= #{resTableId,jdbcType=DECIMAL} and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除 -->	
+	<delete id="deleteByBean" >
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO
+		SET
+			STATUS='0',UPDATE_USER_ID=#{updateUserId},UPDATE_DATE=sysdate 
+		WHERE
+			RES_TABLE_ID= #{resTableId,jdbcType=DECIMAL} and RES_TYPE_CODE=#{resTypeCode,jdbcType=VARCHAR}
+	</delete>
+	
+	
+	<!-- 详情 -->	
+	<select id="findById"  resultMap="zgResourceInfo">
+		SELECT RES_ID,RES_TYPE_CODE,RES_TABLE_ID,RES_NAME,LNG,LAT,STATUS,ORG_CODE
+		FROM
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO T
+		WHERE
+			RES_ID= #{resId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 部件资源详情 -->	
+	<select id="findComponentResource"  resultType="map">
+		select t1.obj_id,t1.info_org_code,t1.code,t1.class_code,t1.name RES_NAME,t1.position ADDR_,t2.grid_name,t1.remark,r1.x,r1.y,t1.photo_path
+		from T_URBAN_OBJ T1 
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join T_ZY_RES_MARKER r1 on t1.obj_id = r1.resources_id 
+		where  r1.marker_type = '020130' and r1.map_type = '5' and t1.status='1'
+		and  t1.obj_id = #{id} 
+		order by t1.update_time desc
+	</select>
+	
+	
+	
+	<select id="findComponentByParam"  resultType="map" databaseId="oracle">
+		select t1.obj_id,t1.info_org_code,t1.code,t1.class_code,t1.name,t1.position ADDR_,t2.grid_name,t1.remark,r1.x,r1.y
+		from T_URBAN_OBJ T1 
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join T_ZY_RES_MARKER r1 on t1.obj_id = r1.resources_id 
+		
+		where  r1.marker_type = '020130' and r1.map_type = '5' and t1.status='1'
+		and t1.class_code in (${typeCodes}) AND t1.INFO_ORG_CODE LIKE #{orgCode}||'%'
+		<choose>
+ 			<when test="hs != null and hs != '' ">
+ 				AND SDO_RELATE(r1.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+ 			</when>
+ 			<otherwise>
+ 				and r1.x BETWEEN #{xmin} AND #{xmax} 
+				and r1.y BETWEEN #{ymin} and #{ymax} 
+ 			</otherwise>
+ 		</choose>
+		order by t1.update_time desc
+	</select>
+
+	<select id="findComponentByParam"  resultType="map" databaseId="dm">
+		select t1.obj_id,t1.info_org_code,t1.code,t1.class_code,t1.name,t1.position ADDR_,t2.grid_name,t1.remark,r1.x,r1.y
+		from T_URBAN_OBJ T1
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join T_ZY_RES_MARKER r1 on t1.obj_id = r1.resources_id
+
+		where  r1.marker_type = '020130' and r1.map_type = '5' and t1.status='1'
+		and t1.class_code in (${typeCodes}) AND t1.INFO_ORG_CODE LIKE #{orgCode}||'%'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				r1.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				and r1.x BETWEEN #{xmin} AND #{xmax}
+				and r1.y BETWEEN #{ymin} and #{ymax}
+			</otherwise>
+		</choose>
+		order by t1.update_time desc
+	</select>
+
+	<!-- 资源列表带类型带网格 -->
+	<select id="findListByParam"  resultType="map" databaseId="oracle" >
+		SELECT
+		T.RES_ID "resId",T.LNG "lng",T.LAT "lat",R1.Z "z",T.ORG_CODE "orgCode",T.RES_TYPE_CODE "resTypeCode",
+		T.RES_TABLE_ID "resTableId",T.RES_NAME "resName",T1.NAME "resTypeName",G.GRID_NAME "orgName",
+		ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005),
+		0) "distance"
+		FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO T
+		INNER JOIN t_zy_res_type T1 ON T1.TYPE_CODE = T.RES_TYPE_CODE
+		INNER JOIN T_DC_GRID G ON G.INFO_ORG_CODE = T.ORG_CODE
+		LEFT JOIN t_zy_res_info T3
+		ON T.RES_TABLE_ID= T3.RES_ID
+		AND T3.STATUS='001'
+		LEFT JOIN T_ZY_RES_MARKER R1 ON T3.RES_ID = R1.RESOURCES_ID AND R1.MARKER_TYPE = T1.TYPE_CODE AND R1.MAP_TYPE = '5'
+		WHERE T.STATUS = '1' AND t.ORG_CODE LIKE #{orgCode}||'%'  AND G.STATUS = '001'
+		<if test="name !=null and name !='' ">
+			AND t.res_name like '%'||#{name}||'%'
+		</if>
+		AND t.RES_TYPE_CODE IN (${typeCodes})
+		AND SDO_WITHIN_DISTANCE(t.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+		order by "distance" asc
+	</select>
+
+	<!-- 资源列表带类型带网格 -->
+	<select id="findListByParam"  resultType="map" databaseId="dm" >
+		SELECT
+		T.RES_ID "resId",T.LNG "lng",T.LAT "lat",R1.Z "z",T.ORG_CODE "orgCode",T.RES_TYPE_CODE "resTypeCode",
+		T.RES_TABLE_ID "resTableId",T.RES_NAME "resName",T1.NAME "resTypeName",G.GRID_NAME "orgName",
+		ROUND(DMGEO.ST_DISTANCE(t.sdo,
+		DMGEO.ST_POINTFROMTEXT('point('||#{x, jdbcType=DECIMAL} ||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)
+		)*100000,0) "distance"
+		FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_INFO T
+		INNER JOIN t_zy_res_type T1 ON T1.TYPE_CODE = T.RES_TYPE_CODE
+		INNER JOIN T_DC_GRID G ON G.INFO_ORG_CODE = T.ORG_CODE
+		LEFT JOIN t_zy_res_info T3
+		ON T.RES_TABLE_ID= T3.RES_ID
+		AND T3.STATUS='001'
+		LEFT JOIN T_ZY_RES_MARKER R1 ON T3.RES_ID = R1.RESOURCES_ID AND R1.MARKER_TYPE = T1.TYPE_CODE AND R1.MAP_TYPE = '5'
+		WHERE T.STATUS = '1' AND t.ORG_CODE LIKE #{orgCode}||'%'  AND G.STATUS = '001'
+		<if test="name !=null and name !='' ">
+			AND t.res_name like '%'||#{name}||'%'
+		</if>
+		AND t.RES_TYPE_CODE IN (${typeCodes})
+		AND DMGEO.ST_DISTANCE(
+		t.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('||#{x, jdbcType=DECIMAL} ||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)
+		) * 100000 <![CDATA[<=]]> ${distance}
+		order by "distance" asc
+	</select>
+
+	<select id="findCountByParam" parameterType="map"  resultType="int" databaseId="oracle">
+		SELECT count(*) FROM ${dbuser.zhsq_szzg}.zg_resource_info t
+		INNER JOIN t_zy_res_type T1 ON T1.TYPE_CODE = T.RES_TYPE_CODE
+		INNER JOIN T_DC_GRID G ON G.INFO_ORG_CODE = T.ORG_CODE
+		WHERE t.status='1'  AND t.org_code LIKE #{orgCode} ||'%'
+		<if test="name !=null and name !='' ">
+			AND t.res_name like '%'||#{name}||'%'
+		</if>
+		AND t.RES_TYPE_CODE IN (${typeCodes})   AND G.STATUS = '001'
+		AND SDO_WITHIN_DISTANCE(t.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+
+	</select>
+
+	<select id="findCountByParam" parameterType="map"  resultType="int" databaseId="dm">
+		SELECT count(*) FROM ${dbuser.zhsq_szzg}.zg_resource_info t
+		INNER JOIN t_zy_res_type T1 ON T1.TYPE_CODE = T.RES_TYPE_CODE
+		INNER JOIN T_DC_GRID G ON G.INFO_ORG_CODE = T.ORG_CODE
+		WHERE t.status='1'  AND t.org_code LIKE #{orgCode} ||'%'
+		<if test="name !=null and name !='' ">
+			AND t.res_name like '%'||#{name}||'%'
+		</if>
+		AND t.RES_TYPE_CODE IN (${typeCodes})   AND G.STATUS = '001'
+		AND DMGEO.ST_DISTANCE(
+		t.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('||#{x, jdbcType=DECIMAL} ||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)
+		) * 100000 <![CDATA[<=]]> ${distance}
+
+	</select>
+
+
+
+
+
+</mapper>

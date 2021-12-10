@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.mwInternet.RepairTaskMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.mwInternet.RepairTask">
+		<id column="DRT_ID" property="drtId" jdbcType="DECIMAL" /> <!--任务编号-->
+		<result column="INFO_ORG_CODE" property="infoOrgCode" jdbcType="VARCHAR" /> <!--所属小区-->
+		<result column="INFO_ORG_NAME" property="infoOrgName" jdbcType="VARCHAR" /> <!--小区名称-->
+		<result column="FAULT_DESC" property="faultDesc" jdbcType="VARCHAR" /> <!--故障描述-->
+		<result column="FAULT_TYPE" property="faultType" jdbcType="VARCHAR" /> <!--故障类型-->
+		<result column="REPAIR_TIME" property="repairTime" jdbcType="TIMESTAMP" /> <!--上报时间-->
+		<result column="ORDER_TIME" property="orderTime" jdbcType="TIMESTAMP" /> <!--预约时间-->
+		<result column="FAULT_ADDR" property="faultAddr" jdbcType="VARCHAR" /> <!--故障地址-->
+		<result column="LINK_USER" property="linkUser" jdbcType="VARCHAR" /> <!--联系人-->
+		<result column="LINK_TEL" property="linkTel" jdbcType="VARCHAR" /> <!--电话-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--是否有效-->
+		<result column="CREATE_BY" property="createBy" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+		<result column="UPDATE_BY" property="updateBy" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="OVER_TIME" property="overTime" jdbcType="TIMESTAMP" /> <!--处理时限-->
+		<result column="STATE" property="state" jdbcType="VARCHAR" /> <!--环节状态-->
+		
+		<result column="TASK_USER_ID" property="taskUserId" jdbcType="DECIMAL" /> 
+		<result column="TASK_USER_NAME" property="taskUserName" jdbcType="VARCHAR" /> 
+		<result column="TASK_ORG_ID" property="taskOrgId" jdbcType="DECIMAL" />
+		<result column="WARN_STATE" property="warnState" jdbcType="VARCHAR" /> 
+		<!--工作流-->
+		<result column="WF_DBID_" property="wfDbid_" jdbcType="DECIMAL" />
+		<result column="WF_ACTIVITY_NAME_" property="wfActivityName_" jdbcType="VARCHAR" />
+		<result column="WF_STATUS" property="wfStatus" jdbcType="VARCHAR" />
+		<result column="WF_INSTANCE_ID" property="wfInstanceId" jdbcType="DECIMAL" />
+		<result column="WF_CUR_USER" property="wfCurUser" jdbcType="VARCHAR" />
+		<!--扩展-->
+		<result column="FAULTTYPESTR" property="faultTypeStr" jdbcType="VARCHAR" />
+		<result column="REPAIRTIMESTR" property="repairTimeStr" jdbcType="VARCHAR" />
+		<result column="ORDERTIMESTR" property="orderTimeStr" jdbcType="VARCHAR" />
+		<result column="OVERTIMESTR" property="overTimeStr" jdbcType="VARCHAR" />
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countDBList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM (
+			SELECT	T.DRT_ID
+			from T_DEVICE_REPAIR_TASK t left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			and (
+				t3.USERID_= #{dbUserId,jdbcType=VARCHAR}
+			)
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchDBList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT
+				T.DRT_ID,T.INFO_ORG_CODE,T.INFO_ORG_NAME,T.FAULT_DESC,T.FAULT_TYPE,T.REPAIR_TIME,T.ORDER_TIME,
+				T.FAULT_ADDR,T.LINK_USER,TO_CHAR(T.REPAIR_TIME, 'YYYY-MM-DD HH24:MI') as REPAIRTIMESTR,
+				T.LINK_TEL,T.OVER_TIME,T.STATE,TO_CHAR(T.OVER_TIME, 'YYYY-MM-DD HH24:MI') as OVERTIMESTR,
+				TO_CHAR(T.ORDER_TIME, 'YYYY-MM-DD') as ORDERTIMESTR,T.WARN_STATE,
+				t2.DBID_ AS WF_DBID_, T2.ACTIVITY_NAME_ AS WF_ACTIVITY_NAME_,t1.STATUS AS WF_STATUS,
+				t1.INSTANCE_ID AS WF_INSTANCE_ID,t1.CUR_USER as WF_CUR_USER,
+				TO_CHAR(t2.CREATE_, 'YYYY-MM-DD HH24:MI:SS') AS WF_CREATE_
+				
+			from T_DEVICE_REPAIR_TASK t left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			and (
+				t3.USERID_= #{dbUserId,jdbcType=VARCHAR}
+			)
+		)
+				
+		ORDER BY WF_CREATE_ DESC 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countJBList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT distinct	T.DRT_ID from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status in ('1','2')
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchJBList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT distinct
+				T.DRT_ID,T.INFO_ORG_CODE,T.INFO_ORG_NAME,T.FAULT_DESC,T.FAULT_TYPE,T.REPAIR_TIME,T.ORDER_TIME,
+				T.FAULT_ADDR,T.LINK_USER,TO_CHAR(T.REPAIR_TIME, 'YYYY-MM-DD HH24:MI') as REPAIRTIMESTR,
+				T.LINK_TEL,T.OVER_TIME,T.STATE,TO_CHAR(T.OVER_TIME, 'YYYY-MM-DD HH24:MI') as OVERTIMESTR,
+				TO_CHAR(T.ORDER_TIME, 'YYYY-MM-DD') as ORDERTIMESTR,T.WARN_STATE,
+				T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,t1.CUR_USER as WF_CUR_USER,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,t1.UPDATE_TIME
+				
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status in ('1','2')
+		)
+		order by WF_STATUS asc,UPDATE_TIME desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countAllList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.DRT_ID
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			and (t1.status in ('1','2') or t1.status is null)
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchAllList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.DRT_ID,T.INFO_ORG_CODE,T.INFO_ORG_NAME,T.FAULT_DESC,T.FAULT_TYPE,T.REPAIR_TIME,T.ORDER_TIME,
+				T.FAULT_ADDR,T.LINK_USER,TO_CHAR(T.REPAIR_TIME, 'YYYY-MM-DD HH24:MI') as REPAIRTIMESTR,
+				T.LINK_TEL,T.OVER_TIME,T.STATE,TO_CHAR(T.OVER_TIME, 'YYYY-MM-DD HH24:MI') as OVERTIMESTR,
+				TO_CHAR(T.ORDER_TIME, 'YYYY-MM-DD') as ORDERTIMESTR,T.WARN_STATE,
+				T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS, t1.CUR_USER as WF_CUR_USER,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,t1.UPDATE_TIME
+				
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			
+			and (t1.status in ('1','2') or t1.status is null)
+		)
+		order by WF_STATUS asc,REPAIRTIMESTR desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countFQList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.DRT_ID
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			
+			<if test="createBy != null ">
+				AND t.CREATE_BY = #{createBy,jdbcType=DECIMAL}
+			</if>
+			<if test="orgId != null ">
+				AND t.ORG_ID = #{orgId,jdbcType=DECIMAL}
+			</if>
+			
+			and (t1.status in ('1','2') or t1.status is null)
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchFQList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.DRT_ID,T.INFO_ORG_CODE,T.INFO_ORG_NAME,T.FAULT_DESC,T.FAULT_TYPE,T.REPAIR_TIME,T.ORDER_TIME,
+				T.FAULT_ADDR,T.LINK_USER,TO_CHAR(T.REPAIR_TIME, 'YYYY-MM-DD HH24:MI') as REPAIRTIMESTR,
+				T.LINK_TEL,T.OVER_TIME,T.STATE,TO_CHAR(T.OVER_TIME, 'YYYY-MM-DD HH24:MI') as OVERTIMESTR,
+				TO_CHAR(T.ORDER_TIME, 'YYYY-MM-DD') as ORDERTIMESTR,T.WARN_STATE,
+				T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS, t1.CUR_USER as WF_CUR_USER,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,t1.UPDATE_TIME
+				
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			<if test="createBy != null ">
+				AND t.CREATE_BY = #{createBy,jdbcType=DECIMAL}
+			</if>
+			<if test="orgId != null ">
+				AND t.ORG_ID = #{orgId,jdbcType=DECIMAL}
+			</if>
+			
+			and (t1.status in ('1','2') or t1.status is null)
+		)
+		order by WF_STATUS asc,REPAIRTIMESTR desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countEndList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.DRT_ID
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			
+			<if test="createBy != null ">
+				AND t.CREATE_BY = #{createBy,jdbcType=DECIMAL}
+			</if>
+			<if test="orgId != null ">
+				AND t.ORG_ID = #{orgId,jdbcType=DECIMAL}
+			</if>
+			
+			and t1.status ='2'
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchEndList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.DRT_ID,T.INFO_ORG_CODE,T.INFO_ORG_NAME,T.FAULT_DESC,T.FAULT_TYPE,T.REPAIR_TIME,T.ORDER_TIME,
+				T.FAULT_ADDR,T.LINK_USER,TO_CHAR(T.REPAIR_TIME, 'YYYY-MM-DD HH24:MI') as REPAIRTIMESTR,
+				T.LINK_TEL,T.OVER_TIME,T.STATE,TO_CHAR(T.OVER_TIME, 'YYYY-MM-DD HH24:MI') as OVERTIMESTR,
+				TO_CHAR(T.ORDER_TIME, 'YYYY-MM-DD') as ORDERTIMESTR,T.WARN_STATE,
+				T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS, t1.CUR_USER as WF_CUR_USER,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,t1.UPDATE_TIME
+				
+			from T_DEVICE_REPAIR_TASK t 
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.DRT_ID = t1.form_id
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			<if test="createBy != null ">
+				AND t.CREATE_BY = #{createBy,jdbcType=DECIMAL}
+			</if>
+			<if test="orgId != null ">
+				AND t.ORG_ID = #{orgId,jdbcType=DECIMAL}
+			</if>
+			
+			and t1.status ='2'
+		)
+		order by REPAIRTIMESTR desc
+	</select>	
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		t.IS_VALID='1'
+		<if test="infoOrgCode != null and infoOrgCode != ''" >
+			<![CDATA[ AND T.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+		</if> 
+		<if test="infoOrgName != null and infoOrgName != ''" >
+			<![CDATA[ AND T.INFO_ORG_NAME LIKE '%'||#{infoOrgName,jdbcType=VARCHAR}||'%' ]]>
+		</if>
+		<if test="faultType != null and faultType != ''" >
+			<![CDATA[ AND T.FAULT_TYPE = #{faultType,jdbcType=VARCHAR} ]]>
+		</if> 
+		<if test="state != null and state != ''" >
+			<![CDATA[ AND T.STATE = #{state,jdbcType=VARCHAR} ]]>
+		</if>
+		<if test="startTimeStr !=null and startTimeStr !=''">
+			<![CDATA[AND T.REPAIR_TIME >= TO_DATE(#{startTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:ss')]]>
+		</if>
+		<if test="endTimeStr !=null and endTimeStr !=''">
+			<![CDATA[AND T.REPAIR_TIME <= TO_DATE(#{endTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:ss')]]>
+		</if>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.mwInternet.RepairTask">
+		<selectKey keyProperty="drtId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_DAILY_TASK.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_REPAIR_TASK
+		(
+			DRT_ID,INFO_ORG_CODE,INFO_ORG_NAME,FAULT_DESC,FAULT_TYPE,REPAIR_TIME,ORDER_TIME,
+			FAULT_ADDR,LINK_USER,LINK_TEL,IS_VALID,CREATE_BY,CREATE_TIME,UPDATE_BY,UPDATE_TIME,
+			OVER_TIME,STATE,ORG_ID,TASK_USER_ID,TASK_USER_NAME,TASK_ORG_ID,WARN_STATE
+		) VALUES (
+			#{drtId,jdbcType=DECIMAL},
+			#{infoOrgCode,jdbcType=VARCHAR},
+			#{infoOrgName,jdbcType=VARCHAR},
+			#{faultDesc,jdbcType=VARCHAR},
+			#{faultType,jdbcType=VARCHAR},
+			#{repairTime,jdbcType=TIMESTAMP},
+			#{orderTime,jdbcType=TIMESTAMP},
+			#{faultAddr,jdbcType=VARCHAR},
+			#{linkUser,jdbcType=VARCHAR},
+			#{linkTel,jdbcType=VARCHAR},
+			'1',
+			#{createBy,jdbcType=DECIMAL},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateBy,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{overTime,jdbcType=TIMESTAMP},
+			#{state,jdbcType=VARCHAR},
+			#{orgId,jdbcType=DECIMAL},
+			#{taskUserId,jdbcType=DECIMAL},
+			#{taskUserName,jdbcType=VARCHAR},
+			#{taskOrgId,jdbcType=DECIMAL},
+			#{warnState,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.mwInternet.RepairTask">
+		UPDATE
+			T_DEVICE_REPAIR_TASK
+		<set> 
+			<if test="infoOrgCode != null " >
+				INFO_ORG_CODE=#{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="infoOrgName != null " >
+				INFO_ORG_NAME=#{infoOrgName,jdbcType=VARCHAR},
+			</if>
+			<if test="faultDesc != null " >
+				FAULT_DESC=#{faultDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="faultType != null " >
+				FAULT_TYPE=#{faultType,jdbcType=VARCHAR},
+			</if>
+			<if test="repairTime != null " >
+				REPAIR_TIME=#{repairTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="orderTime != null " >
+				ORDER_TIME=#{orderTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="faultAddr != null " >
+				FAULT_ADDR=#{faultAddr,jdbcType=VARCHAR},
+			</if>
+			<if test="linkUser != null " >
+				LINK_USER=#{linkUser,jdbcType=VARCHAR},
+			</if>
+			<if test="linkTel != null " >
+				LINK_TEL=#{linkTel,jdbcType=VARCHAR},
+			</if>
+			<if test="updateBy != null " >
+				UPDATE_BY=#{updateBy,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="overTime != null " >
+				OVER_TIME=#{overTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null " >
+				STATE=#{state,jdbcType=VARCHAR},
+			</if>
+			<if test="taskUserId != null " >
+				TASK_USER_ID=#{taskUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="taskUserName != null " >
+				TASK_USER_NAME=#{taskUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="taskOrgId != null " >
+				TASK_ORG_ID=#{taskOrgId,jdbcType=DECIMAL},
+			</if>
+			<if test="warnState != null " >
+				WARN_STATE=#{warnState,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			DRT_ID= #{drtId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.DRT_ID,
+			T.INFO_ORG_CODE,
+			T.INFO_ORG_NAME,
+			T.FAULT_DESC,
+			T.FAULT_TYPE,
+			TO_CHAR(T.REPAIR_TIME,'YYYY-MM-DD HH24:MI') REPAIRTIMESTR,
+			TO_CHAR(T.ORDER_TIME,'YYYY-MM-DD') ORDERTIMESTR,
+			T.FAULT_ADDR,
+			T.LINK_USER,
+			T.LINK_TEL,
+			T.IS_VALID,
+			T.CREATE_BY,
+			T.CREATE_TIME,
+			T.UPDATE_BY,
+			T.UPDATE_TIME,
+			TO_CHAR(T.OVER_TIME,'YYYY-MM-DD') OVERTIMESTR,
+			T.STATE,
+			t.ORG_ID,
+			T.TASK_USER_ID,
+			T.TASK_USER_NAME,
+			T.TASK_ORG_ID,
+			T.WARN_STATE
+		FROM
+			T_DEVICE_REPAIR_TASK T
+		WHERE
+			DRT_ID= #{drtId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.mwInternet.RepairTask">
+		UPDATE
+			T_DEVICE_REPAIR_TASK
+		SET
+			IS_VALID='0'
+		WHERE
+			DRT_ID= #{drtId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

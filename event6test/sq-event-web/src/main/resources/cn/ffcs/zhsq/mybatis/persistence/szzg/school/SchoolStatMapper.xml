@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.school.SchoolStatMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.school.SchoolStat">
+		<id column="STAT_ID" property="statId" jdbcType="DECIMAL" /> <!--主键-->
+		<id column="SCH_ID" property="schId" jdbcType="DECIMAL" /> <!--关联zg_school_seq_id-->
+		<id column="SCHOOL_NAME" property="schoolName" jdbcType="DECIMAL" /> <!--学校名称-->
+		<result column="TEACHERS" property="teachers" jdbcType="DECIMAL" /> <!--老师人数-->
+		<result column="STUDENTS" property="students" jdbcType="DECIMAL" /> <!--学生人数-->
+		<result column="MALES" property="males" jdbcType="DECIMAL" /> <!--男生人数-->
+		<result column="FEMALES" property="females" jdbcType="DECIMAL" /> <!--女生人数-->
+		<result column="STAT_YEAR" property="statYear" jdbcType="DECIMAL" /> <!--统计年份-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态：1-有效，0-删除-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_USER" property="createUser" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATE_USER" property="updateUser" jdbcType="DECIMAL" /> <!--更新人-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM ${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		JOIN ${dbuser.zhsq_szzg}.ZG_SCHOOL S ON T.SCH_ID = S.SEQ_ID
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.STAT_ID,
+			T.SCH_ID,
+			S.SCHOOL_NAME,
+			T.TEACHERS,
+			T.STUDENTS,
+			T.MALES,
+			T.FEMALES,
+			T.STAT_YEAR
+		FROM
+			${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		JOIN ${dbuser.zhsq_szzg}.ZG_SCHOOL S ON T.SCH_ID = S.SEQ_ID
+		<include refid="find_where" />
+		ORDER BY 
+			T.SCH_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.STATUS = '1' 
+			<if test="schoolName != '' and @Ognl@isNotEmpty(schoolName) ">
+				AND S.SCHOOL_NAME like '%'|| #{schoolName,jdbcType=VARCHAR} ||'%'
+			</if>
+			<if test="orgCode != '' and @Ognl@isNotEmpty(orgCode) ">
+				AND S.ORG_CODE like #{orgCode,jdbcType=VARCHAR} ||'%'
+			</if>
+			<if test="statYear != '' and @Ognl@isNotEmpty(statYear) ">
+				AND T.STAT_YEAR = #{statYear,jdbcType=VARCHAR}
+			</if>
+			<if test="schId != '' and @Ognl@isNotEmpty(schId)">
+				AND T.SCH_ID = #{schId,jdbcType=DECIMAL}
+			</if>
+			<if test="statId != '' and @Ognl@isNotEmpty(statId) ">
+				AND T.STAT_ID &lt;&gt; #{statId,jdbcType=DECIMAL}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.school.SchoolStat">
+		<selectKey keyProperty="statId" resultType="long" order="BEFORE"> 
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_SCHOOL_STAT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT
+		(
+			STAT_ID,
+			SCH_ID,
+			TEACHERS,
+			STUDENTS,
+			MALES,
+			FEMALES,
+			STAT_YEAR,
+			STATUS,
+			CREATE_TIME,
+			CREATE_USER,
+			UPDATE_TIME,
+			UPDATE_USER
+		) VALUES (
+			#{statId,jdbcType=DECIMAL},
+			#{schId,jdbcType=DECIMAL},
+			#{teachers,jdbcType=DECIMAL},
+			#{students,jdbcType=DECIMAL},
+			#{males,jdbcType=DECIMAL},
+			#{females,jdbcType=DECIMAL},
+			#{statYear,jdbcType=DECIMAL},
+			'1',
+			sysdate,
+			#{createUser,jdbcType=DECIMAL},
+			sysdate,
+			#{updateUser,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.school.SchoolStat">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		<set> 
+		<if test=" teachers != '' and @Ognl@isNotEmpty(teachers) ">
+			T.TEACHERS = #{teachers,jdbcType=DECIMAL} ,
+		</if>
+		<if test=" students != '' and @Ognl@isNotEmpty(students) ">
+			T.STUDENTS = #{students,jdbcType=DECIMAL} ,
+		</if>
+		<if test=" males != '' and @Ognl@isNotEmpty(males) ">
+			T.MALES = #{males,jdbcType=DECIMAL} ,
+		</if>
+		<if test=" females != '' and @Ognl@isNotEmpty(females) ">
+			T.FEMALES = #{females,jdbcType=DECIMAL} ,
+		</if>
+		<if test=" statYear != '' and @Ognl@isNotEmpty(statYear) ">
+			T.STAT_YEAR = #{statYear,jdbcType=DECIMAL} ,
+		</if>
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			T.STAT_ID= #{statId,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.STAT_ID,
+			T.SCH_ID,
+			T.TEACHERS,
+			T.STUDENTS,
+			T.MALES,
+			T.FEMALES,
+			T.STAT_YEAR,
+			S.SCHOOL_NAME
+		FROM
+			${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		JOIN 
+			${dbuser.zhsq_szzg}.ZG_SCHOOL S ON T.SCH_ID = S.SEQ_ID
+		WHERE
+			T.STAT_ID= #{statId,jdbcType=DECIMAL} 
+	</select>
+	
+	<select id="exit" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		WHERE 
+			T.STATUS = '1' 
+			AND T.STAT_YEAR = #{statYear,jdbcType=VARCHAR}
+			AND T.SCH_ID = #{schId,jdbcType=DECIMAL}
+			<if test="statId != '' and @Ognl@isNotEmpty(statId) ">
+				AND T.STAT_ID &lt;&gt; #{statId,jdbcType=DECIMAL}
+			</if>
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.school.SchoolStat">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_SCHOOL_STAT T
+		SET 
+			T.STATUS = '0', T.UPDATE_TIME = SYSDATE, T.UPDATE_USER = #{updateUser,jdbcType=DECIMAL}
+		WHERE 
+			T.STAT_ID= #{statId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

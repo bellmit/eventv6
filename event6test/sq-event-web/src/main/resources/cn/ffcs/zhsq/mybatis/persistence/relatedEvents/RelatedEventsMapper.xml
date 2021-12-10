@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.relatedEvents.RelatedEventsMapper" >
+<resultMap type="cn.ffcs.zhsq.mybatis.domain.relatedEvents.RelatedEvents" id="BaseResultMap">
+	<id column="RE_ID" property="reId" jdbcType="DECIMAL" />
+	<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" />
+	<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+	<result column="RE_NO" property="reNo" jdbcType="VARCHAR" />
+   	<result column="RE_NAME" property="reName" jdbcType="VARCHAR" />
+   	<result column="OCCU_DATE" property="occuDate" jdbcType="TIMESTAMP" />
+   	<result column="NATURE_" property="nature" jdbcType="VARCHAR" />
+   	<result column="SITUATION" property="situation" jdbcType="VARCHAR" />
+   	<result column="PRISONERS_DOC_TYPE" property="prisonersDocType" jdbcType="VARCHAR" />
+   	<result column="PRISONERS_DOC_NO" property="prisonersDocNo" jdbcType="VARCHAR" />
+   	<result column="PRISONERS_NAME" property="prisonersName" jdbcType="VARCHAR" />
+   	<result column="IS_DETECTION" property="isDetection" jdbcType="VARCHAR" />
+   	<result column="CRIME_NUM" property="crimeNum" jdbcType="DECIMAL" />
+   	<result column="ECAPE_NUM" property="ecapeNum" jdbcType="DECIMAL" />
+   	<result column="ARRESTED_NUM" property="arrestedNum" jdbcType="DECIMAL" />
+   	<result column="DETECTED_OVERVIEW" property="detectedOverview" jdbcType="VARCHAR" />
+   	<result column="STATUS" property="status" jdbcType="VARCHAR" />
+   	<result column="CREATE_TIME" property="createdTime" jdbcType="TIMESTAMP" />
+   	<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+   	<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+   	<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+   	<result column="OCCU_ADDR" property="occuAddr" jdbcType="VARCHAR" />
+   	<result column="EVENT_TYPE" property="eventType" jdbcType="VARCHAR" />
+   	<result column="EVENT_LEVEL" property="eventLevel" jdbcType="VARCHAR" />
+   	<result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR" />
+   	<result column="GRID_NAME" property="gridName" jdbcType="VARCHAR" />
+	<result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR" />
+   	<result column="SPY_END_DATE" property="spyEndDate" jdbcType="TIMESTAMP" />
+</resultMap>
+
+<sql id="sameCol">
+	T1.RE_ID,
+    T1.BIZ_ID,
+    T1.BIZ_TYPE,
+    T1.RE_NO,
+    T1.RE_NAME,
+    T1.OCCU_DATE,
+    T1.NATURE_,
+    T1.SITUATION,
+    T1.PRISONERS_DOC_TYPE,
+    T1.PRISONERS_DOC_NO,
+    T1.PRISONERS_NAME,
+    T1.IS_DETECTION,
+    T1.CRIME_NUM,
+    T1.ECAPE_NUM,
+    T1.ARRESTED_NUM,
+    T1.DETECTED_OVERVIEW,
+    T1.STATUS,
+    T1.CREATE_TIME,
+    T1.CREATE_USER_ID,
+    T1.UPDATE_TIME,
+    T1.UPDATE_USER_ID,
+    T1.OCCU_ADDR,
+    T1.EVENT_TYPE,
+    T1.EVENT_LEVEL,
+    T1.GRID_CODE,
+    T2.GRID_NAME,
+    T2.GRID_PATH,
+    T1.SPY_END_DATE
+</sql>
+
+<!-- 新增涉事案件信息 -->
+<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.relatedEvents.RelatedEvents">
+	<selectKey keyProperty="reId" resultType="long" order="BEFORE">
+		SELECT SEQ_RELATED_EVENTS_ID.NEXTVAL FROM DUAL
+	</selectKey>
+	INSERT INTO T_ZZ_RELATED_EVENTS(RE_ID, BIZ_ID, BIZ_TYPE, RE_NO, RE_NAME, OCCU_DATE, NATURE_, SITUATION, PRISONERS_DOC_TYPE, 
+				PRISONERS_DOC_NO, PRISONERS_NAME, IS_DETECTION, CRIME_NUM, ECAPE_NUM, ARRESTED_NUM, DETECTED_OVERVIEW, STATUS, 
+				CREATE_TIME, CREATE_USER_ID, UPDATE_TIME, UPDATE_USER_ID,
+				OCCU_ADDR,EVENT_TYPE,EVENT_LEVEL,GRID_CODE,SPY_END_DATE)
+	VALUES(#{reId,jdbcType=DECIMAL},#{bizId,jdbcType=DECIMAL},#{bizType,jdbcType=VARCHAR},#{reNo,jdbcType=VARCHAR},#{reName,jdbcType=VARCHAR},
+		   #{occuDate,jdbcType=TIMESTAMP},#{nature,jdbcType=VARCHAR},#{situation,jdbcType=VARCHAR},#{prisonersDocType,jdbcType=VARCHAR},
+		   #{prisonersDocNo,jdbcType=VARCHAR},#{prisonersName,jdbcType=VARCHAR},#{isDetection,jdbcType=VARCHAR},
+		   #{crimeNum,jdbcType=DECIMAL},#{ecapeNum,jdbcType=DECIMAL},#{arrestedNum,jdbcType=DECIMAL},#{detectedOverview,jdbcType=VARCHAR},
+		   '1',  
+		   <if test="createdTime != null">
+		   #{createdTime,jdbcType=TIMESTAMP},
+		  </if>
+		  <if test="createdTime == null">
+		  SYSDATE,
+		  </if>
+		   #{createUserId,jdbcType=DECIMAL}, 
+		  <if test="updateTime != null">
+		   #{updateTime,jdbcType=TIMESTAMP},
+		  </if>
+		  <if test="updateTime == null">
+		  SYSDATE,
+		  </if>#{createUserId,jdbcType=DECIMAL},
+		   #{occuAddr,jdbcType=VARCHAR},#{eventType,jdbcType=VARCHAR},#{eventLevel,jdbcType=VARCHAR},#{gridCode,jdbcType=VARCHAR},#{spyEndDate,jdbcType=TIMESTAMP}
+	)
+</insert>
+
+<!-- 更新涉事案件信息 -->
+<update id="update">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		<if test="bizId != null">
+			T1.BIZ_ID = #{bizId,jdbcType=DECIMAL},
+		</if>
+		<if test="bizType != null">
+			T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+		</if>
+		<if test="reName != null">
+			T1.RE_NAME = #{reName,jdbcType=VARCHAR},
+		</if>
+		<if test="occuDate != null">
+			T1.OCCU_DATE = #{occuDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="nature != null">
+			T1.NATURE_ = #{nature,jdbcType=VARCHAR},
+		</if>
+		<if test="situation != null">
+			T1.SITUATION = #{situation,jdbcType=VARCHAR},
+		</if>
+		<if test="prisonersDocType != null">
+			T1.PRISONERS_DOC_TYPE = #{prisonersDocType,jdbcType=VARCHAR},
+		</if>
+		<if test="prisonersDocNo != null">
+			T1.PRISONERS_DOC_NO = #{prisonersDocNo,jdbcType=VARCHAR},
+		</if>
+		<if test="prisonersName != null">
+			T1.PRISONERS_NAME = #{prisonersName,jdbcType=VARCHAR},
+		</if>
+		<if test="isDetection != null">
+			T1.IS_DETECTION = #{isDetection,jdbcType=VARCHAR},
+		</if>
+		<if test="crimeNum != null">
+			T1.CRIME_NUM = #{crimeNum,jdbcType=DECIMAL},
+		</if>
+		<if test="ecapeNum != null">
+			T1.ECAPE_NUM = #{ecapeNum,jdbcType=DECIMAL},
+		</if>
+		<if test="arrestedNum != null">
+			T1.ARRESTED_NUM = #{arrestedNum,jdbcType=DECIMAL},
+		</if>
+		<if test="detectedOverview != null">
+			T1.DETECTED_OVERVIEW = #{detectedOverview,jdbcType=VARCHAR},
+		</if>
+		<if test="updateUserId != null">
+			T1.UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+		</if>
+		<if test="occuAddr != null">
+			T1.OCCU_ADDR = #{occuAddr,jdbcType=VARCHAR},
+		</if>
+		<if test="eventType != null">
+			T1.EVENT_TYPE = #{eventType,jdbcType=VARCHAR},
+		</if>
+		<if test="eventLevel != null">
+			T1.EVENT_LEVEL = #{eventLevel,jdbcType=VARCHAR},
+		</if>
+		<if test="gridCode != null">
+			T1.GRID_CODE = #{gridCode,jdbcType=VARCHAR},
+		</if>
+		<if test="spyEndDate != null">
+			T1.SPY_END_DATE = #{spyEndDate,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updateTime != null">
+		 T1.UPDATE_TIME=#{updateTime,jdbcType=DATE}
+		  </if>
+		  <if test="updateTime == null">
+		 T1.UPDATE_TIME= SYSDATE
+		  </if>
+	</set>
+	WHERE T1.RE_ID = #{reId,jdbcType=DECIMAL} 
+	
+</update>
+
+<!-- 删除涉事案件信息 -->
+<delete id="delete">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	WHERE T1.RE_ID = #{reId,jdbcType=DECIMAL}
+</delete>
+
+<!-- 批量删除涉事案件信息 -->
+<delete id="deleteByIds">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+  	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+  	WHERE T1.RE_ID IN
+  	<foreach collection="reIdList" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</delete>
+
+<delete id="deleteByIdAndGridCode">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	WHERE T1.RE_ID = #{reId,jdbcType=DECIMAL}
+	AND T1.STATUS = '1'
+	AND T1.GRID_CODE LIKE #{gridCode,jdbcType=DECIMAL}||'%'
+	AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+</delete>
+	<!-- 批量删除涉事案件信息 -->
+<delete id="deleteByIdsAndGridCode">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	WHERE T1.RE_ID IN
+	<foreach collection="reIdList" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	AND T1.STATUS = '1'
+	AND T1.GRID_CODE LIKE #{gridCode,jdbcType=DECIMAL}||'%'
+	AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+</delete>
+	<!-- 全量删除涉事案件信息 -->
+<delete id="deleteByBizAndGridCode">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	WHERE  T1.GRID_CODE LIKE #{gridCode,jdbcType=DECIMAL}||'%'
+	AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+</delete>
+
+<delete id="deleteByIds4CareRoad">
+
+		 UPDATE T_ZZ_RELATED_EVENTS T1
+		   SET T1.STATUS = '0', T1.UPDATE_TIME = SYSDATE
+		 WHERE 
+		  T1.STATUS = '1'
+			<if test = "reIdList != null and (reIdList.size > 0)" >
+				 AND T1.RE_ID IN 
+			 	<foreach collection="reIdList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+	  	 	AND T1.RE_ID IN  (
+	  	 	SELECT T.RE_ID  FROM T_ZZ_CARE_ROAD X  JOIN T_ZZ_RELATED_EVENTS T
+	            ON X.LOT_ID = T.BIZ_ID
+	         WHERE X.GRID_CODE LIKE #{gridCode,jdbcType=DECIMAL}||'%'
+	         AND X.STATUS='1'  
+	         AND T.STATUS='1')  
+	   		 AND T1.BIZ_TYPE = 1
+
+</delete>
+
+
+<!-- 依据业务信息删除涉事案件信息 -->
+<delete id="deleteByBiz">
+	UPDATE T_ZZ_RELATED_EVENTS T1
+	<set>
+		T1.STATUS = '0',
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	WHERE T1.BIZ_ID = #{bizId,jdbcType=DECIMAL} AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+</delete>
+
+<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	SELECT 
+		<include refid="sameCol"/>
+	FROM T_ZZ_RELATED_EVENTS T1 LEFT JOIN T_DC_GRID T2 ON T1.GRID_CODE = T2.INFO_ORG_CODE AND T2.STATUS = '001'
+	WHERE T1.RE_ID = #{reId,jdbcType=DECIMAL}
+</select>
+<select id="findById4CareRoad" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	
+	SELECT T1.RE_ID,
+       T1.BIZ_ID,
+       T1.BIZ_TYPE,
+       T1.RE_NO,
+       T1.RE_NAME,
+       T1.OCCU_DATE,
+       T1.NATURE_,
+       T1.SITUATION,
+       T1.PRISONERS_DOC_TYPE,
+       T1.PRISONERS_DOC_NO,
+       T1.PRISONERS_NAME,
+       T1.IS_DETECTION,
+       T1.CRIME_NUM,
+       T1.ECAPE_NUM,
+       T1.ARRESTED_NUM,
+       T1.DETECTED_OVERVIEW,
+       T1.STATUS,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.OCCU_ADDR,
+       T1.EVENT_TYPE,
+       T1.EVENT_LEVEL,
+       T2.GRID_CODE,
+       T3.GRID_NAME,
+       T3.GRID_PATH,
+       T1.SPY_END_DATE
+  FROM T_ZZ_RELATED_EVENTS T1
+  LEFT JOIN T_ZZ_CARE_ROAD T2
+    ON T1.BIZ_ID = T2.LOT_ID
+   AND T2.STATUS = '1'
+  LEFT JOIN T_DC_GRID T3
+    ON T2.GRID_CODE = T3.INFO_ORG_CODE
+   AND T3.STATUS = '001'
+ WHERE T1.RE_ID = #{reId,jdbcType=DECIMAL}
+	
+</select>
+<select id="findByPeopleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	SELECT
+	<include refid="sameCol"/>
+	FROM zhsq.T_ZZ_RELATED_EVENTS T1
+	LEFT JOIN T_DC_GRID T2 ON T1.GRID_CODE = T2.INFO_ORG_CODE AND T2.STATUS = '001'
+	INNER JOIN zhsq.T_ZZ_INVOLVED_PEOPLE T3
+	ON T1.RE_ID = T3.BIZ_ID
+	WHERE T3.IP_ID = #{peopleId,jdbcType=DECIMAL}
+	AND T1.STATUS = '1'
+	AND T1.BIZ_TYPE = '4'
+</select>
+<select id="findCountByCriteria" resultType="java.lang.Integer" >
+	SELECT COUNT(*)
+  	FROM T_ZZ_RELATED_EVENTS T1, T_ZZ_CARE_ROAD T3, T_DC_GRID T2
+  	WHERE T1.BIZ_ID = T3.LOT_ID AND  T3.GRID_ID = T2.GRID_ID AND T1.STATUS = '1' AND T3.STATUS = '1' AND T2.STATUS = '001'
+  	<include refid="find_where"/>
+</select>
+
+<select id="findPageListByCriteria" resultMap="BaseResultMap">
+	SELECT
+  		<include refid="sameCol"/>
+  	FROM T_ZZ_RELATED_EVENTS T1, T_ZZ_CARE_ROAD T3, T_DC_GRID T2
+  	WHERE T1.BIZ_ID = T3.LOT_ID AND  T3.GRID_ID = T2.GRID_ID AND T1.STATUS = '1' AND T3.STATUS = '1' AND T2.STATUS = '001'
+  	<include refid="find_where"/>
+	ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<!-- 涉案事件单表记录统计 -->
+<select id="findRelatedEventsCountByCriteria" resultType="java.lang.Integer" >
+	SELECT COUNT(*)
+  	FROM T_ZZ_RELATED_EVENTS T1 
+  	LEFT OUTER JOIN T_DC_GRID T2 ON T1.GRID_CODE = T2.INFO_ORG_CODE AND T2.STATUS = '001'
+  	WHERE T1.STATUS = '1'
+  	<include refid="find_where"/>
+</select>
+
+<!-- 涉案事件单表记录列表 -->
+<select id="findRelatedEventsPageListByCriteria" resultMap="BaseResultMap">
+	SELECT
+  		<include refid="sameCol"/>
+  	FROM T_ZZ_RELATED_EVENTS T1
+  	LEFT OUTER JOIN T_DC_GRID T2 ON T1.GRID_CODE = T2.INFO_ORG_CODE AND T2.STATUS = '001'
+  	WHERE T1.STATUS = '1'
+  	<include refid="find_where"/>
+  	ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<sql id="find_where">
+	<if test="bizId != null">
+		AND T1.BIZ_ID = #{bizId ,jdbcType=DECIMAL}
+	</if>
+	<if test="bizType != null">
+		AND T1.BIZ_TYPE = #{bizType ,jdbcType=VARCHAR}
+	</if>
+	<if test="reNo != null">
+		AND T1.RE_NO = #{reNo,jdbcType=VARCHAR}
+	</if>
+	<if test="nature != null and nature != ''">
+		AND T1.NATURE_ = #{nature,jdbcType=VARCHAR}
+	</if>
+	<if test="reName != null">
+		AND T1.RE_NAME LIKE '%'||#{reName,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="isDetection != null">
+		AND T1.IS_DETECTION = #{isDetection ,jdbcType=VARCHAR}
+	</if>
+	<if test="detectedOverview != null">
+		AND T1.DETECTED_OVERVIEW LIKE '%'||#{detectedOverview ,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="status != null">
+		AND T1.STATUS = #{status ,jdbcType=VARCHAR}
+	</if>
+	<if test="keyWord!=null and keyWord!=''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+			OR
+			T1.DETECTED_OVERVIEW LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+			OR
+			T1.SITUATION LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="gridId != null">
+		AND T2.GRID_ID IN (
+			SELECT T3.GRID_ID
+			FROM T_DC_GRID T3
+			WHERE T3.STATUS = '001'
+			START WITH T3.GRID_ID = #{gridId ,jdbcType=DECIMAL}
+			CONNECT BY PRIOR T3.GRID_ID = T3.PARENT_GRID_ID
+		)
+	</if>
+	<if test="gridCode != null and gridCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{gridCode ,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="@Ognl@isNotEmpty(inGridStatus)">
+		<choose>
+			<when test="inGridStatus == 0"></when>
+			<when test="inGridStatus == 1">
+				<![CDATA[AND length(T2.INFO_ORG_CODE) <= 12]]>
+			</when>
+			<when test="inGridStatus == 2">
+				AND length(T2.INFO_ORG_CODE) = 15
+			</when>
+		</choose>
+	</if>
+	<if test="eventType != null">
+		AND T1.EVENT_TYPE = #{eventType ,jdbcType=VARCHAR}
+	</if>
+	<if test="eventLevel != null">
+		AND T1.EVENT_LEVEL = #{eventLevel ,jdbcType=VARCHAR}
+	</if>
+	<if test="occuDateStartStr != null">
+		AND T1.OCCU_DATE >= TO_DATE(#{occuDateStartStr ,jdbcType=VARCHAR},'YYYY-MM-DD')
+	</if>
+	<if test="occuDateEndStr != null">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{occuDateEndStr ,jdbcType=VARCHAR},'YYYY-MM-DD') + 1
+	</if>
+	<if test="spyEndDateStartStr != null">
+		AND T1.SPY_END_DATE >= TO_DATE(#{spyEndDateStartStr ,jdbcType=VARCHAR},'YYYY-MM-DD')
+	</if>
+	<if test="spyEndDateEndStr != null">
+		AND T1.SPY_END_DATE &lt; TO_DATE(#{spyEndDateEndStr ,jdbcType=VARCHAR},'YYYY-MM-DD') + 1
+	</if>
+	<if test="beginTime != null and endTime != null" >
+		<if test="occuDateStartStr == null and occuDateEndStr == null">
+          and T1.OCCU_DATE BETWEEN TO_DATE(#{beginTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') 
+          AND  TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+        </if>  
+     </if>
+     
+    <if test="updateStart !=null">
+		AND T1.UPDATE_TIME  <![CDATA[>=]]>TO_DATE(#{updateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	</if>
+	<if test="updateEnd !=null">
+		AND T1.UPDATE_TIME  <![CDATA[<]]>TO_DATE(#{updateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	</if>
+      
+</sql>
+
+<select id="findCountForSchoolRE" resultType="java.lang.Integer" >
+	SELECT COUNT(*)
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT OUTER JOIN T_ZZ_PLA_INFO PLA
+	    ON T1.BIZ_ID = PLA.PLA_ID
+	  LEFT OUTER JOIN T_DC_GRID T2
+	    ON PLA.GRID_ID = T2.GRID_ID
+	 where T1.STATUS = '1'
+	   AND PLA.STATUS = '001'
+	   AND PLA.TYPE = '1'
+	   AND T2.STATUS = '001'
+	<include refid="find_where"/>
+</select>
+
+<select id="findPageListForSchoolRE" resultMap="BaseResultMap">
+	SELECT <include refid="sameCol"/>
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT OUTER JOIN T_ZZ_PLA_INFO PLA
+	    ON T1.BIZ_ID = PLA.PLA_ID
+	  LEFT OUTER JOIN T_DC_GRID T2
+	    ON PLA.GRID_ID = T2.GRID_ID
+	 where T1.STATUS = '1'
+	   AND PLA.STATUS = '001'
+	   AND PLA.TYPE = '1'
+	   AND T2.STATUS = '001'
+	<include refid="find_where"/>
+	ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<select id="findById4School" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	
+ SELECT T1.RE_ID,
+	    T1.BIZ_ID,
+	    T1.BIZ_TYPE,
+	    T1.RE_NO,
+	    T1.RE_NAME,
+	    T1.OCCU_DATE,
+	    T1.NATURE_,
+	    T1.SITUATION,
+	    T1.PRISONERS_DOC_TYPE,
+	    T1.PRISONERS_DOC_NO,
+	    T1.PRISONERS_NAME,
+	    T1.IS_DETECTION,
+	    T1.CRIME_NUM,
+	    T1.ECAPE_NUM,
+	    T1.ARRESTED_NUM,
+	    T1.DETECTED_OVERVIEW,
+	    T1.STATUS,
+	    T1.CREATE_TIME,
+	    T1.CREATE_USER_ID,
+	    T1.UPDATE_TIME,
+	    T1.UPDATE_USER_ID,
+	    T1.OCCU_ADDR,
+	    T1.EVENT_TYPE,
+	    T1.EVENT_LEVEL,
+	    T2.GRID_CODE,
+	    T2.GRID_NAME,
+	    T2.GRID_PATH,
+	    T1.SPY_END_DATE
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT OUTER JOIN T_ZZ_PLA_INFO PLA
+	    ON T1.BIZ_ID = PLA.PLA_ID
+	  LEFT OUTER JOIN T_DC_GRID T2
+	    ON PLA.GRID_ID = T2.GRID_ID
+	 where T1.STATUS = '1'
+	   AND PLA.STATUS = '001'
+	   AND PLA.TYPE = '1'
+	   AND T2.STATUS = '001'
+     	AND T1.RE_ID = #{reId,jdbcType=DECIMAL} 
+
+</select>
+
+<select id="findCountForCommonRE" resultType="java.lang.Integer" >
+	SELECT COUNT(*)
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT OUTER JOIN T_DC_GRID T2
+	    ON T1.GRID_CODE = T2.INFO_ORG_CODE
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	<include refid="find_where"/>
+</select>
+
+<select id="findPageListForCommonRE" resultMap="BaseResultMap">
+	SELECT <include refid="sameCol"/>
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT OUTER JOIN T_DC_GRID T2
+	    ON T1.GRID_CODE = T2.INFO_ORG_CODE
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	<include refid="find_where"/>
+	ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<select id="findRelatedEventsForGisOfCount" resultType="java.lang.Integer">
+	SELECT COUNT(0)
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_DC_GRID T2
+	    ON T1.GRID_CODE = T2.INFO_ORG_CODE
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="eventType != null and eventType != ''">
+		AND T1.EVENT_TYPE = #{eventType,jdbcType=VARCHAR}
+	</if>
+	<if test="eventLevel != null and eventLevel != ''">
+		AND T1.EVENT_LEVEL = #{eventLevel,jdbcType=VARCHAR}
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+</select>
+
+<select id="findRelatedEventsForGisOfPage" resultType="java.util.HashMap">
+	SELECT T1.RE_ID,
+		   T1.RE_NAME,
+		   T1.OCCU_ADDR,
+		   TO_CHAR(T1.OCCU_DATE, 'YYYY-MM-DD HH:MM:SS') OCCU_DATE,
+	       M.RESOURCES_ID ID,
+	       M.RESOURCES_ID WID,
+	       T1.RE_NAME     NAME,
+	       M.X,
+	       M.Y,
+	       M.MAP_TYPE
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_DC_GRID T2
+	    ON T1.GRID_CODE = T2.INFO_ORG_CODE
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="eventType != null and eventType != ''">
+		AND T1.EVENT_TYPE = #{eventType,jdbcType=VARCHAR}
+	</if>
+	<if test="eventLevel != null and eventLevel != ''">
+		AND T1.EVENT_LEVEL = #{eventLevel,jdbcType=VARCHAR}
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+	 ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<select id="findSchoolEventsForGisOfCount" resultType="java.lang.Integer">
+	SELECT COUNT(0)
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_ZZ_PLA_INFO PLA
+	    ON T1.BIZ_ID = PLA.PLA_ID
+	  LEFT JOIN T_DC_GRID T2
+	    ON PLA.GRID_ID = T2.GRID_ID
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND PLA.STATUS = '001'
+	   AND PLA.TYPE = '1'
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR PLA.PLA_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+</select>
+
+<select id="findSchoolEventsForGisOfPage" resultType="java.util.HashMap">
+	SELECT T1.RE_ID,
+		   T1.RE_NAME,
+		   T1.OCCU_ADDR,
+		   PLA.PLA_NAME,
+		   TO_CHAR(T1.OCCU_DATE, 'YYYY-MM-DD HH:MM:SS') OCCU_DATE,
+	       M.RESOURCES_ID ID,
+	       M.RESOURCES_ID WID,
+	       T1.RE_NAME     NAME,
+	       M.X,
+	       M.Y,
+	       M.MAP_TYPE
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_ZZ_PLA_INFO PLA
+	    ON T1.BIZ_ID = PLA.PLA_ID
+	  LEFT JOIN T_DC_GRID T2
+	    ON PLA.GRID_ID = T2.GRID_ID
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 where T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND PLA.STATUS = '001'
+	   AND PLA.TYPE = '1'
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR PLA.PLA_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+	 ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+<select id="findRoadEventsForGisOfCount" resultType="java.lang.Integer">
+	SELECT COUNT(*)
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_ZZ_CARE_ROAD T3
+	    ON T1.BIZ_ID = T3.LOT_ID
+	  LEFT JOIN T_DC_GRID T2
+	    ON T3.GRID_ID = T2.GRID_ID
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 WHERE T1.STATUS = '1'
+	   AND T3.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T3.LOT_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+</select>
+
+<select id="findRoadEventsForGisOfPage" resultType="java.util.HashMap">
+	SELECT T1.RE_ID,
+		   T1.RE_NAME,
+		   T1.OCCU_ADDR,
+		   T3.LOT_NAME,
+		   TO_CHAR(T1.OCCU_DATE, 'YYYY-MM-DD HH:MM:SS') OCCU_DATE,
+	       M.RESOURCES_ID ID,
+	       M.RESOURCES_ID WID,
+	       T1.RE_NAME     NAME,
+	       M.X,
+	       M.Y,
+	       M.MAP_TYPE
+	  FROM T_ZZ_RELATED_EVENTS T1
+	  LEFT JOIN T_ZZ_CARE_ROAD T3
+	    ON T1.BIZ_ID = T3.LOT_ID
+	  LEFT JOIN T_DC_GRID T2
+	    ON T3.GRID_ID = T2.GRID_ID
+	  LEFT JOIN T_ZY_RES_MARKER M
+	    ON T1.RE_ID = M.RESOURCES_ID
+	   AND M.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND M.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+	 WHERE T1.STATUS = '1'
+	   AND T3.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	<if test="keyWord != null and keyWord != ''">
+		AND (
+			T1.RE_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T1.OCCU_ADDR LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		 OR T3.LOT_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+		)
+	</if>
+	<if test="startTime != null and startTime != ''">
+		AND T1.OCCU_DATE &gt;= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+	</if>
+	<if test="endTime != null and endTime != ''">
+		AND T1.OCCU_DATE &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+	 ORDER BY T1.OCCU_DATE DESC, T1.RE_ID DESC
+</select>
+
+</mapper>

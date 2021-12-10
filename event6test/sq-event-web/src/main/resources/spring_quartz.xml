@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobD" class="cn.ffcs.zhsq.times.service.TimerTonganTaskServImpl"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobC" class="cn.ffcs.zhsq.event.service.impl.TimerTaskServImpl"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobA" class="cn.ffcs.zhsq.event.service.impl.TimerTaskServImpl"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobB" class="cn.ffcs.zhsq.event.service.impl.EventDockingTaskService"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobE" class="cn.ffcs.zhsq.szzg.aqi.service.impl.AqiTaskServiveImpl"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobSynchroBusJob" class="cn.ffcs.zhsq.bus.job.SynchroBusJob"/>
+	<!-- 要调用的工作类 -->
+	<bean id="quartzJobSynchroTaxiJob" class="cn.ffcs.zhsq.taxi.job.SynchroTaxiJob"/>
+	<!-- 要调用的工作类.环卫车基础数据同步 -->
+	<bean id="quartzJobSynchroSanitationTrunckJob" class="cn.ffcs.zhsq.map.sanitationtrunck.job.SynchroSanitationTrunckJob"/>
+	
+	<!-- 定义调用对象和调用对象的方法A -->
+	<bean id="jobtaskA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    <!-- 调用的类 -->
+	    <property name="targetObject">
+	        <ref bean="quartzJobA"/>
+	    </property>
+	    <!-- 调用类中的方法 -->
+	    <property name="targetMethod">
+	        <value>run</value>
+	    </property>
+		<property name="concurrent" value="false" />
+	</bean>
+	<!-- 定义调用对象和调用对象的方法B -->
+	<bean id="jobtaskB" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    <!-- 调用的类 -->
+	    <property name="targetObject">
+	        <ref bean="quartzJobB"/>
+	    </property>
+	    <!-- 调用类中的方法 -->
+	    <property name="targetMethod">
+	        <value>eventDockingTask</value>
+	    </property>
+	</bean>
+	<!-- 定义调用对象和调用对象的方法D -->
+	<bean id="jobtaskD" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="quartzJobD"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 定义调用对象和调用对象的方法E -->
+	<bean id="jobtaskE" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="quartzJobE"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 公交车定时任务调用方法 -->
+	<bean id="jobtaskSynchroBusJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="quartzJobSynchroBusJob"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 出租车定时任务调用方法 -->
+	<bean id="jobtaskSynchroTaxiJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="quartzJobSynchroTaxiJob"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 环卫车基础数据同步定时任务调用方法 -->
+	<bean id="jobtaskSynchroSanitationTrunckJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="quartzJobSynchroSanitationTrunckJob"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>run</value>
+		</property>
+	</bean>
+	<!-- 定义触发时间A -->
+	<bean id="doTimeA" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail">
+	        <ref bean="jobtaskA"/>
+	    </property>
+	    <!-- cron表达式每天20点30分0秒执行一次 0 30 20 * * ? -->
+	    <property name="cronExpression">
+	        <value>0 0/3 * * * ?</value>
+	    </property>
+	</bean>
+	<!-- 定义触发时间B -->
+	<bean id="doTimeB" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail">
+	        <ref bean="jobtaskB"/>
+	    </property>
+	    <!-- cron表达式每天20点30分0秒执行一次 0 30 20 * * ? -->
+	    <property name="cronExpression">
+	        <value>0/40 * * * * ?</value>
+	    </property>
+	</bean>
+
+	<!-- 定义触发时间D -->
+	<bean id="doTimeD" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobtaskD"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 0/3 * * * ?</value>
+		</property>
+	</bean>
+	
+	<!--&lt;!&ndash; 定义触发时间E &ndash;&gt;
+	<bean id="doTimeE" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobtaskE"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 35 * * * ?</value>
+		</property>
+	</bean>-->
+	
+	<bean id="doTimeSynchroBusJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobtaskSynchroBusJob"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 19 10 * * ?</value>
+		</property>
+	</bean>
+	<bean id="doTimeSynchroTaxiJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobtaskSynchroTaxiJob"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 30 0 * * ?</value>
+		</property>
+	</bean>
+	<bean id="doTimeSynchroTrunckJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobtaskSynchroSanitationTrunckJob"/>
+		</property>
+		<property name="cronExpression">
+			<!-- 每天凌晨3点 -->
+			<value>0 0 3 * * ?</value>
+		</property>
+	</bean>
+
+	<!--定时器任务全部迁移至任务调度工程，此文件不再添加定时器任务-->
+<!-- <bean id="loadTask" class="cn.ffcs.zhsq.times.service.TestService" init-method="initTask" />  -->
+<!-- 	<bean id="startQuartz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+		<!-- 通过applicationContextSchedulerContextKey属性配置spring上下文 -->
+<!-- 		<property name="applicationContextSchedulerContextKey"> -->
+<!-- 			<value>applicationContext</value> -->
+<!-- 		</property> -->
+<!-- 	    <property name="triggers"> -->
+<!-- 	        <list> -->
+<!--  	            <ref bean="doTimeA"/> -->
+				<!--<ref bean="doTimeB"/>-->
+				<!-- <ref bean="doTimeD"/> -->
+				<!--<ref bean="doTimeE"/>-->
+<!-- 				<ref bean="doTimeSynchroBusJob"/>-->
+<!-- 				<ref bean="doTimeSynchroTaxiJob"/> -->
+<!-- 				<ref bean="doTimeSynchroTrunckJob"/> --> 
+<!-- 	        </list> -->
+<!-- 	    </property> -->
+<!-- 	</bean> -->
+</beans>

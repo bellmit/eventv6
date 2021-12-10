@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.intermediateData.eventVerify.EventVerifyMapper">
+	<!-- 列表查询列 -->
+	<sql id="listColumn">
+		T.EVENT_VERIFY_ID		"eventVerifyId",
+		T.EVENT_ID 				"eventId",
+		T.EVENT_NAME 			"eventName",
+		T.EVENT_TYPE			"eventType",
+		T.OCCURRED 				"occurred",
+		T.HAPPEN_TIME 			"happenTime",
+		T.CONTACT_USER 			"contactUser",
+		T.CONTENT_				"content",
+		T.TEL 					"tel",
+		T.INFO_ORG_CODE 		"infoOrgCode",
+		T.STATUS_ 				"status",
+		T.USER_TYPE				"userType",
+		T1.GRID_PATH			"gridPath",
+		T.IS_OPEN				"isOpen"
+	</sql>
+
+	<!-- 详情查询列 -->
+	<sql id="detailColumn">
+		<include refid="listColumn"></include>,
+		T.BIZ_ID				"bizId",
+		T.BIZ_PLATFORM 			"bizPlatform",
+		T.EVENT_INFO_ORG_CODE	"eventInfoOrgCode",
+		T.REMARK 				"remark",
+		T.LONGITUDE 			"longitude",
+		T.LATITUDE 				"latitude",
+		T.DATA_JSON 			"dataJson"
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="java.util.Map">
+		<selectKey keyProperty="eventVerifyId" resultType="long" order="BEFORE">
+			SELECT SEQ_EVENT_VERIFY_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_EVENT_VERIFY
+		(
+			EVENT_VERIFY_ID, BIZ_ID, BIZ_PLATFORM, EVENT_ID,
+			EVENT_NAME, EVENT_TYPE, OCCURRED, CONTENT_, HAPPEN_TIME, 
+			INFO_ORG_CODE, EVENT_INFO_ORG_CODE, STATUS_, CONTACT_USER, 
+			TEL, REMARK, LONGITUDE, LATITUDE, 
+			USER_TYPE, IS_OPEN,
+			DATA_JSON, CREATE_USER_ID, CREATE_TIME
+		) VALUES (
+			#{eventVerifyId,jdbcType=DECIMAL}, #{bizId,jdbcType=VARCHAR}, #{bizPlatform,jdbcType=VARCHAR}, #{eventId,jdbcType=DECIMAL},
+			#{eventName,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{occurred,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{happenTime,jdbcType=TIMESTAMP},
+			#{infoOrgCode,jdbcType=VARCHAR}, #{eventInfoOrgCode,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR}, #{contactUser,jdbcType=VARCHAR},
+			#{tel,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR},
+			<choose>
+				<when test="@Ognl@isNotEmpty(userType)">
+					#{userType,jdbcType=VARCHAR},
+				</when>
+				<otherwise>DEFAULT,</otherwise>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(isOpen)">
+					#{isOpen,jdbcType=VARCHAR},
+				</when>
+				<otherwise>DEFAULT,</otherwise>
+			</choose>
+			#{dataJson,jdbcType=VARCHAR}, #{createUserId,jdbcType=DECIMAL}, SYSDATE
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="java.util.Map">
+		UPDATE
+			T_EVENT_VERIFY
+		<set> 
+			<if test="eventName != null and eventName != '' ">
+				EVENT_NAME = #{eventName,jdbcType=VARCHAR},
+			</if>
+			<if test="eventType != null and eventType != '' ">
+				EVENT_TYPE = #{eventType,jdbcType=VARCHAR},
+			</if>
+			<if test="eventId != null ">
+				EVENT_ID = #{eventId,jdbcType=DECIMAL},
+			</if>
+			<if test="occurred != null and occurred != '' ">
+				OCCURRED = #{occurred,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null and content != '' ">
+				CONTENT_ = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="happenTime != null ">
+				HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="infoOrgCode != null and infoOrgCode != ''" >
+				INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="eventInfoOrgCode != null and eventInfoOrgCode != '' ">
+				EVENT_INFO_ORG_CODE = #{eventInfoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null and status != ''" >
+				STATUS_ = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="contactUser != null ">
+				CONTACT_USER = #{contactUser,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null ">
+				TEL = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null " >
+				REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null ">
+				LONGITUDE = #{longitude,jdbcType=VARCHAR}, 
+			</if>
+			<if test="latitude != null ">
+				LATITUDE = #{latitude,jdbcType=VARCHAR},
+			</if>
+			<if test="dataJson != null and dataJson != ''" >
+				DATA_JSON = #{dataJson,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null " >
+				UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="userType != null and userType != '' " >
+				USER_TYPE = #{userType,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(isOpen)">
+				IS_OPEN = #{isOpen,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME = SYSDATE
+		</set>
+		WHERE
+			EVENT_VERIFY_ID = #{eventVerifyId,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 删除 -->	
+	<delete id="delete">
+		UPDATE T_EVENT_VERIFY T
+		SET T.STATUS_ = '06', T.UPDATE_USER_ID = #{delUserId,jdbcType=DECIMAL}, T.UPDATE_TIME = SYSDATE
+		WHERE T.EVENT_VERIFY_ID = #{id,jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 详情 -->	
+	<select id="findById" parameterType="long" resultType="java.util.Map">
+		SELECT
+			<include refid="detailColumn"></include>
+		FROM
+			T_EVENT_VERIFY T
+		LEFT JOIN T_DC_GRID T1
+			ON T.INFO_ORG_CODE = T1.INFO_ORG_CODE AND T1.STATUS = '001'
+		WHERE
+			T.EVENT_VERIFY_ID = #{eventVerifyId,jdbcType=DECIMAL} AND T.STATUS_ IN ('01', '02', '03', '04')
+	</select>
+	
+	<!-- 依据指定条件获取事件审核记录详情 -->	
+	<select id="findEventVerifyByParam" resultType="java.util.Map">
+		SELECT
+			<include refid="detailColumn"></include>
+		FROM
+			T_EVENT_VERIFY T
+		LEFT JOIN T_DC_GRID T1
+			ON T.INFO_ORG_CODE = T1.INFO_ORG_CODE AND T1.STATUS = '001'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1) 
+		<include refid="listSql"></include>
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="findPageListByCriteria" resultType="java.util.Map">
+		SELECT
+			<include refid="listColumn"></include>
+			,T.BIZ_PLATFORM "bizPlatform" 
+		<include refid="listSql"></include>
+		ORDER BY T.STATUS_, T.HAPPEN_TIME DESC
+	</select>
+	
+	<!-- 列表查询语句 -->
+	<sql id="listSql">
+		FROM
+			T_EVENT_VERIFY T
+		LEFT JOIN T_DC_GRID T1
+			ON T.INFO_ORG_CODE = T1.INFO_ORG_CODE AND T1.STATUS = '001'
+		<include refid="find_where" />
+	</sql>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			1 = 1
+			<if test="eventVerifyId != null ">
+				AND T.EVENT_VERIFY_ID = #{eventVerifyId,jdbcType=DECIMAL}
+			</if>
+			<if test="eventId != null ">
+				AND T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+			</if>
+			<if test="infoOrgCode != null and infoOrgCode != '' ">
+				<choose>
+					<when test="isJurisdictionQuery == true ">
+						AND T.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+					</when>
+					<otherwise>
+						AND T.INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+					</otherwise>
+				</choose>
+			</if>
+			<if test="happenTimeStart != null and happenTimeStart != '' ">
+				AND T.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+			</if>
+			<if test="happenTimeEnd != null and happenTimeEnd != '' ">
+				AND T.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+			</if>
+			<if test="happenTimeEndDetail != null and happenTimeEndDetail != '' ">
+				AND T.HAPPEN_TIME <![CDATA[<=]]>TO_DATE(#{happenTimeEndDetail,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+			</if>
+			<if test="keyWord != null and keyWord != '' ">
+				AND (
+					T.CONTENT_ LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+					OR
+					T.EVENT_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+					OR
+					T.OCCURRED LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+				)
+			</if>
+			<choose>
+				<when test="bizPlatformList != null">
+				
+				    <choose>
+				        <when test=" bizPlatformList.size > 0">
+				        	AND T.BIZ_PLATFORM IN
+					        <foreach collection="bizPlatformList" index="index" item="item" open="(" separator="," close=")">
+								#{item}
+					    	</foreach>
+				        </when>
+				        <otherwise>
+				        	AND 1 = 2 
+				        </otherwise>
+				    </choose>
+					
+				</when>
+				<when test="bizPlatform != null and bizPlatform != '' ">
+					AND T.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="statusList != null and statusList.size > 0 ">
+					AND T.STATUS_ IN
+					<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="status != null and status != '' ">
+					AND T.STATUS_ = #{status,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND T.STATUS_ IN ('01', '02', '03', '04')
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="userTypeList != null and userTypeList.size > 0 ">
+					AND T.USER_TYPE IN
+					<foreach collection="userTypeList" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="userType != null and userType != '' ">
+					AND T.USER_TYPE = #{userType,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<if test="@Ognl@isNotEmpty(isOpen)">
+				AND T.IS_OPEN = #{isOpen,jdbcType=VARCHAR}
+			</if>
+			<if test="createUserId != null ">
+				AND T.CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL}
+			</if>
+		</where>
+	</sql>
+	
+</mapper>

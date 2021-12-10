@@ -1,0 +1,145 @@
+﻿body{font-size: 12px;color: #5e5e5e; font-family:"宋体","Arial Narrow"; margin:0; padding:0;}
+a{text-decoration: none;color: #5e5e5e;}
+a:hover {text-decoration:underline;color: #5e5e5e;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3, label, em{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom; font-family:Microsoft YaHei,"Arial Narrow";}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.h_20{height:20px; font-size:0; line-height:0; overflow:hidden;}
+.hide{display:none;}
+/*---------------------------------通用表单 begin---------------------------------*/
+.inp1{width:55%; border:1px solid #c7c7c7; height: 28px; *height:30px; line-height:12px; *line-height:28px; font-size: 12px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.inp1:hover{border:1px solid #36c;}
+.sel1{width:55%; border:1px solid #c7c7c7; height: 28px; line-height:12px; font-size:12px; border-radius:3px; padding-left:3px; color:#5e5e5e; *margin-top:3px;}
+.sel1:hover{border:1px solid #36c;}
+.area1{width:55%; border:1px solid #c7c7c7; height:84px; line-height:22px; font-size:12px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.area1:hover{border:1px solid #36c;}
+/*---------------------------------通用表单 end---------------------------------*/
+
+/*---------------------------------字体颜色 begin---------------------------------*/
+.FontRed{color:#e60012;}/*红色*/
+.FontRed a{color:#e60012;}
+.FontOrange{color:#f39800;}/*橙色*/
+.FontOrange a{color:#f39800;}
+.FontCyan{color:#3dc9a0;}/*青色*/
+.FontCyan a{color:#3dc9a0;}
+.FontPurple{color:#b9a3f3;}/*紫色*/
+.FontPurple a{color:#b9a3f3;}
+.FontBlue{color:#79b0f5;}/*蓝色*/
+.FontBlue a{color:#79b0f5;}
+.FontGreen{color:#b3d465;}/*绿色*/
+.FontGreen a{color:#b3d465;}
+.FontYanghong{color:#ec6941;}/*洋红*/
+.FontYanghong a{color:#ec6941;}
+.FontDarkBlue{color:#36c;}/*深蓝*/
+.FontDarkBlue a{color:#36c;}
+/*---------------------------------字体颜色 end---------------------------------*/
+
+/*---------------------------------操作按钮 begin---------------------------------*/
+.tool{height:28px;}
+.NorToolBtn{padding:4px 7px 4px 25px; color:#fff; margin-right:10px; display:block; float:left; line-height:14px; background-repeat:no-repeat; background-color:#448aca; background-position:7px 5px;}
+.NorToolBtn:hover{color:#fff; text-decoration:none; background-color:#ff9f00;}
+.AddBtn{background-image:url(../images/add.png);}/*新增按钮*/
+.DelBtn{background-image:url(../images/del.png);}/*删除按钮*/
+.EditBtn{background-image:url(../images/edit.png);}/*编辑按钮*/
+.MoreBtn{background-image:url(../images/more.png); background-color:#8fc31f;}/*更多按钮*/
+.JieAnBtn{background-image:url(../images/finish.png);}/*结案按钮*/
+.ShangBaoBtn{background-image:url(../images/shangbao.png);}/*上报按钮*/
+.YueJiShangBaoBtn{background-image:url(../images/yueji.png);}/*越级上报按钮*/
+.ToDepartmentBtn{background-image:url(../images/todepartment.png);}/*分流到部门按钮*/
+.ToPeopleBtn{background-image:url(../images/todepartment.png);}/*分流到人按钮*/
+.MoreTool .list{padding-top:10px;}
+.MoreTool .list ul li{float:right; margin-bottom:10px;}
+.BigTool{width:100%; height: 40px; background: #f4f4f4; padding:10px 0;}
+.BtnList{margin:0 auto; height: 40px;}
+.BigNorToolBtn{display:inline-block; padding: 0 15px 0 39px; height: 40px; color:#fff; font-size:18px; font-family:Microsoft YaHei; text-align:center; line-height: 40px; float: left; margin: 0 10px; background-repeat:no-repeat; background-color:#448aca; background-position: 15px 12px;}
+.BigNorToolBtn:hover{color:#fff; text-decoration:none; background-color:#ff9f00;}
+.SaveBtn{background-image:url(../images/sys1_25.png);}/*保存按钮*/
+.SubmitBtn{background-image:url(../images/finish2.png);}/*提交按钮*/
+.CancelBtn{background-image:url(../images/cancel.png); background-color:#8fc31f;}/*取消按钮*/
+
+/*---------------------------------操作按钮 end---------------------------------*/
+
+/*---------------------------------边框阴影 begin---------------------------------*/
+.DropDownList{position:absolute; z-index:1; top:0;}
+.DropDownList .list{background:#fff; border:1px solid #c5d0dc;}
+.LeftShadow{background:url(../images/leftshadow.png) no-repeat left bottom; padding-left:5px;}
+.RightShadow{background:url(../images/rightshadow.png) no-repeat right bottom; padding-right:5px;}
+.BottomShadow{background:url(../images/bottomshadow.png) repeat-x 0 -2px; height:7px; width:100%;}
+/*---------------------------------边框阴影 end---------------------------------*/
+
+/*---------------------------------表单样式 begin---------------------------------*/
+.MC_Top{line-height: 22px;height:47px; background:#eff2f4; padding:0 10px;}
+.MC_Top ul li{float:left; padding-top:7px; margin-right:20px; width:275px;}
+.MC_Top .sel1{width:180px;}
+.MC_Top ul li.number{float:right; padding-right:5px; line-height:30px; margin-right:0; width:auto;}
+.MC_Top ul li.number span{color:#005eb3;}
+.FormnNotice{height:28px; line-height:28px; color:#9cc6ea; text-align:center;}
+.MC_con{overflow:auto; padding:0 10px;}
+.LabName{line-height: 18px;text-align: right;float: left;width:90px; font-size: 12px; padding-right:5px; height: 28px; display:table; *padding-top:7px;}
+.LabName span{display:table-cell; vertical-align:middle;}
+.NorForm .title{height:28px; background:#eff2f4; padding:0 10px; font-size:16px; line-height:28px; font-family:Microsoft YaHei; border-left:2px solid #36c; margin-top:10px;}
+.NorForm td{line-height: 22px;border-bottom:1px dotted #cecece; width:31%; padding-left:3%; padding-bottom: 5px; padding-top: 5px; vertical-align: top; font-size: 12px;}
+.NorForm td.LeftTd{padding-left:0;}
+.NorForm td.RightTd{border-right:none;}
+.Check_Radio{margin-top: 3px; float:left;}
+.Check_Radio span{margin-right:10px;}
+.Check_Radio input{margin-right:5px; vertical-align:-2px;}
+
+.addinfo{line-height: 32px;width:82%; float:left;}
+.addinfo code{margin-right: 15px;}
+.addinfo code a{text-decoration:underline;}
+.addinfo code a:hover{text-decoration:none;}
+.addinfo p{float:left; margin-right: 15px;}
+.addinfo p img{height: 8px;width: 8px;margin-left:5px; cursor:pointer;}
+.addlist{float:left; background:#c5d0dc; font-size:12px;}
+.addlist td.header{background:#f9f9f9; color:#5e5e5e; font-weight:bold;}
+.addlist td{background:#fff; width:auto; text-align:center; border:none 0; padding:10px 0; vertical-align:middle;}
+/*---------------------------------表单样式 end---------------------------------*/
+
+/*---------------------------------列表 begin---------------------------------*/
+.MainContent{padding:10px 10px 0 10px;}
+.ConSearch{height:32px; position:relative;}
+.AdvanceSearchBtn{text-decoration:underline;}
+.AdvanceSearchBtn:hover{color:#f39800; text-decoration:none;}
+.ConSearch .fl{height:32px; line-height:32px;}
+.ConSearch .fl ul li{float:left; margin-right:10px;}
+.ConSearch .btns{width: 160px; float:left; height:32px; line-height:32px; font-size:14px;}
+.ConSearch .btns ul li{float:left;}
+.chaxun{display:block; width: 55px; height:32px; text-align:center; border-radius:3px; line-height:30px; color:#fff; font-family:Microsoft YaHei; font-size:16px; background:url(../images/sys_13.png) no-repeat 10px 6px #448aca; padding-left:20px; margin-right:9px;}
+.chaxun:hover{background:url(../images/sys_13.png) no-repeat 10px 6px #ff9f00; color:#fff; text-decoration:none;}
+.chongzhi{display:block; width: 55px; height:32px; text-align:center; border-radius:3px; line-height:30px; color:#fff; font-family:Microsoft YaHei; font-size:16px; background:url(../images/reset.png) no-repeat 10px 7px #8fc31f; padding-left:20px;}
+.chongzhi:hover{background:url(../images/reset.png) no-repeat 10px 7px #ff9f00; color:#fff; text-decoration:none;}
+.more{width:100px; background:#fff; border:1px solid #d3d3d3; height:130px; position:absolute; z-index:2; top:47px; right:10px;}
+.more ul li{margin-top:10px;}
+.ToolBar{background:#f4f4f4; border-bottom:1px solid #d8d8d8; border-top:1px solid #d8d8d8; height:32px;}
+.ToolBar .fl{line-height:32px; color:#5e5e5e; width: 300px;}
+.ToolBar .fl img{vertical-align:middle; margin-top: -3px; margin-right:5px; margin-left:10px; width:12px; height:12px;}
+.ToolBar .fr{width: 450px;}
+.ToolBar div.tool{position: relative;padding-top:4px;}
+.ToolBar .fr a{float:right;}
+.blind{width:100%; height:32px; line-height:32px; text-align:center; font-size:12px; border:1px solid #facd89; background:#fffbcc; display:none; text-align:center; color:#A9560C; position:absolute; z-index:1; top:0; left:0;}
+/*---------------------------------列表 end---------------------------------*/
+
+/*---------------------------------选项卡 begin---------------------------------*/
+.ConList .nav{height:36px; background:url(../images/sys_05.png) repeat-x bottom;}
+.ConList .nav ul li{font-size:16px; text-align:center; line-height:34px; height:34px; background:#f9f9f9; padding:0 10px; float:left; margin-right:10px; cursor:pointer; font-family:Microsoft YaHei; border-top:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc;}
+.ConList .nav ul li.current{border-top:2px solid #448aca; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; background:#fff; color:#175fa1; color:#175fa1;}
+.ListShow{border-top:none 0; border-bottom:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; width:auto;}
+/*---------------------------------选项卡 end---------------------------------*/
+
+/*---------------------------------报错 begin---------------------------------*/
+.Error403{width:800px; height:600px; margin:0 auto; background:url(../images/403.png) no-repeat top center;}
+.Error404{width:800px; height:600px; margin:0 auto; background:url(../images/404.png) no-repeat top center;}
+.Error500{width:800px; height:600px; margin:0 auto; background:url(../images/500.png) no-repeat top center;}
+.nodata{width:400px; height:300px; margin:0 auto; background:url(../images/nodata.gif) no-repeat top center;}
+/*---------------------------------报错 end---------------------------------*/
+
+.MainContent ul.ztree li, .MC_Top ul.ztree li {float: none; margin:0;}/*树形下拉不要浮动*/
+#fileupload .upload_table{margin-left:95px;}/*上传图片组件的列表框，在事件中不需要该属性，因为布局不一致*/

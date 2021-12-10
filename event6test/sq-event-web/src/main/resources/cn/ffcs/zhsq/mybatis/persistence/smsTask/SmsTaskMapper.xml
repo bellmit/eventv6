@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.smsTask.SmsTaskMapper" >
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.smsTask.SmsTask" >
+		<result column="TASK_ID" property="taskId" jdbcType="DECIMAL" />
+		<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		<result column="PHONE_NUM" property="phoneNum" jdbcType="VARCHAR" />
+		<result column="SUCCESS_COUNT" property="successCount" jdbcType="DECIMAL" />
+		<result column="FAIL_COUNT" property="failCount" jdbcType="DECIMAL" />
+		<result column="TASK_TYPE" property="taskType" jdbcType="VARCHAR" />
+		<result column="TASK_STATUS" property="taskStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="sameCol">
+	   T1.TASK_ID,
+       T1.BIZ_ID,
+       T1.BIZ_TYPE,
+       T1.PHONE_NUM,
+       T1.SUCCESS_COUNT,
+       T1.FAIL_COUNT,
+       T1.TASK_TYPE,
+       T1.TASK_STATUS
+	</sql>
+	
+	<!-- 新增短信发送信息 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.smsTask.SmsTask" >
+		<selectKey keyProperty="taskId" resultType="long" order="BEFORE">
+			SELECT SEQ_SMS_TASK_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BAS_SMS_TASK(TASK_ID, BIZ_ID, BIZ_TYPE, PHONE_NUM, SUCCESS_COUNT, FAIL_COUNT, TASK_TYPE, TASK_STATUS)
+	  	VALUES
+	    (
+	    	#{taskId,jdbcType=DECIMAL}, #{bizId,jdbcType=DECIMAL},#{bizType,jdbcType=VARCHAR},#{phoneNum,jdbcType=VARCHAR}, 
+	    	#{successCount,jdbcType=DECIMAL},#{failCount,jdbcType=DECIMAL},
+	    	#{taskType,jdbcType=VARCHAR},#{taskStatus,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<!-- 批量新增短信发送信息 -->
+	<insert id="insertSmsTaskBatch" parameterType="java.util.List">
+		<selectKey keyProperty="taskId" resultType="long" order="BEFORE">
+			SELECT SEQ_SMS_TASK_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BAS_SMS_TASK(TASK_ID, BIZ_ID, BIZ_TYPE, PHONE_NUM, SUCCESS_COUNT, FAIL_COUNT, TASK_TYPE, TASK_STATUS)
+	  	VALUES
+	  	<foreach collection="smsTaskInsertList" item="item" index="index" separator="," > 
+	    (
+	    	#{item.taskId,jdbcType=DECIMAL}, #{item.bizId,jdbcType=DECIMAL},#{item.bizType,jdbcType=VARCHAR},
+	    	#{item.phoneNum,jdbcType=VARCHAR}, #{item.successCount,jdbcType=DECIMAL},#{item.failCount,jdbcType=DECIMAL},
+	    	#{item.taskType,jdbcType=VARCHAR},#{item.taskStatus,jdbcType=VARCHAR}
+	    )
+	    </foreach>
+	</insert>
+	
+	<!-- 修改短信发送信息 -->
+	<update id="update">
+		UPDATE T_BAS_SMS_TASK T1
+		<set>
+			<if test="successCount != null">
+				T1.SUCCESS_COUNT = #{successCount,jdbcType=DECIMAL},
+			</if>
+			<if test="failCount != null">
+				T1.FAIL_COUNT = #{failCount,jdbcType=DECIMAL},
+			</if>
+			<if test="taskType != null">
+				T1.TASK_TYPE = #{taskType,jdbcType=VARCHAR},
+			</if>
+			<if test="taskStatus != null">
+				T1.TASK_STATUS = #{taskStatus, jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE T1.TASK_ID = #{taskId,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 批量修改短信发送信息 -->
+	<update id="updateSmsTaskBatch">
+		<foreach collection="smsTaskUpdateList" item="item" index="index" separator="," >
+			UPDATE T_BAS_SMS_TASK T1
+			<set>
+				<if test="successCount != null">
+					T1.SUCCESS_COUNT = #{item.successCount,jdbcType=DECIMAL},
+				</if>
+				<if test="failCount != null">
+					T1.FAIL_COUNT = #{item.failCount,jdbcType=DECIMAL},
+				</if>
+				<if test="taskType != null">
+					T1.TASK_TYPE = #{item.taskType,jdbcType=VARCHAR},
+				</if>
+				<if test="taskStatus != null">
+					T1.TASK_STATUS = #{item.taskStatus, jdbcType=VARCHAR},
+				</if>
+			</set>
+			WHERE T1.TASK_ID = #{item.taskId,jdbcType=DECIMAL}
+		</foreach>
+	</update>
+	
+	<!-- 删除短信发送信息 -->
+	<delete id="delete">
+		UPDATE T_BAS_SMS_TASK T1
+	  	SET T1.TASK_STATUS = ''
+	  	WHERE T1.TASK_ID = #{taskId,jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 依据主键ID查找短信发送信息 -->
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_BAS_SMS_TASK T1
+	  	WHERE T1.TASK_ID = #{taskId,jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 统计短信发送记录数 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+		SELECT COUNT(*)
+	  	FROM T_BAS_SMS_TASK T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"/>
+	</select>
+	
+	<!-- 查找短信发送记录列表 -->
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_BAS_SMS_TASK T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"/>
+	</select>
+	
+	<select id="findSmsTaskList" resultMap="BaseResultMap">
+		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_BAS_SMS_TASK T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"/>
+	</select>
+	
+	<select id="findPageListByDynamic" resultType="map">
+		SELECT
+	  		<include refid="sameCol"/>
+	  		<if test="selectCols!=null and selectCols!='' ">,${selectCols}</if>
+	  	FROM T_BAS_SMS_TASK T1
+	  	<if test="tableName!=null and tableName!='' ">${tableName}</if>
+	  	WHERE 1 = 1
+	  	<if test="whereCondition!=null and whereCondition!='' ">${whereCondition}</if>
+	  	<if test="orderCols!=null and orderCols!='' ">${orderCols}</if>
+	</select>
+	
+	<select id="findListByView" resultType="map">
+		SELECT T2.*
+	  	FROM V_EVENT_SMS_TASK T2
+	</select>
+	
+	<sql id="find_where">
+		<if test="bizType != null">
+			AND T1.BIZ_TYPE = #{bizType, jdbcType=VARCHAR}
+		</if>
+		<if test="bizId != null">
+			AND T1.BIZ_ID = #{bizId, jdbcType=DECIMAL}
+		</if>
+		<if test="phoneNum != null">
+			AND T1.PHONE_NUM = #{phoneNum,jdbcType=VARCHAR}
+		</if>
+		<if test="taskType != null">
+			AND T1.TASK_TYPE = #{taskType,jdbcType=VARCHAR}
+		</if>
+		<if test="taskStatus != null">
+			AND T1.TASK_STATUS = #{taskStatus, jdbcType=VARCHAR}
+		</if>
+	</sql>
+</mapper>

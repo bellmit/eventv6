@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.requestion.ReqLinkMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.requestion.ReqLink">
+		<id column="RLU_ID" property="rluId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="LINKAGE_UNIT_ID" property="linkageUnitId" jdbcType="DECIMAL" /> <!--联动单位ID-->
+		<result column="REQ_ID" property="reqId" jdbcType="DECIMAL" /> <!--诉求ID-->
+		<result column="OVERVIEW" property="overview" jdbcType="VARCHAR" /> <!--办理意见-->
+		<result column="VISIT" property="visit" jdbcType="VARCHAR" /> <!--回访信息-->
+		<result column="SATISFACTION" property="satisfaction" jdbcType="VARCHAR" /> <!--满意度评价-->
+		<result column="USER_ID" property="userId" jdbcType="DECIMAL" /> <!--发起人id-->
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" /> <!--发起人name-->
+		<result column="CREAT_TIME" property="creatTime" jdbcType="TIMESTAMP" /> <!--发起时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATETIMESTR" property="updateTimeStr" jdbcType="VARCHAR" /> <!--更新时间-->
+		<result column="STATE" property="state" jdbcType="VARCHAR" /> <!--状态-->
+		
+		<result column="WF_STATUS" property="wfStatus" jdbcType="VARCHAR" />
+		<result column="WF_INSTANCE_ID" property="wfInstanceId" jdbcType="DECIMAL" />
+		<result column="LINKAGE_UNIT_NAME" property="linkageUnitName" jdbcType="VARCHAR" /> <!--联动单位name-->
+		<result column="LIMIT_DATE" property="limitDate" jdbcType="VARCHAR" />
+		<result column="OVER_TIME" property="overTime" jdbcType="VARCHAR" />
+		
+		<result column="LINK_MAN" property="linkMan" jdbcType="VARCHAR" /> <!--联络员-->
+		<result column="LINK_MAN_TEL" property="linkManTel" jdbcType="VARCHAR" /> <!--联络员联系方式-->
+		<result column="LEADER_NAME" property="leaderName" jdbcType="VARCHAR" /> <!--分管领导-->
+		<result column="LEADER_TEL" property="leaderTel" jdbcType="VARCHAR" /> <!--分管领导联系方式-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_REQ_LINKAGE_UNIT T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.RLU_ID,T.LINKAGE_UNIT_ID,T.REQ_ID,T.OVERVIEW,T.VISIT,T.SATISFACTION,
+			T.USER_ID,T.USER_NAME,T.CREAT_TIME,T.STATUS,t.LINKAGE_UNIT_NAME,
+			t3.LINK_MAN,t3.LINK_MAN_TEL,t3.LEADER_NAME,t3.LEADER_TEL,
+			TO_CHAR(t.UPDATE_TIME, 'YYYY-MM-DD HH24:MI:SS') AS UPDATETIMESTR,
+			t2.STATUS as WF_STATUS,t.STATE,t2.INSTANCE_ID AS WF_INSTANCE_ID,
+			t.LIMIT_DATE,t.OVER_TIME
+		FROM
+			T_REQ_LINKAGE_UNIT T left join ${dbuser.workflow}.wf_process_instance t2 on t.rlu_id = t2.form_id
+			left join T_CORP_LINKAGE_UNIT2 t3 on t.linkage_unit_id = t3.linkage_unit_id
+		where 
+		<include refid="find_where" />
+		 and t2.status in ('1','2') 
+		<if test="formTypeId_ != null ">
+			AND t2.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+		</if>
+		<if test="reqId != null ">
+			AND t.REQ_ID = #{reqId,jdbcType=DECIMAL}
+		</if>
+		<if test="status != null ">
+			and t2.status ='2'
+		</if>
+		<if test="rluId != null ">
+			AND t.RLU_ID = #{rluId,jdbcType=DECIMAL}
+		</if>
+		
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		T.STATUS = '1'
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.ReqLink">
+		<selectKey keyProperty="rluId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_REQ_LINKAGE_UNIT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_REQ_LINKAGE_UNIT
+		(
+			RLU_ID,
+			LINKAGE_UNIT_ID,
+			REQ_ID,
+			OVERVIEW,
+			VISIT,
+			SATISFACTION,
+			USER_ID,
+			USER_NAME,
+			CREAT_TIME,
+			STATUS,
+			LINKAGE_UNIT_NAME,
+			UPDATE_TIME,
+			STATE,
+			LIMIT_DATE,
+			OVER_TIME
+		) VALUES (
+			#{rluId,jdbcType=DECIMAL},
+			#{linkageUnitId,jdbcType=DECIMAL},
+			#{reqId,jdbcType=DECIMAL},
+			#{overview,jdbcType=VARCHAR},
+			#{visit,jdbcType=VARCHAR},
+			#{satisfaction,jdbcType=VARCHAR},
+			#{userId,jdbcType=DECIMAL},
+			#{userName,jdbcType=VARCHAR},
+			#{creatTime,jdbcType=TIMESTAMP},
+			#{status,jdbcType=VARCHAR},
+			#{linkageUnitName,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{state,jdbcType=VARCHAR},
+			#{limitDate,jdbcType=VARCHAR},
+			#{overTime,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.ReqLink">
+		UPDATE
+			T_REQ_LINKAGE_UNIT
+		<set> 
+			<if test="linkageUnitId != null " >
+				LINKAGE_UNIT_ID=#{linkageUnitId,jdbcType=DECIMAL},
+			</if>
+			<if test="reqId != null " >
+				REQ_ID=#{reqId,jdbcType=DECIMAL},
+			</if>
+			<if test="overview != null " >
+				OVERVIEW=#{overview,jdbcType=VARCHAR},
+			</if>
+			<if test="visit != null " >
+				VISIT=#{visit,jdbcType=VARCHAR},
+			</if>
+			<if test="satisfaction != null " >
+				SATISFACTION=#{satisfaction,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null " >
+				USER_ID=#{userId,jdbcType=DECIMAL},
+			</if>
+			<if test="userName != null " >
+				USER_NAME=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="creatTime != null " >
+				CREAT_TIME=#{creatTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="linkageUnitName != null " >
+				LINKAGE_UNIT_NAME=#{linkageUnitName,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null " >
+				STATE=#{state,jdbcType=VARCHAR},
+			</if>
+			
+		</set>
+		WHERE
+			RLU_ID= #{rluId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.RLU_ID,
+			T.LINKAGE_UNIT_ID,
+			T.REQ_ID,
+			T.OVERVIEW,
+			T.VISIT,
+			T.SATISFACTION,
+			T.USER_ID,
+			T.USER_NAME,
+			T.CREAT_TIME,
+			T.STATUS,
+			t.LINKAGE_UNIT_NAME,
+			t.STATE,
+			t.LIMIT_DATE,
+			t.OVER_TIME
+		FROM
+			T_REQ_LINKAGE_UNIT T
+		WHERE
+			RLU_ID= #{rluId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.ReqLink">
+		UPDATE
+			T_REQ_LINKAGE_UNIT
+		SET
+			STATUS='0'
+		WHERE
+			RLU_ID= #{rluId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<select id="queryWFtaskId" parameterType="java.util.Map" resultType="java.util.Map">
+		select t3.task_id from 
+		T_REQ_LINKAGE_UNIT t
+		left join ${dbuser.workflow}.wf_process_instance t2 on t.rlu_id = t2.form_id
+		left join ${dbuser.workflow}.wf_task t3 on t2.instance_id = t3.instance_id
+		where <include refid="find_where" />
+		<if test="formTypeId_ != null ">
+			AND t2.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+		</if>
+		<if test="rluId != null ">
+			AND t.RLU_ID = #{rluId,jdbcType=DECIMAL}
+		</if>
+    </select>
+    
+    <!-- 列表（分页） -->	
+	<select id="showBackList"  resultMap="BaseResultMap">
+		SELECT
+			T.RLU_ID,T.LINKAGE_UNIT_ID,T.REQ_ID,T.OVERVIEW,T.VISIT,T.SATISFACTION,
+			T.USER_ID,T.USER_NAME,T.CREAT_TIME,T.STATUS,t.LINKAGE_UNIT_NAME,
+			t3.LINK_MAN,t3.LINK_MAN_TEL,t3.LEADER_NAME,t3.LEADER_TEL,
+			TO_CHAR(t.UPDATE_TIME, 'YYYY-MM-DD HH24:MI:SS') AS UPDATETIMESTR,
+			t2.STATUS as WF_STATUS,t.STATE
+		FROM
+			T_REQ_LINKAGE_UNIT T left join ${dbuser.workflow}.wf_process_instance t2 on t.rlu_id = t2.form_id
+			left join T_CORP_LINKAGE_UNIT2 t3 on t.linkage_unit_id = t3.linkage_unit_id
+		where 
+		 (T.STATUS = '0' or T.STATUS = '1')
+		 and t2.status in ('1','2') 
+		<if test="formTypeId_ != null ">
+			AND t2.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+		</if>
+		<if test="reqId != null ">
+			AND t.REQ_ID = #{reqId,jdbcType=DECIMAL}
+		</if>
+		<if test="state != null ">
+			and t.state = #{state,jdbcType=VARCHAR}
+		</if>
+		<if test="rluId != null ">
+			AND t.RLU_ID = #{rluId,jdbcType=DECIMAL}
+		</if>
+		
+	</select>
+</mapper>

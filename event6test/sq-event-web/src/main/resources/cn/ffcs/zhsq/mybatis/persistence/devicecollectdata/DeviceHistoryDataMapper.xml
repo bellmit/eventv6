@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.devicecollectdata.DeviceHistoryDataMapper">
+	<!-- 水质监测历史列表（总数） -->	
+	<select id="countWaterHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_WATER_HISTORY T
+		<include refid="find_where" />
+	</select>
+	<!-- 水质监测历史列表（分页） -->	
+	<select id="searchWaterHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_WATER_HISTORY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DWH_ID DESC 
+	</select>
+	<!-- 水质监测历史详情 -->	
+	<select id="getWaterHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_RUNNING_DATA T
+		 WHERE DWH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增水质监测历史详情 -->	
+	<insert id="insertWaterHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="dwhId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_WATER_HISTORY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_WATER_HISTORY
+		(
+			DWH_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_ID,
+			DEVICE_NAME,
+			LONGITUDE,
+			LATITUDE,
+			COLLE_TIME,
+			PH,
+			TEMP,
+			DORATE,
+			ELEC,
+			TURB,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{dwhId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceId,jdbcType=VARCHAR},
+			#{deviceName,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{latitude,jdbcType=VARCHAR},
+			TO_DATE(#{dataTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),
+			#{ph,jdbcType=DECIMAL},
+			#{temp,jdbcType=DECIMAL},
+			#{dorate,jdbcType=DECIMAL},
+			#{elec,jdbcType=DECIMAL},
+			#{turb,jdbcType=DECIMAL},
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	<!-- 空气质量监测历史列表（总数） -->	
+	<select id="countAirHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_AIR_HISTORY T
+		<include refid="find_where" />
+	</select>
+	<!-- 空气质量监测历史列表（分页） -->	
+	<select id="searchAirHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd') COLLETIME
+		  FROM T_DEVICE_AIR_HISTORY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DAH_ID DESC 
+	</select>
+	<!-- 空气质量监测历史详情 -->	
+	<select id="getAirHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd') COLLETIME
+		  FROM T_DEVICE_AIR_HISTORY T
+		 WHERE DAH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增空气质量监测历史详情 -->	
+	<insert id="insertAirHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="dahId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_AIR_HISTORY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_AIR_HISTORY
+		(
+			DAH_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_ID,
+			DEVICE_NAME,
+			LONGITUDE,
+			LATITUDE,
+			COLLE_TIME,
+			PM_TWO,
+			PM_TEN,
+			AQI,
+			AQI_STATUS,
+			PRIM_POLL,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{dahId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceId,jdbcType=VARCHAR},
+			#{deviceName,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{latitude,jdbcType=VARCHAR},
+			TO_DATE(#{monitorTime,jdbcType=VARCHAR},'yyyy-MM-dd'),
+			#{pmTwoFive,jdbcType=VARCHAR},
+			#{pmTen,jdbcType=VARCHAR},
+			#{aqi,jdbcType=VARCHAR},
+			#{dayAqiStatus,jdbcType=VARCHAR},
+			#{primaryPollutant,jdbcType=VARCHAR},
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	<!-- 河流监测历史列表（总数） -->	
+	<select id="countRiverHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_RIVER_HISTORY T
+		<include refid="find_where" />
+	</select>
+	<!-- 河流监测历史列表（分页） -->	
+	<select id="searchRiverHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd') COLLETIME
+		  FROM T_DEVICE_RIVER_HISTORY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DRH_ID DESC 
+	</select>
+	<!-- 河流监测历史详情 -->	
+	<select id="getRiverHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd') COLLETIME
+		  FROM T_DEVICE_RIVER_HISTORY T
+		 WHERE DRH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增河流监测历史 -->	
+	<insert id="insertRiverHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="drhId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_RIVER_HISTORY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_RIVER_HISTORY
+		(
+			DRH_ID,
+			DEVICE_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_NAME,
+			LONGITUDE,
+			LATITUDE,
+			COLLE_TIME,
+			PH,
+			RDO,
+			CODMN,
+			CODCR,
+			BOD5,
+			NHN,
+			TP,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{drhId,jdbcType=DECIMAL},
+			#{deviceId,jdbcType=VARCHAR},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceName,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{latitude,jdbcType=VARCHAR},
+			TO_DATE(#{yearMonth,jdbcType=VARCHAR},'yyyy-MM-dd'),
+			#{ph,jdbcType=DECIMAL},
+			#{_do,jdbcType=DECIMAL},
+			#{codmn,jdbcType=DECIMAL},
+			#{codcr,jdbcType=DECIMAL},
+			#{bod5,jdbcType=DECIMAL},
+			#{nhn,jdbcType=DECIMAL},
+			#{tp,jdbcType=DECIMAL},
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 垃圾桶监测数据列表（总数） -->	
+	<select id="countTrashHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_TRASH_HISTORY T
+		<include refid="find_where" />
+	</select>
+	<!-- 垃圾桶监测数据列表（分页） -->	
+	<select id="searchTrashHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_TRASH_HISTORY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DTH_ID DESC 
+	</select>
+	<!-- 垃圾桶监测数据详情 -->	
+	<select id="getTrashHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_TRASH_HISTORY T
+		 WHERE DTH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增垃圾桶监测数据 -->	
+	<insert id="insertTrashHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="dthId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_TRASH_HISTORY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_TRASH_HISTORY
+		(
+			DTH_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_ID,
+			LONGITUDE,
+			LATITUDE,
+			COLLE_TIME,
+			BATTERYSTATUS,
+			CAPACITY,
+			TCOMPRESS,
+			COMPRESS70COUNT,
+			COMPRESS90COUNT,
+			TOPEN,
+			PRIMARYBATTERY,
+			TSCROLL,
+			VOICE,
+			ALARMREASON,
+			AID,
+			STARTTIME,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{dthId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceId,jdbcType=VARCHAR},
+			#{pointX,jdbcType=VARCHAR},
+			#{pointY,jdbcType=VARCHAR},
+			#{colleTime,jdbcType=TIMESTAMP},
+			#{batterystatus,jdbcType=VARCHAR},
+			#{capacity,jdbcType=VARCHAR},
+			#{compress,jdbcType=VARCHAR},
+			#{compress70count,jdbcType=DECIMAL},
+			#{compress90count,jdbcType=DECIMAL},
+			#{open,jdbcType=VARCHAR},
+			#{primarybattery,jdbcType=VARCHAR},
+			#{scroll,jdbcType=VARCHAR},
+			#{voice,jdbcType=VARCHAR},
+			#{alarmReason,jdbcType=VARCHAR},
+			#{id,jdbcType=VARCHAR},
+			TO_DATE(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	<!-- 井盖监测历史数据列表（总数） -->	
+	<select id="countCoverHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_COVER_HISTORY T
+		<include refid="find_where" />
+	</select>
+	<!-- 井盖监测历史数据列表（分页） -->	
+	<select id="searchCoverHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_COVER_HISTORY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DCH_ID DESC 
+	</select>
+	<!-- 井盖监测历史数据详情 -->	
+	<select id="getCoverHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_COVER_HISTORY T
+		 WHERE DCH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增井盖监测历史数据 -->	
+	<insert id="insertCoverHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="dchId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_COVER_HISTORY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_COVER_HISTORY
+		(
+			DCH_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_ID,
+			LONGITUDE,
+			LATITUDE,
+			COLLE_TIME,
+			ELECTRICITY,
+			INCLINATIONANGLE,
+			REDIDUALVOLTAGE,
+			SIGNALINTENSITY,
+			ALARMREASON,
+			AID,
+			STARTTIME,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{dchId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceId,jdbcType=VARCHAR},
+			#{pointX,jdbcType=VARCHAR},
+			#{pointY,jdbcType=VARCHAR},
+			#{colleTime,jdbcType=TIMESTAMP},
+			#{electricity,jdbcType=DECIMAL},
+			#{inclinationAngle,jdbcType=DECIMAL},
+			#{redidualVoltage,jdbcType=DECIMAL},
+			#{signalIntensity,jdbcType=DECIMAL},
+			#{alarmReason,jdbcType=VARCHAR},
+			#{id,jdbcType=VARCHAR},
+			TO_DATE(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 农业传感器监测历史记录列表（总数） -->	
+	<select id="countSensorHistory"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_SENSOR_HISOTRY T
+		<include refid="find_where" />
+	</select>
+	<!-- 农业传感器监测历史记录列表（分页） -->	
+	<select id="searchSensorHistoryList"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_SENSOR_HISOTRY T
+		<include refid="find_where" />
+		ORDER BY T.COLLE_TIME DESC, T.DSH_ID DESC 
+	</select>
+	<!-- 农业传感器监测历史记录详情 -->	
+	<select id="getSensorHistoryById" parameterType="long"  resultType="java.util.Map">
+		SELECT T.*,TO_CHAR(T.COLLE_TIME,'yyyy-MM-dd hh24:mi:ss') COLLETIME
+		  FROM T_DEVICE_SENSOR_HISOTRY T
+		 WHERE DSH_ID= #{sid,jdbcType=DECIMAL} 
+	</select>
+	<!-- 新增农业传感器监测历史记录 -->	
+	<insert id="insertSensorHistory" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceHistoryData">
+		<selectKey keyProperty="dshId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_SENSOR_HISOTRY.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_SENSOR_HISOTRY
+		(
+			DSH_ID,
+			DEVICE_SERVICE_ID,
+			DEVICE_ID,
+			COLLE_TIME,
+			SALERT_LEVEL,
+			SID,
+			SNAME,
+			SNEWESTVALUE,
+			STYPE,
+			SUNIT,
+			IS_VALID,
+			REMARK,
+			CREATE_TIME
+		) VALUES (
+			#{dshId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceId,jdbcType=VARCHAR},
+			TO_DATE(#{gathertime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),
+			#{alertlevel,jdbcType=VARCHAR},
+			#{id,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{newestvalue,jdbcType=DECIMAL},
+			#{type,jdbcType=VARCHAR},
+			#{unit,jdbcType=VARCHAR},
+			'1',
+			#{remark,jdbcType=VARCHAR},
+			SYSDATE
+		)
+	</insert>
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			AND T.IS_VALID = '1'
+			<if test="deviceServiceId != null and deviceServiceId != ''" >
+				<![CDATA[ AND T.DEVICE_SERVICE_ID = #{deviceServiceId,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="deviceId != null and deviceId != ''" >
+				<![CDATA[ AND T.DEVICE_ID = #{deviceId,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="deviceName != null and deviceName != ''" >
+				<![CDATA[ AND T.DEVICE_NAME = #{deviceName,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="startTime != null and startTime != ''" >
+				<![CDATA[ AND T.COLLE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd') ]]>
+			</if> 
+			<if test="endTime != null and endTime != ''" >
+				<![CDATA[ AND T.COLLE_TIME < TO_DATE(#{endTime,jdbcType=VARCHAR},'yyyy-MM-dd')+1]]>
+			</if>
+		</where>
+	</sql>
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.menuconfigure.PageContItemCfgMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.PageContItemCfg" >
+    <id column="CONT_ITEM_ID" property="contItemId" jdbcType="DECIMAL" />
+    <result column="P_CONT_ITEM_ID" property="pContItemId" jdbcType="DECIMAL" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR" />
+    <result column="DISPLAY_ORDER" property="displayOrder" jdbcType="DECIMAL" />
+    <result column="LAY_CFG_ID" property="layCfgId" jdbcType="DECIMAL" />
+    <result column="PG_IDX_ID" property="pgIdxId" jdbcType="DECIMAL" />
+    <result column="STATUS_" property="status" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CONT_ITEM_ID, P_CONT_ITEM_ID, NAME_, DISPLAY_ORDER, LAY_CFG_ID, PG_IDX_ID, STATUS_
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_GIS_PAGE_CONT_ITEM_CFG
+    where CONT_ITEM_ID = #{contItemId,jdbcType=DECIMAL}
+  </select>
+  
+	<select id="findPageContItemCfgById" resultMap="BaseResultMap">
+		SELECT T.* FROM T_GIS_PAGE_CONT_ITEM_CFG T
+		WHERE T.STATUS_ = '1'
+		AND T.PG_IDX_ID = #{pgIdxId,jdbcType=DECIMAL}
+	</select>
+  
+	<select id="findPageContItemCfg" resultMap="BaseResultMap">
+		SELECT T.* FROM T_GIS_PAGE_CONT_ITEM_CFG T
+		INNER JOIN T_GIS_PAGE_INDEX_CFG T2 ON T.PG_IDX_ID = T2.PG_IDX_CFG_ID
+		WHERE T2.PG_IDX_TYPE = #{pgIdxType,jdbcType=VARCHAR}
+	<choose>
+		<when test="orgCode == null or orgCode == ''">
+			AND T2.REGION_CODE IS NULL
+		</when>
+		<otherwise>
+			AND T2.REGION_CODE = #{orgCode,jdbcType=VARCHAR}
+		</otherwise>
+	</choose>
+		AND T.STATUS_ = '1'
+		AND T2.STATUS_ IN ('1','2')
+	</select>
+	
+	<delete id="delPageContItemCfgByOrgCode">
+		UPDATE T_GIS_PAGE_CONT_ITEM_CFG T SET T.STATUS_ = '0' WHERE T.PG_IDX_ID IN
+		(SELECT T1.PG_IDX_CFG_ID FROM T_GIS_PAGE_INDEX_CFG T1 WHERE T1.STATUS_ = '1' 
+		AND T1.PG_IDX_TYPE = #{pgIdxType,jdbcType=VARCHAR}
+		AND T1.REGION_CODE = #{orgCode,jdbcType=VARCHAR})
+	</delete>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_GIS_PAGE_CONT_ITEM_CFG
+    where CONT_ITEM_ID = #{contItemId,jdbcType=DECIMAL}
+  </delete>
+	
+	<select id="getId" resultType="java.lang.Integer" > 
+		<![CDATA[
+			select  SEQ_GIS_PAGE_CONT_ITEM_CFG_ID.NEXTVAL from dual
+	 	]]>
+	</select>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.PageContItemCfg" >
+    insert into T_GIS_PAGE_CONT_ITEM_CFG (CONT_ITEM_ID, P_CONT_ITEM_ID, NAME_, 
+      DISPLAY_ORDER, LAY_CFG_ID, PG_IDX_ID, 
+      STATUS_)
+    values (#{contItemId,jdbcType=DECIMAL}, #{pContItemId,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, 
+      #{displayOrder,jdbcType=DECIMAL}, #{layCfgId,jdbcType=DECIMAL}, #{pgIdxId,jdbcType=DECIMAL}, 
+      #{status,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.PageContItemCfg" >
+    insert into T_GIS_PAGE_CONT_ITEM_CFG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contItemId != null" >
+        CONT_ITEM_ID,
+      </if>
+      <if test="pContItemId != null" >
+        P_CONT_ITEM_ID,
+      </if>
+      <if test="name != null" >
+        NAME_,
+      </if>
+      <if test="displayOrder != null" >
+        DISPLAY_ORDER,
+      </if>
+      <if test="layCfgId != null" >
+        LAY_CFG_ID,
+      </if>
+      <if test="pgIdxId != null" >
+        PG_IDX_ID,
+      </if>
+      <if test="status != null" >
+        STATUS_,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contItemId != null" >
+        #{contItemId,jdbcType=DECIMAL},
+      </if>
+      <if test="pContItemId != null" >
+        #{pContItemId,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="displayOrder != null" >
+        #{displayOrder,jdbcType=DECIMAL},
+      </if>
+      <if test="layCfgId != null" >
+        #{layCfgId,jdbcType=DECIMAL},
+      </if>
+      <if test="pgIdxId != null" >
+        #{pgIdxId,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.PageContItemCfg" >
+    update T_GIS_PAGE_CONT_ITEM_CFG
+    <set >
+      <if test="pContItemId != null" >
+        P_CONT_ITEM_ID = #{pContItemId,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        NAME_ = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="displayOrder != null" >
+        DISPLAY_ORDER = #{displayOrder,jdbcType=DECIMAL},
+      </if>
+      <if test="layCfgId != null" >
+        LAY_CFG_ID = #{layCfgId,jdbcType=DECIMAL},
+      </if>
+      <if test="pgIdxId != null" >
+        PG_IDX_ID = #{pgIdxId,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        STATUS_ = #{status,jdbcType=CHAR},
+      </if>
+    </set>
+    where CONT_ITEM_ID = #{contItemId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.PageContItemCfg" >
+    update T_GIS_PAGE_CONT_ITEM_CFG
+    set P_CONT_ITEM_ID = #{pContItemId,jdbcType=DECIMAL},
+      NAME_ = #{name,jdbcType=VARCHAR},
+      DISPLAY_ORDER = #{displayOrder,jdbcType=DECIMAL},
+      LAY_CFG_ID = #{layCfgId,jdbcType=DECIMAL},
+      PG_IDX_ID = #{pgIdxId,jdbcType=DECIMAL},
+      STATUS_ = #{status,jdbcType=CHAR}
+    where CONT_ITEM_ID = #{contItemId,jdbcType=DECIMAL}
+  </update>
+</mapper>

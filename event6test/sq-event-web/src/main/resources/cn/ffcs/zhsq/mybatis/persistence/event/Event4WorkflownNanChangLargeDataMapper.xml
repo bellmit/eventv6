@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflownNanChangLargeDataMapper" >
+	<!-- 事件查询列 -->
+	<sql id="eventColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn"></include>
+	</sql>
+	
+	<!-- 事件扩展表查询列 -->
+	<sql id="eventExtendColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventExtendColumn"></include>
+	</sql>
+	
+	<!-- 事件列表扩展查询列 -->
+	<sql id="eventAdditionalColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventAdditionalColumn"></include>
+	</sql>
+	
+	<!-- 导出查询列 -->
+	<sql id="eventColumn4Export">
+		T15.POINT_NAME "pointName", 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Export"></include>
+	</sql>
+	
+	
+	<!-- 待办列表统计 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventTodoSql"></include>
+	</select>
+	
+	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Todo"></include>,
+  			<include refid="eventExtendColumn"></include>
+  		<include refid="eventTodoSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 待办列表语句 -->
+  	<sql id="eventTodoSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Todo"></include>
+		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_todo"></include>
+		<include refid="find_where_eventLabelContent"></include>
+  	</sql>
+  	
+  	<!-- 统计经办事件数量 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="eventHandledSql"></include>
+  	</select>
+  	
+  	<!-- 获取经办事件列表 -->
+  	<select id="findPageList4Handled" resultType="java.util.Map">
+  		SELECT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Handled"></include>
+  		<include refid="eventHandledSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 经办事件查询相关表 -->
+  	<sql id="eventHandledSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Handled"></include>
+  		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_handled"></include>
+  		<include refid="find_where_eventLabelContent"></include>
+  	</sql>
+  	
+  	<!-- 归档列表统计 -->
+  	<select id="findCount4Archive" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventArchiveSql"></include>
+	</select>
+	
+	<!-- 归档列表数据 -->
+  	<select id="findPageList4Archive" resultType="java.util.Map">
+  		SELECT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Archive"></include>
+  		<include refid="eventArchiveSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 归档列表语句 -->
+  	<sql id="eventArchiveSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Archive"></include>
+  		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_archive"></include>
+  	</sql>
+  	
+  	<!-- 辖区所有列表统计 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventJurisdictionSql"></include>
+	</select>
+	
+	<!-- 辖区所有列表数据 -->
+  	<select id="findPageList4Jurisdiction" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Jurisdiction"></include>,
+  			<include refid="eventExtendColumn"></include>
+  		<include refid="eventJurisdictionSql"></include>
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区所有列表语句 -->
+  	<sql id="eventJurisdictionSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4JurisdictionSql"></include>
+		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		<if test="listType != null and listType == 9 ">
+			LEFT JOIN T_ZZ_POINT_INFO T15
+			  ON T14.POINT_SELECTION=T15.POINT_ID 
+		</if>
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_jurisdiction"></include>
+		<include refid="find_where_eventLabelContent"></include>
+  	</sql>
+  	
+  	<!-- 我发起的列表统计 -->
+  	<select id="findCount4Initiator" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventInitiatorSql"></include>
+	</select>
+	
+	<!-- 我发起的列表数据 -->
+  	<select id="findPageList4Initiator" resultType="java.util.Map">
+  		SELECT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Initiator"></include>
+  		<include refid="eventInitiatorSql"></include>
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.initiator_order_by"></include>
+  	</select>
+  	
+  	<!-- 我发起的列表语句 -->
+  	<sql id="eventInitiatorSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Initiator"></include>
+  		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_initiator"></include>
+  	</sql>
+  	
+  	<!-- 我的关注列表统计 -->
+  	<select id="findCount4Attention" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventAttentionSql"></include>
+	</select>
+	
+	<!-- 我的关注列表数据 -->
+  	<select id="findPageList4Attention" resultType="java.util.Map">
+  		SELECT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Attention"></include>
+  		<include refid="eventAttentionSql"></include>
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.attention_order_by"></include>
+  	</select>
+  	
+  	<!-- 我的关注列表语句 -->
+  	<sql id="eventAttentionSql">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Attention"></include>
+		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_attention"></include>
+  	</sql>
+  	
+  	<!-- 辖区需要督办列表统计 -->
+  	<select id="findCount4Supervise" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventSuperviseSql"></include>
+	</select>
+	
+	<!-- 辖区需要督办列表数据 -->
+	<select id="findPageList4Supervise" resultType="java.util.Map">
+  		SELECT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Supervise"></include>
+  		<include refid="eventSuperviseSql"></include>
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.supervise_order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区需要督办列表语句 -->
+  	<sql id="eventSuperviseSql">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventTable4Supervise"></include>
+  		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_supervise"></include>
+  	</sql>
+  	
+  	<!-- 事件查询条件 -->
+  	<sql id="find_where_event">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_event"></include>
+  	</sql>
+  	
+  	<!-- 拓展表过滤条件 -->
+  	<sql id="find_where_extend">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_extend"></include>
+  	</sql>
+  	
+  	<!-- 工作流相关查询条件 -->
+  	<sql id="find_where_workflow">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_workflow"></include>
+  	</sql>
+  	
+  	<!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.order_by"></include>
+  	</sql>
+  	
+  	<!-- 查询事件标签 -->
+  	<sql id="find_where_eventLabelContent">
+		<if test="eventLabelIdList != null and eventLabelIdList.size > 0">
+			AND EXISTS
+ 			(SELECT T16.EVENT_ID
+          		FROM T_EVENT_LABEL_RELA T16
+         		WHERE T16.EVENT_ID = T1.EVENT_ID
+           		AND T16.IS_VALID = '1'
+           		AND T16.LABEL_ID IN
+				<foreach collection="eventLabelIdList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			)
+		</if>
+	</sql>
+</mapper>

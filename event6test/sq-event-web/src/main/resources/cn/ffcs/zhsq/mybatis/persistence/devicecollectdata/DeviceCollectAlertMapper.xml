@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.devicecollectdata.DeviceCollectAlertMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceCollectAlert">
+		<id column="COLLECT_ALERT_ID" property="collectAlertId" jdbcType="DECIMAL" /> <!--采集告警数据ID-->
+		<result column="DEVICE_SERVICE_ID" property="deviceServiceId" jdbcType="DECIMAL" /> <!--设备业务标识-->
+		<result column="COLLECT_ALERT_JSON_STR" property="collectAlertJsonStr" jdbcType="VARCHAR" /> <!--设备采集告警内容，json串-->
+		<result column="STATUS_" property="status" jdbcType="VARCHAR" /> <!--状态，0：删除；1：有效；-->
+		<result column="COLLECT_TIME" property="collectTime" jdbcType="TIMESTAMP" /> <!--设备采集时间-->
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" /> <!--业务类型，00：马尾智慧社区物联网设备-->
+		<result column="CREATED" property="created" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATED" property="updated" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="ALERT_FLAG" property="alertFlag" jdbcType="TIMESTAMP" /> <!--告警标记，0：不告警；1：告警-->
+	</resultMap>
+	<sql id="baseCol">
+			T.COLLECT_ALERT_ID,
+			T.DEVICE_SERVICE_ID,
+			T.COLLECT_ALERT_JSON_STR,
+			T.STATUS_,
+			T.COLLECT_TIME,
+			T.BIZ_TYPE,
+			T.CREATED,
+			T.UPDATED,
+			T.ALERT_FLAG
+	</sql>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_COLLECT_ALERT T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="baseCol" />
+		FROM
+			T_DEVICE_COLLECT_ALERT T
+		<include refid="find_where" />
+		ORDER BY 
+			T.COLLECT_ALERT_ID DESC ,
+			T.COLLECT_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="collectAlertId != null and collectAlertId != ''" >
+				<![CDATA[ AND T.COLLECT_ALERT_ID = #{collectAlertId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="deviceServiceId != null and deviceServiceId != ''" >
+				<![CDATA[ AND T.DEVICE_SERVICE_ID = #{deviceServiceId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="collectAlertJsonStr != null and collectAlertJsonStr != ''" >
+				<![CDATA[ AND T.COLLECT_ALERT_JSON_STR = #{collectAlertJsonStr,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="status != null and status != ''" >
+				<![CDATA[ AND T.STATUS_ = #{status,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="bizType != null and bizType != ''" >
+				<![CDATA[ AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="alertFlag != null and alertFlag != ''" >
+				<![CDATA[ AND T.ALERT_FLAG = #{alertFlag,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="deviceType != null and deviceType != ''" >
+				AND T.DEVICE_SERVICE_ID in( select e.device_service_id from t_device_info e where e.device_type= #{deviceType,jdbcType=VARCHAR} )
+			</if> 
+			<if test="parentDeviceServiceId != null and parentDeviceServiceId != ''" >
+				AND T.DEVICE_SERVICE_ID IN (SELECT   REF_DEVICE_SERVICE_ID D  FROM  T_REF_DEVICE D where D.DEVICE_SERVICE_ID=#{parentDeviceServiceId,jdbcType=VARCHAR})
+			</if> 
+			
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceCollectAlert">
+		<selectKey keyProperty="collectAlertId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_DCA_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_COLLECT_ALERT
+		(
+			COLLECT_ALERT_ID,
+			DEVICE_SERVICE_ID,
+			COLLECT_ALERT_JSON_STR,
+			STATUS_,
+			COLLECT_TIME,
+			BIZ_TYPE,
+			CREATED,
+			UPDATED,
+			ALERT_FLAG
+		) VALUES (
+			#{collectAlertId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=DECIMAL},
+			#{collectAlertJsonStr,jdbcType=VARCHAR},
+			#{alertFlag,jdbcType=VARCHAR},
+			#{collectTime,jdbcType=TIMESTAMP},
+			#{bizType,jdbcType=VARCHAR},
+			#{created,jdbcType=TIMESTAMP},
+			#{updated,jdbcType=TIMESTAMP},
+			#{alertFlag,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceCollectAlert">
+		UPDATE
+			T_DEVICE_COLLECT_ALERT
+		<set> 
+			<if test="deviceServiceId != null " >
+				DEVICE_SERVICE_ID=#{deviceServiceId,jdbcType=DECIMAL},
+			</if>
+			<if test="collectAlertJsonStr != null " >
+				COLLECT_ALERT_JSON_STR=#{collectAlertJsonStr,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS_=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="collectTime != null " >
+				COLLECT_TIME=#{collectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="bizType != null " >
+				BIZ_TYPE=#{bizType,jdbcType=VARCHAR},
+			</if>
+			<if test="created != null " >
+				CREATED=#{created,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updated != null " >
+				UPDATED=#{updated,jdbcType=TIMESTAMP},
+			</if>
+			<if test="alertFlag != null " >
+				ALERT_FLAG=#{alertFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			COLLECT_ALERT_ID= #{collectAlertId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="baseCol" />
+		FROM
+			T_DEVICE_COLLECT_ALERT T
+		WHERE
+			COLLECT_ALERT_ID= #{collectAlertId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceCollectAlert">
+		DELETE FROM T_DEVICE_COLLECT_ALERT WHERE COLLECT_ALERT_ID= #{collectAlertId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<!-- 根据设备ID获取告警数 -->
+	<select id="getCountByDeviceId"  resultType="java.lang.Integer">
+		SELECT COUNT(1)
+	    FROM
+	      T_DEVICE_COLLECT_ALERT T
+	      LEFT JOIN  T_DEVICE_INFO D
+	      ON T.DEVICE_SERVICE_ID=D.DEVICE_SERVICE_ID
+      WHERE D.DEVICE_ID=#{deviceId,jdbcType=DECIMAL}  AND T.ALERT_FLAG='1'
+	</select>
+	
+	<select id="findListByDeviceId"  resultMap="BaseResultMap">
+		SELECT 
+		<include refid="baseCol" />
+	    FROM
+	      T_DEVICE_COLLECT_ALERT T
+	      LEFT JOIN  T_DEVICE_INFO D
+	      ON T.DEVICE_SERVICE_ID=D.DEVICE_SERVICE_ID
+      WHERE D.DEVICE_ID=#{deviceId,jdbcType=DECIMAL}  
+	</select>
+	
+</mapper>

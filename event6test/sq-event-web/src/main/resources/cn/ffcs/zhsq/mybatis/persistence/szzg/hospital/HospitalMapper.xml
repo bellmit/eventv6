@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.hospital.HospitalMapper">
+    <resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.hospital.HospitalBO">
+        <result property="seqId" column="SEQ_ID"/>
+        <result property="hospitalId" column="HOSPITAL_ID"/>
+        <result property="hospitalName" column="HOSPITAL_NAME"/>
+        <result property="orgCode" column="ORG_CODE"/>
+        <result property="orgName" column="ORG_NAME"/>
+        <result property="orgPath" column="ORG_PATH" />
+        <result property="address" column="ADDRESS"/>
+        <result property="x" column="X"/>
+        <result property="y" column="Y"/>
+        <result property="longitude" column="LONGITUDE"/>
+        <result property="latitude" column="LATITUDE"/>
+        <result property="tel" column="TEL"/>
+        <result property="url" column="URL"/>
+        <result property="mail" column="MAIL"/>
+        <result property="gobus" column="GOBUS"/>
+        <result property="hospitalLevel" column="HOSPITAL_LEVEL"/>
+        <result property="hospitalNature" column="HOSPITAL_NATURE"/>
+        <result property="hospitalMType" column="HOSPITAL_MTYPE"/>
+        <result property="hospitalComment" column="HOSPITAL_COMMENT"/>
+        <result property="imgPath" column="IMG_PATH"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="updateUserId" column="UPDATE_USER_ID"/>
+        <result property="status" column="STATUS"/>
+        <result column="TYPE" property="type"/>
+        <result column="TYPE_NAME" property="typeName"/>
+        <result column="CONTACTS" property="contacts"/>
+        <result column="LEGAL_REPRESENTATIVE" property="legalRepresentative"/>
+        <result column="EMPLOYEE_NUM" property="employeeNum"/>
+        <result column="IS_UEBMI_FIXED_UNIT" property="isUebmiFixedUnit"/>
+        <result column="IS_NCMS_FIXED_UNIT" property="isNcmsFixedUnit"/>
+        <result column="AREA" property="area"/>
+        <result column="CONSTRUCTION_AREA" property="constructionArea"/>
+        <result column="HOSPITAL_BEDS" property="hospitalBeds"/>
+        <result column="SPECIALIST_NUM" property="specialistNum"/>
+        <result column="HOSPITAL_SUMMARY" property="hospitalSummary"/>
+        <result column="POSTCODE" property="postcode"/>
+        <result column="BLOOD_BANK_STOCK" property="bloodBankStock"/>
+
+        <result column="HOSPITAL_NUMBER" property="hospitalNumber"/>
+        <result column="TOTAL_POPU" property=""/>
+    </resultMap>
+
+    <select id="findHospitalMark" resultMap="BaseResultMapper">
+        SELECT *
+        FROM ${dbuser.zhsq_szzg}.zg_hospital t
+        WHERE status=1
+
+        <if test="@Ognl@isNotEmpty(hospitalMType)">
+            AND HOSPITAL_MTYPE =${hospitalMType}
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            AND org_code like concat('%', #{orgCode}, '%')
+        </if>
+    </select>
+
+    <select id="findHospitalPoint" resultMap="BaseResultMapper">
+        SELECT *
+        FROM ${dbuser.zhsq_szzg}.zg_hospital t
+        WHERE t.status = '1'
+        and t.type in
+        <foreach collection="sites" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        <if test="orgCode">
+            AND org_code like concat('%', #{orgCode}, '%')
+        </if>
+    </select>
+    <select id="getHospitalCharts" resultType="map">
+	select d.grid_name as org_name, t.hospital_number,  to_char(concat(round(A.snum/10000, 4),''),'fm999990.0000') as totalPoPu
+  from (select t.org_code, count(*) as hospital_number
+          from ${dbuser.zhsq_szzg}.zg_hospital t,t_dc_grid d
+
+         where t.org_code = d.info_org_code
+           and t.type like #{type}
+           and d.parent_grid_id = (select t.grid_id
+                                     from t_dc_grid t
+                                    where t.info_org_code = #{orgCode}
+                                      and STATUS = '001')
+           and t.status = '1'
+
+         group by t.org_code
+
+        ) t
+  left join t_dc_grid d
+    on d.grid_code = t.org_code
+  LEFT JOIN (SELECT P.SYEAR, P.SNUM, P.ORG_CODE
+               FROM ${dbuser.zhsq_szzg}.ZG_STATS_POP P
+              WHERE P.SYEAR = (select max(SYEAR)
+                                 from ${dbuser.zhsq_szzg}.ZG_STATS_POP
+                                where STYPE = 'S001001010'
+                                  and STATUS = '1')
+                AND P.STYPE = 'S001001010'
+                AND P.STATUS = '1'
+
+             ) A
+    ON A.ORG_CODE = t.org_code
+
+	</select>
+
+    <select id="findCountByCriteria" resultType="int">
+        select count(*) from ${dbuser.zhsq_szzg}.zg_hospital t
+        <include refid="find_conditions"/>
+    </select>
+
+    <select id="findPageListByCriteria" resultMap="BaseResultMapper">
+        select t.*,d1.dict_name as type_name,d.grid_path as org_path
+        from ${dbuser.zhsq_szzg}.zg_hospital t
+        left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+        left join t_dc_grid d on d.info_org_code = t.org_code and d.status='001'
+        <include refid="find_conditions"/>
+        order by t.create_time desc
+    </select>
+    <sql id="find_conditions">
+        where t.status = '1'
+        <if test="@Ognl@isNotEmpty(hospitalName)">
+            and (t.hospital_name LIKE '%' || #{hospitalName, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(address)">
+            and (t.address LIKE '%' || #{address, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and (t.org_code LIKE #{orgCode, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(type)">
+            and t.type LIKE #{type, jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <select id="findById" resultMap="BaseResultMapper">
+		select t.*,d1.dict_name as type_name from ${dbuser.zhsq_szzg}.zg_hospital t
+		left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+		where t.seq_id = #{id}
+	</select>
+
+    <update id="update">
+        update ${dbuser.zhsq_szzg}.zg_hospital t
+        <include refid="update_columns"/>
+        where t.seq_id = #{seqId}
+    </update>
+    <sql id="update_columns">
+        <set>
+            t.update_time = sysdate
+            <if test="@Ognl@isNotEmpty(hospitalName)">
+                ,t.hospital_name = #{hospitalName}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                ,t.org_code = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgName)">
+                ,t.org_name = #{orgName}
+            </if>
+
+            <if test="address != null">
+                ,t.address = #{address}
+            </if>
+            <if test="x != null">
+                ,t.x = #{x}
+            </if>
+            <if test="y != null">
+                ,t.y = #{y}
+            </if>
+            <if test="tel != null">
+                ,t.tel = #{tel}
+            </if>
+            <if test="url != null">
+                ,t.url = #{url}
+            </if>
+            <if test="mail != null">
+                ,t.mail = #{mail}
+            </if>
+            <if test="gobus != null">
+                ,t.gobus = #{gobus}
+            </if>
+            <if test="hospitalLevel != null">
+                ,t.hospital_level = #{hospitalLevel}
+            </if>
+            <if test="hospitalNature != null">
+                ,t.hospital_nature = #{hospital_nature}
+            </if>
+            <if test="hospitalMType != null">
+                ,t.hospital_mtype = #{hospitalMType}
+            </if>
+            <if test="hospitalComment != null">
+                ,t.hospital_comment = #{hospitalComment}
+            </if>
+            <if test="imgPath != null">
+                ,t.img_path = #{imgPath}
+            </if>
+            <if test="createUserId != null">
+                ,t.CREATE_USER_ID= #{createUserId}
+            </if>
+            <if test="updateUserId != null">
+                ,t.UPDATE_USER_ID= #{updateUserId}
+            </if>
+            <if test="contacts != null">
+                ,t.contacts = #{contacts}
+            </if>
+            <if test="legalRepresentative != null">
+                ,t.LEGAL_REPRESENTATIVE = #{legalRepresentative}
+            </if>
+            <if test="employeeNum != null">
+                ,t.EMPLOYEE_NUM = #{employeeNum}
+            </if>
+            <if test="isUebmiFixedUnit != null">
+                ,t.IS_UEBMI_FIXED_UNIT = #{isUebmiFixedUnit}
+            </if>
+            <if test="isNcmsFixedUnit != null">
+                ,t.IS_NCMS_FIXED_UNIT = #{isNcmsFixedUnit}
+            </if>
+            <if test="area != null">
+                ,t.area = #{area}
+            </if>
+            <if test="constructionArea != null">
+                ,t.CONSTRUCTION_AREA = #{constructionArea}
+            </if>
+            <if test="hospitalBeds != null">
+                ,t.HOSPITAL_BEDS = #{hospitalBeds}
+            </if>
+            <if test="specialistNum != null">
+                ,t.SPECIALIST_NUM = #{specialistNum}
+            </if>
+            <if test="hospitalSummary != null">
+                ,t.HOSPITAL_SUMMARY = #{hospitalSummary}
+            </if>
+            <if test="postcode != null">
+                ,t.postcode = #{postcode}
+            </if>
+            <if test="bloodBankStock != null">
+                ,t.BLOOD_BANK_STOCK = #{bloodBankStock}
+            </if>
+            <if test="type != null">
+                ,t.type = #{type}
+            </if>
+        </set>
+    </sql>
+
+    <delete id="del">
+		UPDATE ${dbuser.zhsq_szzg}.zg_hospital t
+		SET t.status = '0',
+		t.update_time=sysdate
+		WHERE t.seq_id = #{seqId}
+	</delete>
+
+    <insert id="insert">
+        <selectKey keyProperty="seqId" resultType="long" order="BEFORE">
+            select ${dbuser.zhsq_szzg}.seq_zg_hospital_id.NEXTVAL from DUAL
+        </selectKey>
+
+        insert into ${dbuser.zhsq_szzg}.zg_hospital(seq_id,HOSPITAL_ID, HOSPITAL_NAME, ORG_CODE,ORG_NAME, ADDRESS, X,
+        Y, LONGITUDE,
+        LATITUDE, TEL, URL, MAIL, GOBUS, HOSPITAL_LEVEL, HOSPITAL_NATURE, HOSPITAL_MTYPE, HOSPITAL_COMMENT,
+        IMG_PATH, CREATE_TIME, UPDATE_TIME, STATUS, CONTACTS, LEGAL_REPRESENTATIVE, EMPLOYEE_NUM, IS_UEBMI_FIXED_UNIT,
+        IS_NCMS_FIXED_UNIT, AREA, CONSTRUCTION_AREA, HOSPITAL_BEDS, SPECIALIST_NUM, HOSPITAL_SUMMARY,
+        TYPE, POSTCODE, BLOOD_BANK_STOCK,CREATE_USER_ID,UPDATE_USER_ID)
+        values(#{seqId, jdbcType=DECIMAL},#{hospitalId,jdbcType=NUMERIC}, #{hospitalName,jdbcType=VARCHAR},
+        #{orgCode,jdbcType=VARCHAR},#{orgName,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+        #{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR}, #{longitude,jdbcType=VARCHAR},
+        #{latitude,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+        #{mail,jdbcType=VARCHAR}, #{gobus,jdbcType=VARCHAR}, #{hospitalLevel,jdbcType=VARCHAR},
+        #{hospitalNature,jdbcType=VARCHAR}, #{hospitalMType,jdbcType=VARCHAR}, #{hospitalComment,jdbcType=VARCHAR},
+        #{imgPath,jdbcType=VARCHAR}, sysdate, null ,'1', #{contacts,jdbcType=VARCHAR},
+        #{legalRepresentative,jdbcType=VARCHAR}, #{employeeNum,jdbcType=DECIMAL}, #{isUebmiFixedUnit,jdbcType=VARCHAR},
+        #{isNcmsFixedUnit,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, #{constructionArea,jdbcType=VARCHAR},
+        #{hospitalBeds,jdbcType=DECIMAL}, #{specialistNum,jdbcType=DECIMAL}, #{hospitalSummary,jdbcType=VARCHAR},
+        #{type,jdbcType=DECIMAL}, #{postcode,jdbcType=DECIMAL}, #{bloodBankStock,jdbcType=DECIMAL},#{createUserId,jdbcType=DECIMAL}, #{updateUserId,jdbcType=DECIMAL})
+    </insert>
+</mapper>

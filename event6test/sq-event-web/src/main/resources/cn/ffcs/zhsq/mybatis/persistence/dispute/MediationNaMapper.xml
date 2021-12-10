@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.MediationNaMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.MediationNa">
+		<id column="ID" property="id" jdbcType="DECIMAL" />
+		<result column="PID" property="pid" jdbcType="DECIMAL" />
+		<result column="FLOW_ID" property="flowId" jdbcType="DECIMAL" />
+		<result column="FLOW_NAME" property="flowName" jdbcType="VARCHAR" />
+		<result column="NO_" property="no" jdbcType="VARCHAR" />
+		<result column="CREATE_ID" property="createId" jdbcType="VARCHAR" />
+		<result column="CREATE_NAME" property="createName" jdbcType="VARCHAR" />
+		<result column="CREATE_GROUP" property="createGroup" jdbcType="VARCHAR" />
+		<result column="CREATE_GROUP_NODEPATH" property="createGroupNodepath" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="CURRENT_STEP" property="currentStep" jdbcType="VARCHAR" />
+		<result column="CURRENT_STEP_NAME" property="currentStepName" jdbcType="VARCHAR" />
+		<result column="CURRENT_ROLE" property="currentRole" jdbcType="VARCHAR" />
+		<result column="CURRENT_USERID" property="currentUserid" jdbcType="VARCHAR" />
+		<result column="CURRENT_USERNAME" property="currentUsername" jdbcType="VARCHAR" />
+		<result column="CURRENT_GROUP_NODEPATH" property="currentGroupNodepath" jdbcType="VARCHAR" />
+		<result column="VIEW_USERID" property="viewUserid" jdbcType="VARCHAR" />
+		<result column="VIEW_USERNAME" property="viewUsername" jdbcType="VARCHAR" />
+		<result column="COPY_USERID" property="copyUserid" jdbcType="VARCHAR" />
+		<result column="LAST_USERID" property="lastUserid" jdbcType="VARCHAR" />
+		<result column="LAST_USERNAME" property="lastUsername" jdbcType="VARCHAR" />
+		<result column="LAST_USERGROUP" property="lastUsergroup" jdbcType="VARCHAR" />
+		<result column="LAST_STEP" property="lastStep" jdbcType="VARCHAR" />
+		<result column="LAST_ACTION" property="lastAction" jdbcType="VARCHAR" />
+		<result column="LAST_COMMENT" property="lastComment" jdbcType="VARCHAR" />
+		<result column="DEAL_USERIDS" property="dealUserids" jdbcType="VARCHAR" />
+		<result column="DEAL_USERNAMES" property="dealUsernames" jdbcType="VARCHAR" />
+		<result column="DEALTIME" property="dealtime" jdbcType="TIMESTAMP" />
+		<result column="FINISHTIME" property="finishtime" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" />
+		<result column="STATUSFLAG" property="statusflag" jdbcType="DECIMAL" />
+		<result column="DELETEFLAG" property="deleteflag" jdbcType="DECIMAL" />
+		<result column="MEDIATOR" property="mediator" jdbcType="VARCHAR" />
+		<result column="FULLCONTENT" property="fullcontent" jdbcType="VARCHAR" />
+		<result column="ATTACHMENT" property="attachment" jdbcType="VARCHAR" />
+		<result column="FROM_" property="from" jdbcType="VARCHAR" />
+		<result column="LOCALITY" property="locality" jdbcType="VARCHAR" />
+		<result column="ACCEPT_INSTITUTION" property="acceptInstitution" jdbcType="VARCHAR" />
+		<result column="ACCEPT_PLACE" property="acceptPlace" jdbcType="VARCHAR" />
+		<result column="PARTY" property="party" jdbcType="VARCHAR" />
+		<result column="PARTY_NAME" property="partyName" jdbcType="VARCHAR" />
+		<result column="ACCEPT_DATE" property="acceptDate" jdbcType="TIMESTAMP" />
+		<result column="DOCKING_TYPE" property="dockingType" jdbcType="VARCHAR" />
+		<result column="DISPUTE_TYPE" property="disputeType" jdbcType="VARCHAR" />
+		<result column="STATEMENT" property="statement" jdbcType="VARCHAR" />
+		<result column="CASE_NO_TYPE" property="caseNoType" jdbcType="VARCHAR" />
+		<result column="CASE_NO" property="caseNo" jdbcType="VARCHAR" />
+		<result column="SELF_ASSESSMENT" property="selfAssessment" jdbcType="VARCHAR" />
+		<result column="LEADER_ASSESSMENT" property="leaderAssessment" jdbcType="VARCHAR" />
+		<result column="LEADER_ID" property="leaderId" jdbcType="VARCHAR" />
+		<result column="LEADER_NAME" property="leaderName" jdbcType="VARCHAR" />
+		<result column="CHANGE_COUNT" property="changeCount" jdbcType="DECIMAL" />
+		<result column="DOCKING_NO" property="dockingNo" jdbcType="VARCHAR" />
+		<result column="CRIMINAL_BOND" property="criminalBond" jdbcType="VARCHAR" />
+		<result column="VERDICT_RESULT" property="verdictResult" jdbcType="VARCHAR" />
+		<result column="infoorgcode" property="infoorgcode" jdbcType="VARCHAR" />
+		<result column="type_" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_DISPUTE_MEDIATION_NA T
+		join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+		T.no_,
+		T.ID,
+		G.GRID_PATH as FLOW_NAME,
+		T.DISPUTE_TYPE,
+		T.PARTY_NAME,
+		T.LOCALITY,
+		T.ACCEPT_INSTITUTION,
+		T.STATUS
+		FROM
+		T_ZZ_DISPUTE_MEDIATION_NA T
+		join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001' 
+		<include refid="find_where" />
+		ORDER BY 
+			T.ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+
+		<where>
+			t.deleteFlag = '0'
+			<if test="no != null and no != ''">
+				<![CDATA[ and t.no_ like '%'|| #{no} ||'%' ]]>
+			</if>
+
+			<if test="type_ != null and type_ != ''">
+				<![CDATA[ and t.type_ = #{type_} ]]>
+			</if>
+			<if test="status != null and status != ''">
+				<![CDATA[ and t.statusflag = #{status}]]>
+			</if>
+			<if test="infoOrgCode != null and infoOrgCode != ''">
+				<![CDATA[ AND t.infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="createTimeStart != null and createTimeStart != ''">
+				AND t.create_time <![CDATA[>=]]> TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND t.create_time <![CDATA[<]]> TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+			</if>
+		</where>
+	</sql>
+
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationNa">		
+		INSERT INTO
+			T_ZZ_DISPUTE_MEDIATION_NA
+		(
+			ID,
+			PID,
+			FLOW_ID,
+			FLOW_NAME,
+			no_,
+			CREATE_ID,
+			CREATE_NAME,
+			CREATE_GROUP,
+			CREATE_GROUP_NODEPATH,
+			CREATE_TIME,
+			CURRENT_STEP,
+			CURRENT_STEP_NAME,
+			CURRENT_ROLE,
+			CURRENT_USERID,
+			CURRENT_USERNAME,
+			CURRENT_GROUP_NODEPATH,
+			VIEW_USERID,
+			VIEW_USERNAME,
+			COPY_USERID,
+			LAST_USERID,
+			LAST_USERNAME,
+			LAST_USERGROUP,
+			LAST_STEP,
+			LAST_ACTION,
+			LAST_COMMENT,
+			DEAL_USERIDS,
+			DEAL_USERNAMES,
+			DEALTIME,
+			FINISHTIME,
+			STATUS,
+			STATUSFLAG,
+			DELETEFLAG,
+			MEDIATOR,
+			FULLCONTENT,
+			ATTACHMENT,
+			FROM_,
+			LOCALITY,
+			ACCEPT_INSTITUTION,
+			ACCEPT_PLACE,
+			PARTY,
+			PARTY_NAME,
+			ACCEPT_DATE,
+			DOCKING_TYPE,
+			DISPUTE_TYPE,
+			STATEMENT,
+			CASE_NO_TYPE,
+			CASE_NO,
+			SELF_ASSESSMENT,
+			LEADER_ASSESSMENT,
+			LEADER_ID,
+			LEADER_NAME,
+			CHANGE_COUNT,
+			DOCKING_NO,
+			CRIMINAL_BOND,
+			VERDICT_RESULT
+		)
+		VALUES (
+		#{id,jdbcType=DECIMAL},
+		#{pid,jdbcType=DECIMAL},
+		#{flowId,jdbcType=DECIMAL},
+		#{flowName,jdbcType=VARCHAR},
+		#{no,jdbcType=VARCHAR},
+		#{createId,jdbcType=VARCHAR},
+		#{createName,jdbcType=VARCHAR},
+		#{createGroup,jdbcType=VARCHAR},
+		#{createGroupNodepath,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{currentStep,jdbcType=VARCHAR},
+		#{currentStepName,jdbcType=VARCHAR},
+		#{currentRole,jdbcType=VARCHAR},
+		#{currentUserid,jdbcType=VARCHAR},
+		#{currentUsername,jdbcType=VARCHAR},
+		#{currentGroupNodepath,jdbcType=VARCHAR},
+		#{viewUserid,jdbcType=VARCHAR},
+		#{viewUsername,jdbcType=VARCHAR},
+		#{copyUserid,jdbcType=VARCHAR},
+		#{lastUserid,jdbcType=VARCHAR},
+		#{lastUsername,jdbcType=VARCHAR},
+		#{lastUsergroup,jdbcType=VARCHAR},
+		#{lastStep,jdbcType=VARCHAR},
+		#{lastAction,jdbcType=VARCHAR},
+		#{lastComment,jdbcType=VARCHAR},
+		#{dealUserids,jdbcType=VARCHAR},
+		#{dealUsernames,jdbcType=VARCHAR},
+		#{dealtime,jdbcType=TIMESTAMP},
+		#{finishtime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=VARCHAR},
+		#{statusflag,jdbcType=DECIMAL},
+		#{deleteflag,jdbcType=DECIMAL},
+		#{mediator,jdbcType=VARCHAR},
+		#{fullcontent,jdbcType=VARCHAR},
+		#{attachment,jdbcType=VARCHAR},
+		#{from,jdbcType=VARCHAR},
+		#{locality,jdbcType=VARCHAR},
+		#{acceptInstitution,jdbcType=VARCHAR},
+		#{acceptPlace,jdbcType=VARCHAR},
+		#{party,jdbcType=VARCHAR},
+		#{partyName,jdbcType=VARCHAR},
+		#{acceptDate,jdbcType=TIMESTAMP},
+		#{dockingType,jdbcType=VARCHAR},
+		#{disputeType,jdbcType=VARCHAR},
+		#{statement,jdbcType=VARCHAR},
+		#{caseNoType,jdbcType=VARCHAR},
+		#{caseNo,jdbcType=VARCHAR},
+		#{selfAssessment,jdbcType=VARCHAR},
+		#{leaderAssessment,jdbcType=VARCHAR},
+		#{leaderId,jdbcType=VARCHAR},
+		#{leaderName,jdbcType=VARCHAR},
+		#{changeCount,jdbcType=DECIMAL},
+		#{dockingNo,jdbcType=VARCHAR},
+		#{criminalBond,jdbcType=VARCHAR},
+		#{verdictResult,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationNa">
+		UPDATE
+			T_ZZ_DISPUTE_MEDIATION_NA
+		<set> 
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			ID= #{id,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="findCountById" parameterType="long"  resultType="long">
+	select count(1) from T_ZZ_DISPUTE_MEDIATION_NA t where ID= #{id,jdbcType=DECIMAL} 
+	</select>
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.PID,
+			T.FLOW_ID,
+			T.FLOW_NAME,
+			T.NO_,
+			T.CREATE_ID,
+			T.CREATE_NAME,
+			T.CREATE_GROUP,
+			T.CREATE_GROUP_NODEPATH,
+			T.CREATE_TIME,
+			T.CURRENT_STEP,
+			T.CURRENT_STEP_NAME,
+			T.CURRENT_ROLE,
+			T.CURRENT_USERID,
+			T.CURRENT_USERNAME,
+			T.CURRENT_GROUP_NODEPATH,
+			T.VIEW_USERID,
+			T.VIEW_USERNAME,
+			T.COPY_USERID,
+			T.LAST_USERID,
+			T.LAST_USERNAME,
+			T.LAST_USERGROUP,
+			T.LAST_STEP,
+			T.LAST_ACTION,
+			T.LAST_COMMENT,
+			T.DEAL_USERIDS,
+			T.DEAL_USERNAMES,
+			T.DEALTIME,
+			T.FINISHTIME,
+			T.STATUS,
+			T.STATUSFLAG,
+			T.DELETEFLAG,
+			T.MEDIATOR,
+			T.FULLCONTENT,
+			T.ATTACHMENT,
+			T.FROM_,
+			T.LOCALITY,
+			T.ACCEPT_INSTITUTION,
+			T.ACCEPT_PLACE,
+			T.PARTY,
+			T.PARTY_NAME,
+			T.ACCEPT_DATE,
+			T.DOCKING_TYPE,
+			T.DISPUTE_TYPE,
+			T.STATEMENT,
+			T.CASE_NO_TYPE,
+			T.CASE_NO,
+			T.SELF_ASSESSMENT,
+			T.LEADER_ASSESSMENT,
+			T.LEADER_ID,
+			T.LEADER_NAME,
+			T.CHANGE_COUNT,
+			T.DOCKING_NO,
+			T.CRIMINAL_BOND,
+			T.VERDICT_RESULT
+		FROM
+			T_ZZ_DISPUTE_MEDIATION_NA T
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationNa">
+		UPDATE
+			T_ZZ_DISPUTE_MEDIATION_NA
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+	</delete>
+
+<!-- csk	批量新增、更新数据-->
+	<insert id="insertAll" parameterType="java.util.List">
+			MERGE INTO T_ZZ_DISPUTE_MEDIATION_NA t
+			USING (
+			<foreach collection="list" item="t" index="index" separator="union" >
+			SELECT
+				#{t.id,jdbcType=DECIMAL}                         ID,
+				#{t.pid,jdbcType=DECIMAL}                       PID,
+				#{t.flowId,jdbcType=DECIMAL}                FLOW_ID,
+				#{t.flowName,jdbcType=VARCHAR}            FLOW_NAME,
+				#{t.no,jdbcType=VARCHAR}                        no_,
+				#{t.createId,jdbcType=VARCHAR}            CREATE_ID,
+				#{t.createName,jdbcType=VARCHAR}        CREATE_NAME,
+				#{t.createGroup,jdbcType=VARCHAR}      CREATE_GROUP,
+				#{t.createGroupNodepath,jdbcType=VARCHAR}     CREATE_GROUP_NODEPATH,
+				#{t.createTime,jdbcType=TIMESTAMP}      CREATE_TIME,
+				#{t.currentStep,jdbcType=VARCHAR}      CURRENT_STEP,
+				#{t.currentStepName,jdbcType=VARCHAR}            CURRENT_STEP_NAME,
+				#{t.currentRole,jdbcType=VARCHAR}      CURRENT_ROLE,
+				#{t.currentUserid,jdbcType=VARCHAR}  CURRENT_USERID,
+				#{t.currentUsername,jdbcType=VARCHAR}             CURRENT_USERNAME,
+				#{t.currentGroupNodepath,jdbcType=VARCHAR}  CURRENT_GROUP_NODEPATH,
+				#{t.viewUserid,jdbcType=VARCHAR}        VIEW_USERID,
+				#{t.viewUsername,jdbcType=VARCHAR}    VIEW_USERNAME,
+				#{t.copyUserid,jdbcType=VARCHAR}        COPY_USERID,
+				#{t.lastUserid,jdbcType=VARCHAR}        LAST_USERID,
+				#{t.lastUsername,jdbcType=VARCHAR}    LAST_USERNAME,
+				#{t.lastUsergroup,jdbcType=VARCHAR}  LAST_USERGROUP,
+				#{t.lastStep,jdbcType=VARCHAR}            LAST_STEP,
+				#{t.lastAction,jdbcType=VARCHAR}        LAST_ACTION,
+				#{t.lastComment,jdbcType=VARCHAR}      LAST_COMMENT,
+				#{t.dealUserids,jdbcType=VARCHAR}      DEAL_USERIDS,
+				#{t.dealUsernames,jdbcType=VARCHAR}  DEAL_USERNAMES,
+				#{t.dealtime,jdbcType=TIMESTAMP}           DEALTIME,
+				#{t.finishtime,jdbcType=TIMESTAMP}       FINISHTIME,
+				#{t.status,jdbcType=VARCHAR}                 STATUS,
+				#{t.statusflag,jdbcType=DECIMAL}         STATUSFLAG,
+				#{t.deleteflag,jdbcType=DECIMAL}         DELETEFLAG,
+				#{t.mediator,jdbcType=VARCHAR}             MEDIATOR,
+				#{t.fullcontent,jdbcType=VARCHAR}       FULLCONTENT,
+				#{t.attachment,jdbcType=VARCHAR}         ATTACHMENT,
+				#{t.from,jdbcType=VARCHAR}                    FROM_,
+				#{t.locality,jdbcType=VARCHAR}             LOCALITY,
+				#{t.acceptInstitution,jdbcType=VARCHAR}         ACCEPT_INSTITUTION,
+				#{t.acceptPlace,jdbcType=VARCHAR}      ACCEPT_PLACE,
+				#{t.party,jdbcType=VARCHAR}                   PARTY,
+				#{t.partyName,jdbcType=VARCHAR}          PARTY_NAME,
+				#{t.acceptDate,jdbcType=TIMESTAMP}      ACCEPT_DATE,
+				#{t.dockingType,jdbcType=VARCHAR}      DOCKING_TYPE,
+				#{t.disputeType,jdbcType=VARCHAR}      DISPUTE_TYPE,
+				#{t.statement,jdbcType=VARCHAR}           STATEMENT,
+				#{t.caseNoType,jdbcType=VARCHAR}       CASE_NO_TYPE,
+				#{t.caseNo,jdbcType=VARCHAR}                CASE_NO,
+				#{t.selfAssessment,jdbcType=VARCHAR}              SELF_ASSESSMENT,
+				#{t.leaderAssessment,jdbcType=VARCHAR}          LEADER_ASSESSMENT,
+				#{t.leaderId,jdbcType=VARCHAR}            LEADER_ID,
+				#{t.leaderName,jdbcType=VARCHAR}        LEADER_NAME,
+				#{t.changeCount,jdbcType=DECIMAL}      CHANGE_COUNT,
+				#{t.dockingNo,jdbcType=VARCHAR}          DOCKING_NO,
+				#{t.criminalBond,jdbcType=VARCHAR}    CRIMINAL_BOND,
+				#{t.verdictResult,jdbcType=VARCHAR}   VERDICT_RESULT,
+				#{t.infoorgcode,jdbcType=VARCHAR}   infoorgcode,
+				#{t.type,jdbcType=VARCHAR}   type_
+			FROM DUAL
+			</foreach>) t1
+			ON (t.ID =  t1.ID )
+		    WHEN MATCHED THEN
+		    UPDATE SET
+		    t.PID = t1.PID,
+		    t.FLOW_ID = t1.FLOW_ID,
+		    t.FLOW_NAME = t1.FLOW_NAME,
+		    t.no_ = t1.no_,
+			t.CREATE_ID = t1.CREATE_ID,
+			t.CREATE_NAME = t1.CREATE_NAME,
+			t.CREATE_GROUP = t1.CREATE_GROUP,
+			t.CREATE_GROUP_NODEPATH = t1.CREATE_GROUP_NODEPATH,
+			t.CREATE_TIME = t1.CREATE_TIME,
+			t.CURRENT_STEP = t1.CURRENT_STEP,
+			t.CURRENT_STEP_NAME = t1.CURRENT_STEP_NAME,
+			t.CURRENT_ROLE = t1.CURRENT_ROLE,
+			t.CURRENT_USERID = t1.CURRENT_USERID,
+			t.CURRENT_USERNAME = t1.CURRENT_USERNAME,
+			t.CURRENT_GROUP_NODEPATH = t1.CURRENT_GROUP_NODEPATH,
+			t.VIEW_USERID = t1.VIEW_USERID,
+			t.VIEW_USERNAME = t1.VIEW_USERNAME,
+			t.COPY_USERID = t1.COPY_USERID,
+			t.LAST_USERID = t1.LAST_USERID,
+			t.LAST_USERNAME = t1.LAST_USERNAME,
+			t.LAST_USERGROUP = t1.LAST_USERGROUP,
+			t.LAST_STEP = t1.LAST_STEP,
+			t.LAST_ACTION = t1.LAST_ACTION,
+			t.LAST_COMMENT = t1.LAST_COMMENT,
+			t.DEAL_USERIDS = t1.DEAL_USERIDS,
+			t.DEAL_USERNAMES = t1.DEAL_USERNAMES,
+			t.DEALTIME = t1.DEALTIME,
+			t.FINISHTIME = t1.FINISHTIME,
+			t.STATUS = t1.STATUS,
+			t.STATUSFLAG = t1.STATUSFLAG,
+			t.DELETEFLAG = t1.DELETEFLAG,
+			t.MEDIATOR = t1.MEDIATOR,
+			t.FULLCONTENT = t1.FULLCONTENT,
+			t.ATTACHMENT = t1.ATTACHMENT,
+			t.FROM_ = t1.FROM_,
+			t.LOCALITY = t1.LOCALITY,
+			t.ACCEPT_INSTITUTION = t1.ACCEPT_INSTITUTION,
+			t.ACCEPT_PLACE = t1.ACCEPT_PLACE,
+			t.PARTY = t1.PARTY,
+			t.PARTY_NAME = t1.PARTY_NAME,
+			t.ACCEPT_DATE = t1.ACCEPT_DATE,
+			t.DOCKING_TYPE = t1.DOCKING_TYPE,
+			t.DISPUTE_TYPE = t1.DISPUTE_TYPE,
+			t.STATEMENT = t1.STATEMENT,
+			t.CASE_NO_TYPE = t1.CASE_NO_TYPE,
+			t.CASE_NO = t1.CASE_NO,
+			t.SELF_ASSESSMENT = t1.SELF_ASSESSMENT,
+			t.LEADER_ASSESSMENT = t1.LEADER_ASSESSMENT,
+			t.LEADER_ID = t1.LEADER_ID,
+			t.LEADER_NAME = t1.LEADER_NAME,
+			t.CHANGE_COUNT = t1.CHANGE_COUNT,
+			t.DOCKING_NO = t1.DOCKING_NO,
+			t.CRIMINAL_BOND = t1.CRIMINAL_BOND,
+			t.VERDICT_RESULT = t1.VERDICT_RESULT,
+			t.infoorgcode = t1.infoorgcode,
+			t.type_ = t1.type_
+			WHEN NOT MATCHED THEN
+			INSERT(ID,PID,FLOW_ID,FLOW_NAME,no_,CREATE_ID,CREATE_NAME,CREATE_GROUP,CREATE_GROUP_NODEPATH,CREATE_TIME,CURRENT_STEP,CURRENT_STEP_NAME,
+			CURRENT_ROLE,CURRENT_USERID,CURRENT_USERNAME,CURRENT_GROUP_NODEPATH,VIEW_USERID,VIEW_USERNAME,COPY_USERID,LAST_USERID,LAST_USERNAME,LAST_USERGROUP,
+			LAST_STEP,LAST_ACTION,LAST_COMMENT,DEAL_USERIDS,DEAL_USERNAMES,DEALTIME,FINISHTIME,STATUS,STATUSFLAG,DELETEFLAG,MEDIATOR,FULLCONTENT,ATTACHMENT,FROM_,
+			LOCALITY,ACCEPT_INSTITUTION,ACCEPT_PLACE,PARTY,PARTY_NAME,ACCEPT_DATE,DOCKING_TYPE,DISPUTE_TYPE,STATEMENT,CASE_NO_TYPE,CASE_NO,SELF_ASSESSMENT,
+			LEADER_ASSESSMENT,LEADER_ID,LEADER_NAME,CHANGE_COUNT,DOCKING_NO,CRIMINAL_BOND,VERDICT_RESULT,infoorgcode,type_)
+			VALUES (t1.ID,t1.PID,t1.FLOW_ID,t1.FLOW_NAME,t1.no_,t1.CREATE_ID,t1.CREATE_NAME,t1.CREATE_GROUP,t1.CREATE_GROUP_NODEPATH,t1.CREATE_TIME,t1.CURRENT_STEP,t1.CURRENT_STEP_NAME,
+			t1.CURRENT_ROLE,t1.CURRENT_USERID,t1.CURRENT_USERNAME,t1.CURRENT_GROUP_NODEPATH,t1.VIEW_USERID,t1.VIEW_USERNAME,t1.COPY_USERID,t1.LAST_USERID,t1.LAST_USERNAME,t1.LAST_USERGROUP,
+			t1.LAST_STEP,t1.LAST_ACTION,t1.LAST_COMMENT,t1.DEAL_USERIDS,t1.DEAL_USERNAMES,t1.DEALTIME,t1.FINISHTIME,t1.STATUS,t1.STATUSFLAG,t1.DELETEFLAG,t1.MEDIATOR,t1.FULLCONTENT,t1.ATTACHMENT,t1.FROM_,
+			t1.LOCALITY,t1.ACCEPT_INSTITUTION,t1.ACCEPT_PLACE,t1.PARTY,t1.PARTY_NAME,t1.ACCEPT_DATE,t1.DOCKING_TYPE,t1.DISPUTE_TYPE,t1.STATEMENT,t1.CASE_NO_TYPE,t1.CASE_NO,t1.SELF_ASSESSMENT,
+			t1.LEADER_ASSESSMENT,t1.LEADER_ID,t1.LEADER_NAME,t1.CHANGE_COUNT,t1.DOCKING_NO,t1.CRIMINAL_BOND,t1.VERDICT_RESULT,t1.infoorgcode,t1.type_)
+		</insert>
+
+
+	<select  id="getCodebyName" resultType="java.util.HashMap">
+	SELECT d.to_dict_code infoOrgCode,d.dic_code gridName FROM T_DC_DATA_DIC_MAPPING d where d.dic_type='NANAN_DISPUTE_MEDIATION_350583' and d.dic_pcode ='1'
+		<include refid="find_map" />
+  </select>
+	<!-- 列表（条件） -->
+	<sql id="find_map">
+		<if test="locality != null and locality != ''">
+			 and d.dic_code =#{locality}
+		</if>
+	</sql>
+
+
+	<!-- csk	近12个月趋势-->
+	<select id="findAcquisitionTrendData" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH DATE_ AS(
+		    SELECT TO_CHAR(add_months(to_date(to_char(trunc(sysdate, 'mm')+1, 'yyyy-mm'), 'yyyy-mm'), -(ROWNUM )), 'yyyy-mm') as mon
+		    FROM dual CONNECT BY
+		<choose>
+			<when test="monNum != null and monNum != ''">
+				ROWNUM &lt;= #{monNum}
+			</when>
+			<otherwise>
+				ROWNUM &lt;= 12
+			</otherwise>
+		</choose>
+		),
+		DATA_ AS(
+		      SELECT to_char( T.create_time,'yyyy-mm') EVENT_DATE,count(1) TOTAL_ FROM T_ZZ_DISPUTE_MEDIATION_NA T
+              JOIN  t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		      <include refid="find_where" />
+              GROUP BY to_char( T.create_time,'yyyy-mm')
+		)
+		SELECT D.MON,NVL(A.TOTAL_,0) TOTAL_ FROM DATE_ D
+		LEFT JOIN DATA_ A ON D.MON = A.EVENT_DATE
+		ORDER BY D.MON
+	</select>
+	<!-- csk	南安纠纷类型数量统计（top）-->
+	<select id="findHotEventData" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH NAME_ AS(
+		select g.dict_name name_ from t_bas_datadict g where g.dict_pcode='A001093100'
+		),
+		DATA_ AS(
+		select a.dispute_type name_,a.type_,a.TOTAL_ number_ from
+		(select t.dispute_type,t.type_,count(1) TOTAL_
+		from T_ZZ_DISPUTE_MEDIATION_NA T
+		INNER JOIN  t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		<include refid="find_where" />
+		group by t.dispute_type,t.type_
+		)A
+		)
+		SELECT K.dispute_type,K.typecode,K.TOTAL_ from
+		(SELECT D.name_ dispute_type,B.type_ typecode, NVL (B.number_,0) TOTAL_ FROM NAME_ D
+		LEFT JOIN DATA_ B ON B.name_ = D.name_
+		ORDER BY TOTAL_ desc)K
+		<choose>
+			<when test="topNum != null and topNum != ''">
+			  <if test="topNum != 0">
+				  WHERE ROWNUM &lt;= #{topNum}
+			  </if>
+			</when>
+			<otherwise>
+				WHERE ROWNUM &lt;= 5
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- csk	南安纠纷状态类型数量统计-->
+	<select id="findStatusData" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH data_ as (select a.status name_,a.TOTAL_ number_ from
+		(select t.status, count(1) TOTAL_
+		from T_ZZ_DISPUTE_MEDIATION_NA T
+		JOIN  t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		<include refid="find_where" />
+		group by t.status
+		order by total_ desc)A)
+		SELECT B.name_ Status,NVL (B.number_,0) TOTAL_ FROM DATA_ B
+		ORDER BY TOTAL_ desc
+	</select>
+
+	<!--csk 案件所属网格 -->
+	<select id="searchGrid"  resultMap="BaseResultMap" >
+		SELECT
+		G.GRID_PATH as FLOW_NAME
+		FROM
+		T_ZZ_DISPUTE_MEDIATION_NA T
+		join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		and t.id =#{id}
+	</select>
+
+	<!--csk 排查数，化解率 -->
+	<select id="searchNum"  parameterType="java.util.Map" resultType="java.lang.Long">
+	 SELECT COUNT(1)
+     FROM T_ZZ_DISPUTE_MEDIATION_NA T
+     join t_dc_grid g
+     on t.infoorgcode = g.info_org_code
+     and g.status = '001'
+		<include refid="find_number" />
+	</select>
+	<!-- 列表（条件） -->
+	<sql id="find_number">
+		<where>
+			t.deleteFlag = '0'
+			<if test="status != 0 and status != ''">
+				 and t.statusflag = 1000
+			</if>
+			<if test="infoOrgCode != null and infoOrgCode != ''">
+				<![CDATA[ AND t.infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="createTimeStart != null and createTimeStart != ''">
+				AND t.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+			</if>
+			<if test="createTimeEnd != null and createTimeEnd != ''">
+				AND t.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+			</if>
+		</where>
+	</sql>
+
+	<!--csk 南安化解率排名 -->
+	<select id="searchPaiming"  parameterType="java.util.Map" resultType="java.util.Map">
+		with S as(
+		SELECT COUNT(1) NUMB,sum(case when
+		<choose>
+			<when test="search_type != null and search_type != 0">
+				t2.STATUSFLAG != 0
+			</when>
+			<when test="search_type != null and search_type == 0">
+				t2.STATUSFLAG =0
+			</when>
+			<otherwise>
+				t2.STATUSFLAG=1000
+			</otherwise>
+		</choose>
+        then 1 else 0 end) Resolution_count, T2.Infoorgcode FROM T_ZZ_DISPUTE_MEDIATION_NA T2
+		INNER JOIN T_DC_GRID T3 ON T2.Infoorgcode = T3.INFO_ORG_CODE AND T3.STATUS = '001'
+		WHERE T2.Deleteflag = '0'
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+		<![CDATA[ AND T2.Infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+	    </if>
+		<if test="createTimeStart != null and createTimeStart != ''">
+			AND T2.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd != ''">
+			AND T2.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+		GROUP BY T2.Infoorgcode
+		),
+		S2 as (SELECT max(T1.GRID_NAME) GRID_NAME, max(T1.INFO_ORG_CODE)  INFOORGCODE,SUM(NVL(S.NUMB,0)) NUMB,SUM(NVL(S.Resolution_count,0)) Resolution_count
+		 ,T1.INFO_ORG_CODE, max(T1.Order_Id) Order_Id FROM T_DC_GRID T1
+		LEFT JOIN S on S.Infoorgcode LIKE T1.INFO_ORG_CODE || '%'
+		WHERE T1.PARENT_GRID_ID =  (SELECT G1.GRID_ID FROM T_DC_GRID G1 WHERE
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+		<![CDATA[  G1.INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}]]>
+	    </if>
+		 AND G1.STATUS = '001')
+		AND T1.STATUS = '001'
+		GROUP BY T1.INFO_ORG_CODE 
+
+		)
+		<choose>
+			<when test="paixun_type != null and paixun_type != 0">
+				select S2.INFOORGCODE,S2.GRID_NAME,S2.NUMB,S2.Resolution_count,case when S2.numb = 0 then 0 else  S2.Resolution_count/S2.numb end  Rate,case when S2.numb = 0 then '0.00%' else  TO_CHAR(S2.Resolution_count/S2.numb * 100, 'fm990.00')||'%'end Resolution_rate from S2
+				order by Rate desc
+			</when>
+			<when test="paixun_type != null and paixun_type == 0">
+				select S2.INFOORGCODE,S2.GRID_NAME,S2.NUMB,S2.Resolution_count,case when S2.numb = 0 then '0.00%' else  TO_CHAR(S2.Resolution_count/S2.numb * 100, 'fm990.00')||'%'end  Resolution_rate from S2
+				order by
+				s2.Resolution_count desc,Resolution_rate, s2.Order_Id,s2.INFO_ORG_CODE
+			</when>
+			<otherwise>
+				select S2.INFOORGCODE,S2.GRID_NAME,S2.NUMB,S2.Resolution_count,case when S2.numb = 0 then '0.00%' else  TO_CHAR(S2.Resolution_count/S2.numb * 100, 'fm990.00')||'%'end  Resolution_rate from S2
+				order by
+				s2.numb desc,Resolution_rate, s2.Order_Id,s2.INFO_ORG_CODE
+			</otherwise>
+		</choose>
+
+
+
+
+
+	</select>
+
+	<!--csk 南安纠矛盾纠纷汇聚 -->
+	<select id="DisputesConfluence"  parameterType="java.util.Map" resultType="java.util.Map">
+		with S as(
+		SELECT COUNT(1) NUMB, T2.Infoorgcode FROM T_ZZ_DISPUTE_MEDIATION_NA T2
+		INNER JOIN T_DC_GRID T3 ON T2.Infoorgcode = T3.INFO_ORG_CODE AND T3.STATUS = '001'
+		WHERE T2.Deleteflag = '0'
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			<![CDATA[ AND T2.Infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+		</if>
+		<if test="type_ != null and type_ != ''">
+			<![CDATA[ AND T2.type_ = #{type_}]]>
+		</if>
+		<if test="no != null and no != ''">
+			<![CDATA[ and t.no_ like '%'|| #{no} ||'%' ]]>
+		</if>
+		GROUP BY T2.Infoorgcode
+		)
+		SELECT T1.GRID_NAME, SUM(NVL(S.NUMB,0)) as "count",T1.GRID_ID as  "gridId",T1.Info_Org_Code as "infoOrgCode"  FROM T_DC_GRID T1
+		LEFT JOIN S on S.Infoorgcode LIKE T1.INFO_ORG_CODE || '%'
+		WHERE T1.PARENT_GRID_ID =  (SELECT G1.GRID_ID FROM T_DC_GRID G1 WHERE
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			<![CDATA[  G1.INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}]]>
+		</if>
+		AND G1.STATUS = '001')
+		AND T1.STATUS = '001'
+		AND NUMB != 0
+		GROUP BY T1.INFO_ORG_CODE,T1.GRID_NAME,T1.GRID_ID
+		ORDER BY "count" DESC
+	</select>
+
+	<!-- csk 南安撒点列表（分页） -->
+	<select id="DisputesDotsJsonp"  resultMap="BaseResultMap">
+		SELECT
+		T.ID,
+		T.PID,
+		T.FLOW_ID,
+		T.FLOW_NAME,
+		T.NO_,
+		T.CREATE_ID,
+		T.CREATE_NAME,
+		T.CREATE_GROUP,
+		T.CREATE_GROUP_NODEPATH,
+		T.CREATE_TIME,
+		T.CURRENT_STEP,
+		T.CURRENT_STEP_NAME,
+		T.CURRENT_ROLE,
+		T.CURRENT_USERID,
+		T.CURRENT_USERNAME,
+		T.CURRENT_GROUP_NODEPATH,
+		T.VIEW_USERID,
+		T.VIEW_USERNAME,
+		T.COPY_USERID,
+		T.LAST_USERID,
+		T.LAST_USERNAME,
+		T.LAST_USERGROUP,
+		T.LAST_STEP,
+		T.LAST_ACTION,
+		T.LAST_COMMENT,
+		T.DEAL_USERIDS,
+		T.DEAL_USERNAMES,
+		T.DEALTIME,
+		T.FINISHTIME,
+		T.STATUS,
+		T.STATUSFLAG,
+		T.DELETEFLAG,
+		T.MEDIATOR,
+		T.FULLCONTENT,
+		T.ATTACHMENT,
+		T.FROM_,
+		T.LOCALITY,
+		T.ACCEPT_INSTITUTION,
+		T.ACCEPT_PLACE,
+		T.PARTY,
+		T.PARTY_NAME,
+		T.ACCEPT_DATE,
+		T.DOCKING_TYPE,
+		T.DISPUTE_TYPE,
+		T.STATEMENT,
+		T.CASE_NO_TYPE,
+		T.CASE_NO,
+		T.SELF_ASSESSMENT,
+		T.LEADER_ASSESSMENT,
+		T.LEADER_ID,
+		T.LEADER_NAME,
+		T.CHANGE_COUNT,
+		T.DOCKING_NO,
+		T.CRIMINAL_BOND,
+		T.VERDICT_RESULT,
+		T.infoorgcode,
+		T.type_
+		FROM
+		T_ZZ_DISPUTE_MEDIATION_NA T
+		join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		<include refid="find_where" />
+		ORDER BY
+		T.ID DESC
+	</select>
+
+	<!-- csk 南安查状态总数 -->
+	<select id="findTypeNum" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+		sum(decode(t.statusflag,'-1000',1,0)) as "end",
+		sum(decode(t.statusflag,'1000',1,0)) as "sucess",
+		sum(decode(t.statusflag,'0',1,0)) as "do"
+		FROM T_ZZ_DISPUTE_MEDIATION_NA T
+		inner join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+		<include refid="find_where" />
+	</select>
+
+	<!--  南安趋势数据 -->
+	<select id="findDataTime" resultType="java.util.Map">
+		select to_char(t.create_time,'yyyy-MM-dd') trendDate,count(1) total_
+		from T_ZZ_DISPUTE_MEDIATION_NA t 
+		JOIN t_dc_grid g
+		on t.infoorgcode = g.info_org_code
+		where g.status = '001' and t.deleteFlag = '0' and 
+		t.create_time between to_date(#{createTimeStart},'yyyy-MM-dd') and  to_date(#{createTimeEnd},'yyyy-MM-dd') + 1
+     	<if test="infoOrgCode != null and infoOrgCode != ''">
+			<![CDATA[ AND T.Infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+		</if>
+      group by to_char(t.create_time,'yyyy-MM-dd')
+	</select>
+
+
+	<select id="fetchEventDay" parameterType="java.util.Map" resultType="java.util.Map">
+	SELECT COUNT(1) sum_,to_char(t.create_time,
+	<choose><when test="format != null and format != ''">
+				  '${format}'
+			</when>
+			<otherwise>
+				'yyyy-MM-dd'
+			</otherwise>
+		</choose>	) create_time FROM T_ZZ_DISPUTE_MEDIATION_NA T
+		join t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+	<include refid="find_where" />	
+	 GROUP BY  to_char(t.create_time,
+	<choose><when test="format != null and format != ''">
+				  '${format}'
+			</when>
+			<otherwise>
+				'yyyy-MM-dd'
+			</otherwise>
+		</choose>	) ORDER BY  to_char(t.create_time,
+	<choose><when test="format != null and format != ''">
+				  '${format}'
+			</when>
+			<otherwise>
+				'yyyy-MM-dd'
+			</otherwise>
+		</choose>	)  desc
+	  
+	</select>
+
+
+
+
+
+
+</mapper>
+

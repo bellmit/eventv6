@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.crowd.VisitRecordMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.crowd.VisitRecord" >
+    <id column="VISIT_ID" property="visitId" jdbcType="DECIMAL" />
+    <!-- 居民信息 -->
+    <result column="CI_RS_ID" property="ciRsId" jdbcType="DECIMAL" />
+    <result column="I_NAME" property="name" jdbcType="VARCHAR" />
+    <result column="I_IDENTITY_CARD" property="identityCard" jdbcType="VARCHAR" />
+    <result column="AGE" property="age" jdbcType="DECIMAL"/>
+    <result column="I_GENDER" property="gender" jdbcType="VARCHAR" />
+    <result column="I_BIRTHDAY" property="birthday" jdbcType="DATE" />
+    <!-- 信息人员信息 -->
+    <result column="CRIMINAL_FACTS" property="criminalFacts" jdbcType="VARCHAR" />
+    <result column="VISITED_TYPE" property="visitedType" jdbcType="VARCHAR" />
+    <result column="VISIT_TIME" property="visitTime" jdbcType="TIMESTAMP" />
+    <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR" />
+    <result column="TALK_CONTENT" property="talkContent" jdbcType="VARCHAR" />
+    <result column="VISIT_CAUSE" property="visitCause" jdbcType="VARCHAR" />
+    <result column="VISIT_FORM" property="visitForm" jdbcType="VARCHAR" />
+    <result column="VISIT_EFFECT" property="visitEffect" jdbcType="VARCHAR" />
+    <result column="VISIT_PHOTOURL" property="visitPhotoUrl" jdbcType="VARCHAR" />
+    <result column="RECENT_STATE" property="recentState" jdbcType="VARCHAR" />
+    <result column="MEASURES" property="measures" jdbcType="VARCHAR" />
+     <result column="VISIT_STATUS" property="visitStatus" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+    <result column="VISIT_NAME" property="visitName" jdbcType="VARCHAR" />
+    <result column="UPDATE_USER" property="updateUser" jdbcType="DECIMAL" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="DATE" />
+    <result column="CREATE_USER" property="createUser" jdbcType="DECIMAL" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="DATE" /> 
+    
+    <result column="VISITED_TYPE_STR" property="visitedTypeStr" jdbcType="VARCHAR" />
+    <result column="VISIT_FORM_STR" property="visitFormStr" jdbcType="VARCHAR" />
+    <result column="VISIT_EFFECT_STR" property="visitEffectStr" jdbcType="VARCHAR" />
+    
+     <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"/>
+    <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR"/>
+    
+    <result column="IMPORT_ID" property="importId" jdbcType="DECIMAL"/>
+  </resultMap>
+  <update id="update" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.crowd.VisitRecord" >
+    UPDATE T_ZZ_VISIT_RECORD
+    <set >
+      <if test="name != null" >
+        I_NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="identityCard != null" >
+        I_IDENTITY_CARD = #{identityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        AGE = #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        I_GENDER = #{gender,jdbcType=VARCHAR},
+      </if>
+      <if test="visitedType != null" >
+        VISITED_TYPE = #{visitedType,jdbcType=VARCHAR},
+      </if>
+      <if test="visitTime != null" >
+        VISIT_TIME = #{visitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="visitForm != null" >
+        VISIT_FORM = #{visitForm,jdbcType=VARCHAR},
+      </if>
+      <if test="visitEffect != null" >
+        VISIT_EFFECT = #{visitEffect,jdbcType=VARCHAR},
+      </if>
+      <if test="visitPhotoUrl != null" >
+        VISIT_PHOTOURL = #{visitPhotoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="recentState!=null">
+      	RECENT_STATE = #{recentState,jdbcType=VARCHAR},
+      </if>
+      <if test="visitCause!=null">
+      	VISIT_CAUSE = #{visitCause,jdbcType=VARCHAR},
+      </if>
+      <if test="criminalFacts!=null">
+      	CRIMINAL_FACTS = #{criminalFacts,jdbcType=VARCHAR},
+      </if>
+      <if test="measures!=null">
+      	MEASURES = #{measures,jdbcType=VARCHAR},
+      </if>
+      <if test="talkContent!=null">
+      	TALK_CONTENT =#{talkContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks!=null">
+      	REMARKS = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        I_BIRTHDAY = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="visitName != null" >
+        VISIT_NAME = #{visitName,jdbcType=VARCHAR},
+      </if>
+      <if test="gridId!=null">
+      	GRID_ID = #{gridId,jdbcType=DECIMAL},
+      </if>
+      <if test="gridName!=null">
+      	GRID_NAME = #{gridName,jdbcType=VARCHAR},
+      </if>
+      <if test="importId!=null">
+      	IMPORT_ID = #{importId,jdbcType=VARCHAR},
+      </if>
+       UPDATE_DATE=SYSDATE,
+       UPDATE_USER = #{updateUser,jdbcType=DECIMAL}
+    </set>
+    where VISIT_ID = #{visitId,jdbcType=DECIMAL}
+  </update>
+  <sql id="detail_select">
+  SELECT VISIT_ID,
+       T4.CI_RS_ID,
+       T4.I_NAME,
+       T4.I_IDENTITY_CARD,
+       AGE,
+       DECODE(T4.I_GENDER,'M','男','F','女') I_GENDER,
+       CRIMINAL_FACTS,
+       VISITED_TYPE,
+       (SELECT COLUMN_VALUE_REMARK FROM T_DC_DATA_DICTIONARY_INFO T2 
+       							   WHERE T2.COLUMN_VALUE = T.VISITED_TYPE AND 
+       							         LOWER(T2.TABLE_ID)= #{tableId,jdbcType=VARCHAR} AND 
+       							         LOWER(T2.COLUMN_ID) = #{visitedTypeColumn,jdbcType=VARCHAR}
+       							         ) VISITED_TYPE_STR,
+       VISIT_TIME,
+       GRID_CODE,
+       TALK_CONTENT,
+       VISIT_CAUSE,
+       VISIT_FORM,
+       (SELECT COLUMN_VALUE_REMARK FROM T_DC_DATA_DICTIONARY_INFO T2 
+       							   WHERE T2.COLUMN_VALUE = T.VISIT_FORM AND 
+       							         LOWER(T2.TABLE_ID)= #{tableId,jdbcType=VARCHAR} AND 
+       							         LOWER(T2.COLUMN_ID) = #{visitFormColumn,jdbcType=VARCHAR}
+       							         ) VISIT_FORM_STR,
+       VISIT_EFFECT,
+        (SELECT COLUMN_VALUE_REMARK FROM T_DC_DATA_DICTIONARY_INFO T2 
+       							   WHERE T2.COLUMN_VALUE = T.VISIT_EFFECT AND 
+       							         LOWER(T2.TABLE_ID)= #{tableId,jdbcType=VARCHAR} AND 
+       							         LOWER(T2.COLUMN_ID) = #{visitEffectColumn,jdbcType=VARCHAR}
+       							         ) VISIT_EFFECT_STR,
+       RECENT_STATE,
+       MEASURES,
+       VISIT_STATUS,
+       REMARKS,
+       T.I_BIRTHDAY,
+       T.VISIT_NAME,
+       CREATE_USER,
+       CREATE_DATE,
+       UPDATE_USER,
+       UPDATE_DATE,
+       T.STATUS,
+       VISITOR,
+       GRID_ID,
+       (SELECT T3.GRID_NAME FROM T_DC_GRID T3 WHERE T3.GRID_ID=T.GRID_ID) GRID_NAME,
+       IMPORT_ID
+  FROM T_ZZ_VISIT_RECORD T LEFT OUTER JOIN T_DC_CI_RS_TOP T4 ON T.CI_RS_ID=T4.CI_RS_ID
+  </sql>
+  <sql id="detail_select_all">
+  	SELECT T2.GRID_NAME,T.* FROM T_ZZ_VISIT_RECORD T LEFT OUTER JOIN T_DC_GRID T2 ON T.GRID_ID=T2.GRID_ID  
+  </sql>
+  
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    <include refid="detail_select_all" />
+    where T.VISIT_ID = #{id,jdbcType=DECIMAL}
+  </select>
+  
+  <select id="findVisitRecordByEventId" resultMap="BaseResultMap" parameterType="java.lang.Long"  >
+  	SELECT T1.*,(SELECT T3.GRID_NAME FROM T_DC_GRID T3 WHERE T3.GRID_ID=T1.GRID_ID) GRID_NAME 
+  	FROM T_ZZ_VISIT_RECORD T1 , T_SJ_EVENT_VISIT_RELA T2 
+  	WHERE T1.VISIT_ID = T2.VISIT_ID AND T2.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </select>
+  <delete id="delete" >
+    update T_ZZ_VISIT_RECORD set STATUS='003' where VISIT_ID=#{id,jdbcType=DECIMAL}
+  </delete>
+  
+  <insert id="insert" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.crowd.VisitRecord" >
+  	<selectKey keyProperty="visitId" resultType="long" order="BEFORE">
+		select SEQ_ZZ_VISIT_RECORD_ID.NEXTVAL from DUAL
+	</selectKey>
+	INSERT INTO T_ZZ_VISIT_RECORD
+	  (VISIT_ID,
+	   CI_RS_ID,
+	   I_NAME,
+	   I_IDENTITY_CARD,
+	   AGE,
+	   I_GENDER,
+       CRIMINAL_FACTS,
+       VISITED_TYPE,
+       VISIT_TIME,
+       GRID_CODE,
+       TALK_CONTENT,
+       VISIT_CAUSE,
+       VISIT_FORM,
+       VISIT_EFFECT,
+       VISIT_PHOTOURL,
+       RECENT_STATE,
+       MEASURES,
+       STATUS,
+       REMARKS,
+       I_BIRTHDAY,
+       VISIT_NAME,
+       CREATE_USER,
+       CREATE_DATE,
+       UPDATE_USER,
+       UPDATE_DATE,
+       VISIT_STATUS,
+       GRID_ID,
+       GRID_NAME,
+       IMPORT_ID)
+	   VALUES
+	  (#{visitId,jdbcType=DECIMAL},
+	   #{ciRsId,jdbcType=DECIMAL},
+	   #{name,jdbcType=DECIMAL},
+	   #{identityCard,jdbcType=VARCHAR},
+	   #{age,jdbcType=DECIMAL},
+	   #{gender,jdbcType=VARCHAR},
+       #{criminalFacts,jdbcType=VARCHAR},
+       #{visitedType,jdbcType=VARCHAR},
+       #{visitTime,jdbcType=TIMESTAMP},
+       #{gridCode,jdbcType=VARCHAR}, 
+       #{talkContent,jdbcType=VARCHAR},
+       #{visitCause,jdbcType=VARCHAR},   
+       #{visitForm,jdbcType=VARCHAR},
+       #{visitEffect,jdbcType=VARCHAR}, 
+       #{visitPhotoUrl,jdbcType=VARCHAR}, 
+       #{recentState,jdbcType=VARCHAR}, 
+       #{measures,jdbcType=VARCHAR},  
+       #{status,jdbcType=VARCHAR},
+       #{remarks,jdbcType=VARCHAR},
+       #{birthday,jdbcType=TIMESTAMP},
+       #{visitName,jdbcType=VARCHAR},   
+       #{createUser,jdbcType=DECIMAL},
+       SYSDATE,
+       #{updateUser,jdbcType=DECIMAL},
+       SYSDATE,
+       #{visitStatus,jdbcType=VARCHAR},
+       #{gridId,jdbcType=DECIMAL},
+       #{gridName,jdbcType=VARCHAR},
+       #{importId,jdbcType=DECIMAL}
+	 )
+  </insert>
+  
+  <sql id="find_where">
+      WHERE T.VISIT_STATUS='001' AND T.STATUS='001' AND T4.STATUS=1 
+      <if test="name!=null">
+          AND T.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+      </if>
+      <if test="identityCard!=null">
+          AND T.I_IDENTITY_CARD LIKE CONCAT('%', CONCAT(#{identityCard,jdbcType=VARCHAR}, '%'))
+      </if>
+      <if test="gender!=null">
+          AND T.I_GENDER=#{gender,jdbcType=VARCHAR}
+      </if>
+      <if test="visitedType!=null">
+      	  AND T.VISITED_TYPE=#{visitedType,jdbcType=VARCHAR}
+      </if>
+      <if test="ciRsId!=null">
+      	  AND T.CI_RS_ID=#{ciRsId,jdbcType=DECIMAL}
+      </if>
+      <if test="gridId!=null">
+        AND T.GRID_ID IN (SELECT T2.GRID_ID FROM T_DC_GRID T2 START WITH T2.GRID_ID=#{gridId,jdbcType=DECIMAL}
+       CONNECT BY PRIOR T2.GRID_ID = T2.PARENT_GRID_ID)
+      </if>
+  </sql>
+  
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+    select count(*) from T_ZZ_VISIT_RECORD T LEFT OUTER JOIN T_DC_CI_RS_TOP T4 ON T.CI_RS_ID=T4.CI_RS_ID
+    <include refid="find_where" />
+  </select>
+  
+  <select id="findPageListByCriteria" resultMap="BaseResultMap">
+    <include refid="detail_select" />
+    <include refid="find_where" />
+    ORDER BY T.UPDATE_DATE DESC
+  </select>
+  
+  <select id="countRecordByCiRsId" resultType="java.lang.Integer"  parameterType="java.lang.Long">
+      select count(*) from T_ZZ_VISIT_RECORD where CI_RS_ID=#{ciRsId,jdbcType=DECIMAL} and STATUS='001'
+  </select>
+  
+  <select id="findByCiRsId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    <include refid="detail_select" />
+    where T1.CI_RS_ID = #{id,jdbcType=DECIMAL} AND T1.STATUS='001'
+  </select>
+  
+  <select id="findVisitRecordList" resultMap="BaseResultMap" >
+    <include refid="detail_select_all" />
+    where T.STATUS='001' AND T.CI_RS_ID = #{ciRsId,jdbcType=DECIMAL} AND T.VISITED_TYPE=#{visitType,jdbcType=VARCHAR} ORDER BY VISIT_TIME DESC
+  </select>
+</mapper>

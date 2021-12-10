@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventExpand.EventLabelRelaMapper">
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="map">
+		INSERT INTO
+			T_EVENT_LABEL_RELA
+		(
+			EVENT_ID,
+			LABEL_ID,
+			LABEL_NAME,
+			BIZ_ID,
+			IS_VALID,
+			CREATOR,
+			CREATE_DATE,
+			UPDATER,
+			UPDATE_DATE
+		) VALUES (
+			#{eventId,jdbcType=DECIMAL},
+			<choose>
+				<when test="labelId != null " >
+					#{labelId,jdbcType=DECIMAL},
+				</when>
+				<otherwise>
+					0,
+				</otherwise>
+			</choose>
+			#{labelName,jdbcType=VARCHAR},
+			#{bizId,jdbcType=DECIMAL},
+			'1',
+			#{creator,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updater,jdbcType=DECIMAL},
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 删除 -->	
+	<delete id="deleteByEventIdAndLabelInfo" parameterType="map">
+		UPDATE
+			T_EVENT_LABEL_RELA T 
+		SET T.IS_VALID='0',T.UPDATE_DATE=SYSDATE,T.UPDATER=#{updater,jdbcType=DECIMAL} 
+		WHERE
+			<include refid="do_when"></include>
+	</delete>
+	
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="map">
+		UPDATE
+			T_EVENT_LABEL_RELA T
+		<set> 
+			<if test="bizId != null " >
+				T.BIZ_ID=#{bizId,jdbcType=DECIMAL},
+			</if>
+			<if test="isValid != null " >
+				T.IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="updater != null " >
+				T.UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+			<choose>
+				<when test="updateDate != null ">
+					T.UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP},
+				</when>
+				<otherwise>
+					T.UPDATE_DATE=SYSDATE,
+				</otherwise>
+			</choose>
+		</set>
+		WHERE
+			<include refid="do_when"></include>
+	</update>
+	
+	<!-- 操作执行条件 -->
+  	<sql id="do_when">
+  		  T.EVENT_ID= #{eventId,jdbcType=DECIMAL} 
+		  AND T.LABEL_NAME= #{labelName,jdbcType=VARCHAR} 
+  	</sql>
+  	
+  	
+  	<!-- 根据事件Id查询所关联模块的信息 -->	
+	<select id="searchByEventId" parameterType="map" resultType="map">
+		SELECT
+			T.EVENT_ID,
+			T.LABEL_ID,
+			T.LABEL_NAME,
+			T.BIZ_ID,
+			T.IS_VALID,
+			T.CREATOR,
+			T.CREATE_DATE,
+			T.UPDATER,
+			T.UPDATE_DATE
+		FROM
+			T_EVENT_LABEL_RELA T
+		WHERE
+			T.EVENT_ID= #{eventId,jdbcType=DECIMAL}
+			<if test="isValid != null and isValid != ''">
+				AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+			</if> 
+			<if test="bizId != null " >
+				AND	T.BIZ_ID=#{bizId,jdbcType=DECIMAL}
+			</if>
+			<if test="labelName != null and labelName != ''">
+				AND T.LABEL_NAME=#{labelName,jdbcType=VARCHAR}
+			</if>
+	</select>
+  	
+  	<!-- 根据关联模块的业务Id模块标签名查询数据（反查事件Id） -->	
+	<select id="searchByBizInfo" resultType="map">
+		SELECT
+			T.EVENT_ID,
+			T.LABEL_ID,
+			T.LABEL_NAME,
+			T.BIZ_ID,
+			T.IS_VALID,
+			T.CREATOR,
+			T.CREATE_DATE,
+			T.UPDATER,
+			T.UPDATE_DATE
+		FROM
+			T_EVENT_LABEL_RELA T
+		WHERE
+			T.LABEL_NAME= #{labelName,jdbcType=VARCHAR} 
+			AND	T.BIZ_ID=#{bizId,jdbcType=DECIMAL}
+			<if test="isValid != null and isValid != ''">
+				AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+			</if> 
+	</select>
+	
+	
+  	<!-- 查询数据（分页） -->	
+	<select id="searchList" resultType="map">
+		SELECT
+			T.EVENT_ID,
+			T.LABEL_ID,
+			T.LABEL_NAME,
+			T.BIZ_ID,
+			T.IS_VALID,
+			T.CREATOR,
+			T.CREATE_DATE,
+			T.UPDATER,
+			T.UPDATE_DATE
+		FROM
+			T_EVENT_LABEL_RELA T
+		WHERE
+			<include refid="find_where"></include> 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_EVENT_LABEL_RELA T
+		WHERE 
+		<include refid="find_where" />
+	</select>
+
+
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="labelId != null ">
+			AND T.LABEL_ID=#{labelId,jdbcType=DECIMAL}
+		</if>
+		<if test="labelName != null and labelName != ''">
+			AND T.LABEL_NAME=#{labelName,jdbcType=VARCHAR}
+		</if>
+		<if test="bizId != null ">
+			AND T.BIZ_ID=#{bizId,jdbcType=DECIMAL}
+		</if>
+		<if test="isValid != null and isValid != ''">
+			AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+		</if>
+		<if test="creator != null ">
+			AND T.CREATOR=#{creator,jdbcType=DECIMAL}
+		</if>
+		<if test="createTimeStart!=null">
+  			AND T.CREATE_DATE <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  		</if>
+		<if test="createTimeEnd != null">
+   			AND T.CREATE_DATE <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   		</if>
+		<if test="updater != null ">
+			AND T.UPDATER=#{updater,jdbcType=DECIMAL}
+		</if>
+		<if test="updateTimeStart != null">
+  			AND T.UPDATE_DATE <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  		</if>
+   		<if test="updateTimeEnd != null">
+   			AND T.UPDATE_DATE <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   		</if>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventImport4FileMapper" >
+	<!-- 查询列，为了方便转换为事件 -->
+	<sql id="same_column">
+		ROWIDTOCHAR(T.ROWID)	"rowid",
+		T.EVENT_ID				"eventId",
+		T.EVENT_NAME 			"eventName",
+		T.TYPE_NAME 			"typeName",
+		T.TYPE_ 				"type",
+		T.CONTENT_				"content",
+		T.OCCURRED				"occurred",
+		T.HAPPEN_TIME			"happenTime",
+		T.INFO_ORG_CODE			"infoOrgCode",
+		T.INFO_ORG_NAME			"infoOrgName",
+		T.INFLUENCE_DEGREE		"influenceDegree",
+		T.INFLUENCE_DEGREE_NAME	"influenceDegreeName",
+		T.URGENCY_DEGREE		"urgencyDegree",
+		T.URGENCY_DEGREE_NAME	"urgencyDegreeName",
+		T.TEL					"tel",
+		T.CONTACT_USER			"contactUser",
+		T.CLOSER_NAME			"closerName",
+		T.CLOSER_ORG_NAME		"closerOrgName",
+		T.FIN_TIME				"finTime",
+		T.HANDLE_DATE			"handleDate",
+		T.RESULT				"result",
+		T.CREATE_TIME			"createTime",
+		TO_CHAR(T.MSG_WRONG)	"msgWrong",
+		T.STATUS_				"status",
+		t.user_id				"userId",
+		t.ORG_ID				"orgId"
+	</sql>
+	<!-- 详情页面查询列 -->
+	<sql id="detail_column">
+		ROWIDTOCHAR(T.ROWID)	ROW_ID,
+		TO_CHAR(T.MSG_WRONG)	MSG_WRONG_STR,
+		T.*
+	</sql>
+	
+	<!-- 批量新增记录，为了兼容plsql导入，所以没有设置主键 -->
+	<insert id="insert4Batch" parameterType="java.util.List">
+		INSERT INTO T_EVENT_IMPORT(
+							   EVENT_ID, 			EVENT_NAME, 			TYPE_NAME,
+	                           TYPE_, 				CONTENT_, 				OCCURRED,
+	                           HAPPEN_TIME, 		INFO_ORG_CODE, 			INFO_ORG_NAME, 
+	                           INFLUENCE_DEGREE,	INFLUENCE_DEGREE_NAME,	URGENCY_DEGREE,
+	                           URGENCY_DEGREE_NAME,	TEL, 					CONTACT_USER,
+	                           CLOSER_NAME, 		CLOSER_ORG_NAME, 		FIN_TIME,
+	                           HANDLE_DATE, 		RESULT, 				CREATE_TIME,
+	                           MSG_WRONG, 			STATUS_,USER_ID,ORG_ID,CREATOR_ID,UPDATOR_ID,
+	                           EVENT_MAPPING_ID)
+		SELECT TMP.*
+		FROM (
+	        <foreach collection="list" item="item" index="index" separator="union all">
+	        	SELECT 
+		        	#{item.EVENT_ID,jdbcType=DECIMAL}, 				#{item.EVENT_NAME,jdbcType=VARCHAR}, 			#{item.TYPE_NAME,jdbcType=VARCHAR},
+					#{item.TYPE_,jdbcType=VARCHAR}, 				#{item.CONTENT_,jdbcType=VARCHAR}, 				#{item.OCCURRED,jdbcType=VARCHAR},
+					#{item.HAPPEN_TIME,jdbcType=TIMESTAMP}, 		#{item.INFO_ORG_CODE,jdbcType=VARCHAR}, 		#{item.INFO_ORG_NAME,jdbcType=VARCHAR},
+					#{item.INFLUENCE_DEGREE,jdbcType=VARCHAR}, 		#{item.INFLUENCE_DEGREE_NAME,jdbcType=VARCHAR},	#{item.URGENCY_DEGREE,jdbcType=VARCHAR},
+					#{item.URGENCY_DEGREE_NAME,jdbcType=VARCHAR},	#{item.TEL,jdbcType=VARCHAR}, 					#{item.CONTACT_USER,jdbcType=VARCHAR},
+					#{item.CLOSER_NAME,jdbcType=VARCHAR}, 			#{item.CLOSER_ORG_NAME,jdbcType=VARCHAR}, 		#{item.FIN_TIME,jdbcType=TIMESTAMP},
+					#{item.HANDLE_DATE,jdbcType=TIMESTAMP}, 		#{item.RESULT,jdbcType=VARCHAR}, 				#{item.CREATE_TIME,jdbcType=TIMESTAMP},
+					#{item.MSG_WRONG,jdbcType=VARCHAR}, 			#{item.STATUS_,jdbcType=VARCHAR}, 			#{item.USER_ID,jdbcType=DECIMAL},
+					 			#{item.ORG_ID,jdbcType=DECIMAL}, 			#{item.CREATOR_ID,jdbcType=DECIMAL}, 			#{item.UPDATOR_ID,jdbcType=DECIMAL},
+					#{item.EVENT_MAPPING_ID,jdbcType=VARCHAR}
+				FROM DUAL
+	        </foreach>
+        ) TMP
+	</insert>
+	
+	<!-- 依据rowid更新记录 -->
+	<update id="update">
+		UPDATE T_EVENT_IMPORT T
+		<set>
+			<choose>
+				<when test="eventId != null ">
+					T.EVENT_ID = #{eventId,jdbcType=DECIMAL},
+				</when>
+				<when test="EVENT_ID != NULL ">
+					T.EVENT_ID = #{EVENT_ID,jdbcType=DECIMAL},
+				</when>
+			</choose>
+			<choose>
+				<when test="msgWrong != null ">
+					T.MSG_WRONG = '${msgWrong}',
+				</when>
+				<when test="MSG_WRONG">
+					T.MSG_WRONG = '${MSG_WRONG}',
+				</when>
+			</choose>
+			<choose>
+				<when test="status != null and status != '' ">
+					T.STATUS_ = #{status,jdbcType=VARCHAR},
+				</when>
+				<when test="STATUS_ != null and STATUS_ != '' ">
+					T.STATUS_ = #{STATUS_,jdbcType=VARCHAR},
+				</when>
+			</choose>
+			
+			T.UPDATE_TIME = SYSDATE
+		</set>
+		
+		WHERE ROWIDTOCHAR(T.ROWID) = #{rowid,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 依据rowid更新记录 -->
+	<update id="updateByRowid">
+		UPDATE T_EVENT_IMPORT T
+		<set>
+			<if test="updateSql != null and updateSql != '' ">
+				${updateSql}
+			</if>
+		</set>
+		
+		WHERE ROWIDTOCHAR(T.ROWID) = #{rowid,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 依据rowid删除记录 -->
+	<delete id="deleteByRowid">
+		DELETE FROM T_EVENT_IMPORT T WHERE ROWIDTOCHAR(T.ROWID) = #{rowid,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 依据rowid获取记录 -->
+	<select id="findByRowid" resultType="java.util.Map">
+		SELECT
+			<include refid="detail_column"></include>
+		FROM T_EVENT_IMPORT T
+		WHERE ROWIDTOCHAR(T.ROWID) = #{rowid,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 获取记录数量 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+		SELECT COUNT(1) 
+		FROM T_EVENT_IMPORT T
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 分页获取记录信息 -->
+	<select id="findPageListByCriteria" resultType="java.util.Map">
+		SELECT
+			<include refid="detail_column"></include>
+		FROM T_EVENT_IMPORT T
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 分页获取记录信息，为事件使用 -->
+	<select id="findPageList4EventByCriteria" resultType="java.util.Map">
+		SELECT
+			<include refid="same_column"></include>
+		FROM T_EVENT_IMPORT T
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 获取各列信息 -->
+	<select id="findTableColInfo" resultType="java.util.Map">
+		SELECT A.COLUMN_NAME, A.DATA_TYPE, A.DATA_LENGTH, A.NULLABLE, B.COMMENTS 
+		FROM USER_TAB_COLUMNS A, USER_COL_COMMENTS B
+		WHERE A.TABLE_NAME = B.TABLE_NAME AND A.COLUMN_NAME = B.COLUMN_NAME AND A.TABLE_NAME = 'T_EVENT_IMPORT'
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="keyWord != null and keyWord != '' ">
+			AND (
+			  T.CONTENT_ LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+			  OR
+			  T.EVENT_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+			   OR
+			  T.OCCURRED LIKE '%'||#{keyWord,jdbcType=VARCHAR}|| '%'
+		  )
+		</if>
+		<if test="status != null and status != '' ">
+			AND T.STATUS_ = #{status,jdbcType=CHAR}
+		</if>
+		<if test="statusList != null">
+			AND T.STATUS_ IN
+			<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+		    	#{item}
+		    </foreach>
+		</if>
+	</sql>
+</mapper>

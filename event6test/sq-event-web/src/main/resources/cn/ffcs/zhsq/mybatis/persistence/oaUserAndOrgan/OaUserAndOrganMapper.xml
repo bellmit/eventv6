@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.oaUserAndOrgan.OaUserAndOrganMapper">
+	<resultMap type="cn.ffcs.zhsq.mybatis.domain.userOrganTree.UserOrganTree" id="BaseResultMap">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="pid" property="pid" />
+		<result column="uoo" property="userOrOrgan" />
+		<result column="org_code" property="orgCode" />
+		<result column="org_name" property="orgName" />
+		<result column="chief_level" property="chiefLevel" />
+		
+		<result column="positionName" property="positionName" />
+	</resultMap>
+	
+	<select id="getSuchedulePersons" resultMap="BaseResultMap">
+		select id, name, pid, uoo,org_code 
+		from v_user_and_bm bm 
+		inner join ( 
+		select t1.pk_person from T_OA_S_SCHEDULE_MAPP_PERSON t1
+		inner join T_OA_S_SCHEDULE t2
+		on t1.pk_schedule = t2.id where t2.id=#{scheduleId,jdbcType=BIGINT}
+		) t on t.pk_person=bm.id
+		where bm.uoo='u' and pid in(
+		      select t.id from v_user_and_bm t where t.uoo ='b'
+		start with t.id = #{orgId,jdbcType=BIGINT}
+		connect by prior t.id = t.pid
+		and t.uoo  = 'b'
+		union all
+		select t.id from v_user_and_bm t where t.id=#{orgId,jdbcType=BIGINT}
+		)
+	</select>
+	
+	<select id="getUserAndBMByParam" resultMap="BaseResultMap">
+		select id, name, pid, uoo,org_code,chief_level 
+		from v_user_and_bm 
+		where name is not null
+			<if test=" pId != null and pId != '' ">
+				and PID = #{pId,jdbcType=BIGINT}
+				and UOO in ('u','o')
+			</if>
+			<if test="@Ognl@isNotEmpty(uoos)">
+				and UOO in 
+					<foreach collection="uoos" item="item" index="index" open="(" 
+									separator="," close=")">
+						    #{item}
+					</foreach>
+			</if>
+			<if test=" uoo != null and uoo != '' ">
+				and UOO = #{uoo,jdbcType=VARCHAR}
+			</if>
+	</select>
+	
+	<select id="getUserIncPsitionAndBMByParam" resultMap="BaseResultMap">
+		select userandbm.id, userandbm.name, userandbm.pid, userandbm.uoo,userandbm.org_code,
+			(select  posinfo.position_name
+             from ${dbuser.zhsq}.T_DC_PRIVILEGE_EXAMPLE  priexample
+             LEFT JOIN ${dbuser.zhsq}.t_dc_position_info posinfo
+             on priexample.position_id = posinfo.position_id 
+             where priexample.user_id= userandbm.id
+             and userandbm.uoo = 'u'
+             and rownum=1)positionName
+		from v_user_and_bm userandbm
+		where 1 = 1
+			<if test=" pId != null and pId != '' ">
+				and userandbm.PID = #{pId,jdbcType=BIGINT}
+			</if>
+			<if test="@Ognl@isNotEmpty(uoos)">
+				and userandbm.UOO in 
+					<foreach collection="uoos" item="item" index="index" open="(" 
+									separator="," close=")">
+						    #{item}
+					</foreach>
+			</if>
+			<if test=" uoo != null and uoo != '' ">
+				and userandbm.UOO = #{uoo,jdbcType=VARCHAR}
+			</if>
+			<if test=" keyWords != null and keyWords != '' ">
+				and userandbm.name LIKE '%' || #{keyWords,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test=" orgCode != null and orgCode != '' ">
+				and userandbm.org_code LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+			</if>
+		order by userandbm.UOO
+	</select>
+	
+	<select id="getAllParentLevelList" resultMap="BaseResultMap">
+		select userandbm.id, userandbm.name, userandbm.pid, userandbm.uoo,userandbm.org_code,
+			(select  posinfo.position_name
+             from ${dbuser.zhsq}.T_DC_PRIVILEGE_EXAMPLE  priexample
+             LEFT JOIN ${dbuser.zhsq}.t_dc_position_info posinfo
+             on priexample.position_id = posinfo.position_id 
+             where priexample.user_id= userandbm.id
+             and userandbm.uoo = 'u'
+             and rownum=1)positionName
+		from (
+			  SELECT 
+	            *
+	          FROM 
+	            v_user_and_bm 
+	          CONNECT BY PRIOR  
+	            pid = id
+	          START WITH
+	            id = #{id,jdbcType=BIGINT}
+			  ) userandbm
+		where 
+			userandbm.org_code like #{orgCode,jdbcType=VARCHAR} || '%'
+			<if test=" pId != null and pId != '' ">
+				and userandbm.PID = #{pId,jdbcType=BIGINT}
+			</if>
+			<if test="@Ognl@isNotEmpty(uoos)">
+				and userandbm.UOO in 
+					<foreach collection="uoos" item="item" index="index" open="(" 
+									separator="," close=")">
+						    #{item}
+					</foreach>
+			</if>
+			<if test=" uoo != null and uoo != '' ">
+				and userandbm.UOO = #{uoo,jdbcType=VARCHAR}
+			</if>
+		order by userandbm.pid
+	</select>
+	
+	<select id="getPersonInfoByOrgIdUserId" resultMap="BaseResultMap">
+		select distinct bm.id id,bm.name name,bm.pid,bm.org_code,osi.org_id,osi.org_name from (
+			select * from (select * from v_user_and_bm t where t.uoo in ('u','b')
+			union all
+			select * from v_user_and_bm t where t.id = #{orgId,jdbcType=BIGINT} and t.uoo = 'o') bm1
+			start with bm1.id = #{orgId,jdbcType=BIGINT}
+			connect by prior bm1.id = bm1.pid and bm1.uoo in('u','b') ) bm,${dbuser.zhsq}.t_dc_user_org_social uos,${dbuser.zhsq}.t_dc_org_social_info osi
+			where bm.id = uos.user_id and osi.org_id=uos.social_org_id
+			and bm.uoo = 'u'
+			and osi.org_id in (
+			select t.id from v_user_and_bm t where t.uoo in ('o','b')
+			start with t.id = #{orgId,jdbcType=BIGINT}
+			connect by prior t.id = t.pid
+			and t.uoo  = 'b'
+		) and id = #{userId,jdbcType=BIGINT}
+	</select>
+	
+	<select id="getPathByUserIds" resultType="String">
+		SELECT sys_connect_by_path(t.id,'/') path
+		FROM V_USER_AND_ORGAN t
+		WHERE t.pid = #{orgId,jdbcType=BIGINT}
+		START WITH t.id IN 
+		<foreach collection="userIds" index="index" item="item" open="(" separator="," close=")">
+	    	#{item,jdbcType=BIGINT}
+	    </foreach>
+		CONNECT BY PRIOR t.pid = t.id
+	</select>
+	
+	<select id="getInfoByIds" resultMap="BaseResultMap">
+		SELECT ID,NAME,PID,UOO,CHIEF_LEVEL
+		FROM V_USER_AND_ORGAN T
+		WHERE 1 = 1
+		<if test="uoo != null and uoo != ''">
+			AND T.UOO = #{uoo,jdbcType=VARCHAR}
+		</if>
+		AND T.ID IN
+		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
+	    	'${item}'
+	    </foreach>
+	</select>
+	
+	<select id="getEntityInfoByIds" resultMap="BaseResultMap">
+		select s.org_id id, s.org_name name,
+		       s.parent_org_id pid, 'u' uoo,
+		       s.org_code, s.org_name, s.chief_level
+		from ${dbuser.zhsq}.t_dc_org_entity_info s
+		where s.status = '001' and s.org_id in
+		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
+	    	'${item}'
+	    </foreach>
+	</select>
+	
+	<select id="getGridPersonByPid" resultMap="BaseResultMap">
+		SELECT * FROM (
+			select t.grid_id id,t.grid_name name,t.parent_grid_id pid,'o' uoo,t.grid_level chief_level
+			from ${dbuser.zhsq}.t_dc_grid t where 1=1 and t.status = '001'
+			union all
+			select m.user_id id,ue.party_name,m.grid_id pid,'u' uoo,g.grid_level chief_level
+			from ${dbuser.zhsq}.t_dc_grid_admin m,${dbuser.zhsq}.t_dc_user_entity ue,${dbuser.zhsq}.t_dc_grid g
+			where ue.user_id = m.user_id and m.status = '001'
+			and g.grid_id = m.grid_id and g.status = '001'
+			<if test="personGridLevel != null and personGridLevel != ''">
+				and g.grid_level = #{personGridLevel,jdbcType=BIGINT} --网格员所属 网格
+			</if>
+			<if test="duty != null and duty != ''">
+				and and m.duty = #{duty,jdbcType=BIGINT} --网格员,网格管理员,网格长等
+			</if>
+		)
+		WHERE pid = #{gridId,jdbcType=BIGINT}
+	</select>
+	
+	<select id="queryGrid" resultMap="BaseResultMap">
+		SELECT t.grid_id id,t.grid_name name,t.parent_grid_id pid,'o' uoo,t.grid_level chief_level,t.grid_code org_Code
+		FROM ${dbuser.zhsq}.t_dc_grid t 
+		WHERE 1=1 and t.status = '001'
+		<if test="gridName != null and gridName != ''">
+			AND t.grid_name like '%'||#{gridName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="gridCode != null and gridCode != ''">
+			AND t.grid_code like #{gridCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND t.INFO_ORG_CODE like #{regionCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="pid != null and pid != ''">
+			AND t.parent_grid_id = #{pid,jdbcType=BIGINT}
+		</if>
+		<if test="id != null and id != ''">
+			AND t.grid_id = #{id,jdbcType=BIGINT}
+		</if>
+	</select>
+	<select id="queryGridCount" resultType="long">
+		SELECT count(1)
+		FROM ${dbuser.zhsq}.t_dc_grid t 
+		WHERE 1=1 and t.status = '001'
+		<if test="gridName != null and gridName != ''">
+			AND t.grid_name like '%'||#{gridName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="gridCode != null and gridCode != ''">
+			AND t.grid_code like #{gridCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND t.INFO_ORG_CODE like #{regionCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="pid != null and pid != ''">
+			AND t.parent_grid_id = #{pid,jdbcType=BIGINT}
+		</if>
+		<if test="id != null and id != ''">
+			AND t.grid_id = #{id,jdbcType=BIGINT}
+		</if>
+	</select>
+	<select id="queryGridPerson" resultMap="BaseResultMap">
+		select m.user_id id,ue.party_name name,m.grid_id pid,'u' uoo,g.grid_level chief_level,g.grid_code org_Code,g.grid_name org_name
+		from ${dbuser.zhsq}.t_dc_grid_admin m,${dbuser.zhsq}.t_dc_user_entity ue,${dbuser.zhsq}.t_dc_grid g
+		where ue.user_id = m.user_id and m.status = '001'
+		and g.grid_id = m.grid_id and g.status = '001'
+		<if test="personGridLevel != null and personGridLevel != ''">
+			and g.grid_level = #{personGridLevel,jdbcType=BIGINT} --网格员所属 网格
+		</if>
+		<if test="duty != null and duty != ''">
+			and and m.duty = #{duty,jdbcType=BIGINT} --网格员,网格管理员,网格长等
+		</if>
+		<if test="gridCode != null and gridCode != ''">
+			AND g.grid_code like #{gridCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND g.INFO_ORG_CODE like #{regionCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="pid != null and pid != ''">
+			AND g.parent_grid_id = #{pid,jdbcType=BIGINT}
+		</if>
+		<if test="id != null and id != ''">
+			AND g.grid_id = #{id,jdbcType=BIGINT}
+		</if>
+	</select>
+	<select id="queryGridPersonCount" resultType="long">
+		select count(1)
+		from ${dbuser.zhsq}.t_dc_grid_admin m,${dbuser.zhsq}.t_dc_user_entity ue,${dbuser.zhsq}.t_dc_grid g
+		where ue.user_id = m.user_id and m.status = '001'
+		and g.grid_id = m.grid_id and g.status = '001'
+		<if test="personGridLevel != null and personGridLevel != ''">
+			and g.grid_level = #{personGridLevel,jdbcType=BIGINT} --网格员所属 网格
+		</if>
+		<if test="duty != null and duty != ''">
+			and and m.duty = #{duty,jdbcType=BIGINT} --网格员,网格管理员,网格长等
+		</if>
+		<if test="gridCode != null and gridCode != ''">
+			AND g.grid_code like #{gridCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND g.INFO_ORG_CODE like #{regionCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="pid != null and pid != ''">
+			AND g.parent_grid_id = #{pid,jdbcType=BIGINT}
+		</if>
+		<if test="id != null and id != ''">
+			AND g.grid_id = #{id,jdbcType=BIGINT}
+		</if>
+	</select>
+	
+</mapper>

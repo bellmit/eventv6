@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>南昌市经开区群防群治管控平台</title>
+    <!-- layui样式 -->
+    <#include "/component/szcommonFiles-1.1.ftl" />
+    <#include "/component/szcomponentsFiles-1.1.ftl" />
+    <style>
+        dl{
+            height: 180px !important;
+        }
+        .progress{position: relative; width:250px;margin:-15px 0px 0px 100px;}
+        .progress_bg{height: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden;background-color:#f2f2f2;}
+        .progress_bar{background: #5FB878; width: 0; height: 10px; border-radius: 5px;}
+        .progress_btn{width: 20px; height: 20px; border-radius: 5px; position: absolute;background:#fff;
+            left: 0px; margin-left: -10px; top:-5px; cursor: pointer;border:1px #ddd solid;box-sizing:border-box;}
+        .progress_btn:hover{border-color:#F7B824;}
+    </style>
+</head>
+
+<body>
+<form id="searchForm">
+    <div class="layui-row">
+        <!-- 内容区 -->
+        <input type="hidden" id="feature" name="feature">
+        <div class="layui-col-sm12 layui-form">
+            <div class="content-l bg-cor1 fl">
+                <div class="cont-tt1 bg-cor2">
+                    <p>人脸图库</p>
+                    <button type="button" class="layui-btn layui-btn-warm btn-reset fr" id="resetBtn">重置</button>
+                </div>
+                <div class="pb15">
+                    <div class="layui-form-item ipt-sch">
+                        <!--<div class="layui-input-block">
+                            <input type="text" placeholder="请输入图片地址或者直接上传图片" class="layui-input">
+                        </div>-->
+                    </div>
+                    <!-- !!!!注意，上传图片后筛选条件的高度要随之变化（类名切换，详情看筛选div备注），以适应滚动条美化效果 -->
+                    <div class="ipt-sch-pic">
+                        <img class="layui-upload-img" id="uploadImg" src="${rc.getContextPath()}/js/event/doubleRandomTask/img/icon-tou.png" style="width: 180px;height: 180px">
+                        <div class="ipt-sch-pic-scan">
+                            <i></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <span style="margin-left: 28px">相似度:</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress_bg">
+                                <div class="progress_bar"></div>
+                            </div>
+                            <div class="progress_btn"></div>
+                            <div class="text" id="score">0</div>
+                        </div>
+                    </div>
+                    <div class="ipt-sch-btn">
+                        <div class="layui-row layui-col-space10">
+                            <div class="layui-col-sm4">
+                                <button type="button" class="layui-btn layui-btn-warm" id="upload"><i class="sch-icon sch-icon-u"></i>上传</button>
+                                <input type="hidden" name="images" class="image">
+                            </div>
+                            <div class="layui-col-sm4">
+                                <button type="button" class="layui-btn layui-btn-normal" id="searchBtn"><i class="sch-icon sch-icon-s"></i>搜索</button>
+                            </div>
+                            <div class="layui-col-sm4">
+                                <button type="button" class="layui-btn layui-btn-normal" id="imgEmpty"><i class="sch-icon sch-icon-c"></i>清空</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-tt2 bg-cor2">
+                    <p>筛选条件</p>
+                </div>
+
+                <!-- !!!图片扫描div显示时筛选条件高度用类jk-hei2，没有时用类jk-hei1，切换后需执行美化resize -->
+                <div class="layui-row sch-res jk-hei2 h-x">
+                    <div class="layui-col-sm12">
+                        <p class="sch-res-tt">时间</p>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="timeRadio" id="twenty-four-hours" lay-filter="timeRadio" value="24小时" title="24小时">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="timeRadio" id="three-days" lay-filter="timeRadio" value="3天" title="3天" checked>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="timeRadio" id="seven-days" lay-filter="timeRadio" value="7天" title="7天">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="timeRadio" id="fifteen-days" lay-filter="timeRadio" value="15天" title="15天">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="timeRadio" id="custom" lay-filter="timeRadio" value="自定义" title="自定义">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm12 mt10">
+                            <div class="layui-col-sm5">
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" id="date1" name="startTime" value="" placeholder="2020-01-01 00:00:00">
+                                </div>
+                            </div>
+                            <div class="layui-col-sm2">
+                                <div class="sch-res-bar"></div>
+                            </div>
+                            <div class="layui-col-sm5">
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" id="date2" name="endTime" value="" placeholder="2020-01-02 00:00:00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-sm12 query-criteria-more">
+                        <p class="sch-res-tt">设备点位</p>
+                        <div class="layui-col-sm7 mt10">
+                            <div class="layui-input-block" id="pointPosition">
+                                <select name="pointPosition">
+                                    <option value="" class="layui-input" >请选择</option>
+                                   <!-- <option value="1" >点位一</option>
+                                    <option value="2" >点位二</option>-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm5 mt10">
+                            <div class="layui-input-block sch-pit-btn">
+                                <!--<button type="button" class="layui-btn layui-btn-green font-bold ml15">搜索</button>-->
+                                <button type="button" class="layui-btn layui-btn-warm1 font-bold"
+                                        style="margin: 0px 0px 0px 10px;" id="empty">清空</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-sm12">
+                        <p class="sch-res-tt">性别</p>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="sexTags" value="" title="全部" checked>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="sexTags" value="100001" title="男">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="sexTags" value="100002" title="女">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="sexTags" value="100004" title="其他">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-sm12">
+                        <p class="sch-res-tt">年龄段</p>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="" title="全部" checked>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="100801" title="小孩">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="100802" title="青年">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="100803" title="中年">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="100804" title="老人">
+                            </div>
+                        </div>
+                        <!--<div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="radio" name="ageSectionTags" value="100801,100802,100803,100804" title="其他">
+                            </div>
+                        </div>-->
+                    </div>
+
+                    <!--<div class="layui-col-sm12">
+                        <p class="sch-res-tt">头部特征</p>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="glassTagsAll" lay-skin="primary" title="全部" id="glassTagsAll" class="glassTagsAll" lay-filter="glassTagsAll" value="112001">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="glassTags" lay-skin="primary" title="戴眼镜"  id="glassTags" class="glassTags" lay-filter="glassTagsOne" value="112001">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noGlassTags" lay-skin="primary" title="未戴眼镜" id="noGlassTags" class="glassTags" lay-filter="glassTagsOne" value="112001">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="hatAll" lay-skin="primary" title="全部" id="hatAll" class="hatAll" lay-filter="hatAll" value="112002">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="hat" lay-skin="primary" title="戴帽子" id="hat" class="hat" lay-filter="hatOne" value="112002">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noHat" lay-skin="primary" title="未戴帽子" id="noHat" class="hat" lay-filter="hatOne" value="112002">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="helmetAll" lay-skin="primary" title="全部" id="helmetAll" class="helmetAll" lay-filter="helmetAll" value="112003">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="helmet" lay-skin="primary" title="戴头盔" class="helmet" lay-filter="helmetOne" value="112003">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noHelmet" lay-skin="primary" title="未戴头盔" class="helmet" lay-filter="helmetOne" value="112003">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="maskTagsAll" lay-skin="primary" title="全部" id="maskTagsAll" class="maskTagsAll" lay-filter="maskTagsAll" value="112004">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="maskTags" lay-skin="primary" title="戴口罩" value="112004" class="maskTags" lay-filter="maskTagsOne">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noMaskTags" lay-skin="primary" title="未戴口罩" value="112004" class="maskTags" lay-filter="maskTagsOne">
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="layui-col-sm12">
+                        <div style="margin: 10px 0px 5px 0px">
+                            <span class="sch-res-tt">头部特征</span>
+                            <span> <button type="button" class="layui-btn layui-btn-warm1 font-bold"
+                                           style="margin: 0px 0px 0px 154px;" id="head">清空</button></span>
+                        </div>
+
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="glassTags" lay-skin="primary" title="戴眼镜"  id="glassTags" class="headTags" lay-filter="headTags" value="112001">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noGlassTags" lay-skin="primary" title="未戴眼镜" id="noGlassTags" class="headTags" lay-filter="headTags" value="112008">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="hat" lay-skin="primary" title="戴帽子" id="hat" class="headTags" lay-filter="headTags" value="112002">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noHat" lay-skin="primary" title="未戴帽子" id="noHat" class="headTags" lay-filter="headTags" value="112007">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                               <div class="layui-input-block">
+                                   <input type="checkbox" name="scarf" lay-skin="primary" title="戴头巾" id="scarf" class="headTags" lay-filter="headTags" value="112005">
+                               </div>
+                           </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="helmet" id="helmet" lay-skin="primary" title="戴头盔" class="headTags" lay-filter="headTags" value="112003">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noHelmet" id="noHelmet" lay-skin="primary" title="未戴头盔" class="headTags" lay-filter="headTags" value="112006">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="maskTags" id="maskTags" lay-skin="primary" title="戴口罩" value="112004" class="headTags" lay-filter="headTags">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="noMaskTags" id="noMaskTags" lay-skin="primary" title="未戴口罩" value="112009" class="headTags" lay-filter="headTags">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm12 layui-col-space10">
+                        <p class="sch-res-tt">上身特征</p>
+                        <div class="layui-col-sm6 mt10">
+                            <div class="layui-input-block">
+                                <select id="color-of-clothes">
+                                    <!--<option value="">颜色：全部</option>-->
+                                    <option value="">颜色:全部</option> <!--value="112400"-->
+                                    <option value="112401">白色颜色</option>
+                                    <option value="112402">灰色颜色</option>
+                                    <option value="112403">黑色颜色</option>
+                                    <option value="112404">绿色颜色</option>
+                                    <option value="112405">蓝色颜色</option>
+                                    <option value="112406">红色颜色</option>
+                                    <option value="112407">紫色颜色</option>
+                                    <option value="112408">黄色颜色</option>
+                                    <option value="112409">粉色颜色</option>
+                                    <option value="112410">橙色颜色</option>
+                                    <option value="112411">棕色颜色</option>
+                                    <option value="112412">花色颜色</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm6 mt10">
+                            <div class="layui-input-block">
+                                <select id="texture">
+                                    <!--<option value="112100">上身纹理</option>-->
+                                    <option value="">纹理：全部</option> <!--value="112100"-->
+                                    <option value="112101">格子上身</option>
+                                    <option value="112102">花纹上身</option>
+                                    <option value="112103">纯色上身</option>
+                                    <option value="112104">条纹上身</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-sm12">
+                        <p class="sch-res-tt">所在区域</p>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTagsAll" class="placeTagsAll" lay-skin="primary" id="placeTagsAll" lay-filter="placeTagsAll"  title="全部">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="沿街" lay-filter="placeTagsOne" value="102411">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="小区" lay-filter="placeTagsOne" value="119101">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="酒店" lay-filter="placeTagsOne" value="119102">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="医院" lay-filter="placeTagsOne" value="119103">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="学校" lay-filter="placeTagsOne" value="119104">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="乡镇农村" lay-filter="placeTagsOne" value="119105">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="社会单位" lay-filter="placeTagsOne" value="119106">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="商圈" lay-filter="placeTagsOne" value="119107">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="网吧" lay-filter="placeTagsOne" value="119108">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="车站" lay-filter="placeTagsOne" value="119109">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="小街小巷" lay-filter="placeTagsOne" value="119110">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="商铺" lay-filter="placeTagsOne" value="119111">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="工地" lay-filter="placeTagsOne" value="119112">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="娱乐场所" lay-filter="placeTagsOne" value="119113">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="加油站" lay-filter="placeTagsOne" value="119114">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="旅社" lay-filter="placeTagsOne" value="119116">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="政府单位" lay-filter="placeTagsOne" value="119122">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="广场" lay-filter="placeTagsOne" value="119123">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="机场" lay-filter="placeTagsOne" value="119128">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="景区" lay-filter="placeTagsOne" value="119129">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="宾馆" lay-filter="placeTagsOne" value="119130">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="洗浴美容" lay-filter="placeTagsOne" value="119131">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="饭店" lay-filter="placeTagsOne" value="119132">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="集贸市场" lay-filter="placeTagsOne" value="119133">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="培训机构" lay-filter="placeTagsOne" value="119134">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="涉外" lay-filter="placeTagsOne" value="119135">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="宗教教堂" lay-filter="placeTagsOne" value="119136">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="博物馆" lay-filter="placeTagsOne" value="119137">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="展览馆" lay-filter="placeTagsOne" value="119138">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="影剧院" lay-filter="placeTagsOne" value="119139">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="体育馆" lay-filter="placeTagsOne" value="119140">
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4">
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="placeTags" class="placeTags" lay-skin="primary" title="其他" lay-filter="placeTagsOne" value="119199">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧内容 -->
+            <div class="content-r bg-cor3">
+                <div class="content-header text-align-r">
+                    <button type="button" class="layui-btn layui-btn-ref" id="refresh"><i class="sch-icon sch-icon-ref"></i>刷新</button>
+                </div>
+
+                <!-- 没有底部工具栏时用类cont-wio-ft,有底部工具栏时用类cont-wi-ft -->
+                <div class="content-body cont-wi-ft h-x">
+                    <ul class="peo-list layui-col-space20 clearfix">
+                        <!--<li class="layui-col-lg2 layui-col-md3 layui-col-sm4">
+                            <div class="peo-list-c">
+                                <div class="peo-list-p">
+                                    <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    <div class="peo-list-m">
+                                        <p class="peo-list-t3">相识度</p>
+                                        <p class="peo-list-t4">99.5%</p>
+                                    </div>
+                                </div>
+                                <i class="peo-icon"></i>
+                                <div class="peo-list-ckb">
+                                    <input type="checkbox" name="" lay-skin="primary" title="" checked="">
+                                </div>
+                                <p class="peo-list-t1 peo-icon-add layui-elip">经开区某某街道某某位置</p>
+                                <p class="peo-list-t2 peo-icon-time">2020-01-01 12:00:00</p>
+                            </div>
+                        </li>
+                        <li class="layui-col-sm4 layui-col-md3 layui-col-lg2">
+                            <div class="peo-list-c">
+                                <div class="peo-list-p">
+                                    <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic2.png">
+                                    <div class="peo-list-m">
+                                        <p class="peo-list-t3">相识度</p>
+                                        <p class="peo-list-t4">99.5%</p>
+                                    </div>
+                                </div>
+                                <i class="peo-icon"></i>
+                                <div class="peo-list-ckb">
+                                    <input type="checkbox" name="" lay-skin="primary" title="" checked="">
+                                </div>
+                                <p class="peo-list-t1 peo-icon-add layui-elip">经开区某某街道某某位置</p>
+                                <p class="peo-list-t2 peo-icon-time">2020-01-01 12:00:00</p>
+                            </div>
+                        </li>
+                        <li class="layui-col-sm4 layui-col-md3 layui-col-lg2">
+                            <div class="peo-list-c">
+                                <div class="peo-list-p">
+                                    <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    <div class="peo-list-m">
+                                        <p class="peo-list-t3">相识度</p>
+                                        <p class="peo-list-t4">99.5%</p>
+                                    </div>
+                                </div>
+                                <i class="peo-icon"></i>
+                                <div class="peo-list-ckb">
+                                    <input type="checkbox" name="" lay-skin="primary" title="">
+                                </div>
+                                <p class="peo-list-t1 peo-icon-add layui-elip">经开区某某街道某某位置</p>
+                                <p class="peo-list-t2 peo-icon-time">2020-01-01 12:00:00</p>
+                            </div>
+                        </li>-->
+                    </ul>
+
+                </div>
+
+                <div class="content-footer">
+                    <div class="layui-input-inline fr">
+                        <span id="pageNumber"></span>
+                        <span class="cont-res-count">共 <em id="count">0</em> 条记录</span>
+                    </div>
+                    <div id="selectAllBtn" style="visibility: hidden">
+                        <div class="layui-input-inline peo-list-ckb ml20">
+                            <input type="checkbox" name="selectAll" id="selectAll" lay-skin="primary" lay-filter="selectAll" title="全选" checked="">
+                        </div>
+                        <div class="layui-input-inline peo-list-ckb">
+                            <input type="checkbox" name="selectInvert" id="selectInvert" lay-skin="primary" lay-filter="selectInvert" title="反选">
+                        </div>
+                        <div class="layui-input-inline ml10">
+                            <button type="button" class="layui-btn layui-btn-green"><i class="sch-icon sel-icon-c"></i>已选<em id="selectCount">0</em>个</button>
+                            <button type="button" class="layui-btn layui-btn-warm" id="trajectoryBtn"><i class="sch-icon sel-icon-a"></i>生成轨迹</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+    <script>
+        var placeTags = new Array();
+        var headTags = new Array();
+        var upperBodyTags = new Array();
+        var cids = new Array();
+        var faces = new Array();
+
+        var count = 0;
+        layui.use(['form', 'laydate','table'], function () {
+            var form = layui.form,
+                laydate = layui.laydate,
+                table = layui.table;
+
+            //日期时间选择器
+            laydate.render({
+                elem: '#date1'
+                , type: 'datetime'
+            });
+            //日期时间选择器
+            laydate.render({
+                elem: '#date2'
+                , type: 'datetime'
+            });
+
+            //监听重置按钮
+            $("#resetBtn").on('click', function () {
+                window.location.reload();
+            });
+            //监听搜索按钮
+            $("#searchBtn").on('click', function () {
+                getDataList();
+                form.render();
+            });
+            //图片清空按钮
+            $("#imgEmpty").on('click', function () {
+                $('#uploadImg').attr("src","${rc.getContextPath()}/js/event/doubleRandomTask/img/icon-tou.png");
+                $("#feature").attr("value",'');
+                document.getElementById("selectAllBtn").style.visibility="hidden";//隐藏
+                $("#pageNumber").css("display","");
+                getDataList();
+                form.render();
+            });
+            //设备清空按钮
+            $("#empty").on('click', function () {
+                var queryCriteriaMore = $(".query-criteria-more");
+                queryCriteriaMore.find("select").siblings("div.layui-form-select").find("dd:first").click();
+            });
+            //刷新按钮
+            $("#refresh").on('click',function () {
+                window.location.reload();
+            });
+            //生成轨迹按钮
+            $("#trajectoryBtn").on('click',function () {
+                var faceRecognition = new Array();
+                var str = '';
+                //获取选中的人脸列表生成轨迹
+                var item = $(".face");
+                var countFace = 0;
+                for(var i=0;i<item.length;i++){
+                    if (item[i].checked == true){
+                        countFace++;
+                        str += "&ids=" + $(item[i]).val();
+                    }
+                }
+                if (countFace == 0){
+                    return layer.msg('请至少选择一个头像!');
+                }
+                var url = '${rc.getContextPath()}/zhsq/event/faceRecognition/trajectory.jhtml?' + str;
+                openWin(url);
+            });
+            //点击时间按钮
+            form.on('radio(timeRadio)', function(data){
+                if(data.value == '24小时'){
+                    var days = new Date();
+                    $('#date2').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                    var oneDay = 1000 * 60 * 60 * 24;
+                    var prevDay = days.getTime() - oneDay;
+                    days.setTime(prevDay);
+                    $('#date1').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                }else if (data.value == '3天') {
+                    var days = new Date();
+                    $('#date2').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                    var threeDay = 1000 * 60 * 60 * 24 * 3;
+                    var prevDay = days.getTime() - threeDay;
+                    days.setTime(prevDay);
+                    $('#date1').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                }else if (data.value == '7天'){
+                    var days = new Date();
+                    $('#date2').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                    var sevenDay = 1000 * 60 * 60 * 24 * 7;
+                    var prevDay = days.getTime() - sevenDay;
+                    days.setTime(prevDay);
+                    $('#date1').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                }else if (data.value == '15天'){
+                    var days = new Date();
+                    $('#date2').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                    var fifteenDay = 1000 * 60 * 60 * 24 * 15;
+                    var prevDay = days.getTime() - fifteenDay;
+                    days.setTime(prevDay);
+                    $('#date1').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+                }
+                form.render();
+            });
+
+            //头部特征清空按钮
+            $("#head").on('click', function () {
+                $(".headTags").prop("checked", false);
+                form.render('checkbox');
+            });
+            //头部特征点击事件
+            form.on('checkbox(headTags)', function(data){
+
+                var glassTags = $("#glassTags");
+                var noGlassTags = $("#noGlassTags");
+                if(glassTags[0].checked == true){
+                    $("#noGlassTags").prop("checked", false);
+                    $("#noGlassTags").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#noGlassTags").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+                if(noGlassTags[0].checked == true){
+                    $("#glassTags").prop("checked", false);
+                    $("#glassTags").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#glassTags").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+
+                var hat = $("#hat");
+                var noHat = $("#noHat");
+                if(hat[0].checked == true){
+                    $("#noHat").prop("checked", false);
+                    $("#noHat").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#noHat").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+                if(noHat[0].checked == true){
+                    $("#hat").prop("checked", false);
+                    $("#hat").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#hat").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+
+                var maskTags = $("#maskTags");
+                var noMaskTags = $("#noMaskTags");
+                if(maskTags[0].checked == true){
+                    $("#noMaskTags").prop("checked", false);
+                    $("#noMaskTags").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#noMaskTags").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+                if(noMaskTags[0].checked == true){
+                    $("#maskTags").prop("checked", false);
+                    $("#maskTags").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#maskTags").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+
+                var helmet = $("#helmet");
+                var noHelmet = $("#noHelmet");
+                if(helmet[0].checked == true){
+                    $("#noHelmet").prop("checked", false);
+                    $("#noHelmet").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#noHelmet").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+                if(noHelmet[0].checked == true){
+                    $("#helmet").prop("checked", false);
+                    $("#helmet").attr("disabled", true);
+                    form.render('checkbox');
+                }else {
+                    $("#helmet").removeAttr("disabled");
+                    form.render('checkbox');
+                }
+
+                headTags = [];
+                var item = $(".headTags");
+                for(var i=0;i<item.length;i++){
+                    console.log(item[i].checked)
+                    if(item[i].checked == true){
+                        headTags.push(item[i].value);
+                    }
+                }
+                console.log(headTags);
+            });
+
+            //所属区域点击全选按钮
+            form.on('checkbox(placeTagsAll)', function(data){
+                var checked = data.elem.checked;
+                var item = $(".placeTags");
+                if (checked == true){
+                    $(".placeTags").prop("checked", true);
+                    for(var i=0;i<item.length;i++){
+                        console.log(item[i].defaultValue);
+                        placeTags.push(item[i].defaultValue);
+                    }
+                    form.render('checkbox');
+                }else {
+                    $(".placeTags").prop("checked", false);
+                    form.render('checkbox');
+                    placeTags = [];
+                }
+            });
+            //所属区域全选有一个未选中全选取消选中
+            form.on('checkbox(placeTagsOne)', function(data){
+                var item = $(".placeTags");
+                for(var i=0;i<item.length;i++){
+                    if(item[i].checked == false){
+                        $("#placeTagsAll").prop("checked", false);
+                        form.render('checkbox');
+                    }
+                }
+                //如果都勾选了,勾选全选
+                var all = item.length;
+                for (var i = 0; i < item.length; i++) {
+                    if (item[i].checked == true) {
+                        all--;
+                    }
+                }
+                if(all == 0) {
+                    $("#placeTagsAll").prop("checked", true);
+                    form.render('checkbox');
+                }
+                placeTags = [];
+                for(var i=0;i<item.length;i++){
+                    console.log(item[i].checked);
+                    if(item[i].checked == true){
+                        placeTags.push(item[i].value);
+                    }
+                }
+                console.log(placeTags);
+            });
+
+            //人脸列表全选
+            form.on('checkbox(selectAll)', function(data){
+                var checked = data.elem.checked;
+                var item = $(".face");
+                if (checked == true){
+                    $(".face").prop("checked", true);
+                    for(var i=0;i<item.length;i++){
+                        console.log(item[i].defaultValue);
+                        $("#selectCount").html(item.length);
+                        faces.push(item[i].defaultValue);
+                    }
+                }else {
+                    $(".face").prop("checked", false);
+                    faces = [];
+                    $("#selectCount").html(0);
+                }
+                $("#selectInvert").prop("checked", false);
+                form.render('checkbox');
+            });
+
+            //人脸列表全选有一个未选中全选取消选中
+            form.on('checkbox(selectOne)', function(data){
+                var item = $(".face");
+                for(var i=0;i<item.length;i++){
+                    if(item[i].checked == false){
+                        $("#selectAll").prop("checked", false);
+                        form.render('checkbox');
+                    }
+                }
+                //如果都勾选了,勾选全选
+                var all = item.length;
+                for (var i = 0; i < item.length; i++) {
+                    if (item[i].checked == false) {
+                        all--;
+                    }
+                }
+                if(all == 0) {
+                    $("#selectAll").prop("checked", false);
+                    form.render('checkbox');
+                }
+                $("#selectCount").html(all);
+                faces = [];
+                for(var i=0;i<item.length;i++){
+                    console.log(item[i].checked);
+                    if(item[i].checked == true){
+                        faces.push(item[i].value);
+                    }
+                }
+                console.log(faces);
+            });
+            //人脸列表反选
+            form.on('checkbox(selectInvert)', function(data){
+                var item = $(".face");
+
+                $("#bd input[type='checkbox']").each(function(){
+                    if($(this).prop("checked")){
+                        $(this).prop("checked",false);
+                    }else{
+                        $(this).prop("checked",true);
+                    }
+                });
+
+                //如果都勾选了,勾选全选
+                var all = item.length;
+                for (var i = 0; i < item.length; i++) {
+                    if (item[i].checked == false) {
+                        all--;
+                    }
+                }
+                if(all == item.length) {
+                    $("#selectAll").prop("checked", true);
+                }else {
+                    $("#selectAll").prop("checked", false);
+                }
+                $("#selectCount").html(all);
+                faces = [];
+                for(var i=0;i<item.length;i++){
+                    console.log(item[i].checked)
+                    if(item[i].checked == true){
+                        faces.push(item[i].value);
+                    }
+                }
+                form.render();
+                console.log(faces);
+            });
+        });
+
+        //图片上传
+        layui.use('upload', function(){
+            var $ = layui.jquery
+                ,upload = layui.upload;
+
+            //普通图片上传
+            var uploadInst = upload.render({
+                elem: '#upload'
+                ,url: '/zhsq/event/faceRecognition/upload.json'
+                ,accept:'images'
+                ,size:50000
+                ,before: function(obj){
+                    console.log(obj);
+                    obj.preview(function(index, file, result){
+                        $('#uploadImg').attr('src', result);
+                    });
+                }
+                ,done: function(res){
+                    //如果上传失败
+                    if(res.code > 0){
+                        return layer.msg('上传失败');
+                    }
+                    //上传成功
+                    var uploadText = $('#uploadText');
+                    uploadText.html('<span style="color: #4cae4c;">上传成功</span>');
+
+                    var fileupload = $(".image");
+                    fileupload.attr("value",res.data.src);
+                    console.log(fileupload.attr("value"));
+                    var feature = $("#feature");
+                    feature.attr("value",res.data.feature);
+                    console.log(res.data.feature);
+                    if (res.data.feature != null && res.data.feature != undefined) {
+                        layui.use(['layer'], function () {
+                            var layer = layui.layer;
+                            var submitLoad = layer.load(1);//打开遮罩
+                            getDataList();
+                            document.getElementById("selectAllBtn").style.visibility="visible";//显示
+
+                        });
+                    }
+                    layui.use(['form', 'laydate'], function () {
+                        var form = layui.form;
+                        form.render();
+                    });
+                }
+                ,error: function(){
+                    //演示失败状态，并实现重传
+                    var uploadText = $('#uploadText');
+                    uploadText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    uploadText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            });
+        });
+
+        $(function(){
+            var tag = false,ox = 0,left = 0,bgleft = 0;
+            //默认为80
+            $('.progress_btn').css('left', 200);
+            $('.progress_bar').width(200);
+            $('.text').html(parseInt((200/250)*100));
+
+            $('.progress_btn').mousedown(function(e) {
+                ox = e.pageX - left;
+                tag = true;
+            });
+            $(document).mouseup(function() {
+                tag = false;
+            });
+            $('.progress').mousemove(function(e) {//鼠标移动
+                if (tag) {
+                    left = e.pageX - ox;
+                    if (left <= 0) {
+                        left = 0;
+                    }else if (left > 250) {
+                        left = 250;
+                    }
+                    $('.progress_btn').css('left', left);
+                    $('.progress_bar').width(left);
+                    $('.text').html(parseInt((left/250)*100));
+                }
+            });
+            $('.progress_bg').click(function(e) {//鼠标点击
+                if (!tag) {
+                    bgleft = $('.progress_bg').offset().left;
+                    left = e.pageX - bgleft;
+                    if (left <= 0) {
+                        left = 0;
+                    }else if (left > 250) {
+                        left = 250;
+                    }
+                    $('.progress_btn').css('left', left);
+                    $('.progress_bar').animate({width:left},250);
+                    $('.text').html(parseInt((left/250)*100));
+                }
+            });
+        });
+
+        $(function () {
+            $.fn.extend({
+                // 选择组件
+                select: function () {
+                    var _this = this;
+                    $(_this).children('a').click(function () {
+                        $(this).toggleClass('active');
+                        $(this).siblings('ul').slideToggle(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                        return false;
+                    });
+                    $(document).click(function () {
+                        $('.com-select>a').removeClass('active');
+                        $('.com-select>ul').slideUp(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                    });
+                    $('.com-select>ul').on('click', 'li', function () {
+                        var pText = $(this).text();
+                        $('.com-select>a').find('p').text(pText);
+                        $('.section-tt-year').text(pText);
+                    });
+                    $('.com-select-list').getNiceScroll().resize();
+                },
+                ranking: function (options) {
+                    var _this = this;
+                    $(_this).find('tbody tr').each(function (index, el) {
+                        $(this).find('.ranking-per>p').css({ 'width': options[index] + '%' });
+                    });
+                }
+            });
+
+            // 计算页面高度
+            $('.h-x').niceScroll({
+                cursorcolor: "#ccc",
+                cursoropacitymax: 0.8,
+                cursorwidth: "4px",
+                cursorborderradius: "2px",
+                cursorborder: 'none',
+                autohidemode: true
+            });
+
+            var days = new Date();
+            $('#date2').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+            var threeDay = 1000 * 60 * 60 * 24 * 3;
+            var prevDay = days.getTime() - threeDay;
+            days.setTime(prevDay);
+            $('#date1').val(dateFtt("yyyy-MM-dd hh:mm:ss",days));
+
+            //获取设备名称
+            getDeviceDis();
+
+            //获取列表集合
+            getDataList();
+
+        });
+
+        function getDeviceDis() {
+            $.ajax({
+                type: 'POST',
+                url: '${rc.getContextPath()}/zhsq/event/pointInfo/listData.jhtml',
+                async: true,
+                data: {
+                    page:1,
+                    rows:20
+                },
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    //渲染设备名称
+                    setDeviceNames(data);
+                    layui.use(['form', 'laydate'], function () {
+                        var form = layui.form;
+                        //渲染select框
+                        form.render('select');
+                    });
+                },
+                error: function(data) {
+                    layer.msg("连接超时",{skin:'layui-layer-hui'});
+                },
+                complete : function() {
+                    //layer.close(submitLoad);//关闭遮罩
+                }
+            });
+        }
+
+        function setDeviceNames(data) {
+            var length = data.total;
+            var html = '';
+            html += '<select id="deviceName">';
+            html += '<option value="" class="layui-input">请选择</option>';
+            for (var i = 0; i < data.rows.length; i++) {
+                html += '<option value="'+data.rows[i].deviceCid+'" id="'+data.rows[i].deviceCid+'" name="cids">'+data.rows[i].deviceName+'</option>';
+            }
+            html += '</select>';
+            //重新渲染
+            $("#pointPosition").html(html);
+        }
+
+        function dateFtt(fmt,date) {
+            var o = {
+                "M+" : date.getMonth()+1,     //月份
+                "d+" : date.getDate(),     //日
+                "h+" : date.getHours(),     //小时
+                "m+" : date.getMinutes(),     //分
+                "s+" : date.getSeconds(),     //秒
+                "q+" : Math.floor((date.getMonth()+3)/3), //季度
+                "S" : date.getMilliseconds()    //毫秒
+            };
+            if(/(y+)/.test(fmt))
+                fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
+            for(var k in o)
+                if(new RegExp("("+ k +")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            return fmt;
+        }
+
+        function getDataList(minId,maxId,curr) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer;
+                var submitLoad = layer.load(1);//打开遮罩
+                var limit = 12;
+                //清空上身特征
+                upperBodyTags = [];
+                cids = [];
+                var cid = $("#deviceName").find("option:selected").val();
+                if (cid != undefined && cid != ""){
+                    cids.push($("#deviceName").find("option:selected").val());
+                }
+                var clothes = $("#color-of-clothes").find("option:selected").val();
+                var texture = $("#texture").find("option:selected").val();
+                if (clothes != "") {
+                    upperBodyTags.push($("#color-of-clothes").find("option:selected").val());
+                }
+                if (texture != ""){
+                    upperBodyTags.push($("#texture").find("option:selected").val());
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '${rc.getContextPath()}/zhsq/event/faceRecognition/listData.json',
+                    data: {
+                        placeTags: JSON.stringify(placeTags),
+                        headTags: JSON.stringify(headTags),
+                        upperBodyTags: JSON.stringify(upperBodyTags),
+                        cids: JSON.stringify(cids),
+                        score: $("#score").text(),
+                        startTime: $("#date1").val(),
+                        endTime: $("#date2").val(),
+                        limit: limit,
+                        feature: $("#feature").val(),
+                        sexTags:  $('input[name="sexTags"]:checked').val(),
+                        ageSectionTags: $('input[name="ageSectionTags"]:checked').val(),
+                        minId:minId,
+                        maxId:maxId
+                    },
+                    async: true,
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data)
+                        if (data.totalCount != 0 && data.list.length != 0 ){
+                            var minId = data.list[0].id;
+                            var maxId = data.list[0].id;
+                            //获取ID中最大值和最小值,做分页
+                            for (var i = 0; i < data.list.length; i++) {
+                                var curMin = data.list[i].id;
+                                curMin<minId?minId=curMin:null;
+
+                                var curMax = data.list[i].id;
+                                curMax>maxId?maxId=curMax:null;
+                            }
+                            count = data.totalCount;
+                            $("#count").text(count);
+                            //判断是否有人体特征,如果没有就分页,否则分页
+                            if ($("#feature").val() == null || $("#feature").val() == ""){
+                                layui.use('laypage', function(){
+                                    var laypage = layui.laypage;
+                                    //执行一个laypage实例
+                                    laypage.render({
+                                        elem: 'pageNumber' //注意，这里的 pageNumber 是 ID，不用加 # 号
+                                        ,count: data.totalCount //数据总数，从服务端得到
+                                        ,limit:limit
+                                        ,curr:curr
+                                        ,layout: ['next']
+                                        ,next: '加载更多'
+                                        ,jump: function(obj, first){
+                                            //obj包含了当前分页的所有参数，比如：
+                                            //首次不执行
+                                            if(!first){
+                                                /*if (curr == undefined || obj.curr > curr) {
+                                                    //下一页
+                                                    console.log(minId);
+                                                    getDataList(minId,null,obj.curr);
+                                                }else {
+                                                    //上一页
+                                                    console.log(maxId);
+                                                    getDataList(null,maxId,obj.curr);
+                                                }*/
+                                                getDataList(minId,null,obj.curr);
+                                            }
+                                        }
+                                    });
+                                });
+                            }else {
+                                $("#pageNumber").css("display","none");
+                            }
+                            getFaceList(data);
+                        }else {
+                            //重新渲染
+                            $(".peo-list").html('');
+                            $("#count").html(0);
+                            $("#pageNumber").css("display","none");
+                            document.getElementById("selectAllBtn").style.visibility="hidden";//隐藏
+                        }
+                    },
+                    error: function(data) {
+                        document.getElementById("selectAllBtn").style.visibility="hidden";//隐藏
+                        layer.msg("连接超时",{skin:'layui-layer-hui'});
+                    },
+                    complete : function() {
+                        layer.close(submitLoad);//关闭遮罩
+                    }
+                });
+            });
+
+        }
+
+        //获取图片列表
+        function getFaceList(data) {
+            var html = '';
+            for (var i = 0; i < data.list.length; i++) {
+                if (data.list[i].score != null){
+                    html += '<input type="hidden" id="latitude" name="latitude" value="'+data.list[i].latitude+'">';
+                    html += '<input type="hidden" id="longitude" name="longitude" value="'+data.list[i].longitude+'">';
+                    html += '<li class="layui-col-lg2 layui-col-md3 layui-col-sm4">';
+                    html += '<div onmouseover=\'hoverOpenImg(this)\' class="peo-list-c">';
+                    html += '<div class="peo-list-p" id="faceImg" style="cursor: pointer" onclick="detail(\''+data.list[i].id+'\')">';
+                    html += '<img src="'+data.list[i].faceUrl+'">';
+                    html += '<div class="peo-list-m" style="display: block">';
+                    html += '<p class="peo-list-t3">相似度</p>';
+                    html += '<p class="peo-list-t4">'+ Math.floor(data.list[i].score) + '%' +'</p>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<i class="peo-icon"></i>';
+                    html += '<div class="peo-list-ckb" id="bd">';
+                    html += '<input type="checkbox" name="face" lay-skin="primary" class="face" id="face" value="'+data.list[i].id+'" ' +
+                        'lay-filter="selectOne" checked latitude="'+data.list[i].latitude+'" longitude="'+data.list[i].longitude+'"' +
+                        'deviceName="'+data.list[i].deviceName+'" faceUrl="'+data.list[i].faceUrl+'" captureTime="'+data.list[i].captureTime+'">';
+                    html += '</div>';
+                    html += '<p style="display: block" class="peo-list-t1 peo-icon-add layui-elip peo">'+data.list[i].deviceName+'</p>';
+                    html += '<p style="display: block" class="peo-list-t2 peo-icon-time peo">'+formateTimeStamp(data.list[i].captureTime)+'</p>';
+                    //html += '<p title="人脸检索" onclick="query(\''+data.list[i].faceUrl+'\')" class="layui-icon layui-icon-face-smile face-icon" style="font-size: 30px; color: #ff7b1e;margin-left:66px;line-height: 66px;display: none"></p>';
+                    html += '<p title="人脸检索" onclick="query(\''+data.list[i].id+'\')" class="layui-icon layui-icon-face-smile face-icon" style="font-size: 30px; color: #ff7b1e;margin-left:66px;line-height: 66px;display: none"></p>';
+                    html += '</div>';
+                    html += '</li>';
+                }else {
+                    html += '<input type="hidden" id="latitude" name="latitude" value="'+data.list[i].latitude+'">';
+                    html += '<input type="hidden" id="longitude" name="longitude" value="'+data.list[i].longitude+'">';
+                    html += '<li class="layui-col-lg2 layui-col-md3 layui-col-sm4">';
+                    html += '<div onmouseover=\'hoverOpenImg(this)\' class="peo-list-c">';
+                    html += '<div class="peo-list-p" id="faceImg" style="cursor: pointer" onclick="detail(\''+data.list[i].id+'\')">';
+                    html += '<img src="'+data.list[i].faceUrl+'">';
+                    html += '<div class="peo-list-m" style="display: none">';
+                    html += '<p class="peo-list-t3">相似度</p>';
+                    html += '<p class="peo-list-t4">'+ Math.floor(data.list[i].score) + '%' +'</p>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<i class="peo-icon"></i>';
+                    html += '<div class="peo-list-ckb" id="bd">';
+                    html += '<input type="checkbox" name="face" lay-skin="primary" class="face" id="face" value="'+data.list[i].id+'" ' +
+                        'lay-filter="selectOne"  latitude="'+data.list[i].latitude+'" longitude="'+data.list[i].longitude+'"' +
+                        'deviceName="'+data.list[i].deviceName+'" faceUrl="'+data.list[i].faceUrl+'" captureTime="'+data.list[i].captureTime+'">';
+                    html += '</div>';
+                    html += '<p style="display: block" class="peo-list-t1 peo-icon-add layui-elip peo">'+data.list[i].deviceName+'</p>';
+                    html += '<p style="display: block" class="peo-list-t2 peo-icon-time peo">'+formateTimeStamp(data.list[i].captureTime)+'</p>';
+                    //html += '<p title="人脸检索" onclick="query(\''+data.list[i].faceUrl+'\')" class="layui-icon layui-icon-face-smile face-icon" style="font-size: 30px; color: #ff7b1e;margin-left:66px;line-height: 66px;display: none"></p>';
+                    html += '<p title="人脸检索" onclick="query(\''+data.list[i].id+'\')" class="layui-icon layui-icon-face-smile face-icon" style="font-size: 30px; color: #ff7b1e;margin-left:66px;line-height: 66px;display: none"></p>';
+                    html += '</div>';
+                    html += '</li>';
+                }
+            }
+            //重新渲染
+            $(".peo-list").append(html);
+            $('.h-x').niceScroll().resize();
+            $("#selectCount").html(data.list.length);
+            layui.use(['form', 'laydate'], function () {
+                var form = layui.form;
+                form.render();
+            });
+        }
+
+        function formateTimeStamp(time){
+            var date = new Date();
+            date.setTime(time);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours()< 10 ? "0" + date.getHours() : date.getHours();
+            var minute = date.getMinutes()< 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var second = date.getSeconds()< 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return year + "-" + month + "-" + day+" "+hour+":"+minute+":"+second;
+        }
+
+        // 悬浮展示图片
+        function hoverOpenImg(_this){
+            $(_this).hover(function(){
+                //console.log($(this))
+                $(_this).children(".peo").css("display","none");
+                $(_this).children(".face-icon").css("display","block");
+            },function(){
+                $(_this).children(".peo").css("display","block");
+                $(_this).children(".face-icon").css("display","none");
+            });
+        }
+
+        function query(id) {
+            layui.use(['layer'], function () {
+                var layer = layui.layer;
+                var submitLoad = layer.load(1);//打开遮罩
+
+                $.ajax({
+                    type: 'POST',
+                    url: '${rc.getContextPath()}/zhsq/event/faceRecognition/getFeatureById.jhtml',
+                    async: false,
+                    data: {
+                        id:id
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.result == "success"){
+                            $('#uploadImg').attr('src', data.jsonObject.faceUrl);
+                            var feature = $("#feature");
+                            feature.attr("value",data.jsonObject.faceFeature);
+                            //清空人脸
+                            $(".peo-list").html('');
+                            getDataList();
+                            document.getElementById("selectAllBtn").style.visibility="visible";//显示
+                        }
+                    },
+                    error: function(data) {
+                        layer.msg("连接超时",{skin:'layui-layer-hui'});
+                    },
+                    complete : function() {
+                        layer.close(submitLoad);//关闭遮罩
+                    }
+                });
+            });
+        }
+
+        function detail(id) {
+            var url = '${rc.getContextPath()}/zhsq/event/faceRecognition/view.jhtml?id=' + id;
+            openWin(url);
+        }
+
+        function openWin(url) {
+                    var indexAdd = layer.open({
+                        type: 2,
+                        title: false,
+                        closeBtn: 0,
+                        area: ['100%', '100%'],
+                        shadeClose: true, //点击遮罩关闭
+                        content: url,
+                        success: function (layero) {
+                            // 计算页面高度
+                            calcLayBdH(layero);
+                        }
+                    });
+                    LayuiComp.addWin(indexAdd);
+                }
+
+        // 计算弹窗内容框高度
+        function calcLayBdH(layero) {
+            var winW = $(window).width(),
+                winH = $(window).height(),
+                lhH = $(layero.selector).find('.lay-nor-hd').outerHeight(true),
+                lbH,
+                layCalcAdH = $(layero.selector).find('.lay-calc-ad').outerHeight(true);
+            if (winW <= 1366) {
+                lbH = winH - lhH - 10;
+            } else {
+                lbH = winH - lhH - 15;
+            }
+            $(layero.selector).find('.lay-nor-bd').height(lbH);
+            if(layCalcAdH >= lbH){
+                console.log(layCalcAdH);
+                $(layero.selector).find('.lay-pos-ad').addClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '100px'});
+            }else{
+                $(layero.selector).find('.lay-pos-ad').removeClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '0px'});
+            }
+        }
+
+    </script>
+</body>
+
+</html>

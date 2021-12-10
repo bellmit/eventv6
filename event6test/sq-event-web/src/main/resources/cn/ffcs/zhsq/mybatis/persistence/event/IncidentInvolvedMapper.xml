@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.IncidentInvolvedMapper" >
+<resultMap type="cn.ffcs.zhsq.mybatis.domain.event.IncidentInvolved" id="BaseResultMap">
+	<id column="INVOLVED_ID" property="involvedId" jdbcType="DECIMAL" />
+	<result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+   	<result column="LOT_ID" property="lotId" jdbcType="DECIMAL" />
+   	<result column="IS_DETECTION" property="isDetection" jdbcType="VARCHAR" />
+   	<result column="FUGITIVE_AMOUNT" property="fugitiveAmount" jdbcType="DECIMAL" />
+   	<result column="ARRESTED_AMOUNT" property="arrestedAmount" jdbcType="DECIMAL" />
+   	<result column="DETECTED_DESC" property="detectedDesc" jdbcType="VARCHAR" />
+   	<result column="STATUS" property="status" jdbcType="VARCHAR" />
+</resultMap>
+<insert id="insert" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.event.IncidentInvolved">
+	<selectKey keyProperty="involvedId" resultType="long" order="BEFORE">
+		select SEQ_SJ_INCIDENT_INVOLVED_ID.NEXTVAL from DUAL
+	</selectKey>
+	insert into T_SJ_INCIDENT_INVOLVED(INVOLVED_ID,EVENT_ID,LOT_ID,IS_DETECTION,FUGITIVE_AMOUNT,ARRESTED_AMOUNT,DETECTED_DESC,STATUS) 
+	values(#{involvedId,jdbcType=DECIMAL},#{eventId,jdbcType=DECIMAL},#{lotId,jdbcType=DECIMAL},#{isDetection,jdbcType=VARCHAR},
+	#{fugitiveAmount,jdbcType=DECIMAL},#{arrestedAmount,jdbcType=DECIMAL},#{detectedDesc,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR})
+</insert>
+
+<select id="findIncidentInvolvedById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	<include refid="detail_select"/>
+	 where T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+</select>
+<update id="update">
+	update T_SJ_INCIDENT_INVOLVED
+	<set>
+		<if test="involvedId!=null">
+		INVOLVED_ID = #{involvedId ,jdbcType=DECIMAL},
+		</if>
+		<if test="eventId!=null">
+		EVENT_ID = #{eventId ,jdbcType=DECIMAL},
+		</if>
+		<if test="lotId!=null">
+		LOT_ID = #{lotId ,jdbcType=DECIMAL},
+		</if> 
+		<if test="isDetection!=null">
+		IS_DETECTION = #{isDetection ,jdbcType=CHAR},
+		</if>
+		<if test="fugitiveAmount!=null">
+		FUGITIVE_AMOUNT = #{fugitiveAmount ,jdbcType=DECIMAL},
+		</if>
+		<if test="arrestedAmount!=null">
+		ARRESTED_AMOUNT = #{arrestedAmount ,jdbcType=DECIMAL},
+		</if>
+		<if test="detectedDesc!=null">
+		DETECTED_DESC = #{detectedDesc ,jdbcType=VARCHAR},
+		</if>
+		<if test="status!=null">
+		STATUS = #{status ,jdbcType=CHAR}
+		</if>
+	</set>
+	where EVENT_ID = #{eventId ,jdbcType=DECIMAL}
+</update>
+
+<sql id="detail_select">
+	select 
+	T.INVOLVED_ID,
+	T.EVENT_ID,
+	T.LOT_ID,
+	T.IS_DETECTION,
+	T.FUGITIVE_AMOUNT,
+	T.ARRESTED_AMOUNT,
+	T.DETECTED_DESC,
+	T.STATUS
+	FROM T_SJ_INCIDENT_INVOLVED T
+</sql>
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.timeApplication.TimeApplicationCheckMapper" >
+  	<!-- 查询列 -->
+  	<sql id="sameCol">
+       	T1.CHECK_ID				"checkId",
+       	T1.APPLICATION_ID		"applicationId",
+       	T1.AUDITOR_ID			"auditorId",
+       	T1.AUDITOR_ORG_ID		"auditorOrgId",
+       	T1.AUDITOR_TYPE			"auditorType",
+       	T1.CHECK_ADVICE			"checkAdvice",
+       	T1.SERVICE_NAME			"serviceName",
+       	T1.REMARK				"checkRemark",
+       	T1.STATUS				"timeAppCheckStatus"
+  	</sql>
+  	
+  	<!-- 详情查询列 -->
+  	<sql id="detailCol">
+  		<include refid="sameCol"></include>,
+  		T1.CREATOR_ID	"creatorId",
+  		T1.UPDATE_TIME	"updateTime",
+  		T1.UPDATER_ID	"updaterId"
+  	</sql>
+  	
+  	<!-- 新增时限审核信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="checkId" resultType="long" order="BEFORE">
+			select SEQ_CHECK_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_TIME_CHECK (
+			CHECK_ID, APPLICATION_ID, AUDITOR_ID, AUDITOR_ORG_ID,
+			AUDITOR_TYPE, CHECK_ADVICE, SERVICE_NAME, STATUS, 
+			CREATOR_ID, CREATE_TIME, UPDATER_ID, UPDATE_TIME
+        )
+        VALUES(
+        	#{checkId,jdbcType=DECIMAL}, #{applicationId,jdbcType=DECIMAL}, #{auditorId,jdbcType=DECIMAL}, #{auditorOrgId,jdbcType=DECIMAL},
+        	#{auditorType,jdbcType=VARCHAR}, #{checkAdvice,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR}, #{timeAppCheckStatus,jdbcType=VARCHAR},
+        	#{creatorId,jdbcType=DECIMAL}, SYSDATE, #{updaterId,jdbcType=DECIMAL}, SYSDATE
+        )
+  	</insert>
+  	
+  	<!-- 依据id更新时限审核信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_TIME_CHECK T1 
+		<set>
+			<if test="@Ognl@isNotEmpty(timeAppCheckStatus)">
+				T1.STATUS = #{timeAppCheckStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="checkAdvice != null ">
+				T1.CHECK_ADVICE = #{checkAdvice,jdbcType=VARCHAR},
+			</if>
+			<if test="auditorId != null and auditorId > 0 ">
+				T1.AUDITOR_ID	= #{auditorId,jdbcType=DECIMAL},	
+			</if>
+			<if test="auditorOrgId != null and auditorOrgId > 0 ">
+				T1.AUDITOR_ORG_ID	= #{auditorOrgId,jdbcType=DECIMAL},	
+			</if>
+			<if test="@Ognl@isNotEmpty(checkRemark)">
+				T1.REMARK = #{checkRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="updaterId != null ">
+				T1.UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+			</if>
+		  	
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		
+		WHERE T1.CHECK_ID = #{checkId,jdbcType=DECIMAL}
+  	</update>
+  	
+  	<!-- 依据id删除时限审核信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_TIME_CHECK T1
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T1.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T1.STATUS = '0', 
+	  		T1.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	WHERE T1.CHECK_ID = #{checkId,jdbcType=DECIMAL}
+  	</delete>
+  	
+  	<!-- 依据id获取时限审核属性 -->
+  	<select id="findById" resultType="java.util.Map" parameterType="java.lang.Long">
+  		SELECT
+	  		<include refid="detailCol"/>
+	  	FROM T_EVENT_TIME_CHECK T1
+	  	WHERE T1.CHECK_ID = #{checkId,jdbcType=DECIMAL} AND T1.STATUS IN ('1', '2', '3', '4')
+  	</select>
+  	
+  	<!-- 无分页获取时限申请审核信息 -->
+  	<select id="findTimeAppCheckList" resultType="java.util.Map" >
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_TIME_CHECK T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"></include>
+  	</select>
+  	
+  	<!-- 时限申请查询条件 -->
+  	<sql id="find_where_app">
+  		AND T2.STATUS = '1'
+  		<if test="@Ognl@isNotEmpty(applicationType)">
+			AND T2.APPLICATION_TYPE = #{applicationType,jdbcType=VARCHAR}
+		</if>
+		<if test="businessId != null">
+			AND T2.BUSINESS_ID = #{businessId,jdbcType=DECIMAL} 
+		</if>
+  	</sql>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where">
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(timeAppCheckStatus)">
+  				AND T1.STATUS = #{timeAppCheckStatus,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(timeAppCheckStatusList)">
+  				AND T1.STATUS IN
+				<foreach collection="timeAppCheckStatusList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+  			</when>
+  			<otherwise>
+  				AND T1.STATUS IN ('1', '2', '3', '4')
+  			</otherwise>
+  		</choose>
+  		<if test="checkId != null ">
+  			AND T1.CHECK_ID = #{checkId,jdbcType=DECIMAL}
+  		</if>
+  		<if test="applicationId != null ">
+  			AND T1.APPLICATION_ID = #{applicationId,jdbcType=DECIMAL}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(auditorType)">
+  			AND T1.AUDITOR_TYPE = #{auditorType,jdbcType=VARCHAR}
+  		</if>
+  	</sql>
+  	
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.resource.ZgResourceTypeMapper">
+	<resultMap id="ZgResourceType" type="cn.ffcs.zhsq.mybatis.domain.szzg.resource.ZgResourceType">
+		<id column="RES_TYPE_ID" property="resTypeId" jdbcType="DECIMAL" /> <!--res_type_id-->
+		<result column="RES_TYPE_NAME" property="resTypeName" jdbcType="VARCHAR" /> <!--res_type_name-->
+		<result column="PARENT_TYPE_ID" property="parentTypeId" jdbcType="DECIMAL" /> <!--PARENT_TYPE_ID-->
+		<result column="PARENT_TYPE_NAME" property="parentTypeName" jdbcType="DECIMAL" /> <!--PARENT_TYPE_NAME-->
+		<result column="TYPE_CODE" property="typeCode" jdbcType="VARCHAR" /> <!--type_code-->
+		<result column="ICON" property="icon" jdbcType="VARCHAR" /> <!--icon-->
+		<result column="MENU_ID" property="menuId" jdbcType="DECIMAL" /> <!--MENU_ID-->
+		<result column="MENU_NAME" property="menuName" jdbcType="VARCHAR" /> <!--MENU_NAME-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--STATUS-->
+		<result column="CREATE_USER" property="createUser" jdbcType="DECIMAL" /> <!--CREATE_USER-->
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" /> <!--CREATE_DATE-->
+		<result column="UPDATE_USER" property="updateUser" jdbcType="DECIMAL" /> <!--UPDATE_USER-->
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" /> <!--UPDATE_DATE-->
+	</resultMap>
+	
+	<select id="findMenuDetailUrl" resultType="map">
+	SELECT T.TYPE_CODE,t.icon,t.res_type_name NAME,
+       G.MENU_DETAIL_URL URL,
+       G.MENU_DETAIL_WIDTH WIDTH,
+       G.MENU_DETAIL_HEIGHT height 
+	  FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T
+	  LEFT JOIN T_GIS_DATA_CFG G
+	    ON T.MENU_ID = G.GDC_ID
+	   AND T.STATUS = '1'
+	   AND G.STATUS = '001'
+	 WHERE T.Type_Code IN (${typeCodes})
+	</select>
+	
+		<!-- 详情 -->	
+	<select id="findById" parameterType="java.lang.Integer"  resultMap="ZgResourceType">
+    SELECT T.RES_TYPE_ID,
+       T.RES_TYPE_NAME,
+       T.PARENT_TYPE_ID,
+       (SELECT r.res_type_name FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE r WHERE r.res_type_id=t.parent_type_id) PARENT_TYPE_NAME,
+       T.TYPE_CODE,
+       T.ICON,
+       T.MENU_ID,
+       G.MENU_NAME
+  FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T
+  LEFT JOIN T_GIS_DATA_CFG G
+    ON T.MENU_ID = G.GDC_ID
+ WHERE RES_TYPE_ID =#{resTypeId,jdbcType=DECIMAL} 
+	</select>
+			<!-- 是否有子项  -->	
+	<select id="isHaveChildren" resultType="int">
+		SELECT count(*) 
+		  FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T 
+		   where T.STATUS = '1' and t.PARENT_TYPE_ID=#{id}
+	</select>
+			<!-- 查询typeCode 是否存在  -->	
+	<select id="findByTypeCode" resultType="int">
+		SELECT count(*) 
+		  FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T 
+		   where T.STATUS = '1' and t.type_code=#{typeCode}
+	</select>
+
+	<select id="findCountByCriteria" parameterType="map"  resultType="int">
+		SELECT count(*) 
+		  FROM (SELECT * FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T
+      WHERE T.STATUS = '1' <if test="name != null ">
+   				 AND (t.res_type_name LIKE '%'||#{name}||'%' OR t.type_code LIKE '%'||#{name}||'%')</if>
+       START WITH t.res_type_id=#{id} 
+       CONNECT BY PRIOR t.res_type_id=t.parent_type_id) t 
+      LEFT JOIN T_GIS_DATA_CFG G
+        ON T.MENU_ID = G.GDC_ID
+       AND G.STATUS = '001'
+       AND T.STATUS = '1'
+	</select>
+	
+	
+	<!-- 列表（分页） -->	
+	<select id="findPageListByCriteria"  parameterType="map"  resultMap="ZgResourceType">
+	SELECT G.MENU_NAME, T.*
+      FROM (SELECT * FROM ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T
+      WHERE T.STATUS = '1' <if test="name != null ">
+   				 AND (t.res_type_name LIKE '%'||#{name}||'%' OR t.type_code LIKE '%'||#{name}||'%')</if>
+       START WITH t.res_type_id=#{id} 
+       CONNECT BY PRIOR t.res_type_id=t.parent_type_id) t 
+      LEFT JOIN T_GIS_DATA_CFG G
+        ON T.MENU_ID = G.GDC_ID
+       AND G.STATUS = '001'
+       AND T.STATUS = '1'       
+        ORDER BY t.Parent_Type_Id
+	</select>
+
+	
+	<!-- 查树 -->	
+	<select id="findTree"  parameterType="map"  resultMap="ZgResourceType">
+		SELECT
+			T.RES_TYPE_ID,
+			T.RES_TYPE_NAME,
+			T.PARENT_TYPE_ID,
+			T.TYPE_CODE,
+			T.MENU_ID,t.icon
+		FROM
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE T where t.status='1' 
+	</select>
+	 
+	<!-- 新增 -->	
+	<insert id="insert" >
+		<selectKey keyProperty="resTypeId" resultType="long" order="BEFORE"> 
+			SELECT ${dbuser.zhsq_szzg}.seq_zg_resource_type.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE
+		(
+			RES_TYPE_ID,
+			RES_TYPE_NAME,
+			PARENT_TYPE_ID,
+			TYPE_CODE,
+			MENU_ID,
+			ICON,
+			STATUS,
+			CREATE_USER,
+			CREATE_DATE
+		) VALUES (
+			#{resTypeId,jdbcType=DECIMAL},
+			#{resTypeName,jdbcType=VARCHAR},
+			#{parentTypeId,jdbcType=DECIMAL},
+			#{typeCode,jdbcType=VARCHAR},
+			#{menuId,jdbcType=VARCHAR},
+			#{icon,jdbcType=VARCHAR},
+			'1',
+			#{createUser,jdbcType=DECIMAL},
+			sysdate
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" >
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE
+		<set> 
+				UPDATE_USER=#{updateUser,jdbcType=DECIMAL},
+				UPDATE_DATE=sysdate,
+		
+			<if test="resTypeName != null " >
+				RES_TYPE_NAME=#{resTypeName,jdbcType=VARCHAR},
+			</if>
+			<if test="parentTypeId != null " >
+				PARENT_TYPE_ID=#{parentTypeId,jdbcType=DECIMAL},
+			</if>
+			<if test="typeCode != null " >
+				TYPE_CODE=#{typeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="menuId != null " >
+				menu_Id=#{menuId,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null " >
+				icon=#{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			
+		</set>
+		WHERE
+			RES_TYPE_ID= #{resTypeId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="map">
+		UPDATE ${dbuser.zhsq_szzg}.ZG_RESOURCE_TYPE SET STATUS='0',UPDATE_USER=#{updateId},update_date=sysdate WHERE
+			RES_TYPE_ID IN ( SELECT t.res_type_id FROM ZHSQ_SZZG.ZG_RESOURCE_TYPE T WHERE t.status='1'
+ 	START WITH t.res_type_id=#{id,jdbcType=DECIMAL}  CONNECT BY PRIOR t.res_type_id=t.parent_type_id) 
+	</delete>
+</mapper>

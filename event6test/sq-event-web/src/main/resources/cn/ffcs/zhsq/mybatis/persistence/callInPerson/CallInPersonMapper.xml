@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.callInPerson.CallInPersonMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.callInPerson.CallInPerson">
+		<id column="CP_ID" property="cpId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="CP_NAME" property="cpName" jdbcType="VARCHAR" /> <!--姓名-->
+		<result column="CP_MOBILE" property="cpMobile" jdbcType="VARCHAR" /> <!--联系电话-->
+		<result column="CP_SEX" property="cpSex" jdbcType="VARCHAR" /> <!--性别-->
+		<result column="CREATER" property="creater" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATER" property="updater" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_YP_MS_CALL_IN_PERSON T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.CP_ID,
+			T.CP_NAME,
+			T.CP_MOBILE,
+			T.CP_SEX,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_CALL_IN_PERSON T
+		<include refid="find_where" />
+		ORDER BY 
+			T.CP_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		WHERE T.STATUS = '1'
+			<if test="cpId != null and cpId != ''" >
+				<![CDATA[ AND T.CP_ID = #{cpId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="cpName != null and cpName != ''" >
+				<![CDATA[ AND T.CP_NAME LIKE '%'||#{cpName,jdbcType=VARCHAR} ]]>
+			</if>
+			<if test="cpMobile != null and cpMobile != ''" >
+				<![CDATA[ AND T.CP_MOBILE LIKE '%'||#{cpMobile,jdbcType=VARCHAR} ]]>
+			</if>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.callInPerson.CallInPerson">
+		<selectKey keyProperty="cpId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_YP_MS_CALL_IN_PERSON.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_CALL_IN_PERSON
+		(
+			CP_ID,
+			CP_NAME,
+			CP_MOBILE,
+			CP_SEX,
+			CREATER,
+			CREATE_TIME,
+			UPDATER,
+			UPDATE_TIME,
+			STATUS
+		) VALUES (
+			#{cpId,jdbcType=DECIMAL},
+			#{cpName,jdbcType=VARCHAR},
+			#{cpMobile,jdbcType=VARCHAR},
+			#{cpSex,jdbcType=VARCHAR},
+			#{creater,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updater,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.callInPerson.CallInPerson">
+		UPDATE
+			T_YP_MS_CALL_IN_PERSON
+		<set> 
+			<if test="cpName != null " >
+				CP_NAME=#{cpName,jdbcType=VARCHAR},
+			</if>
+			<if test="cpMobile != null " >
+				CP_MOBILE=#{cpMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="cpSex != null " >
+				CP_SEX=#{cpSex,jdbcType=VARCHAR},
+			</if>
+			<if test="updater != null " >
+				UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+				UPDATE_TIME=SYSDATE,
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			CP_ID= #{cpId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.CP_ID,
+			T.CP_NAME,
+			T.CP_MOBILE,
+			T.CP_SEX,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_CALL_IN_PERSON T
+		WHERE
+			CP_ID= #{cpId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 根据参数获取客户信息 zhangzhenhai -->	
+	<select id="searchByParams"   resultMap="BaseResultMap">
+		SELECT
+			T.CP_ID,
+			T.CP_NAME,
+			T.CP_MOBILE,
+			T.CP_SEX,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_CALL_IN_PERSON T
+		WHERE
+			T.STATUS = '1'
+			<include refid="find_where_forcase" />
+	</select>
+	<!-- 根据参数获取客户信息（条件） zhangzhenhai -->	
+	<sql id="find_where_forcase">
+			<if test="cpId != null and cpId != ''" >
+				<![CDATA[ AND T.CP_ID = #{cpId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="cpName != null and cpName != ''" >
+				<![CDATA[ AND T.CP_NAME LIKE '%'||#{cpName,jdbcType=VARCHAR}|| '%']]>
+			</if>
+			<if test="cpMobile != null and cpMobile != ''" >
+				<![CDATA[ AND T.CP_MOBILE = #{cpMobile,jdbcType=VARCHAR} ]]>
+			</if>
+	</sql>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.callInPerson.CallInPerson">
+		UPDATE
+			T_YP_MS_CALL_IN_PERSON
+		SET
+			STATUS='0'
+		WHERE
+			CP_ID= #{cpId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

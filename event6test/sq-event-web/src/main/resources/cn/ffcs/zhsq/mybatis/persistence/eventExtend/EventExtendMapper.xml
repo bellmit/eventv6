@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventExtend.EventExtendMapper" >
+  	<!-- 查询列 -->
+  	<sql id="sameCol">
+	    T1.EXTEND_ID			"extendId",
+       	T1.EVENT_ID				"eventId",
+       	T1.IS_INSPECTED			"isInspected",
+       	T1.PATROL_TYPE          "patrolType", 
+       	T1.POINT_SELECTION      "pointSelection", 
+       	T1.IS_NOTICE            "isNotice", 
+       	T1.IS_JOINT_HANDLED		"isJointHandled",
+       	T1.IS_JOINT_OPERATED	"isJointOperated",
+       	T1.IS_BONUS_POINT		"isBonusPoint",
+       	T1.IS_LEAD_USER			"isLeadUser",
+       	T1.BONUS_POINT			"bonusPoint",
+       	T1.CREATOR_ID			"creatorId",
+       	T1.CREATOR_ORG_ID		"creatorOrgId",
+       	T1.STATUS				"status",
+       	T1.PLAN_TYPE			"planType",
+       	T1.PLAN_LEVEL			"planLevel",
+       	T1.INFLUENCE_LEVEL		"influenceLevel",
+       	T1.PLAN_CONFIG_ID		"planConfigId",
+       	T1.IS_PLAN				"isPlan"
+  	</sql>
+  	
+  	<!-- 事件查询列 -->
+  	<sql id="eventCol">
+  		T2.EVENT_ID		"eventId",
+  		T2.EVENT_NAME	"eventName",
+       	T2.HAPPEN_TIME	"happenTime",
+       	T2.HANDLE_DATE	"handleDate",
+       	T2.TYPE_		"type",
+       	T2.STATUS		"eventStatus",
+       	T2.SUB_STATUS	"eventSubStatus",
+       	T2.CREATE_TIME	"createTime",
+       	T3.GRID_PATH	"gridPath"
+  	</sql>
+  	
+  	<!-- 新增事件扩展属性信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="extendId" resultType="long" order="BEFORE">
+			SELECT SEQ_EXTEND_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_EXTEND (
+			EXTEND_ID, EVENT_ID, PARENT_EVENT_ID, IS_INSPECTED, 
+			IS_JOINT_HANDLED, IS_JOINT_OPERATED, INTEGRITY_SCORE,ER_ID,
+			PATROL_TYPE,POINT_SELECTION,IS_NOTICE,
+			STATUS,
+			CREATOR_ID, CREATE_TIME,IS_LEAD_USER,CREATOR_ORG_ID,
+			PLAN_TYPE, PLAN_LEVEL, BONUS_POINT,
+			IS_BONUS_POINT,
+			INFLUENCE_LEVEL,
+			IS_PLAN,
+			EMT_TYPE,
+			PLAN_CONFIG_ID
+        )
+        VALUES(
+        	#{extendId,jdbcType=DECIMAL}, #{eventId,jdbcType=DECIMAL}, #{parentEventId,jdbcType=DECIMAL}, #{isInspected,jdbcType=VARCHAR},
+        	#{isJointHandled,jdbcType=VARCHAR}, #{isJointOperated,jdbcType=VARCHAR}, #{integrityScore,jdbcType=DECIMAL}, #{erId,jdbcType=DECIMAL},
+        	#{patrolType,jdbcType=VARCHAR},#{pointSelection,jdbcType=DECIMAL},#{isNotice,jdbcType=VARCHAR},
+        	<choose>
+        		<when test="@Ognl@isNotEmpty(status)">
+        			#{status,jdbcType=VARCHAR},
+        		</when>
+        		<otherwise>DEFAULT,</otherwise>
+        	</choose>
+			#{creatorId,jdbcType=DECIMAL}, SYSDATE,#{isLeadUser,jdbcType=VARCHAR},#{creatorOrgId,jdbcType=DECIMAL},
+			NULLIF(#{planType,jdbcType=VARCHAR}, ''), NULLIF(#{planLevel,jdbcType=VARCHAR}, ''), #{bonusPoint,jdbcType=DECIMAL},
+			<choose>
+				<when test="@Ognl@isNotEmpty(isBonusPoint)">
+					#{isBonusPoint,jdbcType=VARCHAR},
+				</when>
+				<otherwise>DEFAULT,</otherwise>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(influenceLevel)">
+					#{influenceLevel,jdbcType=VARCHAR},
+				</when>
+				<otherwise>
+					DEFAULT,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(isPlan)">
+					#{isPlan,jdbcType=VARCHAR},
+				</when>
+				<otherwise>
+					DEFAULT,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(emtType)">
+					#{emtType,jdbcType=DECIMAL},
+				</when>
+				<otherwise>
+					DEFAULT,
+				</otherwise>
+			</choose>
+			NULLIF(#{planConfigId,jdbcType=VARCHAR}, '')
+        )
+  	</insert>
+  	
+  	<!-- 依据id更新扩展属性信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_EXTEND T1 
+		<set>
+			<if test="@Ognl@isNotEmpty(isInspected)">
+				T1.IS_INSPECTED = #{isInspected,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(isJointHandled)">
+				T1.IS_JOINT_HANDLED = #{isJointHandled,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(isJointOperated)">
+				T1.IS_JOINT_OPERATED = #{isJointOperated,jdbcType=VARCHAR},
+			</if>
+			<if test="integrityScore != null ">
+				T1.INTEGRITY_SCORE = #{integrityScore,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(isBonusPoint)">
+				T1.IS_BONUS_POINT = #{isBonusPoint,jdbcType=VARCHAR},
+			</if>
+			<if test="bonusPoint != null ">
+				T1.BONUS_POINT = #{bonusPoint,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(patrolType)">
+				T1.PATROL_TYPE = #{patrolType,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(isNotice)">
+				T1.IS_NOTICE = #{isNotice,jdbcType=VARCHAR},
+			</if>
+			<if test="pointSelection != null ">
+				T1.POINT_SELECTION = #{pointSelection,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(status)">
+				T1.STATUS = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="updaterId != null ">
+				T1.UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+			</if>
+			<if test="erId != null ">
+				T1.ER_ID = #{erId,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(isLeadUser)">
+				T1.IS_LEAD_USER = #{isLeadUser,jdbcType=VARCHAR},
+			</if>
+			<if test="creatorId != null">
+				T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL},
+			</if>
+			<if test="creatorOrgId != null ">
+				T1.CREATOR_ORG_ID = #{creatorOrgId,jdbcType=DECIMAL},
+			</if>
+			<if test="planType != null ">
+				T1.PLAN_TYPE = #{planType,jdbcType=VARCHAR},
+			</if>
+			<if test="planLevel != null ">
+				T1.PLAN_LEVEL = #{planLevel,jdbcType=VARCHAR},
+			</if>
+			<if test="planConfigId != null ">
+				T1.PLAN_CONFIG_ID = #{planConfigId,jdbcType=VARCHAR},
+			</if>
+			<choose>
+				<when test="@Ognl@isNotEmpty(influenceLevel)">
+					T1.INFLUENCE_LEVEL = #{influenceLevel,jdbcType=VARCHAR},
+				</when>
+				<when test="influenceLevel == ''">
+					T1.INFLUENCE_LEVEL = DEFAULT,
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(isPlan)">
+					T1.IS_PLAN = #{isPlan,jdbcType=VARCHAR},
+				</when>
+				<when test="isPlan == ''">
+					T1.IS_PLAN = DEFAULT,
+				</when>
+			</choose>
+			<if test="@Ognl@isNotEmpty(emtType)"><!-- 按位或 -->
+				T1.EMT_TYPE = (T1.EMT_TYPE + #{emtType,jdbcType=DECIMAL}) - BITAND(T1.EMT_TYPE, #{emtType,jdbcType=DECIMAL}),
+			</if>
+		  	
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		
+		WHERE T1.EXTEND_ID = #{extendId,jdbcType=DECIMAL}
+  	</update>
+  	
+  	<!-- 依据id删除扩展属性信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_EXTEND T1
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T1.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T1.STATUS = '0', 
+	  		T1.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	WHERE T1.EXTEND_ID = #{extendId,jdbcType=DECIMAL}
+  	</delete>
+  	
+  	<!-- 依据id获取事件扩展属性 -->
+  	<select id="findById" resultType="java.util.Map" parameterType="java.lang.Long">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_EXTEND T1
+	  	WHERE T1.EXTEND_ID = #{extendId,jdbcType=DECIMAL} AND T1.STATUS = '1'
+  	</select>
+  	
+  	<!-- 依据事件id获取事件扩展属性 -->
+  	<select id="findByEventId" resultType="java.util.Map" parameterType="java.lang.Long">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_EXTEND T1
+	  	WHERE T1.EVENT_ID = #{eventId,jdbcType=DECIMAL} AND T1.STATUS = '1'
+  	</select>
+  	
+  	<!-- 获取辖区内事件统计量(必有扩展信息) -->
+  	<select id="findCount4EventExtendAll" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		<include refid="eventExtendAll"></include>
+  	</select>
+  	
+  	<!-- 分页获取辖区内事件记录(必有扩展信息) -->
+  	<select id="findPageList4EventExtendAll" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="eventCol"></include>
+  		<include refid="eventExtendAll"></include>
+  		<include refid="event_order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区内事件语句(必有扩展信息) -->
+  	<sql id="eventExtendAll">
+  		FROM T_EVENT_EXTEND T1, T_EVENT T2, T_DC_GRID T3
+  		WHERE T1.EVENT_ID = T2.EVENT_ID 
+  		AND T2.GRID_ID = T3.GRID_ID 
+  		<include refid="find_where"></include>
+  		<include refid="event_find_where"></include>
+  	</sql>
+  	
+  	<!-- 获取辖区内事件记录数量 -->
+  	<select id="findCount4EventAll" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		<include refid="eventAllSql"></include>
+  	</select>
+  	
+  	<!-- 获取辖区内事件记录列表 -->
+  	<select id="findPageList4EventAll" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="eventCol"></include>,
+  			T1.INTEGRITY_SCORE	"integrityScore"
+  		<include refid="eventAllSql"></include>
+  		<include refid="event_order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区内事件记录语句 -->
+  	<sql id="eventAllSql">
+  		FROM T_EVENT T2
+		INNER JOIN T_DC_GRID T3
+			ON T2.GRID_ID = T3.GRID_ID
+		LEFT JOIN T_EVENT_EXTEND T1
+			ON T2.EVENT_ID = T1.EVENT_ID AND T1.STATUS = '1'
+		WHERE 1 = 1
+  		<include refid="event_find_where"></include>
+  	</sql>
+  	
+  	<!-- 统计待办事件记录 -->
+  	<select id="findCount4EventTodo" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="eventTodoSql"></include>
+  	</select>
+  	
+  	<!-- 获取待办事件记录 -->
+  	<select id="findPageList4EventTodo" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="eventCol"></include>
+  		<include refid="eventTodoSql"></include>
+  		<include refid="event_order_by"></include>
+  	</select>
+  	
+  	<!-- 事件待办语句 -->
+  	<sql id="eventTodoSql">
+  		FROM T_EVENT T2
+  		LEFT JOIN T_EVENT_EXTEND T1
+  			ON T1.EVENT_ID = T2.EVENT_ID
+  		INNER JOIN T_DC_GRID T3
+  			ON T2.GRID_ID = T3.GRID_ID
+  		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T4
+  			ON T2.EVENT_ID = T4.FORM_ID AND T4.FORM_TYPE_ID = 300
+  		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T5
+  			ON T4.INSTANCE_ID = T5.PROCINST_
+  		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T6
+  			ON T5.DBID_ = T6.TASK_ 
+		WHERE (T6.TYPE_ = '3' AND T6.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T6.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} OR T6.TYPE_ = '1' AND T6.USERID_ = #{curOrgId,jdbcType=VARCHAR})
+  		<include refid="find_where"></include>
+  		<include refid="event_find_where"></include>
+  	</sql>
+  	
+  	<!-- 依据事件id获取祖先数量 -->
+  	<select id="findAncestorCountByEventId" resultType="java.lang.Integer">
+  		SELECT COUNT(1)
+  		<include refid="eventAncestorSql"></include>
+  		<include refid="event_find_where"></include>
+  	</select>
+  	
+  	<!-- 依据事件id获取祖先列表 -->
+  	<select id="findAncestorListByEventId" resultType="java.util.Map">
+  		SELECT
+  			<include refid="eventCol"></include>
+  		<include refid="eventAncestorSql"></include>
+  		<include refid="event_find_where"></include>
+  		<include refid="event_order_by"></include>
+  	</select>
+
+	<!-- 依据事件id获取驳回环节列表 -->
+	<select id="findRejectTaskByEventId" resultType="java.util.Map">
+		SELECT T3.TASK_NAME,T3.OPERATE_TYPE
+		FROM T_EVENT T1
+		INNER JOIN WORKFLOW.wf_process_instance T2
+		ON T1.EVENT_ID = T2.FORM_ID
+		AND T2.Form_Type_Id = '300'
+		INNER JOIN workflow.wf_task T3
+		ON T2.Instance_Id = T3.Instance_Id
+		WHERE T1.Event_Id = #{eventId,jdbcType=DECIMAL}
+		AND T1.STATUS IN ('00','01','02','03','04')
+		<if test="taskName != null">
+			AND T3.Task_Name = #{taskName,jdbcType=VARCHAR}
+		</if>
+		<if test="operateType != null">
+			AND T3.OPERATE_TYPE = #{operateType,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+  	<!-- 获取事件祖先 -->
+  	<sql id="eventAncestorSql">
+  		FROM T_EVENT T2, T_DC_GRID T3
+		WHERE T2.GRID_ID = T3.GRID_ID AND T3.STATUS = '001'
+		AND T2.EVENT_ID IN (
+		    SELECT T1.PARENT_EVENT_ID
+		    FROM T_EVENT_EXTEND T1
+		    WHERE T1.STATUS = '1'
+		    START WITH T1.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+		    CONNECT BY PRIOR T1.PARENT_EVENT_ID = T1.EVENT_ID
+		)
+  	</sql>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where">
+  		<if test="@Ognl@isNotEmpty(status)">
+  			AND T1.STATUS = #{status,jdbcType=VARCHAR}
+  		</if>
+		<if test="eventId != null">
+			AND T1.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+		</if>
+		<if test="@Ognl@isNotEmpty(isInspected)">
+			AND T1.IS_INSPECTED = #{isInspected,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(isJointHandled)">
+			AND T1.IS_JOINT_HANDLED = #{isJointHandled,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(isJointOperated)">
+			AND T1.IS_JOINT_OPERATED = #{isJointOperated,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(patrolType)">
+			AND	T1.PATROL_TYPE = #{patrolType,jdbcType=VARCHAR} 
+		</if>
+		<if test="pointSelection != null ">
+			AND	T1.POINT_SELECTION = #{pointSelection,jdbcType=DECIMAL} 
+		</if>
+		<if test="@Ognl@isNotEmpty(isNotice)">
+			AND	T1.IS_NOTICE = #{isNotice,jdbcType=VARCHAR} 
+		</if>
+		<if test="@Ognl@isNotEmpty(isLeadUser) ">
+			AND	T1.IS_LEAD_USER = #{isLeadUser,jdbcType=VARCHAR} 
+		</if>
+		<if test="creatorId != null">
+			AND	T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL} 
+		</if>
+		<if test="creatorOrgId != null">
+			AND	T1.CREATOR_ORG_ID = #{creatorOrgId,jdbcType=DECIMAL} 
+		</if>
+  	</sql>
+  	
+  	<!-- 事件相关查询条件 -->
+  	<sql id="event_find_where">
+  		<choose>
+  			<when test="eventStatusList != null">
+				<choose>
+					<when test="eventStatusList.size > 0 ">
+						AND T2.STATUS IN
+						<foreach collection="eventStatusList" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+						</foreach>
+					</when>
+					<!-- 为了防止传入无效状态，从而导致查询出更多的数据 -->
+					<otherwise>
+						AND 1 = 2
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+  				AND T2.STATUS IN ('00', '01', '02', '03', '04')
+  			</otherwise>
+  		</choose>
+  		
+  		
+  		<if test="@Ognl@isNotEmpty(sourceList)">
+  			AND T2.SOURCE IN
+  			<foreach collection="sourceList" index="index" item="item" open="(" separator="," close=")">
+  				#{item}
+  			</foreach>
+  		</if>
+  		<if test="@Ognl@isNotEmpty(urgencyDegreeList)">
+  			AND T2.URGENCY_DEGREE IN
+  			<foreach collection="urgencyDegreeList" index="index" item="item" open="(" separator="," close=")">
+  				#{item}
+  			</foreach>
+  		</if>
+  		<if test="@Ognl@isNotEmpty(code)">
+			AND T2.CODE_ = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(handleDateFlag)">
+			AND T2.HANDLE_DATE_FLAG = #{handleDateFlag,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(eventType)">
+			AND T2.TYPE_ LIKE #{eventType,jdbcType=VARCHAR}||'%'
+		</if>
+  		<if test="@Ognl@isNotEmpty(keyWord)">
+			AND (
+				T2.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			  	OR
+			  	T2.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			   	OR
+			  	T2.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+		  	)
+	  	</if>
+		<if test="@Ognl@isNotEmpty(happenTimeStart)">
+			AND T2.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="@Ognl@isNotEmpty(happenTimeEnd)">
+	   		AND T2.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	  	<if test="@Ognl@isNotEmpty(createTimeStart)">
+	  		AND T2.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="@Ognl@isNotEmpty(createTimeEnd)">
+	   		AND T2.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	   	AND T3.STATUS = '001'
+  		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+  			AND T3.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+  		</if>
+  	</sql>
+  	
+  	<!-- 列表排序字段 -->
+  	<sql id="event_order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY T2.${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T2.EVENT_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+</mapper>

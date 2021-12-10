@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.jointDefence.JointDefenceMapper">
+
+
+	<select id="findPageList" resultType="java.util.Map">
+		with user_temp as
+		(select distinct t.user_id, t.social_org_id
+		from t_dc_privilege_example t
+		where 1=1
+		<if test="positionCode != null and positionCode != '' ">
+			AND t.position_code = #{positionCode,jdbcType=VARCHAR}
+		</if>
+		<if test="positionId != null and positionId != '' ">
+			AND t.position_id = #{positionId,jdbcType=DECIMAL}
+		</if>
+		)
+		select e.party_name, certify.verify_mobile, entity.org_entity_path,
+		e.identity_card,e.user_id, entity.ORG_CODE USER_REGION_CODE,
+		entity.org_name
+		from t_dc_user_entity e
+		inner join user_temp t
+		on e.user_id = t.user_id
+		left join t_dc_party_user_certify certify
+		on
+		t.user_id = certify.user_id
+		and certify.STATUS = '001'
+		left join t_dc_org_social_info social
+		on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity
+		on entity.org_id = social.location_org_id
+		where e.status = '001'
+		<include refid="find_where" />
+		ORDER BY e.DOMAIN_UPDATE_TIME DESC
+	</select>
+
+	<select id="findCount" resultType="java.lang.Integer">
+		with user_temp as
+		(select distinct t.user_id, t.social_org_id
+		from
+		t_dc_privilege_example t
+		where 1=1
+		<if test="positionCode != null and positionCode != '' ">
+			AND t.position_code = #{positionCode,jdbcType=VARCHAR}
+		</if>
+		<if test="positionId != null and positionId != '' ">
+			AND t.position_id = #{positionId,jdbcType=DECIMAL}
+		</if>
+		)
+		select count(1)
+		from t_dc_user_entity e
+		inner join user_temp t
+		on e.user_id = t.user_id
+		left join t_dc_party_user_certify certify
+		on
+		t.user_id = certify.user_id
+		and certify.STATUS = '001'
+		left join t_dc_org_social_info social
+		on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity
+		on entity.org_id = social.location_org_id
+		where e.status = '001'
+		<include refid="find_where" />
+	</select>
+
+	<sql id="find_where">
+		<if test="name != null and name != '' ">
+			AND e.PARTY_NAME LIKE '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="idCard != null and idCard != '' ">
+			AND e.IDENTITY_CARD LIKE
+			'%'||#{idCard,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="tel != null and tel != '' ">
+			AND certify.verify_mobile LIKE
+			'%'||#{tel,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="startInfoOrgCode != null and startInfoOrgCode != '' ">
+			AND entity.ORG_CODE LIKE
+			#{startInfoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="infoOrgCode != null and startInfoOrgCode != '' ">
+			AND entity.ORG_CODE LIKE
+			#{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="userId != null and userId != '' ">
+			AND e.user_id = #{userId}
+		</if>
+
+	</sql>
+
+	<select id="findEventPageList" resultType="java.util.Map">
+		select e.EVENT_NAME, e.CONTENT_,e.STATUS
+		EVENT_STATUS,t.CREATE_TIME,e.EVENT_ID,p.cur_user 
+		from t_event_verify t
+		left join t_event e on t.event_id = e.event_id 
+		join ${dbuser.workflow}.wf_process_instance p on e.event_id=p.form_id 
+		where t.event_id >0
+		and t.create_user_id = #{userId,jdbcType=DECIMAL}
+		order by t.event_verify_id desc
+	</select>
+
+	<select id="findEventCount" resultType="java.lang.Integer">
+		select count(1)
+		from t_event_verify t
+		left join t_event e
+		on t.event_id = e.event_id
+		where t.event_id >0
+		and t.create_user_id = #{userId,jdbcType=DECIMAL}
+		order by t.event_verify_id desc
+	</select>
+
+	<select id="findStatByOrgCode" parameterType="map" resultType="map">
+	 SELECT t.lf_org_num,t.lf_admin_num,t.all_rs_num,REPORT_EVENT_NUM,ACCEPT_EVENT_NUM,DOING_EVENT_NUM FROM T_BI_SHLF t 
+where t.region_code=#{orgCode} and t.statics_date=(select max(s.statics_date) from t_bi_shlf s )
+	</select>
+
+	
+	<select id="findGridPathByOrgCode" parameterType="map"
+		resultType="map">
+		SELECT replace(to_char(wm_concat(grid_name)),',','-') grid_path FROM (
+		SELECT t.grid_name FROM t_dc_grid t where t.status='001' and t.grid_level>0
+		start with t.info_org_code=#{orgCode} connect by prior
+		t.parent_grid_id =t.grid_id order by t.grid_level )
+	</select>
+	
+	<select id="findJointTeamList" parameterType="map" resultType="map">
+
+
+
+		with user_temp as (select e.party_name, e.user_id,entity.ORG_CODE,
+		e.DOMAIN_UPDATE_TIME from t_dc_user_entity e
+		inner join (select distinct t.user_id, t.social_org_id from
+
+		t_dc_privilege_example t where t.position_id = #{positionId}) t on e.user_id = t.user_id
+		left join t_dc_ci_rs_top top on top.i_identity_card = e.identity_card and
+
+		top.status = '1' and top.org_code like #{orgCode}||'%'
+		left join t_dc_org_social_info social on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity on entity.org_id =
+		social.location_org_id
+		where e.status = '001' AND entity.ORG_CODE LIKE #{orgCode}||'%')
+
+
+		SELECT m.cen_lon,m.cen_lat,t.grid_name,t.grid_id,t.info_org_code,u.user_id,u.party_name FROM user_temp u
+
+		left join t_dc_grid t on t.info_org_code = u.ORG_CODE
+		left join map_bus_grid_gis m on t.grid_id=m.wid and m.status='001' and
+		m.mapt=#{mapt,jdbcType=INTEGER}
+
+		where t.info_org_code like #{orgCode}||'%' and t.status='001' and
+		t.grid_level=7
+	</select>
+
+	<select id="findJointTeamCount" parameterType="map"
+		resultType="java.lang.Integer">
+		with user_temp as (select e.party_name, e.user_id, entity.ORG_CODE from
+		t_dc_user_entity e
+		inner join (select distinct t.user_id, t.social_org_id from
+		t_dc_privilege_example t where t.position_id = #{positionId}) t on
+		e.user_id = t.user_id
+		left join t_dc_ci_rs_top top on top.i_identity_card = e.identity_card and
+		top.status = '1' and top.org_code like #{orgCode}||'%'
+		left join t_dc_org_social_info social on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity on entity.org_id =
+		social.location_org_id
+		where e.status = '001' AND entity.ORG_CODE LIKE #{orgCode}||'%')
+		SELECT count(1)
+		FROM t_dc_grid t left join map_bus_grid_gis m on t.grid_id=m.wid and
+		m.status='001' and m.mapt=#{mapt,jdbcType=INTEGER}
+		left join user_temp u on t.info_org_code = u.ORG_CODE
+		where t.info_org_code like #{orgCode}||'%' and t.status='001' and
+		t.grid_level=7
+	</select>
+
+	<select id="findJointPersonList" parameterType="map" resultType="map">
+		SELECT * FROM (
+		with user_temp as (select distinct t.user_id, t.social_org_id from
+		t_dc_privilege_example t where t.position_id = #{positionId})
+		select e.party_name ,e.USER_ID,
+		top.RESIDENT_MOBILE,entity.org_code,e.DOMAIN_UPDATE_TIME,r.i_identity_card
+		,w.cen_lon,w.cen_lat
+		,ROW_NUMBER()OVER(PARTITION BY r.i_identity_card ORDER BY r.rs_room_id desc ) num_
+		from t_dc_user_entity e inner join user_temp t on e.user_id = t.user_id
+		left join t_dc_ci_rs_top top on top.i_identity_card = e.identity_card
+		and top.status = '1'
+		left join t_dc_org_social_info social on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity on entity.org_id =
+		social.location_org_id
+		left join t_dc_grid g on g.info_org_code=entity.org_code and
+		g.status='001'
+		left join t_dc_area_building_info b on b.grid_id = g.grid_id
+		left join t_dc_ci_rs_room r on r.i_identity_card=top.i_identity_card and
+		b.building_id=r.building_id
+		left join map_wg_jzw_gis w on r.building_id=w.wid
+		where e.status = '001' and entity.chief_level=7
+		and entity.org_code like #{orgCode}||'%' 
+		<if test="idCard != null">
+			and e.identity_card = #{idCard}
+		</if>
+		) t where t.num_=1 ORDER BY t.DOMAIN_UPDATE_TIME DESC
+
+
+	</select>
+
+	<select id="findJointPersonCount" parameterType="map"
+		resultType="java.lang.Integer">
+		SELECT count(1) FROM (
+		with user_temp as (select distinct t.user_id, t.social_org_id from
+		t_dc_privilege_example t where t.position_id = #{positionId})
+		select ROW_NUMBER()OVER(PARTITION BY r.i_identity_card ORDER BY r.rs_room_id
+		desc ) num_
+		from t_dc_user_entity e inner join user_temp t on e.user_id = t.user_id
+		left join t_dc_ci_rs_top top on top.i_identity_card = e.identity_card
+		and top.status = '1'
+		left join t_dc_org_social_info social on social.org_id = t.social_org_id
+		left join t_dc_org_entity_info entity on entity.org_id =
+		social.location_org_id
+		left join t_dc_grid g on g.info_org_code=entity.org_code and
+		g.status='001'
+		left join t_dc_area_building_info b on b.grid_id = g.grid_id
+		left join t_dc_ci_rs_room r on r.i_identity_card=top.i_identity_card and
+		b.building_id=r.building_id
+		left join map_wg_jzw_gis w on r.building_id=w.wid
+		where e.status = '001' and entity.chief_level=7
+		and entity.org_code like #{orgCode}||'%' and r.org_code like
+		#{orgCode}||'%' and top.org_code like #{orgCode}||'%'
+		) t where t.num_=1
+	</select>
+</mapper>

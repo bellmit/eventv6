@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>南昌市经开区群防群治管控平台</title>
+    <!-- layui样式 -->
+    <#include "/component/szcommonFiles-1.1.ftl" />
+    <#include "/component/szcomponentsFiles-1.1.ftl" />
+    <style>
+        #test{
+            max-height: 500px;
+        }
+        /*.img:hover{border:1px solid #fcff5c
+        }*/
+    </style>
+</head>
+
+<body>
+    <div class="layui-row">
+        <!-- 弹窗 -->
+        <!-- 高级搜索弹窗 -->
+        <form id="searchForm">
+            <input type="hidden" value="${cids}" name="cids" id="cids">
+            <input type="hidden" value="${controlLibraryId}" name="controlLibraryId" id="controlLibraryId">
+            <input type="hidden" value="${controlTaskId}" name="controlTaskId" id="controlTaskId">
+            <input type="hidden" value="${controlObjectId}" name="controlObjectId" id="controlObjectId">
+            <input type="hidden" value="${identityCardNumber}" name="identityCardNumber" id="identityCardNumber">
+            <input type="hidden" value="${name}" name="name" id="name">
+            <div class="layui-row layui-calc-h1">
+                <div class="layui-fluid">
+                    <div class="layui-col-xs12 mt15">
+                        <div class="layui-row layui-form mt20 layui-sch-g">
+                            <div class="col-per-23">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="margin-right: 5px">排序方式:</label>
+                                    <select id="sort" name="sort" lay-verify-custom="required:true">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-per-18">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="margin-right: 5px">告警状态:</label>
+                                    <select id="alarmOperationType" name="alarmOperationType" >
+                                    </select>
+                                </div>
+                            </div>
+                            <!--<div class="col-per-23">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="margin-right: 5px"><i>*</i>报警类型</label>
+                                    <select id="alarmTypes" name="alarmTypes">
+                                    </select>
+                                </div>
+                            </div>-->
+                            <div class="col-per-26">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">抓拍时间:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" class="layui-input" id="date1" placeholder="请选择" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-per-28 ml20">
+                                <button type="button" class="layui-btn layui-btn-normal" id="searchBtn">查询</button>
+                                <button type="button" class="layui-btn layui-btn-ext1" id="resetBtn">重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <!-- 内容区 -->
+        <div id="test" class="layui-col-sm12 layui-form">
+            <!-- 右侧内容 -->
+            <div>
+                <!--<div class="content-header text-align-r">
+                    <button type="button" class="layui-btn layui-btn-ref"><i class="sch-icon sch-icon-ref"></i>刷新</button>
+                </div>-->
+                <!-- 没有底部工具栏时用类cont-wio-ft -->
+                <div class="content-body cont-wio-ft h-x" style="background-color: #f5f5f5">
+                    <ul class="peo-list peo-list-ext1 layui-col-space20 clearfix" id="warning">
+                        <!--<li class="layui-col-lg4 layui-col-md6 layui-col-sm12">
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic2.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm12 peo-list-tb bg-fff">
+                                <table class="table-th-ext2">
+                                    <colgroup>
+                                        <col width="50%">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="peo-list-t6 layui-elip cor-ext2"><i class="layui-icon layui-icon-username"></i>裘某（网格员王13600000000）</p>
+                                            </td>
+                                            <td>
+                                                <p class="peo-list-t6 flex"><i class="layui-icon layui-icon-user"></i>相似度<i class="peo-list-per"><span class="peo-list-per-bar" style="width: 90%;"></span></i><em class="cor-ext2">90%</em></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-template-1"></i>上访人员</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-location"></i>中益雅苑进口车道-97</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-date"></i>2020.07.09 13:18:06</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li class="layui-col-lg4 layui-col-md6 layui-col-sm12">
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic2.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm12 peo-list-tb bg-fff">
+                                <table class="table-th-ext2">
+                                    <colgroup>
+                                        <col width="50%">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="peo-list-t6 layui-elip cor-ext2"><i class="layui-icon layui-icon-username"></i>裘某（网格员王13600000000）</p>
+                                            </td>
+                                            <td>
+                                                <p class="peo-list-t6 flex"><i class="layui-icon layui-icon-user"></i>相似度<i class="peo-list-per"><span class="peo-list-per-bar" style="width: 90%;"></span></i><em class="cor-ext2">90%</em></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-template-1"></i>上访人员</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-location"></i>中益雅苑进口车道-97</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-date"></i>2020.07.09 13:18:06</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li class="layui-col-lg4 layui-col-md6 layui-col-sm12">
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic2.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm12 peo-list-tb bg-fff">
+                                <table class="table-th-ext2">
+                                    <colgroup>
+                                        <col width="50%">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="peo-list-t6 layui-elip cor-ext2"><i class="layui-icon layui-icon-username"></i>裘某（网格员王13600000000）</p>
+                                            </td>
+                                            <td>
+                                                <p class="peo-list-t6 flex"><i class="layui-icon layui-icon-user"></i>相似度<i class="peo-list-per"><span class="peo-list-per-bar" style="width: 90%;"></span></i><em class="cor-ext2">90%</em></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-template-1"></i>上访人员</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-location"></i>中益雅苑进口车道-97</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-date"></i>2020.07.09 13:18:06</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li class="layui-col-lg4 layui-col-md6 layui-col-sm12">
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic2.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm6">
+                                <div class="peo-list-c">
+                                    <div class="peo-list-p">
+                                        <img src="../../../../statics/web-assets/_shzl/jingkaiqu/images/icon-peo-pic1.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-sm12 peo-list-tb bg-fff">
+                                <table class="table-th-ext2">
+                                    <colgroup>
+                                        <col width="50%">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <p class="peo-list-t6 layui-elip cor-ext2"><i class="layui-icon layui-icon-username"></i>裘某（网格员王13600000000）</p>
+                                            </td>
+                                            <td>
+                                                <p class="peo-list-t6 flex"><i class="layui-icon layui-icon-user"></i>相似度<i class="peo-list-per"><span class="peo-list-per-bar" style="width: 90%;"></span></i><em class="cor-ext2">90%</em></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-template-1"></i>上访人员</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-location"></i>中益雅苑进口车道-97</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <p class="peo-list-t6"><i class="layui-icon layui-icon-date"></i>2020.07.09 13:18:06</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>-->
+                    </ul>
+                </div>
+            </div>
+            <!-- 暂无数据 -->
+            <p id="noData" class="layui-text font-size-18 cor-blue2 font-bold text-align-c layui-hide mtf70">暂无数据</p>
+        </div>
+    </div>
+    <script src="${uiDomain}/web-assets/common/js/jqry-9-1-12-4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="${uiDomain}/web-assets/plugins/jquery-nicescroll/jquery.nicescroll-1.js"></script>
+    <script src="${uiDomain}/web-assets/plugins/layui-v2.5.5/layui/layui.all.js"></script>
+    <script>
+
+        LayuiComp.SingleSelect('alarmOperationType',{
+            selectValue:"",
+            pCode:'${alarmOperationType}',
+            selectedCallback:function(originalData){
+            },
+            context:'${sysDomain}'
+        });
+
+        /*LayuiComp.SingleSelect('alarmTypes',{
+            selectValue:"",
+            pCode:'${alarmTypes}',
+            selectedCallback:function(originalData){
+            },
+            context:'${sysDomain}'
+        });*/
+
+        LayuiComp.SingleSelect('sort',{
+            customData: [
+                {name:'按时间排序',value:'captureTime|desc'},
+                {name:'按相似度排序',value:'score|desc'}
+            ],
+            selectValue:'captureTime|desc',
+            selectedCallback:function(data){
+            },
+            context:'${sysDomain}'
+        });
+
+        layui.use(['form', 'laydate','table'], function () {
+            var form = layui.form,
+                laydate = layui.laydate,
+                table = layui.table;
+
+            //监听搜索按钮
+            $("#searchBtn").on('click', function () {
+                getDataList();
+                form.render();
+            });
+
+            //监听重置按钮
+            $("#resetBtn").on('click', function () {
+                $("#searchForm")[0].reset();
+                getDataList();
+                form.render();
+            });
+
+            //日期时间选择器
+            laydate.render({
+                elem: '#date1'
+                ,type: 'datetime'
+                ,range: true
+            });
+            //日期时间选择器
+            laydate.render({
+                elem: '#date2'
+                , type: 'datetime'
+            });
+
+        });
+
+        $(function () {
+            $.fn.extend({
+                // 选择组件
+                select: function () {
+                    var _this = this;
+                    $(_this).children('a').click(function () {
+                        $(this).toggleClass('active');
+                        $(this).siblings('ul').slideToggle(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                        return false;
+                    });
+                    $(document).click(function () {
+                        $('.com-select>a').removeClass('active')
+                        $('.com-select>ul').slideUp(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                    });
+                    $('.com-select>ul').on('click', 'li', function () {
+                        var pText = $(this).text();
+                        $('.com-select>a').find('p').text(pText);
+                        $('.section-tt-year').text(pText);
+                    });
+                    $('.com-select-list').getNiceScroll().resize();
+                },
+                ranking: function (options) {
+                    var _this = this;
+                    $(_this).find('tbody tr').each(function (index, el) {
+                        $(this).find('.ranking-per>p').css({ 'width': options[index] + '%' });
+                    });
+                }
+            });
+
+            // 计算页面高度
+            $('#test').niceScroll({
+                cursorcolor: "#ccc",
+                cursoropacitymax: 0.8,
+                cursorwidth: "4px",
+                cursorborderradius: "2px",
+                cursorborder: 'none',
+                autohidemode: true
+            });
+
+            //获取列表集合
+            getDataList();
+        });
+        var layerIndex;
+            function getDataList(offset) {
+            layerIndex = layer.load();
+            var alarmOperationType = $("#alarmOperationType").val();
+            var sort = $("#sort").val();
+            var cids = $("#cids").val();
+            var controlLibraryId = $("#controlLibraryId").val();
+            var controlTaskId = $("#controlTaskId").val();
+            var controlObjectId = $("#controlObjectId").val();
+            var identityCardNumber = $("#identityCardNumber").val();
+            var name = $("#name").val();
+            var dateArray = $("#date1").val().split(' - ');
+            var startDateStr = dateArray[0],
+                endDateStr = dateArray[1]?dateArray[1]:"";
+            $.ajax({
+                type: 'POST',
+                url: '${rc.getContextPath()}/zhsq/event/warning/listData.json',
+                data: {
+                    alarmOperationType:alarmOperationType,
+                    sort:sort,
+                    startDateStr:startDateStr,
+                    endDateStr:endDateStr,
+                    cids:cids,
+                    controlLibraryId:controlLibraryId,
+                    controlTaskId:controlTaskId,
+                    controlObjectId:controlObjectId,
+                    identityCardNumber:identityCardNumber,
+                    name:name,
+                    offset:offset
+                },
+                async: false,
+                dataType: 'json',
+                success: function(data) {
+                    setData(data);
+                    if (data.list.length == 0){
+                        $("#noData").removeClass("layui-hide");
+                    }else {
+                        $("#noData").addClass("layui-hide");
+                    }
+                    window.names = data;
+                },
+                error: function(data) {
+                    layer.msg("连接超时",{skin:'layui-layer-hui'});
+                },
+                complete : function() {
+                    //layer.close(submitLoad);//关闭遮罩
+                }
+            });
+        }
+
+        function setData(data) {
+            var html = '';
+            for (var i = 0; i < data.list.length; i++) {
+                html += '<li style="cursor: pointer;" class="layui-col-lg4 layui-col-md6 layui-col-sm12 img" onclick="detail(\''+data.list[i].id+'\')">';
+                html += '<div class="layui-col-sm6">';
+                html += '<div class="peo-list-c">';
+                html += '<div class="peo-list-p">';
+                html += '<img src="'+data.list[i].faceUrl+'">';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="layui-col-sm6">';
+                html += '<div class="peo-list-c">';
+                html += '<div class="peo-list-p">';
+                html += '<img src="'+data.list[i].imageUrl+'">';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="layui-col-sm12 peo-list-tb bg-fff">';
+                html += '<table class="table-th-ext2">';
+                html += '<colgroup>';
+                html += '<col width="50%">';
+                html += '<col>';
+                html += '</colgroup>';
+                html += '<tbody>';
+                html += '<tr>';
+                html += '<td>';
+                html += '<p class="peo-list-t6 layui-elip cor-ext2"><i class="layui-icon layui-icon-username"></i>'+data.list[i].objectMainJson.name+'</p>';
+                html += '</td>';
+                html += '<td>';
+                html += '<p class="peo-list-t6 flex"><i class="layui-icon layui-icon-user"></i>相似度<i class="peo-list-per"><span class="peo-list-per-bar" style="width: 90%;"></span></i><em class="cor-ext2">'+ Math.floor(data.list[i].score) + '%' +'</em></p>';
+                html += '</td>';
+                html += '</tr>';
+                html += '<tr>';
+                html += '<td colspan="2">';
+                html += '<p class="peo-list-t6"><i class="layui-icon layui-icon-template-1"></i>'+data.list[i].libName+'</p>';
+                html += '</td>';
+                html += '</tr>';
+                html += '<tr>';
+                html += '<td colspan="2">';
+                html += '<p class="peo-list-t6"><i class="layui-icon layui-icon-location"></i>'+data.list[i].deviceName+'</p>';
+                html += '</td>';
+                html += '</tr>';
+                html += '<tr>';
+                html += '<td>';
+                html += '<p class="peo-list-t6"><i class="layui-icon layui-icon-date"></i>'+formateTimeStamp(data.list[i].alarmTime)+'</p>';
+                html += '</td>';
+                html += '<td>';
+                if (data.list[i].isEffective == 0){
+                    html += '<p class="peo-list-t6 flex"><i class="layui-icon layui-icon-tread" style="font-size: 30px;"><em style="font-size: 20px;margin-left: 5px">无效</em></p>';
+                } else if (data.list[i].isEffective == 1) {
+                    html += '<p class="peo-list-t6 flex"><i class="layui-icon layui-icon-praise" style="font-size: 30px;"><em style="font-size: 20px;margin-left: 5px">有效</em></p>';
+                }
+                html += '</td>';
+                html += '</tr>';
+                html += '</tbody>';
+                html += '</table>';
+                html += '</div>';
+                html += '</li>';
+            }
+            //重新渲染
+            $(".peo-list").html(html);
+            //$('.h-x').niceScroll().resize();
+            $('#test').niceScroll().resize();
+            layer.close(layerIndex);
+        }
+
+        function detail(id) {
+            var url = '${rc.getContextPath()}/zhsq/event/warning/detail.jhtml?id=' + id;
+            var indexAdd = layer.open({
+                type: 2,
+                title: false,
+                closeBtn: 0,
+                shadeClose: true, //点击遮罩关闭
+                area: ['100%', '100%'],
+                content: url,
+                success: function (layero) {
+                    calcLayBdH(layero)
+                }
+            });
+            LayuiComp.addWin(indexAdd);
+        }
+
+        function formateTimeStamp(time){
+            var date = new Date();
+            date.setTime(time);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours()< 10 ? "0" + date.getHours() : date.getHours();
+            var minute = date.getMinutes()< 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var second = date.getSeconds()< 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return year + "-" + month + "-" + day+" "+hour+":"+minute+":"+second;
+        }
+
+        // 计算弹窗内容框高度
+        function calcLayBdH(layero) {
+            var winW = $(window).width(),
+                winH = $(window).height(),
+                lhH = $(layero.selector).find('.lay-nor-hd').outerHeight(true),
+                lbH,
+                layCalcAdH = $(layero.selector).find('.lay-calc-ad').outerHeight(true);
+            if (winW <= 1366) {
+                lbH = winH - lhH - 10;
+            } else {
+                lbH = winH - lhH - 15;
+            }
+            $(layero.selector).find('.lay-nor-bd').height(lbH);
+            if(layCalcAdH >= lbH){
+                console.log(layCalcAdH);
+                $(layero.selector).find('.lay-pos-ad').addClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '100px'});
+            }else{
+                $(layero.selector).find('.lay-pos-ad').removeClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '0px'});
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

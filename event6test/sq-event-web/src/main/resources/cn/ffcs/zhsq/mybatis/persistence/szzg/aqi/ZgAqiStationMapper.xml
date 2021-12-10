@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.aqi.ZgAqiStationMapper">
+	<resultMap id="AqiStationMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAqiStation">
+	    <id column="SEQID" property="seqid" jdbcType="DECIMAL" /> <!--主键。SEQ_ZG_AQI_STATION-->
+		<result column="STATIONID" property="statioId" jdbcType="VARCHAR" /> <!--站点ID-->
+		<result column="STATIONNAME" property="stationName" jdbcType="VARCHAR" /> <!--站点名称-->
+		<result column="DIMENSIONS" property="dimensions" jdbcType="VARCHAR" /> <!--纬度-->
+		<result column="SOURCES" property="sources" jdbcType="DECIMAL" /> <!--数据来源-->
+		
+		
+	  <association property="zgAQI" javaType="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAQI">
+			<id column="SEQID" property="seqid" jdbcType="INTEGER" />
+			<result column="MONITORTIME" property="monitorTime" jdbcType="TIMESTAMP" />
+			<result column="AQI" property="aqi" jdbcType="VARCHAR" />
+			<result column="SO2" property="so2" jdbcType="VARCHAR" />
+			<result column="SO2_24" property="so224" jdbcType="VARCHAR" />
+			<result column="NO2" property="no2" jdbcType="VARCHAR" />
+			<result column="NO2_24" property="no224" jdbcType="VARCHAR" />
+			<result column="PM10" property="pm10" jdbcType="VARCHAR" />
+			<result column="PM10_24" property="pm1024" jdbcType="VARCHAR" />
+			<result column="PM2_5" property="pm25" jdbcType="VARCHAR" />
+			<result column="PM2_5_24" property="pm2524" jdbcType="VARCHAR" />
+			<result column="CO" property="co" jdbcType="VARCHAR" />
+			<result column="CO_24" property="co24" jdbcType="VARCHAR" />
+			<result column="O3" property="o3" jdbcType="VARCHAR" />
+			<result column="O3_8" property="o38" jdbcType="VARCHAR" />
+			<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="STATENAME" property="stateName" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+
+	<resultMap id="ArcgisInfoMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+   </resultMap>
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM ${dbuser.zhsq_szzg}.ZG_AQI_STATION T
+		inner join ${dbuser.zhsq_szzg}.zg_aqi a  on  t.stationid=a.statioid 
+		<include refid="find_where" />
+		and   a.monitortime = 
+		(SELECT MAX(t1.monitortime) FROM  ${dbuser.zhsq_szzg}.ZG_AQI_STATION s1  inner join ${dbuser.zhsq_szzg}.zg_aqi t1  on  t1.statioid=s1.stationid     WHERE t1.monitortype ='1'      AND s1.SOURCES ='1')  
+		 
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="AqiStationMap">
+		SELECT
+			T.SEQID,
+			T.STATIONID,
+			T.STATIONNAME,
+			T.LOCATION,
+			T.LONGITUDE,
+			T.DIMENSIONS,
+			T.SOURCES,
+			 a.aqi, a.pm2_5,a.pm10,a.co,a.no2,a.o3,a.so2
+		FROM ${dbuser.zhsq_szzg}.ZG_AQI_STATION T
+		inner join ${dbuser.zhsq_szzg}.zg_aqi a  on  t.stationid=a.statioid 
+		<include refid="find_where" />
+		 and   a.monitortime =  
+		 (SELECT MAX(t1.monitortime) FROM  ${dbuser.zhsq_szzg}.ZG_AQI_STATION s1  inner join ${dbuser.zhsq_szzg}.zg_aqi t1  on  t1.statioid=s1.stationid     WHERE t1.monitortype ='1'      AND s1.SOURCES ='1')  
+		 
+		order by t.SEQID
+	</select>
+	
+	
+	<select id="getStationListByParams"  resultMap="AqiStationMap">
+		SELECT
+			T.SEQID,
+			T.STATIONID,
+			T.STATIONNAME,
+			T.LOCATION,
+			T.LONGITUDE,
+			T.DIMENSIONS,
+			T.SOURCES
+		FROM ${dbuser.zhsq_szzg}.ZG_AQI_STATION T
+		<include refid="find_where" />
+	</select>
+	
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="sources != null and sources != ''">
+		 		AND T.SOURCES = #{sources,jdbcType=DECIMAL}
+			</if>
+			<if test="stationName != null and stationName != ''">
+		 		AND T.STATIONNAME  like   '%' ||#{stationName,jdbcType=VARCHAR}||'%'
+			</if>
+			<!-- 是否告警 -->
+			<if test="showType != null and showType=='gj'.toString()  ">
+			  <choose>  
+	            <when test="alarmValue !=null ">  
+	                AND A.AQI>#{alarmValue,jdbcType=DECIMAL}
+	            </when >  
+	            <otherwise>  
+	             AND A.AQI>100
+	            </otherwise>  
+	        </choose>
+			</if>
+		</where>
+	</sql>
+	
+	
+	<!-- 插入一条 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAqiStation">
+		<selectKey keyProperty="seqid" resultType="long" order="BEFORE"> 
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_AQI_STATION.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			${dbuser.zhsq_szzg}.ZG_AQI_STATION
+		(
+			SEQID,
+			STATIONID,
+			STATIONNAME,
+			LOCATION,
+			X,
+			Y,
+			LONGITUDE,
+			DIMENSIONS,
+			SOURCES
+		) VALUES (
+			#{seqid,jdbcType=DECIMAL},
+			#{stationid,jdbcType=VARCHAR},
+			#{stationname,jdbcType=VARCHAR},
+			#{location,jdbcType=VARCHAR},
+			#{x,jdbcType=VARCHAR},
+			#{y,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{dimensions,jdbcType=VARCHAR},
+			#{sources,jdbcType=DECIMAL}
+		)
+	</insert>
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAqiStation">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_AQI_STATION
+		<set> 
+			<if test="stationid != null " >
+				STATIONID=#{stationid,jdbcType=VARCHAR},
+			</if>
+			<if test="stationname != null " >
+				STATIONNAME=#{stationname,jdbcType=VARCHAR},
+			</if>
+			<if test="location != null " >
+				LOCATION=#{location,jdbcType=VARCHAR},
+			</if>
+			<if test="x != null " >
+				X=#{x,jdbcType=VARCHAR},
+			</if>
+			<if test="y != null " >
+				Y=#{y,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null " >
+				LONGITUDE=#{longitude,jdbcType=VARCHAR},
+			</if>
+			<if test="dimensions != null " >
+				DIMENSIONS=#{dimensions,jdbcType=VARCHAR},
+			</if>
+			<if test="sources != null " >
+				SOURCES=#{sources,jdbcType=DECIMAL},
+			</if>
+		</set>
+		WHERE
+			SEQID= #{seqid,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="AqiStationMap">
+			SELECT
+			T.SEQID,
+			T.STATIONID,
+			T.STATIONNAME,
+			T.LOCATION,
+			T.LONGITUDE,
+			T.DIMENSIONS,
+			T.SOURCES,
+			a.monitortime,
+			a.aqi, a.pm2_5,a.pm10,a.co,a.no2,a.o3,a.so2
+		FROM ${dbuser.zhsq_szzg}.ZG_AQI_STATION T
+		inner join ${dbuser.zhsq_szzg}.zg_aqi a  on  t.stationid=a.statioid 
+		where T.SEQID= #{seqid,jdbcType=DECIMAL}   and   a.monitortime =  
+		(SELECT MAX(t1.monitortime) FROM  ${dbuser.zhsq_szzg}.ZG_AQI_STATION s1  inner join ${dbuser.zhsq_szzg}.zg_aqi t1  on  t1.statioid=s1.stationid     WHERE t1.monitortype IN ('1', '3')      AND s1.SOURCES ='1'     )  
+			
+	</select>
+	
+
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAqiStation">
+		DELETE FROM ${dbuser.zhsq_szzg}.ZG_AQI_STATION WHERE SEQID= #{seqid,jdbcType=DECIMAL} 
+	</delete>
+	
+   <select id="findCountByParams" resultType="int" >
+		SELECT count(1) 
+		from  ${dbuser.zhsq_szzg}.ZG_AQI_STATION  where 1=1
+		<if test="statioId != null and statioId != ''">
+			AND STATIOID = #{statioId,jdbcType=VARCHAR}
+		</if>
+		<if test="stationName != null and stationName != ''">
+			AND STATIONNAME = #{stationName,jdbcType=VARCHAR}
+		</if>
+	</select>
+<select id="getArcgisInfosDataListByIds" resultMap="ArcgisInfoMap"><!-- 提供地图定位数据 -->
+	SELECT 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.STATIONNAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+  	FROM T_ZY_RES_MARKER T
+   INNER JOIN ${dbuser.zhsq_szzg}.ZG_AQI_STATION T1
+    ON T.RESOURCES_ID = T1.SEQID
+   WHERE T1.SEQID IN (${ids}) 
+   AND T.MAP_TYPE =#{mapt,jdbcType=DECIMAL}  
+   and t.marker_type = #{markerType,jdbcType=VARCHAR}
+</select>
+
+	<select id="getDataListByStation" resultType="Map">
+	    <if test="mtype != null and mtype == '1'.toString()">
+ 			select tt.stationname, tt.statioid,tt.monitortime,tt.so2,tt.aqi,tt.aqi,tt.no2,tt.pm10,tt.pm2_5,tt.co,tt.o3
+ 			,rownum from (
+ 	    </if>
+		select distinct  t.stationname,t.statioid,t.monitortime,t.so2,nvl(t.aqi,0) aqi,t.no2,t.pm10,t.pm2_5,t.co,t.o3 
+		from ${dbuser.zhsq_szzg}.zg_aqi   t 
+		WHERE  1=1
+		<if test="statioId != null and statioId != ''">
+		 		AND T.STATIOID = #{statioId,jdbcType=VARCHAR}
+		</if>	
+		<if test="mtype != null and mtype != ''">
+		 		AND T.MONITORTYPE = #{mtype,jdbcType=VARCHAR}
+		</if>	
+ 		order by t.monitortime
+ 	    <if test="mtype != null and mtype == '1'.toString()">
+ 	    	desc
+ 	   		 <![CDATA[
+ 			) tt  where rownum<#{total,jdbcType=DECIMAL}
+ 			]]>
+ 	    </if>
+	</select>
+
+
+
+
+</mapper>

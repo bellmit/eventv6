@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.ldOrg.LdOrgMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg">
+		<id column="LD_ID" property="ldId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="LD_TYPE" property="ldType" jdbcType="VARCHAR" /> <!--单位类型-->
+		<result column="LD_NAME" property="ldName" jdbcType="VARCHAR" /> <!--名称-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--组织编码-->
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" /> <!--组织ID-->
+		<result column="LD_BZ" property="ldBz" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="LD_ITEM" property="ldItem" jdbcType="VARCHAR" /> <!--服务项目-->
+		<result column="LD_PRICE" property="ldPrice" jdbcType="VARCHAR" /> <!--原价-->
+		<result column="LD_DIS_COUNT" property="ldDisCount" jdbcType="VARCHAR" /> <!--折后价-->
+		<result column="LD_SERVER" property="ldServer" jdbcType="VARCHAR" /> <!--材料及服务费-->
+		<result column="CREATER" property="creater" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATER" property="updater" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_YP_MS_LD_ORG T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.LD_ID,
+			T.LD_TYPE,
+			T.LD_NAME,
+			T.ORG_CODE,
+			T.ORG_ID,
+			T.LD_BZ,
+			T.LD_ITEM,
+			T.LD_PRICE,
+			T.LD_DIS_COUNT,
+			T.LD_SERVER,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_LD_ORG T
+		<include refid="find_where" />
+		ORDER BY 
+			T.LD_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		WHERE 1=1
+			<if test="ldId != null and ldId != ''" >
+				<![CDATA[ AND T.LD_ID = #{ldId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="ldType != null and ldType != ''" >
+				<![CDATA[ AND T.LD_TYPE = #{ldType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="ldName != null and ldName != ''" >
+				<![CDATA[ AND T.LD_NAME LIKE '%'||#{ldName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="orgCode != null and orgCode != ''" >
+				<![CDATA[ AND T.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="orgId != null and orgId != ''" >
+				<![CDATA[ AND T.ORG_ID = #{orgId,jdbcType=DECIMAL} ]]>
+			</if> 
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg">
+		<selectKey keyProperty="ldId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_YP_MS_LD_ORG.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_LD_ORG
+		(
+			LD_ID,
+			LD_TYPE,
+			LD_NAME,
+			ORG_CODE,
+			ORG_ID,
+			LD_BZ,
+			LD_ITEM,
+			LD_PRICE,
+			LD_DIS_COUNT,
+			LD_SERVER,
+			CREATER,
+			CREATE_TIME,
+			UPDATER,
+			UPDATE_TIME,
+			STATUS
+		) VALUES (
+			#{ldId,jdbcType=DECIMAL},
+			#{ldType,jdbcType=VARCHAR},
+			#{ldName,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{orgId,jdbcType=DECIMAL},
+			#{ldBz,jdbcType=VARCHAR},
+			#{ldItem,jdbcType=VARCHAR},
+			#{ldPrice,jdbcType=VARCHAR},
+			#{ldDisCount,jdbcType=VARCHAR},
+			#{ldServer,jdbcType=VARCHAR},
+			#{creater,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updater,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg">
+		UPDATE
+			T_YP_MS_LD_ORG
+		<set> 
+			<if test="ldType != null " >
+				LD_TYPE=#{ldType,jdbcType=VARCHAR},
+			</if>
+			<if test="ldName != null " >
+				LD_NAME=#{ldName,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null " >
+				ORG_ID=#{orgId,jdbcType=DECIMAL},
+			</if>
+			<if test="ldBz != null " >
+				LD_BZ=#{ldBz,jdbcType=VARCHAR},
+			</if>
+			<if test="ldItem != null " >
+				LD_ITEM=#{ldItem,jdbcType=VARCHAR},
+			</if>
+			<if test="ldPrice != null " >
+				LD_PRICE=#{ldPrice,jdbcType=VARCHAR},
+			</if>
+			<if test="ldDisCount != null " >
+				LD_DIS_COUNT=#{ldDisCount,jdbcType=VARCHAR},
+			</if>
+			<if test="ldServer != null " >
+				LD_SERVER=#{ldServer,jdbcType=VARCHAR},
+			</if>
+			<if test="updater != null " >
+				UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+				UPDATE_TIME=SYSDATE,
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			LD_ID= #{ldId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.LD_ID,
+			T.LD_TYPE,
+			T.LD_NAME,
+			T.ORG_CODE,
+			T.ORG_ID,
+			T.LD_BZ,
+			T.LD_ITEM,
+			T.LD_PRICE,
+			T.LD_DIS_COUNT,
+			T.LD_SERVER,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_LD_ORG T
+		WHERE
+			LD_ID= #{ldId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<update id="deleteById" parameterType="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg">
+		UPDATE
+			T_YP_MS_LD_ORG
+		SET
+			STATUS='0'
+		WHERE
+			LD_ID= #{ldId,jdbcType=DECIMAL} 
+	</update>
+	
+	<select id="searchByLdType" parameterType="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg" resultMap="BaseResultMap">
+		SELECT
+			T.LD_ID,
+			T.LD_TYPE,
+			T.LD_NAME,
+			T.ORG_CODE,
+			T.ORG_ID,
+			T.LD_BZ,
+			T.LD_ITEM,
+			T.LD_PRICE,
+			T.LD_DIS_COUNT,
+			T.LD_SERVER,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_LD_ORG T
+		WHERE
+			LD_TYPE= #{ldType,jdbcType=VARCHAR}
+			AND STATUS = '1'
+	</select>
+	
+	<!-- 批量插入数据 -->
+	<insert id="batchInsert" parameterType="java.util.List">
+		
+		INSERT INTO
+			T_YP_MS_LD_ORG
+		(
+			LD_ID,
+			LD_NAME,
+			ORG_CODE,
+			LD_TYPE,
+			CREATE_TIME,
+			CREATER,
+			STATUS
+		)
+		SELECT SEQ_T_YP_MS_LD_ORG.NEXTVAL,T.* FROM (
+		<foreach collection="list" item="item" separator="union all">
+		(
+            SELECT 
+			#{item.ldName,jdbcType=VARCHAR},
+			#{item.orgCode,jdbcType=VARCHAR},
+			#{item.ldType,jdbcType=VARCHAR},
+			SYSDATE,
+			#{item.creater,jdbcType=VARCHAR},
+			'1'
+			FROM DUAL
+		)
+		</foreach>
+		) T
+	</insert>
+</mapper>

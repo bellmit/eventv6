@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.education.EducationMapper">
+    <resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.education.EducationBO">
+        <result property="seqid" column="SEQID"/>
+        <result property="orgCode" column="ORG_CODE"/>
+        <result property="orgName" column="ORG_NAME"/>
+        <result property="orgPath" column="ORG_PATH" />
+        <result property="type" column="TYPE"/>
+        <result property="typeName" column="TYPE_NAME"/>
+        <result property="males" column="MALES"/>
+        <result property="females" column="FEMALES"/>
+        <result property="totalPeople" column="TOTAL_PEOPLE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateTime" column="UPDAT_ETIME"/>
+        <result property="status" column="STATUS"/>
+        <result property="yearStr" column="YEAR_"/>
+    </resultMap>
+
+    <select id="findChartByEducation" resultType="map" parameterType="map">
+    	
+    	SELECT  NVL(T.TOTAL_PEOPLE,0) TOTAL_PEOPLE, D.INFO_ORG_CODE ORG_CODE,NVL(T.YEAR_ ,#{yearStr}) YEAR_,D.GRID_NAME AS ORG_NAME
+        FROM T_DC_GRID D
+      LEFT JOIN  ${dbuser.zhsq_szzg}.ZG_EDUCATION T ON D.INFO_ORG_CODE = T.ORG_CODE AND T.STATUS = '1' AND T.TYPE = #{type} AND T.YEAR_ = #{yearStr}
+        WHERE  D.STATUS = '001' AND
+        D.PARENT_GRID_ID = (SELECT O.GRID_ID
+                            FROM T_DC_GRID O
+                            WHERE O.INFO_ORG_CODE = #{orgCode}
+                            AND O.STATUS = '001')
+    	ORDER BY TOTAL_PEOPLE DESC,D.ORDER_ID ASC,D.INFO_ORG_CODE ASC
+    </select>
+    
+    <select id="getEducationCharts" resultType="map">
+    
+    	SELECT D.GRID_NAME AS ORG_NAME,
+          NVL((CASE WHEN T.TOTAL_PEOPLE = 0 THEN 0 ELSE ROUND(T.TOTAL_PEOPLE/10000, 4)  END),0) TOTAL,
+           NVL((CASE WHEN T.TOTAL_PEOPLE = 0 THEN 0 ELSE ROUND(T.MALES/T.TOTAL_PEOPLE*100,2)  END),0) || '%' 
+           ||':'|| 
+           NVL((CASE WHEN T.TOTAL_PEOPLE = 0 THEN 0 ELSE ROUND(T.FEMALES/T.TOTAL_PEOPLE*100,2)  END),0) ||'%'  AS PROP
+         FROM T_DC_GRID D
+         LEFT JOIN ${dbuser.zhsq_szzg}.ZG_EDUCATION T ON D.INFO_ORG_CODE = T.ORG_CODE AND T.STATUS='1' AND T.TYPE= #{type} AND T.YEAR_= #{yearStr}
+         WHERE D.STATUS = '001'
+               AND D.PARENT_GRID_ID = (SELECT O.GRID_ID
+                            FROM T_DC_GRID O
+                            WHERE O.INFO_ORG_CODE = #{orgCode}
+                            AND O.STATUS = '001')
+         ORDER BY D.ORDER_ID,D.INFO_ORG_CODE
+    </select>
+
+    <select id="getEducationByParams" resultMap="BaseResultMapper">
+        select * from ${dbuser.zhsq_szzg}.zg_education t
+        <include refid="conditions"/>
+    </select>
+
+    <select id="findById" resultMap="BaseResultMapper">
+		select t.* ,
+		d.grid_name as org_name,
+        d1.dict_name as type_name
+        from ${dbuser.zhsq_szzg}.zg_education t
+        left join t_dc_grid d on d.info_org_code = t.org_code and d.status='001'
+        left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+        where t.seqid=#{seqid}
+	</select>
+    <select id="findCountByCriteria" resultType="int">
+        select count(*) from ${dbuser.zhsq_szzg}.zg_education t
+        <include refid="conditions"/>
+    </select>
+    <select id="findPageListByCriteria" resultMap="BaseResultMapper">
+        select t.*,
+        d.grid_path as org_path,
+        d1.dict_name as type_name
+        from ${dbuser.zhsq_szzg}.zg_education t
+        left join t_dc_grid d on d.info_org_code = t.org_code and d.status='001'
+        left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+        <include refid="conditions"/>
+    </select>
+    <sql id="conditions">
+        where t.status = '1'
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and ( t.org_code LIKE #{orgCode, jdbcType=VARCHAR}  || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(type)">
+            and t.type = #{type}
+        </if>
+        <if test="@Ognl@isNotEmpty(yearStr)">
+            and t.year_ = #{yearStr}
+        </if>
+    </sql>
+    <update id="update">
+        update ${dbuser.zhsq_szzg}.zg_education t
+        <set>
+            t.update_time = SYSDATE
+            , t.org_Code = #{orgCode, jdbcType=VARCHAR}
+            , t.type = #{type, jdbcType=VARCHAR}
+            ,t.males = #{males, jdbcType=DECIMAL}
+            , t.females = #{females, jdbcType=DECIMAL}
+            , t.total_People = #{totalPeople, jdbcType=DECIMAL}
+            , t.year_ = #{yearStr, jdbcType=VARCHAR}
+            where t.seqid = #{seqid,jdbcType=DECIMAL}
+        </set>
+    </update>
+    <insert id="insert">
+        <selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+            select ${dbuser.zhsq_szzg}.seq_zg_education_id.NEXTVAL from DUAL
+        </selectKey>
+
+        insert into ${dbuser.zhsq_szzg}.zg_education(seqid,org_code, type, males, females, total_people, create_time,
+        status,year_)
+        values(#{seqid, jdbcType=DECIMAL},#{orgCode, jdbcType=VARCHAR}, #{type, jdbcType=VARCHAR}
+        , #{males, jdbcType=DECIMAL}, #{females, jdbcType=DECIMAL}, #{totalPeople, jdbcType=DECIMAL}
+        , SYSDATE, '1', #{yearStr, jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="delete">
+        UPDATE ${dbuser.zhsq_szzg}.zg_education t
+        SET t.status = '0',
+        t.update_time=sysdate
+        WHERE t.seqid = #{seqid}
+    </delete>
+    
+    
+    
+    
+    
+    <select id="findCountByCriteriaPriSchool" resultType="int" parameterType="map">
+        select count(*) from ${dbuser.zhsq_szzg}.zg_statistics t
+        where t.status = '1' and t.stype= 's12' 
+        <if test="params.orgCode!=null and params.orgCode !=''">
+            and ( t.dict_code LIKE #{params.orgCode, jdbcType=VARCHAR}  || '%')
+        </if>
+        <if test="params.yearStr!=null and params.yearStr !=''">
+            and t.syear = #{params.yearStr}
+        </if>
+    </select>
+    
+    <select id="findPageListByCriteriaPriSchool" resultType="map" parameterType="map">
+        select 
+        t.seqid as seqid,
+        d.grid_name as area,
+        t.s1 as newage,
+        t.s2 as newread 
+        from ${dbuser.zhsq_szzg}.zg_statistics t
+        left join t_dc_grid d on d.info_org_code = t.dict_code and d.status='001'
+        where t.status = '1' and t.stype= 's12' 
+        <if test="params.orgCode!=null and params.orgCode !=''">
+            and ( t.dict_code LIKE #{params.orgCode, jdbcType=VARCHAR}  || '%')
+        </if>
+        <if test="params.yearStr!=null and params.yearStr !=''">
+            and t.syear = #{params.yearStr}
+        </if>
+    </select>
+    
+    <select id="findPriEduById" resultType="map" parameterType="long">
+        select
+		t.*,
+        d.grid_name as area
+        from ${dbuser.zhsq_szzg}.zg_statistics t
+        left join t_dc_grid d on d.info_org_code = t.dict_code and d.status='001'
+        where t.status = '1' and t.stype= 's12' and t.seqid=#{seqid}
+	</select>
+	
+	
+	<update id="updatePriEdu">
+        update ${dbuser.zhsq_szzg}.zg_statistics t
+        set t.s1=#{params.newage},
+            t.s2=#{params.newread},
+            t.update_time = SYSDATE,
+            t.update_id=#{params.updateId}
+        where t.seqid=#{params.seqid} and t.stype= 's12'
+    </update>
+    
+    <delete id="deletePriEdu">
+        UPDATE ${dbuser.zhsq_szzg}.zg_statistics t
+        SET t.status = '0',
+        t.update_time=sysdate
+        WHERE t.seqid = #{seqid} and t.stype= 's12'
+    </delete>
+    
+    <select id="checkPriEdu" resultType="map" parameterType="map">
+        select
+		t.seqid
+		from ${dbuser.zhsq_szzg}.zg_statistics t
+        where t.status = '1' and t.stype= 's12' 
+          and t.syear=#{params.yearStr} 
+          and t.dict_code=#{params.orgCode}
+	</select>
+	
+	
+	<insert id="insertPriEdu">
+        insert into zhsq_szzg.zg_statistics t 
+            (t.seqid,t.syear,t.smonth,t.dict_code,t.stype,t.s1,t.s2,t.status,t.create_id,t.create_time)
+        values
+            (zhsq_szzg.seq_statistics_id.nextval,
+            #{params.yearStr},
+            '9',
+            #{params.orgCode},
+            's12',
+            #{params.newage},
+            #{params.read},
+            '1',
+            #{params.createId},
+            SYSDATE);
+    </insert>
+
+    
+    
+</mapper>

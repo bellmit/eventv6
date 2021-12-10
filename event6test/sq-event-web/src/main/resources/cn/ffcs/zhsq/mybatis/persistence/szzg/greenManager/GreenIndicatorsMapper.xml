@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.greenManager.GreenIndicatorsMapper">
+	<resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.greenManager.StatsGreenBO">
+		<result property="seqid" column="SEQID" />
+		<result property="syear" column="SYEAR" />
+		<result property="orgCode" column="ORG_CODE" />
+		<result property="orgName" column="ORG_NAME" />
+		<result property="orgPath" column="ORG_PATH" />
+		<result property="builtupArea" column="BUILTUP_AREA" />
+		<result property="regionalArea" column="REGIONAL_AREA" />
+		<result property="popu" column="POPU" />
+		<result property="gRate" column="G_RATE" />
+		<result property="gCoverrate" column="G_COVERRATE" />
+		<result property="gCoverarea" column="G_COVERAREA" />
+		<result property="gArea" column="G_AREA" />
+		<result property="gParkarea" column="G_PARKAREA" />
+		<result property="gPerparkarea" column="G_PERPARKAREA" />
+		<result property="forestArea" column="FOREST_AREA" />
+		<result property="forestCoverarea" column="FOREST_COVERAREA" />
+		<result property="x" column="X" />
+		<result property="y" column="Y" />
+		<result property="longitude" column="LONGITUDE" />
+		<result property="dimensions" column="DIMENSIONS" />
+		<result property="geometry" column="GEOMETRY" />
+		<result property="opdate" column="OPDATE" />
+		<result property="status" column="STATUS" />
+		<result property="updateTime" column="UPDATE_TIME" />
+	</resultMap>
+	<select id="findCountByCriteria" resultType="int">
+		 SELECT COUNT(*) FROM ${dbuser.zhsq_szzg}.zg_stats_green t
+		 <include refid="conditions"/>
+	</select>
+	<select id="findPageListByCriteria" resultMap="BaseResultMapper">
+		SELECT t.*,d1.grid_path as ORG_PATH FROM ${dbuser.zhsq_szzg}.zg_stats_green t
+		left join t_dc_grid d1 on d1.info_org_code = t.org_code and d1.status='001'
+		 <include refid="conditions"/>
+		 order by opdate desc
+	</select>
+	<sql id="conditions">
+		where t.status = '1'
+		<if test="@Ognl@isNotEmpty(syear)">
+			and t.sYear = #{syear}
+		</if>
+		<if test="@Ognl@isNotEmpty(orgCode)">
+			and ( t.org_code like #{orgCode, jdbcType=VARCHAR} ||  '%' )
+		</if>
+	</sql>
+
+
+	<select id="findById" resultMap="BaseResultMapper">
+		select * from ${dbuser.zhsq_szzg}.zg_stats_green t where t.seqid=#{seqid}
+	</select>
+
+
+	<update id="update">
+		UPDATE ${dbuser.zhsq_szzg}.zg_stats_green
+		<set>
+			update_time = sysdate
+			<if test=" syear!=null">
+				,SYEAR = #{syear}
+			</if>
+			<if test=" builtupArea!=null">
+				,BUILTUP_AREA = #{builtupArea}
+			</if>
+			<if test=" regionalArea!=null">
+				,REGIONAL_AREA = #{regionalArea}
+			</if>
+			<if test=" popu!=null">
+				,POPU = #{popu}
+			</if>
+			<if test=" gRate!=null">
+				,G_RATE = #{gRate}
+			</if>
+			<if test=" gCoverrate!=null">
+				,G_COVERRATE = #{gCoverrate}
+			</if>
+			<if test=" gCoverarea!=null">
+				,G_COVERAREA = #{gCoverarea}
+			</if>
+			<if test=" gArea!=null">
+				,G_AREA = #{gArea}
+			</if>
+			<if test=" gParkarea!=null">
+				,G_PARKAREA = #{gParkarea}
+			</if>
+			<if test=" gPerparkarea!=null">
+				,G_PERPARKAREA = #{gPerparkarea}
+			</if>
+			<if test=" forestArea!=null">
+				,FOREST_AREA = #{forestArea}
+			</if>
+			<if test=" forestCoverarea!=null">
+				,FOREST_COVERAREA = #{forestCoverarea}
+			</if>
+			<if test=" x!=null">
+				,X = #{x}
+			</if>
+			<if test=" y!=null">
+				,Y = #{y}
+			</if>
+			where seqid=#{seqid}
+		</set>
+	</update>
+
+
+	<delete id="delete">
+		UPDATE ${dbuser.zhsq_szzg}.zg_stats_green t
+		SET t.status = '0',
+		t.update_time=sysdate
+		WHERE t.seqid = #{seqid}
+	</delete>
+	
+	<select id="findStatsGreen" resultMap="BaseResultMapper">
+		SELECT * FROM ${dbuser.zhsq_szzg}.zg_stats_green t  where  t.status = '1'
+	</select>
+
+	<select id="findCharDataByQs" resultMap="BaseResultMapper">
+		SELECT t.syear as SYEAR,sum(t.g_area) as GAREA,sum(t.g_parkarea) as GPARKAREA,sum(t.g_coverarea) as GCOVERAREA
+		FROM ${dbuser.zhsq_szzg}.zg_stats_green t  where  t.status = '1' and t.org_code like #{orgCode} group by t.syear
+		order by t.syear asc
+	</select>
+
+	<select id="findCharDataByQs_2" resultMap="BaseResultMapper">
+		SELECT t.syear as SYEAR,sum(t.FOREST_COVERAREA) as FOREST_COVERAREA,avg(t.g_rate) as GRATE,avg(t.g_coverrate) AS GCOVERRATE
+		FROM ${dbuser.zhsq_szzg}.zg_stats_green t  where  t.status = '1' and t.org_code like #{orgCode} group by t.syear
+		order by t.syear asc
+	</select>
+
+
+  	<select id="findStatsGreenByParams" resultMap="BaseResultMapper">
+		SELECT * FROM ${dbuser.zhsq_szzg}.zg_stats_green t
+		where t.status = '1'
+		<if test="@Ognl@isNotEmpty(syear)">
+			and t.sYear = #{syear}
+		</if>
+		<if test="@Ognl@isNotEmpty(orgCode)">
+			and  t.org_code like #{orgCode, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+
+	
+	<insert id="insert">
+		<selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+			select ${dbuser.zhsq_szzg}.seq_zg_stats_green_id.NEXTVAL from DUAL
+		</selectKey>
+
+		insert into ${dbuser.zhsq_szzg}.zg_stats_green (seqid,syear,org_code, org_name, builtup_area, regional_area,popu, g_rate,g_coverrate,
+		g_coverarea,g_area, g_parkarea, g_perparkarea, forest_area, forest_coverarea,x, y, longitude, dimensions, 
+		geometry, opdate, status, update_time)
+		values(#{seqid},#{syear},#{orgCode},#{orgName},#{builtupArea},#{regionalArea},#{popu},
+		#{gRate},#{gCoverrate},#{gCoverarea},#{gArea},#{gParkarea},#{gPerparkarea},#{forestArea},#{forestCoverarea},
+		#{x},#{y},#{longitude},#{dimensions},#{geometry},sysdate,'1', null)
+	</insert>
+</mapper>

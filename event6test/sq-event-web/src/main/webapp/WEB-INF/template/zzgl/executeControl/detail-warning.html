@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>南昌市经开区群防群治管控平台</title>
+    <!-- layui样式 -->
+    <#include "/component/szcommonFiles-1.1.ftl" />
+    <#include "/component/szcomponentsFiles-1.1.ftl" />
+    <!--引用百度地图API-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=cgxWxSdSiywGLUvIbfnepU2bmaXcILqf"></script>
+    <!--<script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>-->
+    <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.2/skins/default/aliplayer-min.css" />
+    <script charset="utf-8" type="text/javascript" src="https://g.alicdn.com/de/prismplayer/2.8.2/aliplayer-min.js"></script>
+    <script src="${uiDomain}/web-assets/common/js/jqry-9-1-12-4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="${uiDomain}/web-assets/plugins/jquery-nicescroll/jquery.nicescroll-1.js"></script>
+    <script src="${uiDomain}/web-assets/plugins/layui-v2.5.5/layui/layui.all.js"></script>
+    <script src="${rc.getContextPath()}/js/map/bMap/bMapTools.js?v=1.0.019" type="text/javascript"></script>
+
+    <style>
+        ul li{
+            padding: 6.5px;
+            float: left;
+        }
+        ul li img{
+            width: 150px;
+            height: 180px;
+        }
+        .small_li > li {
+            margin-right: -4px !important;
+            border-width: 2px;
+            border-style: solid;
+            border-color: white;
+            border-image: initial;
+        }
+    </style>
+</head>
+
+<body class="bg-cor3">
+    <div class="layui-row">
+        <!-- 内容区 -->
+        <div class="layui-col-sm12 layui-form">
+            <div class="peo-list-ext1 layui-col-sm8 layui-col-sm-offset2 mt15">
+                <div class="layui-col-sm4">
+                    <div class="layui-col-sm6">
+                        <div class="peo-list-c">
+                            <div class="peo-list-p">
+                                <img src="${jsonObject.imageUrl}">
+                                <p class="peo-list-p-des">布控人脸</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm6">
+                        <div class="peo-list-c">
+                            <div class="peo-list-p">
+                                <img src="${jsonObject.faceUrl}">
+                                <p class="peo-list-p-des">抓拍人脸</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm12 bg-fff ">
+                        <table class="table-th-ext2">
+                            <colgroup>
+                                <col width="50%">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr class="layui-progress">
+                                    <td colspan="2">
+                                        <p class="peo-list-t6 peo-list-t7 flex">相似度<i class="peo-list-per">
+                                            <span class="peo-list-per-bar" style="width: 90%;"></span>
+                                        </i><em class="cor-ext2" id="score"></em></p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="layui-col-sm8">
+                    <div class="layui-col-sm12">
+                        <div class="layui-col-sm7 layui-col-md8 layui-col-lg9">
+                            <#if jsonObject.isHandle??>
+                                <div class="layui-input-block pl15">
+                                    <input type="text" id="operationDetail" value="${jsonObject.operationDetail}" placeholder="请输入警情备注，最大长度不超过200" class="layui-input">
+                                    <button class="layui-btn peo-btn-save" onclick="save()">保存</button>
+                                </div>
+                            <#else>
+                                <div class="layui-input-block pl15">
+                                    <input type="text" id="operationDetail" placeholder="请输入警情备注，最大长度不超过200" class="layui-input">
+                                    <button class="layui-btn peo-btn-save" onclick="save()">保存</button>
+                                </div>
+                            </#if>
+                        </div>
+                        <div class="layui-col-sm5 layui-col-md4 layui-col-lg3">
+                            <div class="layui-input-block sch-pit-btn font-size-0 flex">
+                                <#if jsonObject.isHandle == 1>
+                                <#else>
+                                <button type="button" class="layui-btn layui-btn-green font-bold flex1 ml10" onclick="invalid()" >无效</button>
+                                <button type="button" class="layui-btn layui-btn-warm2 font-bold flex1" onclick="effective()">有效</button>
+                                </#if>
+                                <button type="button" id="closeBtn" class="layui-btn layui-btn-warm btn-back" style="margin: -20px 0 0 133px;">返回</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm12 mt15 pl15">
+                        <div class="peo-list-box">
+                            <table class="table-th-ext3 mt20">
+                                <colgroup>
+                                    <col width="22%">
+                                    <col width="28%">
+                                    <col width="22%">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <p>姓名：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.objectMainJson.name!'--'}</p>
+                                        </td>
+                                        <td>
+                                            <p>所在布控库：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.libName!'--'}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>性别：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.objectMainJson.gender!'--'}</p>
+                                        </td>
+                                        <td>
+                                            <p>所在布控任务：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.taskName!'--'}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>身份证号：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.objectMainJson.identityCardNumber!'--'}</p>
+                                        </td>
+                                        <td>
+                                            <p>出生年月：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.objectMainJson.birthday!'--'}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>民族：</p>
+                                        </td>
+                                        <td>
+                                            <p>${jsonObject.objectMainJson.nationality!'--'}</p>
+                                        </td>
+                                        <td>
+                                            <p>告警时间：</p>
+                                        </td>
+                                        <td>
+                                            <p id="alarmTime"></p>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <p>告警设备名称：</p>
+                                        </td>
+                                        <td colspan="3">
+                                            <p>${jsonObject.deviceName!'--'}</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>告警设备地址：</p>
+                                        </td>
+                                        <td colspan="3">
+                                            <p>${jsonObject.address!'--'}</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-sm12 mt15">
+                <div class="layui-col-sm8 layui-col-sm-offset2 peo-btn-g1 font-size-0 bg-fff pt15 layui-bud-tab">
+                    <button class="layui-btn layui-this active"><i class="layui-icon layui-icon-carousel"></i>看图片</button>
+                    <#if hlsUrl??>
+                        <button class="layui-btn"><i class="layui-icon layui-icon-play"></i>看视频</button>
+                    <#else>
+                        <button class="layui-btn disable"><i class="layui-icon layui-icon-play"></i>看视频</button>
+                    </#if>
+                    <button class="layui-btn"><i class="layui-icon layui-icon-location"></i>看地图</button>
+                </div>
+                <div class="layui-col-sm12">
+                    <div class="layui-col-sm2" >
+                        <a href="javascript:;" class="marquee-side" id="pre" onclick="detail(this)">
+                            <div class="marquee-side-p">
+                                <img src="" id="prePic">
+                            </div>
+                            <button class="layui-btn"><i class="layui-icon layui-icon-left" ></i>上一个</button>
+                        </a>
+                        <div id="test1"></div>
+                        <div style="margin: 270px 0 0 150px;cursor: pointer;">
+                            <i class="layui-icon layui-icon-left" id="pre-page" style="font-size: 30px; color: #1E9FFF;" onclick="change(1)"></i>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm8 pt15 bg-fff">
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <img style="width: 100%;height: 500px;" src="${jsonObject.sceneUrl}">
+                            </div>
+                            <div class="layui-tab-item">
+                                <div style="width: 100%;height: 500px;" class="prism-player" id="player-con"></div>
+                            </div>
+                            <div class="layui-tab-item" style="height: 500px;">
+                                <!--百度地图容器-->
+                                <div style="width: 100%;height: 100%;border:#ccc solid 1px;font-size:12px;overflow: hidden" id="map"></div>
+                            </div>
+                        </div>
+                        <div class="smImgBox">
+                            <div class="listBox">
+                                <ul id="listBox" class="cf small_li" style="float:left; width:100%;height:auto;">
+                                  <#if list??>
+                                      <#list list as bo>
+                                        <#if bo_index < 5 >
+                                            <#if jsonObject.id == bo.id>
+                                            <li style="border: 1px solid #ff8145;">
+                                                <i class="arr2"></i>
+                                                <img style="cursor: pointer;" onclick="detail(this)" src="${bo.faceUrl}" id="${bo.id}">
+                                            </li>
+                                            <#else>
+                                            <li>
+                                                <i class="arr2"></i>
+                                                <img style="cursor: pointer;" onclick="detail(this)" src="${bo.faceUrl}" id="${bo.id}" >
+                                            </li>
+                                            </#if>
+                                        </#if>
+                                      </#list>
+
+                                  </#if>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="layui-col-sm2" >
+                        <a href="javascript:;" class="marquee-side" id="next" onclick="detail(this)">
+                            <div class="marquee-side-p">
+                                <img src="" id="nextPic">
+                            </div>
+                            <button class="layui-btn">下一个<i class="layui-icon layui-icon-right" ></i></button>
+                        </a>
+                            <div style="margin: 270px 0 0 20px;cursor: pointer;" >
+                                <i class="layui-icon layui-icon-right" style="font-size: 30px; color: #1E9FFF;" id="next-page" onclick="change(2)"></i>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        var array = [];
+        var isEffective;
+        var id_ = "${jsonObject.id}";
+        var imgLen = '${list?size}';
+        $(function () {
+            $("#alarmTime").text(formateTimeStamp("${jsonObject.alarmTime}"));
+            $("#score").text(Math.floor("${jsonObject.score}") + "%");
+            <#if list??>
+                <#list list as bo>
+                    var id = "${bo.id}";
+                    var faceUrl = "${bo.faceUrl}";
+                    array.push({"id":id,"faceUrl":faceUrl})
+                </#list>
+            </#if>
+            for (var i = 0; i < array.length; i++) {
+                if (id_ == array[i].id && i == 0){
+                    $("#pre").css("visibility","hidden");
+                    $('#nextPic').attr('src', array[i + 1].faceUrl);
+                    $('#next').attr('id', array[i + 1].id);
+                    break;
+                }
+
+                if (id_ == array[i].id && i == array.length - 1){
+                    $("#next").css("visibility","hidden");
+                    $('#prePic').attr('src', array[i - 1].faceUrl);
+                    $('#pre').attr('id', array[i - 1].id);
+                    break;
+                }
+
+                if (id_ == array[i].id) {
+                    $('#prePic').attr('src', array[i - 1].faceUrl);
+                    $('#pre').attr('id', array[i - 1].id);
+                    $('#nextPic').attr('src', array[i + 1].faceUrl);
+                    $('#next').attr('id', array[i + 1].id);
+                    break;
+                }
+            }
+        });
+
+        layui.use('element', function() {
+            var $ = layui.jquery
+                , element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+        });
+
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form,
+                laydate = layui.laydate;
+
+            //日期时间选择器
+            laydate.render({
+                elem: '#date1'
+                , type: 'datetime'
+            });
+            //日期时间选择器
+            laydate.render({
+                elem: '#date2'
+                , type: 'datetime'
+            });
+
+            $("#closeBtn").on('click',function () {
+                parent.layer.closeAll();
+            });
+
+        });
+
+        $('.layui-bud-tab').on('click', 'button', function () {
+            $(this).addClass('layui-this active').siblings().removeClass('layui-this active');
+            $('.layui-tab-item').eq($(this).index()).addClass('layui-show active').siblings().removeClass('layui-show active');
+        });
+
+        function invalid() {
+            layer.open({
+                type: 1
+                ,btn:['确 定','取 消']
+                ,content: '<div style="padding: 20px 100px;">'+ '你确定将该信息为无效吗' +'</div>'
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,btn1: function(){
+                    isEffective = 0;
+                    save(isEffective);
+                    layer.closeAll();
+                }
+                ,btn2: function(){
+                    layer.closeAll();
+                }
+            });
+        }
+
+        function effective() {
+            layer.open({
+                type: 1
+                ,btn:['确 定','取 消']
+                ,content: '<div style="padding: 20px 100px;">'+ '你确定将该信息为有效吗' +'</div>'
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,btn1: function(){
+                    isEffective = 1;
+                    save(isEffective);
+                    layer.closeAll();
+                }
+                ,btn2: function(){
+                    layer.closeAll();
+                }
+            });
+        }
+
+        function save(isEffective) {
+            var operationDetail = $("#operationDetail").val();
+            $.ajax({
+                type: 'POST',
+                url: '${rc.getContextPath()}/zhsq/event/warning/save.json',
+                data: {
+                    id: id_,
+                    isEffective: isEffective,
+                    operationDetail: operationDetail
+                },
+                async: true,
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    if(data.result == "success"){
+                        layer.msg("保存成功",{skin:'layui-layer-hui'});
+                    }else {
+                        layer.msg("保存失败",{skin:'layui-layer-hui'});
+                    }
+                },
+                error: function(data) {
+                    layer.msg("连接超时",{skin:'layui-layer-hui'});
+                },
+                complete : function() {
+                    //layer.close(submitLoad);//关闭遮罩
+                }
+            });
+        }
+
+        function detail(_this) {
+            layer.load();
+            var id = $(_this).attr("id");
+            window.location.href="${rc.getContextPath()}/zhsq/event/warning/detail.jhtml?id=" + id;
+        }
+
+        var offset = 0;
+        if (offset <= 0){
+            $("#pre-page").css("pointer-events","none");
+        }else if (offset < imgLen) {
+            $("#next-page").css("pointer-events","auto");
+        }
+        function change(direct, ev) {
+            stopBubble(ev);//这样就不会再冒泡给父级了
+            if (direct == 1) {//左滑
+                offset = offset - 5;
+            } else {//right slide
+                offset = offset + 5;
+            }
+
+            if (offset <= 0){
+                offset = 0;
+                $("#pre-page").css("pointer-events","none");
+            }else {
+                $("#pre-page").css("pointer-events","auto");
+            }
+
+            if (offset >= imgLen){
+                offset = imgLen - (imgLen%5);
+            }else if (offset >= imgLen - 5) {
+                $("#next-page").css("pointer-events","none");
+            }else {
+                $("#next-page").css("pointer-events","auto");
+            }
+
+            parent.getDataList(offset);
+            var data = parent.names;
+            console.log(data);
+            var html = '';
+            if (data.list.length < 5){
+                for (var i = 0; i < data.list.length; i++) {
+                    if (data.list[i].id == id_){
+                        html += '<li style="border: 1px solid #ff8145;">';
+                        html += '<i class="arr2"></i>';
+                        html += ' <img style="cursor: pointer;" onclick="detail(this)" src="'+data.list[i].faceUrl+'" id="'+data.list[i].id+'" >';
+                        html += '</li>';
+                    } else {
+                        html += '<li>';
+                        html += '<i class="arr2"></i>';
+                        html += ' <img style="cursor: pointer;" onclick="detail(this)" src="'+data.list[i].faceUrl+'" id="'+data.list[i].id+'" >';
+                        html += '</li>';
+                    }
+                }
+            } else {
+                for (var i = 0; i < 5; i++) {
+                    if (data.list[i].id == id_){
+                        html += '<li style="border: 1px solid #ff8145;">';
+                        html += '<i class="arr2"></i>';
+                        html += ' <img style="cursor: pointer;" onclick="detail(this)" src="'+data.list[i].faceUrl+'" id="'+data.list[i].id+'" >';
+                        html += '</li>';
+                    } else {
+                        html += '<li>';
+                        html += '<i class="arr2"></i>';
+                        html += ' <img style="cursor: pointer;" onclick="detail(this)" src="'+data.list[i].faceUrl+'" id="'+data.list[i].id+'" >';
+                        html += '</li>';
+                    }
+                }
+            }
+            $("#listBox").html(html);
+        }
+
+        function stopBubble(e) {
+            //如果提供了事件对象，则这是一个非IE浏览器
+            if ( e && e.stopPropagation )
+            //因此它支持W3C的stopPropagation()方法
+                e.stopPropagation();
+            else
+            //否则，我们需要使用IE的方式来取消事件冒泡
+                window.event.cancelBubble = true;
+        }
+
+        // 计算弹窗内容框高度
+        function calcLayBdH(layero) {
+            var winW = $(window).width(),
+                winH = $(window).height(),
+                lhH = $(layero.selector).find('.lay-nor-hd').outerHeight(true),
+                lbH,
+                layCalcAdH = $(layero.selector).find('.lay-calc-ad').outerHeight(true);
+            if (winW <= 1366) {
+                lbH = winH - lhH - 10;
+            } else {
+                lbH = winH - lhH - 15;
+            }
+            $(layero.selector).find('.lay-nor-bd').height(lbH);
+            if(layCalcAdH >= lbH){
+                console.log(layCalcAdH);
+                $(layero.selector).find('.lay-pos-ad').addClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '100px'});
+            }else{
+                $(layero.selector).find('.lay-pos-ad').removeClass('lay-pos-btm');
+                $(layero.selector).find('.lay-calc-ad').css({'padding-bottom': '0px'});
+            }
+        }
+
+        $(function () {
+            $.fn.extend({
+                // 选择组件
+                select: function () {
+                    var _this = this;
+                    $(_this).children('a').click(function () {
+                        $(this).toggleClass('active');
+                        $(this).siblings('ul').slideToggle(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                        return false;
+                    });
+                    $(document).click(function () {
+                        $('.com-select>a').removeClass('active');
+                        $('.com-select>ul').slideUp(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                    });
+                    $('.com-select>ul').on('click', 'li', function () {
+                        var pText = $(this).text();
+                        $('.com-select>a').find('p').text(pText);
+                        $('.section-tt-year').text(pText);
+                    });
+                    $('.com-select-list').getNiceScroll().resize();
+                },
+                ranking: function (options) {
+                    var _this = this;
+                    $(_this).find('tbody tr').each(function (index, el) {
+                        $(this).find('.ranking-per>p').css({ 'width': options[index] + '%' });
+                    });
+                },
+
+            });
+
+            // 计算页面高度
+            $('.h-x').niceScroll({
+                cursorcolor: "#ccc",
+                cursoropacitymax: 0.8,
+                cursorwidth: "4px",
+                cursorborderradius: "2px",
+                cursorborder: 'none',
+                autohidemode: true,
+            });
+        });
+
+        //创建和初始化地图函数：
+        function initMap(){
+            createMap();//创建地图
+            setMapEvent();//设置地图事件
+            addMapControl();//向地图添加控件
+            addMapOverlay();//向地图添加覆盖物
+        }
+        var log = "${jsonObject.longitude}";
+        var lat = "${jsonObject.latitude}";
+        var ggPoint = new BMap.Point(log,lat);
+        function createMap(){
+            map = new BMap.Map("map");
+            map.centerAndZoom(ggPoint, 16);
+            map.addControl(new BMap.NavigationControl());
+
+        }
+        function setMapEvent(){
+            map.enableScrollWheelZoom(true);
+            map.enableKeyboard();
+            map.enableDragging();
+            map.enableDoubleClickZoom()
+        }
+
+        function addMapOverlay(){
+
+        }
+
+        setTimeout(function(){
+            var convertor = new BMap.Convertor();
+            var pointArr = [];
+            pointArr.push(ggPoint);
+            convertor.translate(pointArr, 3, 5, translateCallback)
+        }, 1000);
+
+        //坐标转换完之后的回调函数
+         function translateCallback(data){
+            console.log(data.points[0]);
+             if(data.status === 0) {
+                 var marker = new BMap.Marker(data.points[0]);
+                 map.addOverlay(marker);
+                 var content ="<div><br>地址: :${jsonObject.deviceName}<br></div>";
+                 addClickHandler(content, marker);
+                 map.setCenter(data.points[0]);
+                 //map.panTo(data.points[0]);
+             }
+         }
+
+        function addClickHandler(content,marker){
+            marker.addEventListener("mouseover",function(e){
+                openInfo(content,e);
+            });
+        }
+        function openInfo(content,e) {
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+
+        //向地图添加控件
+        function addMapControl(){
+            var scaleControl = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+            scaleControl.setUnit(BMAP_UNIT_IMPERIAL);
+            map.addControl(scaleControl);
+            var navControl = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+            map.addControl(navControl);
+            var overviewControl = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:true});
+            map.addControl(overviewControl);
+
+        }
+
+        var map;
+        initMap();
+
+        var hls = '${hlsUrl}';
+        var player = new Aliplayer({
+                "id": "player-con",
+                "source": hls,
+                "width": "100%",
+                "height": "500px",
+                "autoplay": false,
+                "isLive": false,
+                "rePlay": false,
+                "playsinline": true,
+                "preload": true,
+                "controlBarVisibility": "hover",
+                "useH5Prism": true
+            }, function (player) {
+                console.log("The player is created");
+            }
+        );
+
+        var _video = document.querySelector('video');
+        player.on('play', function(e) {
+            _video.removeEventListener('click', play);
+            _video.addEventListener('click', pause);
+        });
+        player.on('pause', function(e) {
+            _video.removeEventListener('click', pause);
+            _video.addEventListener('click', play)
+        });
+
+        function play() {
+            if (player) player.play();
+        }
+
+        function pause() {
+            if (player) player.pause();
+        }
+
+        function formateTimeStamp(time){
+            var date = new Date();
+            date.setTime(time);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours()< 10 ? "0" + date.getHours() : date.getHours();
+            var minute = date.getMinutes()< 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var second = date.getSeconds()< 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return year + "-" + month + "-" + day+" "+hour+":"+minute+":"+second;
+        }
+
+    </script>
+</body>
+
+</html>

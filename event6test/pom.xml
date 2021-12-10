@@ -1,0 +1,734 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.ffcs.event</groupId>
+	<artifactId>sq-event-parent</artifactId>
+	<version>3.0.3</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>sq-event-api</module>
+		<module>sq-event-web</module>
+	</modules>
+	<properties>
+		<!-- 其他工程API依赖版本 -->
+		<version.sq-system-serv-v2-api>2.0.2</version.sq-system-serv-v2-api>
+		<version.sq_system_serv>3.0.0</version.sq_system_serv>
+
+		<!-- 工具包 -->
+		<axis2.version>1.6.2</axis2.version>
+		<spring.rabbit.version>1.2.0.RELEASE</spring.rabbit.version>
+		<version.commons.lang>2.6</version.commons.lang>
+		<version.commons.fileupload>1.3.1</version.commons.fileupload>
+		<version.commons.codec>1.9</version.commons.codec>
+		<version.commons.beanutils>1.8.3</version.commons.beanutils>
+		<version.junit>4.11</version.junit>
+		<version.mysql.connector>5.1.24</version.mysql.connector>
+		<version.freemarker>2.3.27-incubating</version.freemarker>
+		<version.json-lib>2.4</version.json-lib>
+		<version.Memcached-Java-Client>3.0.2</version.Memcached-Java-Client>
+		<version.amqp-client>3.2.3</version.amqp-client>
+		<version.dom4j>1.6.1</version.dom4j>
+		<version.cglib>3.1</version.cglib>
+		<version.jackson-mapper>1.9.13</version.jackson-mapper>
+<!-- 		<version.httpclient>4.3.4</version.httpclient> -->
+		<version.hessian>4.0.37</version.hessian>
+		<version.jackson-databind>2.9.10.8</version.jackson-databind>
+		<version.jackson-all>1.9.2</version.jackson-all>
+		<!-- Plugin的属性定义 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>1.8</jdk.version>
+
+		<version.plugin.tomcat>2.2</version.plugin.tomcat>
+		<version.plugin.jetty>8.1.14.v20131031</version.plugin.jetty>
+		<version.plugin.cargo>2.5</version.plugin.cargo>
+		
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<version.shequ.common>3.0.038</version.shequ.common>
+		<version.dubbo>2.7.11-ffcs</version.dubbo>
+		<version.shequ.log>3.1.7</version.shequ.log>
+		<hibernate.version>5.5.3.Final</hibernate.version>
+
+		<!-- Release -->
+		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
+	</properties>
+
+	<!-- <scm> <url>https://192.168.52.26/svn/Dev/智慧社区/二期/8_代码/公众应用(CMS)/trunk/sq-cms-fjsq/sq-cms-parent</url> 
+		<connection>scm:svn:https://192.168.52.26/svn/Dev/智慧社区/二期/8_代码/公众应用(CMS)/trunk/sq-cms-fjsq/sq-cms-parent</connection> 
+		<developerConnection>scm:svn:https://192.168.52.26/svn/Dev/智慧社区/二期/8_代码/公众应用(CMS)/trunk/sq-cms-fjsq/sq-cms-parent</developerConnection> 
+		</scm> -->
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://192.168.52.125:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://192.168.52.125:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven-net-cn</id>
+			<name>Maven China Mirror</name>
+			<url>http://192.168.52.125:8081/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<!-- compiler插件, 设定JDK版本 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<showWarnings>true</showWarnings>
+					<compilerArguments>
+						<verbose />
+						<!--<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>-->
+						<bootclasspath>${java.home}/lib/rt.jar${path.separator}${java.home}/lib/jce.jar</bootclasspath>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+
+			<!-- 打包源代码 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<encording>UTF-8</encording>
+				</configuration>
+			</plugin>
+
+			<!-- test插件, 仅测试名称为*Test的类,使用支持分组测试的surefire-junit47 driver -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<argLine>-Xmx256M</argLine>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.12.4</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+
+
+			<!-- tomcat插件 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+					<uriEncoding>UTF-8</uriEncoding>
+				</configuration>
+			</plugin>
+
+			<!-- resource插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+			</plugin>
+
+			<!-- install插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
+
+			<!-- clean插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
+
+			<!-- ant插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+			</plugin>
+
+			<!-- dependency插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+			</plugin>
+
+			<!-- SVN 插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.2</version>
+				<configuration>
+					<tagBase>https://192.168.52.26/svn/Dev/智慧社区/二期/8_代码/综治网格/trunk/sq-zzgrid-parent
+					</tagBase>
+					<tagNameFormat>${project.artifactId}-V@{project.version}-build-${maven.build.timestamp}
+					</tagNameFormat>
+					<workingDirectory>${java.io.tmpdir}/${project.artifactId}/checkout
+					</workingDirectory>
+					<checkModificationExcludes>
+						<checkModificationExclude>.project</checkModificationExclude>
+						<checkModificationExclude>.classpath</checkModificationExclude>
+						<checkModificationExclude>.settings</checkModificationExclude>
+					</checkModificationExcludes>
+					<generateReleasePoms>false</generateReleasePoms>
+					<autoVersionSubmodules>false</autoVersionSubmodules>
+					<remoteTagging>true</remoteTagging>
+					<username>${svn.name}</username>
+					<password>${svn.pwd}</password>
+				</configuration>
+			</plugin>
+
+			<!-- 打包神器 <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>1.4</version> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>shade</goal> </goals> <configuration> <transformers> </transformers> 
+				</configuration> </execution> </executions> </plugin> -->
+
+			<!-- tomcat运行 -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat6-maven-plugin</artifactId>
+				<version>${version.plugin.tomcat}</version>
+				<configuration>
+					<!-- http port -->
+					<port>9090</port>
+					<!-- application path always starts with / -->
+					<path>/conf</path>
+					<uriEncoding>UTF-8</uriEncoding>
+					<!-- <systemProperties> <java.io.tmpdir>${project.build.directory}</java.io.tmpdir> 
+						</systemProperties> -->
+				</configuration>
+			</plugin>
+
+			<!-- jetty插件 -->
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${version.plugin.jetty}</version>
+				<configuration>
+					<!-- 启动热部署 -->
+					<reload>automatic</reload>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<systemProperties>
+						<systemProperty>
+							<name>spring.profiles.active</name>
+							<value>development</value>
+						</systemProperty>
+					</systemProperties>
+					<useTestClasspath>true</useTestClasspath>
+					<webAppConfig>
+						<contextPath>/${project.artifactId}</contextPath>
+					</webAppConfig>
+				</configuration>
+			</plugin>
+
+			<!-- 使用Cargo实现自动化部署 -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>${version.plugin.cargo}</version>
+				<configuration>
+					<container>
+						<containerId>tomcat6x</containerId>
+						<type>remote</type>
+					</container>
+					<configuration>
+						<type>runtime</type>
+						<properties>
+							<cargo.remote.username>root</cargo.remote.username>
+							<cargo.remote.password>123456</cargo.remote.password>
+							<cargo.tomcat.manager.url>http://192.168.137.2:8080/manager</cargo.tomcat.manager.url>
+						</properties>
+					</configuration>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<!--第三方包版本统一管理-->
+			<dependency>
+				<groupId>cn.ffcs.sqopen</groupId>
+				<artifactId>sq-dependencies-bom</artifactId>
+				<version>${version.shequ.common}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!--社区sq-common工具包的版本管理-->
+			<dependency>
+				<groupId>cn.ffcs.sqopen</groupId>
+				<artifactId>sq-common-bom</artifactId>
+				<version>${version.shequ.common}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!--dubbo依赖的第三方包版本-->
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-dependencies-bom</artifactId>
+				<version>${version.dubbo}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!--日志log包也升级了log4j，必须需要使用新的日志包-->
+			<dependency>
+				<groupId>cn.ffcs.sqopen</groupId>
+				<artifactId>sq-log-api</artifactId>
+				<version>${version.shequ.log}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.sqopen</groupId>
+				<artifactId>sq-log-utils</artifactId>
+				<version>${version.shequ.log}</version>
+			</dependency>
+			
+			<dependency>
+			  <groupId>cn.ffcs.bi</groupId>
+			  <artifactId>sq_bi_api</artifactId>
+			  <version>3.0.040</version>
+			</dependency>
+						
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>${version.commons.lang}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>${version.commons.fileupload}</version>
+			</dependency>
+ 			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${version.commons.codec}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${version.commons.beanutils}</version>
+			</dependency>
+ 			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>${version.cglib}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-mapper-asl</artifactId>
+				<version>${version.jackson-mapper}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.jackson</groupId>
+				<artifactId>jackson-core-asl</artifactId>
+				<version>${version.jackson-mapper}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus</groupId>
+				<artifactId>jackson-all</artifactId>
+				<version>${version.jackson-all}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.json-lib</groupId>
+				<artifactId>json-lib</artifactId>
+				<version>${version.json-lib}</version>
+				<classifier>jdk15</classifier>
+			</dependency>
+
+ 			<dependency>
+				<groupId>org.mybatis.caches</groupId>
+				<artifactId>mybatis-ehcache</artifactId>
+				<version>1.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${version.freemarker}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${version.mysql.connector}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${version.junit}</version>
+				<scope>test</scope>
+			</dependency>
+
+ 			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>1.7.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>2.2.1</version>
+			</dependency>
+ 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>1.7.26</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>1.7.26</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-aar-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-adb</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-adb-codegen</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-ant-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-clustering</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-codegen</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-integration</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-java2wsdl</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-jaxbri</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-jaxws</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-jaxws-integration</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-jibx</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-json</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-kernel</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-mar-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-metadata</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-mtompolicy</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-repo-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-resource-bundle</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-saaj</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-soapmonitor-servlet</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-spring</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-transport-http</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-transport-local</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-xmlbeans</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>org.apache.axis2.osgi</artifactId>
+				<version>${axis2.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>oracle</groupId>
+				<artifactId>ojdbc</artifactId>
+				<version>10.2.0.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.proxool</groupId>
+				<artifactId>proxool</artifactId>
+				<version>0.9.1</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.zzgrid</groupId>
+				<artifactId>proxool-cglib</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>1.6.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>1.6.12</version>
+			</dependency>
+
+			<dependency>
+				<groupId>bouncycastle</groupId>
+				<artifactId>bouncycastle-jce-jdk13</artifactId>
+				<version>112</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.zzgrid</groupId>
+				<artifactId>sq-cm-tools-4log-1.1.0</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+			<!-- cn.ffcs -->
+			<dependency>
+				<groupId>cn.ffcs.oauth</groupId>
+				<artifactId>oauth-util</artifactId>
+				<version>2.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>cn.ffcs.sq_sms_api</groupId>
+				<artifactId>sms-api</artifactId>
+				<version>3.0.000</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.sq_thirdpart</groupId>
+				<artifactId>thirdpart-api</artifactId>
+				<version>3.0.000</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs</groupId>
+				<artifactId>sq_cookie_serv</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.system</groupId>
+				<artifactId>sq-system-serv-v2-api</artifactId>
+				<version>${version.sq-system-serv-v2-api}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs</groupId>
+				<artifactId>sq_system_serv</artifactId>
+				<version>${version.sq_system_serv}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.sqopen</groupId>
+				<artifactId>sq-tool-zookeeper</artifactId>
+				<version>3.1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>persistence-api</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.workflow</groupId>
+				<artifactId>workflow-api</artifactId>
+				<version>3.0.084.001</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.zzgrid</groupId>
+				<artifactId>sq-police-api</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.zzgrid</groupId>
+				<artifactId>zzgrid-serv-api</artifactId>
+				<version>3.0.2</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.resident</groupId>
+				<artifactId>sq-resident-api</artifactId>
+				<version>6.0.067.012</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs</groupId>
+				<artifactId>sq-system-server-api</artifactId>
+				<version>3.0.142.001</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs</groupId>
+				<artifactId>sq-system-util</artifactId>
+				<version>3.0.143.001</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.ffcs.doorsys</groupId> 
+				<artifactId>sq-doorsys-api</artifactId> 
+				<version>4.0.017</version> 
+			</dependency>
+
+            <dependency>
+                <groupId>cn.ffcs.zzgrid</groupId>
+                <artifactId>sq-zzgrid-api</artifactId>
+                <version>6.0.066.005</version>
+            </dependency>
+            <dependency>
+				<groupId>cn.ffcs.oa</groupId>
+				<artifactId>sq-oa-web-api</artifactId>
+				<version>4.0.018</version>
+			</dependency>
+			<dependency>
+          		<groupId>cn.ffcs.oa</groupId>
+		  		<artifactId>sq-oa-common</artifactId>
+		  		<version>4.0.000</version>
+		  		<exclusions>
+		  			<exclusion>
+		  				<groupId>javassist</groupId>
+		  				<artifactId>javassist</artifactId>
+		  			</exclusion>
+		  		</exclusions>
+       		</dependency>
+       		<dependency>
+			    <groupId>cn.ffcs.gis</groupId>
+			    <artifactId>sq-gis-api</artifactId>
+			    <version>6.0.016</version>
+			</dependency>
+			
+ 			<!-- dubbo升级导致增添httpclient依赖 -->
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.5.8</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.jackson-databind}</version>
+			</dependency>
+			
+		</dependencies>
+	</dependencyManagement>
+
+</project>

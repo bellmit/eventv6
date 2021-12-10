@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.mapDataMaintain.MapDataMaintainMapper">
+    <resultMap id="GridResultMap" type="cn.ffcs.shequ.mybatis.domain.zzgl.grid.MixedGridInfo">
+        <id column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+        <result column="INFO_ORG_ID" jdbcType="DECIMAL" property="infoOrgId" />
+        <result column="INFO_ORG_CODE" jdbcType="VARCHAR" property="infoOrgCode" />
+        <result column="PARENT_GRID_ID" jdbcType="DECIMAL" property="parentGridId" />
+        <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+        <result column="GRID_CODE" jdbcType="VARCHAR" property="gridCode" />
+        <result column="GRID_LEVEL" jdbcType="DECIMAL" property="gridLevel" />
+        <result column="GRID_AREA" jdbcType="DECIMAL" property="gridArea" />
+        <result column="GRID_DESC" jdbcType="CLOB" property="gridDesc" />
+        <result column="GRID_TYPE" jdbcType="VARCHAR" property="gridType" />
+        <result column="DUTY_TELNUM" jdbcType="VARCHAR" property="dutyTelnum" />
+        <result column="GRID_PHOTO" jdbcType="VARCHAR" property="gridPhoto" />
+        <result column="MODEL_ID" jdbcType="DECIMAL" property="modelId" />
+        <result column="USER_ID" jdbcType="DECIMAL" property="userId" />
+        <result column="RESULT_TABLE_NAME" jdbcType="VARCHAR" property="resultTableName" />
+        <result column="MAP_TYPE" jdbcType="VARCHAR" property="mapType" />
+        <result column="MAP_ZOOM" jdbcType="DECIMAL" property="mapZoom" />
+        <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+        <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+        <result column="STATUS" jdbcType="VARCHAR" property="status" />
+        <result column="CREATE_USER" jdbcType="DECIMAL" property="createUser" />
+        <result column="CREATE_DATE" jdbcType="DATE" property="createDate" />
+        <result column="UPDATE_USER" jdbcType="DECIMAL" property="updateUser" />
+        <result column="UPDATE_DATE" jdbcType="DATE" property="updateDate" />
+        <result column="ORG_NAME" jdbcType="VARCHAR" property="infoOrgName" />
+        <result column="GRID_MODEL" jdbcType="VARCHAR" property="gridModel" />
+        <result column="IC_ORG_ID" jdbcType="DECIMAL" property="icOrgId" />
+        <result column="GRID_STATUS" jdbcType="VARCHAR" property="gridStatus" />
+        <result column="GRID_MODEL" jdbcType="VARCHAR" property="gridModel"/>
+        <result column="GRID_MANAGER_NAME" jdbcType="VARCHAR" property="gridManagerName"/>
+        <result column="IC_ORG_ID" jdbcType="DECIMAL" property="icOrgId"/>
+        <!-- 附属信息 -->
+        <result column="REGIS_VALUE" jdbcType="VARCHAR" property="userName" />
+        <result column="GRID_ADMIN_PHONE" jdbcType="VARCHAR" property="gridAdminPhone" />
+        <result column="GRID_PATH" jdbcType="VARCHAR" property="gridPath" />
+    </resultMap>
+
+    <sql id="find_where">
+        WHERE T1.STATUS='001'
+        AND T1.GRID_MODEL = '001'
+
+        <if test="gridName!=null">
+            AND T1.GRID_NAME LIKE CONCAT('%', CONCAT(#{gridName,jdbcType=VARCHAR}, '%'))
+        </if>
+        <if test="infoOrgCode!=null">
+            AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+        </if>
+
+        <!-- 网格轮廓在地图上的绘制情况查询字段 -->
+        <if test="drawedType != null">
+            <choose>
+                <!-- 所有的 -->
+                <when test="drawedType == '-1'">
+
+                </when>
+                <!-- 无轮廓标记-->
+                <when test="drawedType == 0">
+                    AND T2.HS IS NULL
+                </when>
+                <!-- 有轮廓标记 -->
+                <when test="drawedType == 1">
+                    AND T2.HS IS NOT NULL
+                </when>
+            </choose>
+        </if>
+
+        <!-- 是否标注中心点 -->
+        <if test="isMarker != null and isMarker != ''">
+            <choose>
+                <!-- 所有的 -->
+                <when test="isMarker == '-1'">
+
+                </when>
+                <!-- 没有标注中心点 -->
+                <when test="isMarker == 0">
+                    AND (T2.CEN_LON IS NULL OR T2.CEN_LON = '' OR T2.CEN_LAT IS NULL OR T2.CEN_LAT = '')
+                </when>
+                <!-- 已经标注中心点 -->
+                <when test="isMarker == 1">
+                    AND (T2.CEN_LON IS NOT NULL AND T2.CEN_LAT IS NOT NULL)
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="findCountByCriteria" resultType="java.lang.Integer" >
+        SELECT COUNT(DISTINCT T1.GRID_ID)
+        FROM T_DC_GRID T1
+        LEFT JOIN  MAP_BUS_GRID_GIS T2
+          ON T1.GRID_ID = T2.WID
+          AND T2.STATUS = '001'
+        <if test="mapt != null">
+            AND T2.MAPT = #{mapt, jdbcType=INTEGER}
+        </if>
+        <include refid="find_where" />
+    </select>
+
+    <!-- 福州市平台需要统计每一级底下的最基础网格数量 -->
+    <select id="findPageListByCriteria" resultMap="GridResultMap" >
+        SELECT DISTINCT  T1.GRID_ID,T1.PARENT_GRID_ID, T1.INFO_ORG_CODE, T1.GRID_NAME, T1.GRID_LEVEL,T1.STATUS, T1.MAP_TYPE,
+            T1.GRID_MODEL, T1.GRID_PATH
+        FROM T_DC_GRID T1
+        LEFT JOIN  MAP_BUS_GRID_GIS T2
+        ON T1.GRID_ID = T2.WID
+        AND T2.STATUS = '001'
+        <if test="mapt != null">
+            AND T2.MAPT = #{mapt, jdbcType=INTEGER}
+        </if>
+        <include refid="find_where" />
+        ORDER BY T1.INFO_ORG_CODE ASC
+    </select>
+
+
+
+</mapper>

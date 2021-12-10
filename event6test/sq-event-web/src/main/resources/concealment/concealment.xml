@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+实现步骤：
+如果可以写正则那么就在regular写正则，<regular></regular>
+如果写不了可以在 cn.ffcs.resident.api.service.impl.FieldMaskImpl
+类里面写专属的实现方式<implMethod></implMethod>
+ -->
+<concealment>
+   <!--江西 -->
+   <orgCode id="36">
+       <field>
+           <name>prisonersDocNo</name>
+          <regular>[0-9xX]{4}$</regular>
+            <replacement>****</replacement>
+           <implMethod></implMethod>
+       </field>
+       <field>
+           <name>idCard</name>
+          <regular>[0-9xX]{4}$</regular>
+            <replacement>****</replacement>
+           <implMethod></implMethod>
+       </field>
+       <field>
+           <name>tel</name>
+           <regular>(\d{3})([-\d]{4})(\d{0})</regular>
+            <replacement>$1****$3</replacement>
+           <implMethod></implMethod>
+       </field>
+       <field>
+           <name>homeAddr</name>
+          <regular>\d</regular>
+            <replacement>*</replacement>
+           <implMethod></implMethod>
+       </field>
+       <field>
+           <name>registAddr</name>
+          <regular>\d</regular>
+            <replacement>*</replacement>
+           <implMethod></implMethod>
+       </field>
+       <field>
+           <name>residenceAddr</name>
+          <regular>\d</regular>
+            <replacement>*</replacement>
+           <implMethod></implMethod>
+       </field>
+    </orgCode>
+</concealment>

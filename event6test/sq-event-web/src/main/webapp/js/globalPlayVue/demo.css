@@ -1,0 +1,61 @@
+.maskVideo{
+    background-color: aquamarine;
+    position: fixed;
+}
+.center{
+    margin: 0 auto;
+    width: 1350px;
+}
+#app{
+    padding: 16px 10px;
+}
+#demo .ivu-form-item-label {
+    padding-right: 20px;
+}
+#demo #loginInfo .ivu-input {
+    width: 220px;
+}
+.ivu-input-wrapper {
+    margin-right: 10px;
+}
+.ivu-select {
+    margin-right: 10px;
+}
+#demo .ivu-input-wrapper {
+    width: 68px;
+}
+#demo .ivu-input {
+    width: 100%;
+}
+
+#demo .ivu-date-picker-rel .ivu-input-wrapper  {
+    width: 360px;
+}
+.ivu-btn + .ivu-btn {
+    margin-left: 20px;
+}
+.ivu-form-item .ivu-form-item {
+    margin-bottom: 6px;
+}
+#loginModule {
+    width: 560px;
+    margin: 10px auto;
+    padding: 16px;
+    border: 1px dashed #ccc;
+}
+#ctrlModule{
+    width: 850px;
+    float: left;
+    padding: 10px;
+    border: 1px dashed #ccc;
+}
+#popModule{
+    float: right;
+    width: 482px;
+    height: 372px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+}
+#ctrlModule .ivu-form-item {
+    margin-bottom: 16px;
+}

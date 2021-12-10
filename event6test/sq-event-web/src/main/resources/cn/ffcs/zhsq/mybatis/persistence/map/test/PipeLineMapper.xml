@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.test.PipeLineMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.test.PipeLine" >
+    <result column="AREA_ID" jdbcType="VARCHAR" property="areaId" />
+    <result column="START_POINT" jdbcType="VARCHAR" property="startPoint" />
+    <result column="END_POINT" jdbcType="VARCHAR" property="endPoint" />
+	<result column="pipeLineKind" jdbcType="VARCHAR" property="pipeLineKind" />
+    <result column="START_LONGITUDE" jdbcType="VARCHAR" property="startLongitude" />
+	<result column="START_LATITUDE" jdbcType="VARCHAR" property="startLatitude" />
+	<result column="END_LONGITUDE" jdbcType="VARCHAR" property="endLongitude" />
+    <result column="END_LATITUDE" jdbcType="VARCHAR" property="endLatitude" />
+</resultMap>
+
+	<select id="findPipeLineList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+		SELECT T.AREA_ID,T.START_POINT,T.END_POINT,T.PIPELINE_KIND,
+				T2.LONGITUDE START_LONGITUDE, T2.LATITUDE START_LATITUDE,
+				T3.LONGITUDE END_LONGITUDE, T3.LATITUDE END_LATITUDE
+		FROM T_PIPELINE T
+			LEFT JOIN T_PIPE_POS T2 ON T.START_POINT = T2.SPOT_POINT
+			LEFT JOIN T_PIPE_POS T3 ON T.END_POINT = T3.SPOT_POINT
+		WHERE 1=1
+		<if test="pipeLineKind != null and pipeLineKind != ''">
+			AND T.PIPELINE_KIND = #{pipeLineKind, jdbcType=VARCHAR}
+		</if>
+
+				START WITH T.START_POINT IN (SELECT START_POINT
+												FROM T_PIPELINE T1
+											WHERE START_POINT NOT IN (SELECT END_POINT FROM T_PIPELINE))
+		CONNECT BY PRIOR T.END_POINT = T.START_POINT
+	</select>
+
+</mapper>

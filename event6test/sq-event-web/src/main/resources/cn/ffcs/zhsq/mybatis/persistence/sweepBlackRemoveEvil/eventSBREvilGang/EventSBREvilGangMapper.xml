@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.sweepBlackRemoveEvil.eventSBREvilGang.EventSBREvilGangMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREvilGang.EventSBREvilGang">
+		<id column="GANG_ID" property="gangId" jdbcType="DECIMAL" /> <!--团伙编号，序列为：SEQ_GANG_ID-->
+		<result column="GANG_NAME" property="gangName" jdbcType="VARCHAR" /> <!--团伙名称-->
+		<result column="INFO_ORG_CODE" property="infoOrgCode" jdbcType="VARCHAR" /> <!--所属区域-->
+		<result column="ACTIVITY_ZONE" property="activityZone" jdbcType="VARCHAR" /> <!--主要活动地带-->
+		<result column="SITUATION" property="situation" jdbcType="VARCHAR" /> <!--团伙涉黑涉恶情况-->
+		<result column="HIT_STATUS" property="hitStatus" jdbcType="VARCHAR" /> <!--打击状态，1 已扫除；2 扫除中-->
+		<result column="GANG_REMARK" property="gangRemark" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="GANG_STATUS" property="gangStatus" jdbcType="VARCHAR" /> <!--状态，1 有效；0 无效-->
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" /> <!--登记时间-->
+		<result column="CREATOR_ID" property="creatorId" jdbcType="DECIMAL" /> <!--登记人员-->
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATER_ID" property="updaterId" jdbcType="DECIMAL" /> <!--更新人员-->
+		
+		<result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR" /><!-- 网格全称 -->
+		
+		
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_EVENT_SBRE_EVIL_GANG T
+		<include refid="find_where" />
+	</select>
+	
+	<sql id="searchList">
+		SELECT
+			T.GANG_ID,
+			T.GANG_NAME,
+			T.INFO_ORG_CODE,
+			G.GRID_PATH,
+			T.ACTIVITY_ZONE,
+			T.SITUATION,
+			T.HIT_STATUS,
+			T.GANG_REMARK,
+			T.GANG_STATUS,
+			T.CREATE_DATE,
+			T.CREATOR_ID,
+			T.UPDATE_DATE,
+			T.UPDATER_ID
+		FROM
+			T_EVENT_SBRE_EVIL_GANG T
+		LEFT JOIN T_DC_GRID G
+        ON T.INFO_ORG_CODE = G.INFO_ORG_CODE
+		<include refid="find_where" />
+		AND G.status = '001' 
+	
+	</sql>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		<include refid="searchList" />
+			ORDER BY 
+			T.GANG_ID DESC 
+	</select>
+	
+	<!-- 列表 -->	
+	<select id="getListByParams"  resultMap="BaseResultMap">
+		<include refid="searchList" />
+		<if test="gangId != null and gangId != ''" >
+				<![CDATA[ AND T.GANG_ID != #{gangId,jdbcType=VARCHAR} ]]>
+		</if>
+		ORDER BY 
+		T.GANG_ID DESC 
+	</select>
+	
+	
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="allName != null and allName != ''" >
+				<![CDATA[ AND T.GANG_NAME = #{allName,jdbcType=VARCHAR} ]]>
+			</if>
+			<if test="gangName != null and gangName != ''" >
+				<![CDATA[ AND T.GANG_NAME LIKE '%'||#{gangName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="infoOrgCode != null and infoOrgCode != ''" >
+				<![CDATA[ AND T.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="activityZone != null and activityZone != ''" >
+				<![CDATA[ AND T.ACTIVITY_ZONE LIKE '%'||#{activityZone,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="situation != null and situation != ''" >
+				<![CDATA[ AND T.SITUATION LIKE '%'||#{situation,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="hitStatus != null and hitStatus != ''" >
+				<![CDATA[ AND T.HIT_STATUS = #{hitStatus,jdbcType=VARCHAR} ]]>
+			</if> 
+			AND T.GANG_STATUS='1' 
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREvilGang.EventSBREvilGang">
+		<selectKey keyProperty="gangId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_GANG_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_EVENT_SBRE_EVIL_GANG
+		(
+			GANG_ID,
+			GANG_NAME,
+			INFO_ORG_CODE,
+			ACTIVITY_ZONE,
+			SITUATION,
+			HIT_STATUS,
+			GANG_REMARK,
+			GANG_STATUS,
+			CREATE_DATE,
+			CREATOR_ID,
+			UPDATE_DATE,
+			UPDATER_ID
+		) VALUES (
+			#{gangId,jdbcType=DECIMAL},
+			#{gangName,jdbcType=VARCHAR},
+			#{infoOrgCode,jdbcType=VARCHAR},
+			#{activityZone,jdbcType=VARCHAR},
+			#{situation,jdbcType=VARCHAR},
+			#{hitStatus,jdbcType=VARCHAR},
+			#{gangRemark,jdbcType=VARCHAR},
+			'1',
+			#{createDate,jdbcType=TIMESTAMP},
+			#{creatorId,jdbcType=DECIMAL},
+			#{updateDate,jdbcType=TIMESTAMP},
+			#{updaterId,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREvilGang.EventSBREvilGang">
+		UPDATE
+			T_EVENT_SBRE_EVIL_GANG
+		<set> 
+			<if test="gangName != null " >
+				GANG_NAME=#{gangName,jdbcType=VARCHAR},
+			</if>
+			<if test="infoOrgCode != null " >
+				INFO_ORG_CODE=#{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="activityZone != null " >
+				ACTIVITY_ZONE=#{activityZone,jdbcType=VARCHAR},
+			</if>
+			<if test="situation != null " >
+				SITUATION=#{situation,jdbcType=VARCHAR},
+			</if>
+			<if test="hitStatus != null " >
+				HIT_STATUS=#{hitStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="gangRemark != null " >
+				GANG_REMARK=#{gangRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="gangStatus != null " >
+				GANG_STATUS=#{gangStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null " >
+				CREATE_DATE=#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creatorId != null " >
+				CREATOR_ID=#{creatorId,jdbcType=DECIMAL},
+			</if>
+			<if test="updateDate != null " >
+				UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updaterId != null " >
+				UPDATER_ID=#{updaterId,jdbcType=DECIMAL},
+			</if>
+		</set>
+		WHERE
+			GANG_ID= #{gangId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.GANG_ID,
+			T.GANG_NAME,
+			T.INFO_ORG_CODE,
+			G.GRID_PATH,
+			T.ACTIVITY_ZONE,
+			T.SITUATION,
+			T.HIT_STATUS,
+			T.GANG_REMARK,
+			T.GANG_STATUS,
+			T.CREATE_DATE,
+			T.CREATOR_ID,
+			T.UPDATE_DATE,
+			T.UPDATER_ID
+		FROM
+			T_EVENT_SBRE_EVIL_GANG T
+		LEFT JOIN T_DC_GRID G
+        ON T.INFO_ORG_CODE = G.INFO_ORG_CODE
+        WHERE G.status = '001' 
+		AND GANG_ID= #{gangId,jdbcType=DECIMAL}  
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREvilGang.EventSBREvilGang">
+		UPDATE
+			T_EVENT_SBRE_EVIL_GANG
+		SET
+			GANG_STATUS='0'
+		WHERE
+			GANG_ID= #{gangId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

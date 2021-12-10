@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventDuplication.EventDuplicationMapper" >
+	<!-- 批量新增/更新重复事件信息 -->
+	<update id="insertOrUpdate">
+		MERGE INTO T_EVENT_DUPLICATION T1
+		USING (
+			<foreach collection="list" item="item" separator="union All">
+				SELECT 
+					#{item.leadEventId,jdbcType=DECIMAL}			leadEventId,
+					#{item.duplicateEventId,jdbcType=DECIMAL}	duplicateEventId,
+					#{item.creator,jdbcType=DECIMAL}					creator,
+					#{item.updater,jdbcType=DECIMAL}					updater
+				FROM DUAL
+			</foreach>
+		) T2
+		ON (T1.LEAD_EVENT_ID = T2.leadEventId AND T1.DUPLICATE_EVENT_ID = T2.duplicateEventId)
+		WHEN MATCHED THEN
+			UPDATE  SET 
+				T1.CREATOR = T2.creator,
+				T1.CREATE_TIME = SYSDATE,
+				T1.UPDATER = updater,
+				T1.UPDATE_TIME = SYSDATE,
+				T1.IS_VALID = '1'
+			
+		WHEN NOT MATCHED THEN
+			INSERT (
+				DUPLICATION_ID,
+				LEAD_EVENT_ID,
+				DUPLICATE_EVENT_ID,
+				IS_VALID,
+				CREATOR,
+				CREATE_TIME,
+				UPDATER,
+				UPDATE_TIME
+			) VALUES (
+				SEQ_DUPLICATION_ID.NEXTVAL,
+				T2.leadEventId,
+				T2.duplicateEventId,
+				'1',
+				T2.creator,
+				SYSDATE,
+				T2.updater,
+				SYSDATE
+			)
+		
+	</update>
+	
+	<!-- 获取重复事件数量 -->
+	<select id="findDuplicatedEventCount" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1)
+		<include refid="duplicationEventListSql"></include>
+	</select>
+	
+	<!-- 无分页获取重复事件列表记录 -->
+	<select id="findDuplicatedEventList" resultType="java.util.Map">
+		SELECT 
+			T3.EVENT_ID			"eventId", 
+			T3.EVENT_NAME	"eventName",
+			T3.HAPPEN_TIME	"happenTime",
+			T3.TYPE_				"type",
+			T3.STATUS			"status",
+			T4.GRID_PATH		"gridPath"
+		<include refid="duplicationEventListSql"></include>
+	</select>
+	
+	<!-- 重复事件记录获取语句 -->
+	<sql id="duplicationEventListSql">
+		FROM T_EVENT_DUPLICATION T1, T_EVENT T3, T_DC_GRID T4
+		WHERE T1.DUPLICATE_EVENT_ID = T3.EVENT_ID AND T3.GRID_ID = T4.GRID_ID
+		AND T1.LEAD_EVENT_ID = #{leadEventId,jdbcType=DECIMAL}
+		AND T1.IS_VALID = '1' AND T4.STATUS = '001'
+		AND T3.STATUS IN ('00', '01', '02', '03', '04')
+	</sql>
+	
+	<!-- 删除重复事件记录 -->
+	<delete id="delete">
+		UPDATE T_EVENT_DUPLICATION T1
+		<set>
+			T1.IS_VALID = '0',
+			T1.UPDATER = #{updater,jdbcType=DECIMAL},
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE 
+		<choose>
+			<when test="duplicationId != null ">
+				T1.DUPLICATION_ID = #{duplicationId,jdbcType=DECIMAL}
+			</when>
+			<when test="leadEventId != null ">
+				T1.LEAD_EVENT_ID = #{leadEventId,jdbcType=DECIMAL}
+				
+				<if test="duplicationEventId != null ">
+					AND T1.DUPLICATE_EVENT_ID = #{duplicationEventId,jdbcType=DECIMAL}
+				</if>
+			</when>
+		</choose>
+	</delete>
+</mapper>

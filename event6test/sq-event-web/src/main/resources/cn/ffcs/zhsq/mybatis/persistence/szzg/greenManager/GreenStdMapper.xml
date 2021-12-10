@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.greenManager.GreenStdMapper">
+	<resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.greenManager.GreenStdBO">
+		<result property="seqid" column="SEQID" />
+		<result property="name" column="NAME" />
+		<result property="type" column="TYPE" />
+		<result property="typeName" column="TYPE_NAME"/>
+		<result property="content" column="CONTENT" />
+		<result property="stdval" column="STDVAL" />
+		<result property="actval" column="ACTVAL" />
+		<result property="syear" column="SYEAR" />
+		<result property="opdate" column="OPDATE" />
+		<result property="status" column="STATUS" />
+		<result property="updateTime" column="UPDATETIME" />
+	</resultMap>
+	<select id="findCountByCriteria" resultType="int">
+		select count(*) from ${dbuser.zhsq_szzg}.zg_green_std t
+		<include refid="conditions"/>
+	</select>
+	<select id="findPageListByCriteria" resultMap="BaseResultMapper">
+		select t.*,d1.dict_name as type_name
+		from ${dbuser.zhsq_szzg}.zg_green_std t
+		left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+		<include refid="conditions"/>
+		order by opdate desc
+	</select>
+	<sql id="conditions">
+		where t.status = '1'
+		<if test="@Ognl@isNotEmpty(name)">
+			and (t.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%')
+		</if>
+		<if test="@Ognl@isNotEmpty(type)">
+			and t.type = #{type}
+		</if>
+		<if test="@Ognl@isNotEmpty(syear)">
+			and t.syear = #{syear}
+		</if>
+	</sql>
+	
+	<select id="findById" resultMap="BaseResultMapper">
+		select t.*,d1.dict_name as type_name
+		from ${dbuser.zhsq_szzg}.zg_green_std t
+		left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+		where t.seqid=#{seqid}
+	</select>
+	<update id="update">
+		update ${dbuser.zhsq_szzg}.zg_green_std t
+		<set>
+			t.update_time = sysdate
+			<if test="name != null">
+				, t.NAME = #{name}
+			</if>
+			<if test="type != null">
+				, t.TYPE = #{type}
+			</if>
+			<if test="content != null">
+				, t.CONTENT = #{content}
+			</if>
+			<if test="stdval != null">
+				, t.STDVAL = #{stdval}
+			</if>
+			<if test="actval != null">
+				, t.ACTVAL = #{actval}
+			</if>
+			<if test="syear != null">
+				, t.SYEAR = #{syear}
+			</if>
+		</set>
+		where t.seqid=#{seqid}
+	</update>
+	<update id="del">
+		UPDATE ${dbuser.zhsq_szzg}.zg_green_std t
+		SET t.status = '0',
+		t.update_time=sysdate
+		WHERE t.seqid = #{seqid}
+	</update>
+	<insert id="insert">
+		<selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+			select ${dbuser.zhsq_szzg}.seq_zg_green_std_id.NEXTVAL from DUAL
+		</selectKey>
+
+		insert into ${dbuser.zhsq_szzg}.zg_green_std t (t.seqid,t.name,t.type, t.content, t.stdval, t.actval, t.syear, t.opdate, t.status, t.update_time)
+		values(#{seqid},#{name},#{type},#{content},#{stdval},#{actval},#{syear},sysdate,'1', null)
+	</insert>
+	
+	
+  	<select id="findGreenStdByParams" resultType="map">
+		SELECT * FROM ${dbuser.zhsq_szzg}.zg_green_std t
+		<include refid="conditions"/>
+	</select>
+</mapper>

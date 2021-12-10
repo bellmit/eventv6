@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.timerManage.TimerManageMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.timerManage.TimerManage" >
+    <id column="TIMER_ID" property="timerId" jdbcType="DECIMAL" />
+    <result column="TIMER_NAME" property="timerName" jdbcType="VARCHAR" />
+    <result column="TASK_CLASS" property="taskClass" jdbcType="VARCHAR" />
+    <result column="EXPRESSION_" property="expression" jdbcType="VARCHAR" />
+    <result column="TIMER_REMARK" property="timerRemark" jdbcType="VARCHAR" />
+    <result column="APP_CODE" property="appCode" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="OPERATE_TIME" property="operateTime" jdbcType="DATE" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    TIMER_ID, TIMER_NAME, TASK_CLASS, EXPRESSION_, TIMER_REMARK, APP_CODE, STATUS, OPERATE_TIME
+  </sql>
+
+  <sql id="find_where">
+    <if test="appCode != null">
+      AND APP_CODE = #{appCode, jdbcType=VARCHAR}
+    </if>
+  </sql>
+
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+    SELECT COUNT(1) FROM T_BAS_TIMER_MANAGE
+    WHERE 1 = 1
+    <include refid="find_where"/>
+  </select>
+
+  <select id="findPageListByCriteria" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List"/>
+    from T_BAS_TIMER_MANAGE
+    where STATUS in ('002','001')
+    <include refid="find_where"/>
+  </select>
+
+  <select id="getTimerManageList"  resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List"/>
+    from T_BAS_TIMER_MANAGE
+    where STATUS in ('002')
+    <include refid="find_where"/>
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.math.BigDecimal" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_BAS_TIMER_MANAGE
+    where TIMER_ID = #{timerId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.math.BigDecimal" >
+    delete from T_BAS_TIMER_MANAGE
+    where TIMER_ID = #{timerId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.timerManage.TimerManage" >
+    <selectKey keyProperty="timerId" resultType="long" order="BEFORE">
+      select seq_timer_manage_id.NEXTVAL from DUAL
+    </selectKey>
+    insert into T_BAS_TIMER_MANAGE (TIMER_ID, TIMER_NAME, TASK_CLASS, 
+      EXPRESSION_, TIMER_REMARK, APP_CODE, 
+      STATUS, OPERATE_TIME)
+    values (#{timerId,jdbcType=DECIMAL}, #{timerName,jdbcType=VARCHAR}, #{taskClass,jdbcType=VARCHAR}, 
+      #{expression,jdbcType=VARCHAR}, #{timerRemark,jdbcType=VARCHAR}, #{appCode,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{operateTime,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.timerManage.TimerManage" >
+    insert into T_BAS_TIMER_MANAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="timerId != null" >
+        TIMER_ID,
+      </if>
+      <if test="timerName != null" >
+        TIMER_NAME,
+      </if>
+      <if test="taskClass != null" >
+        TASK_CLASS,
+      </if>
+      <if test="expression != null" >
+        EXPRESSION_,
+      </if>
+      <if test="timerRemark != null" >
+        TIMER_REMARK,
+      </if>
+      <if test="appCode != null" >
+        APP_CODE,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="timerId != null" >
+        #{timerId,jdbcType=DECIMAL},
+      </if>
+      <if test="timerName != null" >
+        #{timerName,jdbcType=VARCHAR},
+      </if>
+      <if test="taskClass != null" >
+        #{taskClass,jdbcType=VARCHAR},
+      </if>
+      <if test="expression != null" >
+        #{expression,jdbcType=VARCHAR},
+      </if>
+      <if test="timerRemark != null" >
+        #{timerRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="appCode != null" >
+        #{appCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        #{operateTime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.timerManage.TimerManage" >
+    update T_BAS_TIMER_MANAGE
+    <set >
+      <if test="timerName != null" >
+        TIMER_NAME = #{timerName,jdbcType=VARCHAR},
+      </if>
+      <if test="taskClass != null" >
+        TASK_CLASS = #{taskClass,jdbcType=VARCHAR},
+      </if>
+      <if test="expression != null" >
+        EXPRESSION_ = #{expression,jdbcType=VARCHAR},
+      </if>
+      <if test="timerRemark != null" >
+        TIMER_REMARK = #{timerRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="appCode != null" >
+        APP_CODE = #{appCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME = #{operateTime,jdbcType=DATE},
+      </if>
+    </set>
+    where TIMER_ID = #{timerId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.timerManage.TimerManage" >
+    update T_BAS_TIMER_MANAGE
+    set TIMER_NAME = #{timerName,jdbcType=VARCHAR},
+      TASK_CLASS = #{taskClass,jdbcType=VARCHAR},
+      EXPRESSION_ = #{expression,jdbcType=VARCHAR},
+      TIMER_REMARK = #{timerRemark,jdbcType=VARCHAR},
+      APP_CODE = #{appCode,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=VARCHAR},
+      OPERATE_TIME = #{operateTime,jdbcType=DATE}
+    where TIMER_ID = #{timerId,jdbcType=DECIMAL}
+  </update>
+</mapper>

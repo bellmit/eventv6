@@ -1,0 +1,26 @@
+/*---------------------------------边框阴影 begin---------------------------------*/
+body{font-size: 12px;color: #5e5e5e; font-family:"宋体","Arial Narrow"; margin:0; padding:0;}
+a{text-decoration: none;color: #5e5e5e;}
+a:hover {text-decoration:underline;color: #5e5e5e;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3, label, em{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom; font-family:Microsoft YaHei,"Arial Narrow";}
+input, button{font-size:12px;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.hide{display:none;}
+.DropDownList{}
+.DropDownList .list{background:#fff; border:1px solid #c5d0dc;}
+.LeftShadow{background:url(../images/leftshadow.png) no-repeat left bottom; padding-left:5px;}
+.RightShadow{background:url(../images/rightshadow.png) no-repeat right bottom; padding-right:5px;}
+.BottomShadow{background:url(../images/bottomshadow.png) repeat-x 0 -2px; height:7px; width:100%;}
+/*---------------------------------边框阴影 end---------------------------------*/
+/*---------------------------------选项卡 begin---------------------------------*/
+.ConList .nav{height:36px; background:url(../images/sys_05.png) repeat-x bottom;}
+.ConList .nav ul li{font-size:16px; text-align:center; line-height:34px; height:34px; background:#f9f9f9; padding:0 10px; float:left; margin-right:10px; cursor:pointer; font-family:Microsoft YaHei; border-top:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc;}
+.ConList .nav ul li.current{border-top:2px solid #448aca; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; background:#fff; color:#175fa1; color:#175fa1;}
+.ListShow{border-top:none 0; border-bottom:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; width:auto;}
+/*---------------------------------选项卡 end---------------------------------*/
+.StyleSelect ul{padding:0 10px; height:30px;}
+.StyleSelect ul li{float:left; line-height:30px; font-size:12px;}
+.StyleSelect ul li.line{margin:0 10px;}
+.StyleSelect ul li a:hover{color:#36c;}

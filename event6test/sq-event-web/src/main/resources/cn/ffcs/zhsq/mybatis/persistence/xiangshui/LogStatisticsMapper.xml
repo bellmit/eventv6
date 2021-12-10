@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.xiangshui.LogStatisticsMapper">
+	<resultMap type="cn.ffcs.zhsq.mybatis.domain.xiangshui.LogStatistics" id="logStatisticsMap">
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"></result>
+		<result column="ORG_CODE" property="orgCode" jdbcType="DECIMAL"></result>
+		<result column="LOG_COUNT" property="logCount" jdbcType="DECIMAL"></result>
+		<result column="PERSON_COUNT" property="personCount" jdbcType="DECIMAL"></result>
+	</resultMap>
+	<select id="searchList" resultMap="logStatisticsMap">
+		<!-- 日志数量 -->
+		with D as (
+		SELECT substr(G.INFO_ORG_CODE,0,#{params.length,jdbcType=VARCHAR}) REGION_CODE
+			FROM T_DC_GRID_ADMIN M,
+				 T_DC_USER_ENTITY UE,
+				 T_DC_GRID G,
+				 zhsq_log.T_LOGIN_LOG L,
+				 T_DC_ORG_SOCIAL_INFO I
+		 WHERE UE.USER_ID = M.USER_ID AND M.STATUS = '001' AND UE.STATUS = '001'
+			AND G.GRID_ID = M.GRID_ID AND G.STATUS = '001'
+			AND G.GRID_LEVEL = 6
+			AND L.USER_ID = UE.USER_ID AND L.LOGIN_TYPE IN('phone_login','phone_module')
+			AND instr(G.INFO_ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+			AND I.ORG_CODE = L.ORG_CODE AND I.STATUS = '001'
+			AND I.LOCATION_ORG_ID = G.INFO_ORG_ID
+			<if test="params.startTime != null and params.startTime != ''">
+				AND L.LOGIN_TIME <![CDATA[>=]]> #{params.startTime,jdbcType=VARCHAR}
+			</if>
+			<if test="params.endTime != null and params.endTime != ''">
+				AND L.LOGIN_TIME <![CDATA[<]]> #{params.endTime,jdbcType=VARCHAR}
+			</if>
+		),
+		D2 as(
+		   SELECT D.REGION_CODE,COUNT(D.REGION_CODE) LOG_COUNT FROM D
+		   GROUP BY D.REGION_CODE
+		),
+		<!-- 网格员数量 -->
+		P as (
+		  SELECT substr(G.INFO_ORG_CODE,0,#{params.length,jdbcType=VARCHAR}) REGION_CODE
+		  FROM T_DC_GRID_ADMIN  M,
+		       T_DC_USER_ENTITY UE,
+		       T_DC_GRID        G
+		  WHERE UE.USER_ID = M.USER_ID AND M.STATUS = '001' AND UE.STATUS = '001'
+		   AND G.GRID_ID = M.GRID_ID AND G.STATUS = '001'
+		   AND G.GRID_LEVEL = 6
+		   AND instr(G.INFO_ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+		),
+		P2 AS(
+		 SELECT P.REGION_CODE,COUNT(P.REGION_CODE) PERSON_COUNT FROM P
+		 GROUP BY P.REGION_CODE
+		)
+		SELECT E.ORG_NAME,E.ORG_CODE,NVL(D2.LOG_COUNT,0) LOG_COUNT,NVL(P2.PERSON_COUNT,0) PERSON_COUNT
+		FROM D2,P2,T_DC_ORG_ENTITY_INFO E
+			WHERE E.STATUS = '001' 
+			 AND D2.REGION_CODE(+) = E.ORG_CODE
+			 AND P2.REGION_CODE(+) = E.ORG_CODE
+			 AND instr(E.ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+			 AND E.CHIEF_LEVEL = #{params.level,jdbcType=VARCHAR}
+			 ORDER BY E.ORDERS
+	</select>
+	
+	<select id="searchLists" resultMap="logStatisticsMap">
+		with D as (
+	    SELECT substr(G.INFO_ORG_CODE,0,#{params.length,jdbcType=VARCHAR}) REGION_CODE
+	      FROM T_DC_GRID_ADMIN M,
+	         T_DC_USER_ENTITY UE,
+	         T_DC_GRID G,
+	         T_L_LOG L,
+	         T_DC_ORG_ENTITY_INFO I
+	     WHERE UE.USER_ID = M.USER_ID AND M.STATUS = '001' AND UE.STATUS = '001'
+	      AND G.GRID_ID = M.GRID_ID AND G.STATUS = '001'
+	      AND instr(G.INFO_ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+	      AND L.CREATE_USER_ID = M.USER_ID
+	      AND G.GRID_LEVEL = 6
+	      AND I.ORG_CODE = L.REGION_CODE AND I.STATUS = '001' AND L.IS_VALID = '1'
+	      AND I.ORG_ID = G.INFO_ORG_ID
+	      <if test="params.startTime != null and params.startTime != ''">
+	      	AND L.LOG_DATE <![CDATA[>=]]> #{params.startTime,jdbcType=VARCHAR} 
+	      </if>
+	      <if test="params.endTime != null and params.endTime != ''">
+	      	AND L.LOG_DATE <![CDATA[<=]]> #{params.endTime,jdbcType=VARCHAR} 
+	      </if>
+	    ),
+	    D2 as(
+	       SELECT D.REGION_CODE,COUNT(D.REGION_CODE) LOG_COUNT FROM D
+	       GROUP BY D.REGION_CODE
+	    ),
+	    P as (
+	      SELECT substr(G.INFO_ORG_CODE,0,#{params.length,jdbcType=VARCHAR}) REGION_CODE
+	      FROM T_DC_GRID_ADMIN  M,
+	           T_DC_USER_ENTITY UE,
+	           T_DC_GRID        G
+	      WHERE UE.USER_ID = M.USER_ID AND M.STATUS = '001' AND UE.STATUS = '001'
+	       AND G.GRID_ID = M.GRID_ID AND G.STATUS = '001'
+	       AND G.GRID_LEVEL = 6
+	       AND instr(G.INFO_ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+	    ),
+	    P2 as(
+	     SELECT P.REGION_CODE,COUNT(P.REGION_CODE) PERSON_COUNT FROM P
+	     GROUP BY P.REGION_CODE
+	    )
+	    SELECT E.ORG_NAME,E.ORG_CODE,NVL(D2.LOG_COUNT,0) LOG_COUNT ,NVL(P2.PERSON_COUNT,0) PERSON_COUNT
+	    FROM D2,T_DC_ORG_ENTITY_INFO E,P2
+	      WHERE E.STATUS = '001' 
+	       AND D2.REGION_CODE(+) = E.ORG_CODE
+	       AND P2.REGION_CODE(+) = E.ORG_CODE
+	       AND instr(E.ORG_CODE, #{params.infoOrgCode,jdbcType=VARCHAR}) = 1
+	       AND E.CHIEF_LEVEL = #{params.level,jdbcType=VARCHAR}
+	       ORDER BY E.ORDERS
+	</select>
+</mapper>

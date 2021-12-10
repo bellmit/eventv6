@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.thresholdcolorcfg.ThresholdColorCfgMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.thresholdcolorcfg.ThresholdColorCfg" >
+	<id column="TC_ID" jdbcType="DECIMAL" property="tcId" />
+	<result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+	<result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    <result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    <result column="CLASS_" jdbcType="VARCHAR" property="class_" />
+    <result column="SUB_CLASS" jdbcType="VARCHAR" property="subClass" />
+    <result column="COLOR_VAL" jdbcType="VARCHAR" property="colorVal" />
+    <result column="STATUS_" jdbcType="VARCHAR" property="status_" />
+    <result column="CREATE_TIME" jdbcType="VARCHAR" property="createTime" />
+    <result column="UPDATED" jdbcType="VARCHAR" property="updated" />
+    <result column="REMARK_" jdbcType="VARCHAR" property="remark_" />
+    <result column="MIN_VALUE" jdbcType="INTEGER" property="minValue" />
+    <result column="MAX_VALUE" jdbcType="INTEGER" property="maxValue" />
+    <result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="PARAM_CFG_STR" jdbcType="VARCHAR" property="paramCfgStr" />
+    <result column="INDEX_NUM" jdbcType="DECIMAL" property="indexNum" />
+</resultMap>
+	<!-- 2015-9-23 liushi add 查询列表数据 -->
+	<select id="findPageThresholdColorCfgCriteria" resultMap="BaseResultMap">
+		SELECT T1.GRID_ID,T1.GRID_NAME,T.* FROM T_ZZ_THRESHOLD_COLOR_CFG T
+		LEFT JOIN T_DC_GRID T1 ON T.ORG_CODE = T1.INFO_ORG_CODE AND T1.STATUS='001'
+		WHERE 1=1 AND (T.STATUS_ = '1' OR T.STATUS_='2')
+		<if test="class_ != null">
+			AND T.CLASS_ = #{class_,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode != null">
+			AND  #{orgCode,jdbcType=VARCHAR} LIKE T.ORG_CODE || '%'
+		</if>
+		ORDER BY T.ORG_CODE DESC,T.INDEX_NUM 
+	</select>
+	<select id="findCountThresholdColorCfgCriteria" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_ZZ_THRESHOLD_COLOR_CFG T
+		WHERE 1=1 AND (T.STATUS_ = '1' OR T.STATUS_='2')
+		<if test="class_ != null">
+			AND T.CLASS_ = #{class_,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode != null">
+			AND  #{orgCode,jdbcType=VARCHAR} LIKE T.ORG_CODE || '%'
+		</if>
+	</select>
+	<select id="findThresholdColorCfgById" resultMap="BaseResultMap">
+		SELECT T1.GRID_ID,T1.GRID_NAME,T.* FROM T_ZZ_THRESHOLD_COLOR_CFG T 
+		LEFT JOIN T_DC_GRID T1 ON T.ORG_CODE = T1.INFO_ORG_CODE AND T1.STATUS='001'
+		WHERE T.TC_ID = #{tcId,jdbcType=DECIMAL}
+	</select>
+	<!-- 2014-10-10 liushi add 根据pid查询子节点列表 -->
+	<insert id="insertThresholdColorCfg" parameterType="cn.ffcs.zhsq.mybatis.domain.map.thresholdcolorcfg.ThresholdColorCfg">
+		<selectKey keyProperty="tcId" resultType="long" order="BEFORE">
+			select THRESHOLD_COLOR_CFG_SEQ.NEXTVAL from DUAL
+		</selectKey>
+		
+		INSERT INTO T_ZZ_THRESHOLD_COLOR_CFG 
+	      (TC_ID,ORG_CODE,CLASS_,SUB_CLASS
+	      ,STATUS_,CREATE_TIME,UPDATED,REMARK_
+	      ,PARAM_CFG_STR,INDEX_NUM
+	      )
+	    VALUES(#{tcId,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},#{class_,jdbcType=VARCHAR},#{subClass,jdbcType=VARCHAR}
+	    ,#{status_,jdbcType=VARCHAR} ,SYSDATE,SYSDATE,#{remark_,jdbcType=VARCHAR}
+	    ,#{paramCfgStr,jdbcType=VARCHAR},#{indexNum,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<update id="updateThresholdColorCfg" parameterType="cn.ffcs.zhsq.mybatis.domain.map.thresholdcolorcfg.ThresholdColorCfg">
+		UPDATE T_ZZ_THRESHOLD_COLOR_CFG T
+		SET T.ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+		    T.CLASS_ = #{class_,jdbcType=VARCHAR},
+		    T.SUB_CLASS = #{subClass,jdbcType=VARCHAR},
+		    T.STATUS_ = #{status_,jdbcType=VARCHAR},
+		    T.UPDATED = SYSDATE,
+		    T.REMARK_ = #{remark_,jdbcType=VARCHAR},
+		    T.PARAM_CFG_STR = #{paramCfgStr,jdbcType=VARCHAR},
+		    T.INDEX_NUM = #{indexNum,jdbcType=DECIMAL}
+		WHERE T.TC_ID = #{tcId,jdbcType=DECIMAL}
+	</update>
+	
+	<update id="deleteThresholdColorCfg">
+		UPDATE T_ZZ_THRESHOLD_COLOR_CFG T SET T.STATUS_ = '0' WHERE T.TC_ID = #{tcId,jdbcType=DECIMAL}
+	</update>
+	<select id="getThresholdColorCfgList" resultMap="BaseResultMap">
+		SELECT T.* FROM T_ZZ_THRESHOLD_COLOR_CFG T
+		WHERE 1=1 AND T.STATUS_ = '1'
+		<if test="class_ != null">
+			AND T.CLASS_ = #{class_,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode != null">
+			AND  #{orgCode,jdbcType=VARCHAR} LIKE T.ORG_CODE || '%'
+		</if>
+		ORDER BY T.ORG_CODE DESC,T.INDEX_NUM
+	</select>
+</mapper>

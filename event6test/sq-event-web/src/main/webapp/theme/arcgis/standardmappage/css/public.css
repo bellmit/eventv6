@@ -1,0 +1,16 @@
+body, html{overflow:hidden;}
+body{font-size:12px; color:#000;margin:0 auto; font-family:"宋体","Arial Narrow";}
+a{text-decoration:none; color:#000; transition:all 0.3s; -moz-transition:all 0.3s; -webkit-transition:all 0.3s;}
+a:hover {text-decoration:underline;color:#CA0000;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom;}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px; color:#959595; padding-left:5px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.h_20{height:20px; font-size:0; line-height:0; overflow:hidden;}
+.hide{display:none;}

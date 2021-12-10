@@ -1,0 +1,318 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	font: 12px/ 160% 'Microsoft YaHei', simsun, Tahoma, Arial;
+	padding: 0;
+	margin: 0;
+}
+
+.green{
+	color:green;
+}
+.border_b_r{
+	border-right: 1px solid #BED3DF;
+    border-bottom: 1px solid #BED3DF;
+}
+.text_r{
+	text-align:right;
+}
+.text_r a{
+	width:40px;
+	display:inline-table;
+	text-align:center;
+}
+
+
+
+/*新样式*/
+img,a{margin:0;padding:0}
+.w100{width:99.9%;margin:0 auto}
+
+.titlebar{
+	height:30px;
+	line-height:30px;
+	margin: 0px auto; 
+	z-index:1000;
+	_position:relative;
+	_top:0px;
+}
+
+.titlebar .titlenav {
+	float: left;
+	display: block;
+	z-index: 100;
+	overflow: visible;
+	position: fixed;
+	top: 0px; /* position fixed for IE6 */
+	_position: absolute;
+	_top: expression(documentElement.scrollTop + "px");
+	background:url(titleBg.png) repeat-x;
+	height: 30px;
+	line-height: 30px;
+	border-bottom:1px solid #ccc;
+}
+
+.tittext{ font-weight:bold;font-size:12px;margin-left:10px; float:left;color:#1885bc}
+.titright{
+	float:right;
+	margin-right:10px;
+	text-align:right;
+}
+.ytb-sep {
+    background-image: url("grid-blue-split.gif");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 0 none;
+    cursor: default;
+    display:inline-table;
+    font-size: 1px;
+    height: 16px;
+    margin: 0 2px;
+    overflow: hidden;
+    width: 4px;
+}
+.titbtn{
+	width:55px;
+	font-size:12px;
+	
+}
+.titright a{
+	color:#000;
+	text-align:center;
+	text-decoration:none;
+	display:inline-table;
+    height:30px;
+    line-height:30px;
+	font-size:12px;
+}
+
+.titb{
+	background:#eff0f1;
+	height:35px;
+	border-left:1px solid #fff;
+	font-size:12px;
+	line-height:35px;
+}
+.border-t{
+	border-top:1px solid #BED3DF;
+	margin-bottom:15px;
+}
+.item{
+	height:40px;
+	line-height:25px;
+	border-bottom:1px solid #bed3df;
+	font-size:12px;
+}
+.itemtit{
+	
+	height:30px;
+	line-height:30px;
+	width:120px;
+	text-align:right;
+	padding-right:5px;
+	font-weight:bold;
+	background:#eff0f1;
+	
+	color:#000;
+	font-size:12px;
+		border-bottom:1px solid #bed3df;
+	white-space: nowrap;
+	overflow:hidden；
+}
+.item_btn{
+	height:40px;
+	font-size:12px;
+	background:#eff0f1;
+	border-bottom:1px solid #bed3df;
+}
+.itemtit_btn{
+	font-weight:bold;
+	text-align:right;
+	padding-right:5px;
+	border-bottom:1px solid #bed3df;
+}
+.border_b{
+		border-bottom:1px solid #BED3DF;
+}
+.w150{
+width:150px;
+	border: 1px solid #BED3DF;
+    padding: 1px 3px;
+	background:url(text-bg.gif) top repeat-x;
+}
+.w150readonly{
+width:150px;
+	border: 1px solid #BED3DF;
+    padding: 1px 3px;
+	background:#eff0f1;	
+}
+.w155{
+	width:155px;
+	border: 1px solid #BED3DF;
+    padding: 1px 0px 1px;
+	background:url(text-bg.gif) top repeat-x;
+}
+textarea{
+	border: 1px solid #BED3DF;
+	margin:5px auto;
+    padding: 1px 3px;
+	background:url(text-bg.gif) top repeat-x;
+}
+	
+.btn_reset {
+    background-image: url("form_reset.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+
+}
+.btn_search {
+    background-image: url("form_search.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+}
+.btn_add {
+    background-image: url("add.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 25px;
+}
+.btn_del {
+    background-image: url("del.png");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 25px;
+}
+table{
+	font-size:12px;
+}
+table a{
+	color: #008080;
+    font-weight: normal;
+    text-decoration: none;
+}
+.border_t_b{
+		border-bottom:1px solid #BED3DF;
+
+}
+	
+.rowIdx {
+    background-color: #CEDEEF;
+    background-image: url("rowIdx.png");
+    background-position: center top;
+    background-repeat: repeat-x;
+    border-right: 1px solid #BED3DF;
+    border-bottom: 1px solid #BED3DF;
+	border-top: 1px solid #BED3DF;
+    padding: 0;
+    width: 20px;
+}
+.page{
+	font-size:12px;
+	color: #405368;
+    font-weight: bold;
+}
+.page a{
+color: #008080;
+    font-weight: normal;
+    text-decoration: none;}
+.btn_save {
+    background-image: url("btn_save.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_cancel {
+    background-image: url("btn_cancel.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_import {
+    background-image: url("btn_import.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_submit {
+    background-image: url("btn_submit.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_back {
+    background-image: url("btn_back.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_print {
+    background-image: url("btn_print.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+.btn_recycle {
+    background-image: url("btn_recycle.gif");
+    background-repeat: no-repeat;
+    border: 0 solid #888888;
+    height: 22px;
+    width: 57px;
+	cursor:pointer;
+}
+
+.table_class {background-color: black;}
+.table_class th {height:25px; line-height:25px;background-color: white;}
+.table_class td {height:25px; line-height:25px;background-color: white;}
+.table_class td input {width:40px;}
+
+.titlebar .s_text {color:red;}
+
+.doc_title {
+	width:90%;margin:5px 0px 5px 1px; height:40px; line-height:40px; font-size:14px;
+}
+
+.hbtn{
+  background:url(flow/h_btn.gif) no-repeat center center;
+  width:53px;
+  height:30px;
+  line-height:30px;
+	font-size:12px;
+	border:0;
+	cursor:pointer;
+}
+
+.searchList-2{
+	background:#BAD3F6; 
+	color:#444; 
+	width:100%;
+}
+.searchList-2 th{
+	text-align:right; 
+	padding:2px 5px; 
+	background:#EEF2F6;
+	font-weight:normal;
+	height:20px;
+}
+.searchList-2 td{padding:2px 5px; background:#fff;height:20px;}
+
+.l_elist{height:10px;border-bottom:1px #ccc dashed;}
+.r_elist{height:30px;line-height:30px; font-size:12px;padding-left:100px;border-bottom:1px #ccc dashed;}

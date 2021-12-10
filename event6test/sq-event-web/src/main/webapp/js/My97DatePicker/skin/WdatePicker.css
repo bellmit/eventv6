@@ -1,0 +1,10 @@
+.Wdate{
+	border:#c7c7c7 1px solid;
+	height:20px;
+	background:#fff url(timeview.png) no-repeat right;
+}
+
+.WdateFmtErr{
+	font-weight:bold;
+	color:red;
+}

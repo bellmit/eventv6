@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventSuperviseRespMapper">
+	
+		
+	<!-- 根据督办信息Id与被督办人Id查找消息IdmsgId -->	
+	<select id="findMsgInfo"  resultType="map">
+	select t1.msg_id as msgId
+	from t_bas_msg t1
+	inner join t_bas_msg_receiver t2 on t1.msg_id=t2.msg_id
+	where t1.module_code='32' and t1.biz_id=#{remindId,jdbcType=DECIMAL}
+	and t2.receiver_id=#{supervisedId,jdbcType=DECIMAL}
+	</select>
+	
+</mapper>

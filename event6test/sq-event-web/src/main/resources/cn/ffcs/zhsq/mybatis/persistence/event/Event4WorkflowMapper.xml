@@ -1,0 +1,1199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper" >
+	<!-- 事件基础查询列，草稿列表查询列 -->
+	<sql id="eventBaseColumn">
+		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+		T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+		T1.TYPE_ "type", 					T1.SOURCE "source", 					
+		T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+		T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+	   	T1.CREATE_TIME "createTime", 		T1.INFLUENCE_DEGREE "influenceDegree", 
+	   	T1.URGENCY_DEGREE "urgencyDegree", 	T1.HANDLE_DATE_FLAG "handleDateFlag",
+	   	T1.CONTENT_ "content",				T1.BIZ_PLATFORM "bizPlatform"
+	</sql>
+	
+	<!-- 事件查询列 -->
+	<sql id="eventColumn">
+	   	T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+		T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+		T1.TYPE_ "type", 					T1.SOURCE "source", 					
+		T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+		T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+	   	T1.CREATE_TIME "createTime", 		T1.INFLUENCE_DEGREE "influenceDegree", 
+	   	T1.URGENCY_DEGREE "urgencyDegree", 	T1.HANDLE_DATE_FLAG "handleDateFlag",
+	   	T1.CONTENT_ "content",				T1.BIZ_PLATFORM "bizPlatform",
+	   	<include refid="eventAdditionalColumn"></include>
+	   	<if test="isCapEventExtend != null and isCapEventExtend == true ">
+	   		,<include refid="eventExtendColumn"></include>
+	   	</if>
+	</sql>
+	
+	<!-- 事件列表扩展查询列 -->
+	<sql id="eventAdditionalColumn">
+		T1.CONTACT_USER		"contactUser",	T1.TEL		"tel",
+		T1.CODE_			"code",			T1.OCCURRED	"occurred",
+		T1.INVOLVED_PERSION "involvedPersion",
+		T3.USER_NAME	"creatorName",		T3.ORG_NAME "creatorOrgName"
+	</sql>
+	
+	<!-- 事件扩展表查询列 -->
+	<sql id="eventExtendColumn">
+	    T14.PATROL_TYPE "patrolType",       T14.POINT_SELECTION "pointSelection", 
+	    T14.IS_NOTICE "isNotice",			T14.EMT_TYPE		"emtType"
+	</sql>
+	
+	<!-- 导出查询列 -->
+	<sql id="eventColumn4Export">
+		T1.COLLECT_WAY		"collectWay"
+		<if test="isCapMapInfo != null and isCapMapInfo == true ">
+			,
+			T13.X	"longitude",
+			T13.Y	"latitude"
+		</if>
+	</sql>
+	
+	
+	<!-- 草稿列表统计 -->
+	<select id="findCount4Draft" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		<include refid="eventDraftSql"></include>
+	</select>
+	
+	<!-- 草稿列表数据 -->
+	<select id="findPageList4Draft" resultType="java.util.Map">
+		SELECT <include refid="eventBaseColumn"></include>
+		<include refid="eventDraftSql"></include>
+		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.CREATE_TIME DESC
+	  		</otherwise>
+	  	</choose>
+	</select>
+	
+	<!-- 草稿列表语句 -->
+	<sql id="eventDraftSql">
+		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		WHERE T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+	</sql>
+	
+	
+	<!-- 待办列表统计 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventTodoSql"></include>
+	</select>
+	
+	<!-- 待办列表查询列 -->
+	<sql id="eventColumn4Todo">
+		<include refid="eventColumn"></include>,
+		T3.INSTANCE_ID		"instanceId", 			T3.WORKFLOW_ID	"workFlowId", 
+	   	T3.STATUS 				"wfStatus",				T4.DBID_					"taskId",
+	   	T7.IS_RECEIVE 			"taskReceivedStaus",	T6.REMIND_MARK	"remindMark", 
+	   	T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType"
+	</sql>
+	
+	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Todo"></include>
+  		<include refid="eventTodoSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 待办查询相关表 -->
+  	<sql id="eventTable4Todo">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+		  ON T3.INSTANCE_ID = T4.PROCINST_
+		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		  ON T4.DBID_ = T5.TASK_
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+		LEFT JOIN ${dbuser.workflow}.WF_TASK_RECEIVE T7
+		  ON T7.TASK_ID = T4.DBID_
+		   AND T7.INSTANCE_ID = T4.PROCINST_
+		   AND T7.USER_ID = #{curUserId,jdbcType=DECIMAL}
+		   AND T7.ORG_ID = #{curOrgId,jdbcType=DECIMAL} 
+  	</sql>
+  	
+  	<!-- 待办列表语句 -->
+  	<sql id="eventTodoSql">
+  		<include refid="eventTable4Todo"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_todo"></include>
+  	</sql>
+  	
+  	<!-- 待办查询条件 -->
+  	<sql id="find_where_todo">
+  		AND T3.STATUS = '1' AND T2.STATUS = '001'
+  		AND ((T5.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR (T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.TYPE_ = '3'))
+		<if test="@Ognl@isNotEmpty(remindStatus)">
+			<choose>
+				<when test='remindStatus == "1" '>
+					AND T6.REMIND_MARK = '1'
+				</when>
+				<when test='remindStatus == "2" '>
+					AND T6.SUPERVISE_MARK = '1'
+				</when>
+			</choose>
+		</if>
+		<if test="@Ognl@isNotEmpty(taskReceivedStaus)">
+			AND NVL(T7.IS_RECEIVE, '0') = #{taskReceivedStaus,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_event"></include>
+  	</sql>
+  	
+  	<!-- 统计经办事件数量 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="eventHandledSql"></include>
+  	</select>
+  	
+  	<!-- 经办列表查询列 -->
+  	<sql id="eventColumn4Handled">
+  		<include refid="eventColumn"></include>,
+  		T3.INSTANCE_ID		"instanceId", T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType"
+  	</sql>
+  	
+  	<!-- 获取经办事件列表 -->
+  	<select id="findPageList4Handled" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Handled"></include>
+  		<include refid="eventHandledSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 经办事件查询相关表 -->
+  	<sql id="eventTable4Handled">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID 
+  	</sql>
+  	
+  	<!-- 经办事件语句 -->
+  	<sql id="eventHandledSql">
+  		<include refid="eventTable4Handled"></include>
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="find_where_handled"></include>
+  	</sql>
+  	
+  	<!-- 经办事件列表查询条件 -->
+  	<sql id="find_where_handled">
+  		AND T2.STATUS = '001'
+		AND EXISTS (
+		    SELECT 1
+		    FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		    WHERE T8.INSTANCE_ID = T3.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID
+		    AND T9.USER_ID = #{handledUserId,jdbcType=DECIMAL} AND T9.ORG_ID = #{handledOrgId,jdbcType=DECIMAL} AND T9.USER_TYPE = '3'
+		    AND T9.ISDONE = '1'
+		)
+		<include refid="find_where_event"></include>
+  	</sql>
+  	
+  	<!-- 获取辖区事件(办理人员查询)总量 -->
+  	<select id="findCount4EventOrg" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="eventOrgSql"></include>
+  	</select>
+  	
+  	<!-- 辖区事件(办理人员查询)查询列 -->
+  	<sql id="eventColumn4EventOrg">
+  		<include refid="eventColumn"></include>,
+  		T3.INSTANCE_ID		"instanceId", T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType"
+  	</sql>
+  	
+  	<!-- 获取辖区事件(办理人员查询)列表 -->
+  	<select id="findPageList4EventOrg" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4EventOrg"></include>
+  		<include refid="eventOrgSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区事件(办理人员查询)相关查询表 -->
+  	<sql id="eventTable4EventOrg">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		ON T3.INSTANCE_ID = T6.INSTANCE_ID 
+		<if test="isCapEventExtend != null and isCapEventExtend == true ">
+			INNER JOIN T_EVENT_EXTEND T14
+			ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1'
+		</if>
+  	</sql>
+  	
+  	<!-- 辖区事件(办理人员查询)语句 -->
+  	<sql id="eventOrgSql">
+  		<include refid="eventTable4EventOrg"></include>
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="find_where_eventOrg"></include>
+  	</sql>
+  	
+  	<!-- 辖区事件(办理人员查询)查询条件 -->
+  	<sql id="find_where_eventOrg">
+  		AND T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+  	</sql>
+  	
+  	<!-- 归档列表统计 -->
+  	<select id="findCount4Archive" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventArchiveSql"></include>
+	</select>
+	
+	<!-- 归档列表查询列 -->
+	<sql id="eventColumn4Archive">
+		<include refid="eventColumn"></include>,
+		T12.EVA_LEVEL			"evaLevel",
+		T3.INSTANCE_ID 		"instanceId", 			T6.REMIND_MARK 		"remindMark", 
+		T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType"
+	</sql>
+	
+	<!-- 归档列表数据 -->
+  	<select id="findPageList4Archive" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Archive"></include>
+  		<include refid="eventArchiveSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 归档列表查询相关表 -->
+  	<sql id="eventTable4Archive">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+        LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1'
+		LEFT JOIN T_SJ_EVA_RESULT T12
+		  ON T14.EVENT_ID = T12.OBJECT_ID AND T14.ER_ID = T12.ER_ID AND T12.EVA_OBJ = '03'
+  	</sql>
+  	
+  	<!-- 归档列表语句 -->
+  	<sql id="eventArchiveSql">
+  		<include refid="eventTable4Archive"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_archive"></include>
+  	</sql>
+  	
+  	<!-- 归档列表查询条件 -->
+  	<sql id="find_where_archive">
+  		AND T3.STATUS = '2' AND T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+		<choose>
+			<when test="@Ognl@isNotEmpty(evaLevelList)">
+				AND T12.EVA_LEVEL IN
+				<foreach collection="evaLevelList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(evaLevel)">
+	     		AND T12.EVA_LEVEL = #{evaLevel,jdbcType=VARCHAR}
+	     	</when>
+		</choose>
+  	</sql>
+  	
+  	<!-- 辖区所有列表统计 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" databaseId="oracle">
+		SELECT COUNT(1)
+		<include refid="eventJurisdictionSql"></include>
+	</select>
+
+	<!-- 辖区所有列表统计 达梦版-->
+	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" databaseId="dm">
+		SELECT COUNT(1)
+		<include refid="eventJurisdictionSql_dm"></include>
+	</select>
+	
+	<!-- 辖区所有查询列 -->
+	<sql id="eventColumn4Jurisdiction">
+		<include refid="eventColumn"></include>,
+		<if test="listType != null and listType == 9 ">
+			<include refid="eventColumn4Export"></include>,
+		</if>
+		T1.FIN_TIME			"finTime",
+	   	T3.INSTANCE_ID 		"instanceId", 			T6.REMIND_MARK 		"remindMark", 
+	   	T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType",
+	   	T3.STATUS			"wfStatus",				T3.CUR_ORG			"curOrgName",
+	   	T3.WORKFLOW_ID		"workflowId",			T3.CUR_NODE			"curNodeName",
+	   	T10.STATUS			"wfAttentionStatus"
+	</sql>
+	
+	<!-- 辖区所有列表数据 -->
+  	<select id="findPageList4Jurisdiction" resultType="java.util.Map" databaseId="oracle">
+  		SELECT <include refid="eventColumn4Jurisdiction"></include>
+  		<include refid="eventJurisdictionSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+
+	<!-- 辖区所有列表数据  达梦版-->
+	<select id="findPageList4Jurisdiction" resultType="java.util.Map"  databaseId="dm">
+		SELECT <include refid="eventColumn4Jurisdiction"></include>
+		<include refid="eventJurisdictionSql_dm"></include>
+		<include refid="order_by"></include>
+	</select>
+  	
+  	<!-- 辖区所有查询相关表 -->
+  	<sql id="eventTable4JurisdictionSql">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+
+		<!--南昌事件-辖区所有列表高级查询个性化条件：办理单位、办理方式关联业务表-->
+		<if test="handledTaskUnitId != null and handledTaskUnitId != '' and handledType == 'todo' ">
+				INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+				ON T3.INSTANCE_ID = T4.PROCINST_
+				INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+				ON T4.DBID_ = T5.TASK_
+		</if>
+
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+		LEFT JOIN ${dbuser.workflow}.WF_ATTENTION T10
+		  ON T10.FOREIGN_ID = T1.EVENT_ID 
+		  AND T10.ORG_ID = 0
+		  AND T10.STATUS = '1'
+		  AND T10.ATTENTION_TYPE = '2'
+		  AND T10.FORM_TYPE = '300'
+		  AND T10.USER_TYPE = '3'
+		  AND T10.USER_ID = #{attentionUserId,jdbcType=DECIMAL} 
+		<choose>
+			<!-- 地图查找范围 -->
+			<when test="isMapDistanceSearch != null and  isMapDistanceSearch == true ">
+				INNER JOIN T_ZY_RES_MARKER T13
+				ON T1.EVENT_ID = T13.RESOURCES_ID AND T13.MARKER_TYPE = '0301'
+			</when>
+			<when test="isCapMapInfo != null and isCapMapInfo == true ">
+				LEFT JOIN T_ZY_RES_MARKER T13
+				  ON T1.EVENT_ID = T13.RESOURCES_ID AND T13.MARKER_TYPE = '0301'
+				  <if test="@Ognl@isNotEmpty(mapType)">
+				  		AND T13.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+				  </if>
+			</when>
+		</choose>
+		<if test="isCapEventExtend != null and isCapEventExtend == true ">
+			INNER JOIN T_EVENT_EXTEND T14
+			ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1'
+		</if>
+  	</sql>
+  	
+  	<!-- 辖区所有列表语句 -->
+  	<sql id="eventJurisdictionSql" >
+  		<include refid="eventTable4JurisdictionSql"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_jurisdiction"></include>
+  	</sql>
+
+	<!-- 辖区所有列表语句   达梦版-->
+	<sql id="eventJurisdictionSql_dm"  >
+		<include refid="eventTable4JurisdictionSql"></include>
+		WHERE T3.FORM_TYPE_ID = 300
+		<include refid="find_where_jurisdiction_dm"></include>
+	</sql>
+
+  	
+  	<!-- 辖区所有查询条件 -->
+  	<sql id="find_where_jurisdiction">
+  		AND T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+		<!-- 地图查找范围 -->
+		<if test="isMapDistanceSearch != null and  isMapDistanceSearch == true ">
+				AND T13.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+				AND SDO_WITHIN_DISTANCE(
+				    T13.SDO,
+				    MDSYS.SDO_GEOMETRY(
+				       2001,
+				       8192,
+				       MDSYS.SDO_POINT_TYPE(#{longitude,jdbcType=DECIMAL}, #{latitude,jdbcType=DECIMAL}, 0),
+				       NULL,
+				       NULL
+				    ),
+				    'DISTANCE = ${mapDistanceWithin}'<!-- mapDistanceWithin不可使用#，否则会导致“无效的列索引” -->
+				) = 'TRUE'
+		</if>
+
+  	</sql>
+
+	<!-- 辖区所有查询条件  达梦版-->
+	<sql id="find_where_jurisdiction_dm">
+		AND T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+		<!-- 地图查找范围 -->
+		<if test="isMapDistanceSearch != null and  isMapDistanceSearch == true ">
+			AND T13.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			AND ROUND(DMGEO.ST_DISTANCE(
+			T13.SDO,
+			DMGEO.ST_POINTFROMTEXT('point('|| #{longitude, jdbcType=DECIMAL}||' '|| #{latitude, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+			) <![CDATA[<=]]> ${mapDistanceWithin}
+		</if>
+	</sql>
+  	
+  	<!-- 我发起的列表统计 -->
+  	<select id="findCount4Initiator" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventInitiatorSql"></include>
+	</select>
+	
+	<!-- 我发起的列表查询列 -->
+	<sql id="eventColumn4Initiator">
+		<include refid="eventColumn"></include>,
+		T3.INSTANCE_ID 		"instanceId", 			T6.REMIND_MARK 		"remindMark", 
+		T6.SUPERVISE_MARK	"superviseMark", 		T6.SUPERVISION_TYPE "supervisionType",
+		T3.STATUS			"wfStatus"
+	</sql>
+	
+	<!-- 我发起的列表数据 -->
+  	<select id="findPageList4Initiator" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Initiator"></include>
+  		<include refid="eventInitiatorSql"></include>
+  		<include refid="initiator_order_by"></include>
+  	</select>
+  	
+  	<!-- 我发起的列表相关表 -->
+  	<sql id="eventTable4Initiator">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+  	</sql>
+  	
+  	<!-- 我发起的列表语句 -->
+  	<sql id="eventInitiatorSql">
+  		<include refid="eventTable4Initiator"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_initiator"></include>
+  	</sql>
+  	
+  	<!-- 我发起的列表查询条件 -->
+  	<sql id="find_where_initiator">
+  		AND T3.STATUS IN ('1','2') AND T2.STATUS = '001'
+  		<if test="initiatorId != null and initiatorId > 0 ">
+			AND T3.USER_ID = #{initiatorId,jdbcType=DECIMAL} 
+		</if>
+		<if test="initiatorOrgId != null and initiatorOrgId > 0 ">
+			AND T3.ORG_ID = #{initiatorOrgId,jdbcType=DECIMAL} 
+		</if>
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+  	</sql>
+  	
+  	<!-- 我发起的列表排序 -->
+  	<sql id="initiator_order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T3.START_TIME DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+  	
+  	<!-- 我的关注列表统计 -->
+  	<select id="findCount4Attention" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventAttentionSql"></include>
+	</select>
+	
+	<!-- 我的关注查询列 -->
+	<sql id="eventColumn4Attention">
+		<include refid="eventColumn"></include>,
+		T3.INSTANCE_ID 		"instanceId", 			T6.REMIND_MARK 		"remindMark", 
+		T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType",
+		T3.STATUS			"wfStatus"
+	</sql>
+	
+	<!-- 我的关注列表数据 -->
+  	<select id="findPageList4Attention" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Attention"></include>
+  		<include refid="eventAttentionSql"></include>
+  		<include refid="attention_order_by"></include>
+  	</select>
+  	
+  	<!-- 我的关注列表关联表 -->
+  	<sql id="eventTable4Attention">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+		INNER JOIN ${dbuser.workflow}.WF_ATTENTION T10
+		  ON T10.FOREIGN_ID = T1.EVENT_ID 
+  	</sql>
+  	
+  	<!-- 我的关注列表语句 -->
+  	<sql id="eventAttentionSql">
+		<include refid="eventTable4Attention"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_attention"></include>
+  	</sql>
+  	
+  	<!-- 我的关注列表查询条件 -->
+  	<sql id="find_where_attention">
+  		AND T2.STATUS = '001'
+  		AND T10.ORG_ID = 0
+  		AND T10.STATUS = '1'
+  		AND T10.ATTENTION_TYPE = '2'
+  		AND T10.FORM_TYPE = '300'
+  		AND T10.USER_TYPE = '3'
+  		AND T10.USER_ID = #{attentionUserId,jdbcType=DECIMAL}
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+  	</sql>
+  	
+  	<!-- 我的关注列表排序 -->
+  	<sql id="attention_order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.HAPPEN_TIME DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+  	
+  	<!-- 辖区需要督办列表统计 -->
+  	<select id="findCount4Supervise" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventSuperviseSql"></include>
+	</select>
+	
+	<!-- 辖区需要督办列表查询列 -->
+	<sql id="eventColumn4Supervise">
+		<include refid="eventColumn"></include>,
+		T3.INSTANCE_ID 		"instanceId", 			T6.REMIND_MARK 		"remindMark", 
+		T6.SUPERVISE_MARK	"superviseMark",		T6.SUPERVISION_TYPE "supervisionType",
+		T3.STATUS			"wfStatus"
+	</sql>
+	
+	<!-- 辖区需要督办列表数据 -->
+  	<select id="findPageList4Supervise" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Supervise"></include>
+  		<include refid="eventSuperviseSql"></include>
+  		<include refid="supervise_order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区所有督办列表相关表 -->
+  	<sql id="eventTable4Supervise">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID 
+  	</sql>
+  	
+  	<!-- 辖区需要督办列表语句 -->
+  	<sql id="eventSuperviseSql">
+  		<include refid="eventTable4Supervise"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_supervise"></include>
+  	</sql>
+  	
+  	<!-- 辖区需要督办列表查询条件 -->
+  	<sql id="find_where_supervise">
+  		AND T2.STATUS = '001' AND T3.STATUS = '1'
+		<![CDATA[
+		AND (
+			(SYSDATE > T1.HANDLE_DATE - 1 AND SYSDATE < T1.HANDLE_DATE) 
+			OR
+			SYSDATE > T1.HANDLE_DATE 
+			OR
+			T1.INFLUENCE_DEGREE IN ('03', '04') 
+			OR
+			T1.URGENCY_DEGREE IN ('02', '03', '04')
+		)
+		]]>
+		<include refid="find_where_event"></include>
+		<include refid="find_where_workflow"></include>
+  	</sql>
+  	
+  	<!-- 辖区需要督办列表排序 -->
+  	<sql id="supervise_order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.HAPPEN_TIME DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where_event">
+  	<if test="@Ognl@isNotEmpty(updateTimeStart)">
+			AND T1.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="@Ognl@isNotEmpty(updateTimeEnd)">
+			AND T1.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+  		<if test="@Ognl@isNotEmpty(code)">
+  			AND T1.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+  		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(eventName)">
+				AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="@Ognl@isNotEmpty(eventNameAccurate)">
+				AND T1.EVENT_NAME = #{eventNameAccurate,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(type)">
+			AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(content)">
+			AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(occurred)">
+			AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="happenTime != null">
+			AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+		</if>
+		<choose>
+			<!-- wuqf,江西省事件表与实例表2000万*2000万以上就查不出来了，plsql查询10秒左右，mybatis5分钟也出不来
+			AND T2.INFO_ORG_CODE LIKE '${infoOrgCode}%'
+			20210821 $会变成硬解析，不太稳定等升级spring5再测试 -->
+			<when test="@Ognl@isNotEmpty(infoOrgCode)">				
+				AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="@Ognl@isNotEmpty(infoOrgCodeAccurate)">
+				AND T2.INFO_ORG_CODE = #{infoOrgCodeAccurate,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(tel)">
+			AND T1.TEL = #{tel,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(contactUser)">
+			AND T1.CONTACT_USER LIKE #{contactUser,jdbcType=DECIMAL}||'%'
+		</if>
+		<if test="creatorId != null">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(collectWayArray)">
+				AND T1.COLLECT_WAY IN
+				<foreach collection="collectWayArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(collectWay)">
+				AND T1.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(influenceDegreeArray)">
+				AND T1.INFLUENCE_DEGREE IN
+				<foreach collection="influenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(influenceDegree)">
+				AND T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+				AND T1.URGENCY_DEGREE IN
+				<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(urgencyDegree)">
+				AND T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(sourceArray)">
+				AND T1.SOURCE IN
+				<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(source)">
+				AND T1.SOURCE = #{source,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(subStatusArray)">
+				AND T1.SUB_STATUS IN
+				<foreach collection="subStatusArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(subStatus)">
+				AND T1.SUB_STATUS = #{subStatus,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(attrFlag)">
+			AND T1.ATTR_FLAG LIKE '%' || #{attrFlag,jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="@Ognl@isNotEmpty(isAdopted)">
+			AND T1.IS_ADOPTED = #{isAdopted,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(bizPlatformArray)">
+				AND T1.BIZ_PLATFORM IN
+				<foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(bizPlatform)">
+				AND T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(removeBizPlatform)">
+			AND T1.BIZ_PLATFORM NOT IN (#{removeBizPlatform,jdbcType=VARCHAR})
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(statusList)">
+				AND T1.STATUS IN
+				<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(status)">
+				AND T1.STATUS = #{status,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND 1 = 2
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(removeTypeArray)">
+				AND
+				<foreach collection="removeTypeArray" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(removeTypeList)">
+				AND
+				<foreach collection="removeTypeList" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(eventIdList)">
+			AND T1.EVENT_ID IN
+			<foreach collection="eventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="@Ognl@isNotEmpty(eliminateEventIdList)">
+			AND T1.EVENT_ID NOT IN
+			<foreach collection="eliminateEventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		
+		<choose>
+			<when test="@Ognl@isNotEmpty(generalSearch)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.INVOLVED_PERSION LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(warnKeyWordSearch)">
+				AND (
+					REGEXP_LIKE(T1.CONTENT_,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.EVENT_NAME,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.OCCURRED,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyRemarkWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.REMARK LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+		</choose>
+		
+	  <if test="@Ognl@isNotEmpty(happenTimeStart)">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="@Ognl@isNotEmpty(happenTimeEnd)">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <choose>
+	   		<when test="@Ognl@isNotEmpty(createTimeStart)">
+	   			AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   		</when>
+	   		<when test="@Ognl@isNotEmpty(createDateTimeStart)">
+	   			AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createDateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   		</when>
+	   </choose>
+	   <choose>
+	   		<when test="@Ognl@isNotEmpty(createTimeEnd)">
+	   			AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd')+1
+	   		</when>
+	   		<when test="@Ognl@isNotEmpty(createDateTimeEnd)">
+	   			AND T1.CREATE_TIME <![CDATA[<=]]>TO_DATE(#{createDateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   		</when>
+	   </choose>
+	   <if test="@Ognl@isNotEmpty(handleDateDayStart)">
+	   		AND T1.HANDLE_DATE <![CDATA[>=]]>TO_DATE(#{handleDateDayStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateDayEnd)">
+	   		AND T1.HANDLE_DATE <![CDATA[<]]>TO_DATE(#{handleDateDayEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd') + 1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateFlag)">
+	   		AND T1.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+	   </if>
+	   <if test="@Ognl@isNotEmpty(creatorOrgCode)">
+	   		AND EXISTS (
+			      SELECT 1
+			      FROM T_DC_PRIVILEGE_EXAMPLE EXAMPLE, T_DC_ORG_SOCIAL_INFO ORG
+			      WHERE EXAMPLE.SOCIAL_ORG_ID = ORG.ORG_ID AND ORG.STATUS = '001'
+			      AND ORG.ORG_CODE LIKE #{creatorOrgCode ,jdbcType=VARCHAR}||'%'
+			      AND EXAMPLE.USER_ID = T1.CREATOR_ID
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeStart)">
+	   		AND T1.FIN_TIME <![CDATA[>=]]>TO_DATE(#{finTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeEnd)">
+	   		AND T1.FIN_TIME <![CDATA[<]]>TO_DATE(#{finTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(gridAdminDuty)">
+	   		AND EXISTS (
+			  SELECT 1 
+			  FROM T_DC_GRID_ADMIN GRIDADMIN, T_DC_GRID GRID
+			  WHERE GRIDADMIN.GRID_ID = GRID.GRID_ID 
+			  AND GRID.STATUS = '001' AND GRIDADMIN.STATUS = '001' 
+			  AND GRIDADMIN.DUTY = #{gridAdminDuty ,jdbcType=VARCHAR}
+			  AND GRIDADMIN.USER_ID = T1.CREATOR_ID 
+			)
+	   </if>
+	   <!--查询是否存在附件类型(处理前，处理中，处理后)-->
+	   <if test="@Ognl@isNotEmpty(eventSeq)">
+	   		AND EXISTS (
+			  SELECT 1
+			  FROM T_ATTACHMENT T16
+			 WHERE T16.ATTACHMENT_TYPE = 'ZHSQ_EVENT'
+			   AND T16.BIZ_ID = T1.EVENT_ID
+			   AND T16.EVENT_SEQ = #{eventSeq ,jdbcType=VARCHAR}
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(dynamicSql4Event)">
+	   		${dynamicSql4Event}
+	   </if>
+		<!--南昌事件-辖区所有列表高级查询个性化条件：办理单位、办理方式-->
+		<if test="handledTaskUnitId != null and handledTaskUnitId != '' ">
+			<choose>
+				<when test="handledType == 'nanChangEventEnd' ">
+					AND EXISTS (
+						SELECT 1
+						FROM T_EVENT_PROCESS T11
+						WHERE T11.STATUS = '03'
+						AND T11.EVENT_ID = T1.EVENT_ID
+						AND T11.ORG_ID = #{handledTaskUnitId,jdbcType=DECIMAL}
+					)
+				</when>
+			</choose>
+		</if>
+		<!-- 拓展表查询条件 -->
+		<if test="isCapEventExtend != null and isCapEventExtend == true ">
+			<include refid="find_where_extend"></include>
+		</if>
+	   	
+		<!-- 盐都演示功能，事件是否重复标识，1 重复；0 否 -->
+		<if test="@Ognl@isNotEmpty(isDuplicate)">
+			AND T1.IS_DUPLICATE = #{isDuplicate,jdbcType=VARCHAR}
+		</if>
+		<!-- 事件基本信息完整性查询 1：完整；0 不完整；-1 待判断； -->
+		<if test="@Ognl@isNotEmpty(isPerfect)">
+			AND T1.IS_PERFECT = #{isPerfect,jdbcType=VARCHAR}
+		</if>
+		<!-- 举报人员 -->
+		<if test="@Ognl@isNotEmpty(informant)">
+			AND T1.INFORMANT LIKE '%' || #{informant,jdbcType=VARCHAR} || '%'
+		</if>
+		<!-- 举报电话 -->
+		<if test="@Ognl@isNotEmpty(informantTel)">
+			AND T1.INFORMANT_TEL LIKE '%' || #{informantTel,jdbcType=VARCHAR} || '%'
+		</if>
+		<!-- 事件环节逾期查询 -->
+		<if test="overdue !=null">
+			<choose>
+				<when test="overdue.toString()=='0'.toString() "><!-- 表示正常的事件(当前环节与历史环节均不逾期) -->
+					AND NOT EXISTS (
+				      	SELECT 1
+				      	FROM ${dbuser.workflow}.JBPM4_TASK T4_1 
+				      	WHERE T4_1.PROCINST_ = T3.INSTANCE_ID
+				      	AND T4_1.DUEDATE_<![CDATA[<]]>SYSDATE
+				 	 )
+				 	 AND NOT EXISTS (
+				 	 	SELECT 1
+				 	 	FROM ${dbuser.workflow}.WF_TASK T8_1
+				 	 	WHERE T8_1.INSTANCE_ID = T3.INSTANCE_ID
+				 	 	AND T8_1.ISTIMEOUT = '1'
+				 	 )
+				</when>
+				<when test="overdue.toString()=='1'.toString() "><!-- 表示即将逾期的事件(当前环节即将逾期) -->
+					AND EXISTS (
+				      	SELECT 1
+				      	FROM ${dbuser.workflow}.JBPM4_TASK T4_1 
+				      	WHERE T4_1.PROCINST_ = T3.INSTANCE_ID
+						AND SYSDATE<![CDATA[<=]]>T4_1.DUEDATE_
+						AND SYSDATE<![CDATA[>=]]>T4_1.DUEDATE_-1
+				 	 )
+				</when>
+				<when test="overdue.toString()=='2'.toString() "><!-- 表示逾期的事件(当前环节或者历史环节已经逾期) -->
+				
+					 AND 
+					 (1=0 
+					 <if test="listType.toString()!=('2'.toString()) "><!-- 经办查询逾期只关注自己办理过的历史环节是否逾期，不关注当前环节 -->
+						 OR EXISTS (
+					      	SELECT 1
+					      	FROM ${dbuser.workflow}.JBPM4_TASK T4_1 
+					      	WHERE T4_1.PROCINST_ = T3.INSTANCE_ID
+					      	AND T4_1.DUEDATE_<![CDATA[<]]>SYSDATE
+					 	 )
+					 </if>
+				 	 <if test="listType.toString()!=('1'.toString()) "><!-- 待办查询逾期只关注当前环节，不关注历史环节 -->
+					 	 OR EXISTS (
+					 	 	SELECT 1
+					 	 	FROM ${dbuser.workflow}.WF_TASK T8_1
+					 	 	WHERE T8_1.INSTANCE_ID = T3.INSTANCE_ID
+					 	 	AND T8_1.ISTIMEOUT = '1'
+					 	 	<if test="listType.toString()=='2'.toString() "><!-- 经办查询逾期只关注自己办理过的历史环节是否逾期 -->
+					 	 		AND T8_1.TRANSACTOR_ID=#{handledUserId,jdbcType=DECIMAL}
+					 	 		AND T8_1.ORG_ID=#{handledOrgId,jdbcType=DECIMAL}
+					 	 	</if>
+					 	 )
+				 	 </if>
+				 	 )
+				</when>
+			</choose>
+		</if>
+		<if test="@Ognl@isNotEmpty(socialOrgCode)">	<!-- 查部门 -->
+			<!-- isdone 0 未处理，1 已处理  -->
+			and t3.instance_id in (select p.instance_id from  ${dbuser.workflow}.wf_task_participation p join t_dc_org_social_info s
+    			on s.org_id =p.org_id where  p.isdone='0' and s.org_code like #{socialOrgCode} || '%' )
+		</if>
+  	</sql>
+  	
+  	
+  	<!-- 拓展表过滤条件 -->
+  	<sql id="find_where_extend">
+		<choose>
+			<when test="@Ognl@isNotEmpty(patrolTypeArray)">
+				AND T14.PATROL_TYPE IN
+				<foreach collection="patrolTypeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(patrolType)">
+				AND T14.PATROL_TYPE = #{patrolType,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="pointSelection != null ">
+			AND	T14.POINT_SELECTION = #{pointSelection,jdbcType=DECIMAL} 
+		</if>
+		<if test="@Ognl@isNotEmpty(isNotice)">
+			AND	T14.IS_NOTICE = #{isNotice,jdbcType=VARCHAR} 
+		</if>
+		<if test="@Ognl@isNotEmpty(emtType)">
+			AND T14.EMT_TYPE = BITAND(T14.EMT_TYPE, #{emtType,jdbcType=DECIMAL})
+			AND T14.EMT_TYPE > 0
+		</if>
+  	</sql>
+  	
+  	<!-- 工作流相关查询条件 -->
+  	<sql id="find_where_workflow">
+  		<if test="@Ognl@isNotEmpty(archiveTimeStart)">
+  			AND T3.END_TIME <![CDATA[>=]]>TO_DATE(#{archiveTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="@Ognl@isNotEmpty(archiveTimeEnd)">
+	   		AND T3.END_TIME <![CDATA[<]]>TO_DATE(#{archiveTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	   	<if test="@Ognl@isNotEmpty(curHandledTaskName)">
+	   		AND EXISTS (
+	   			SELECT 1
+	   			FROM ${dbuser.workflow}.WF_PROCESS_INSTANCE T3_1
+	   			INNER JOIN ${dbuser.workflow}.WF_TASK T8_1
+	   				ON T3_1.INSTANCE_ID = T8_1.INSTANCE_ID
+	   			WHERE T3.INSTANCE_ID = T3_1.INSTANCE_ID AND (T3_1.CUR_NODE = #{curHandledTaskName,jdbcType=VARCHAR} OR T8_1.TASK_NAME = #{curHandledTaskName,jdbcType=VARCHAR})
+	   		)
+		</if>
+		<if test="@Ognl@isNotEmpty(superviseMark)">
+			AND T6.SUPERVISE_MARK = #{superviseMark,jdbcType=VARCHAR}
+		</if>
+  		<!--南昌事件-辖区所有列表高级查询个性化条件：办理单位、办理方式-->
+		<if test="handledTaskUnitId != null and handledTaskUnitId != '' ">
+			<choose>
+				<when test="handledType == 'todo'">
+					AND ((T5.USERID_ =  #{handledTaskUnitId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR
+					(T5.GROUPID_ =  #{handledTaskUnitId,jdbcType=VARCHAR}  AND T5.TYPE_ = '3'))
+					AND T3.STATUS = '1'
+				</when>
+				<when test="handledType == 'done' ">
+					AND EXISTS
+					(SELECT 1
+					FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+					WHERE T8.TASK_ID = T9.TASK_ID
+					AND T8.INSTANCE_ID = T3.INSTANCE_ID
+					AND T9.ORG_ID = #{handledTaskUnitId,jdbcType=DECIMAL}
+					AND T9.USER_TYPE = '3'
+					AND T9.ISDONE = '1'
+					)
+				</when>
+			</choose>
+		</if>
+		<!--督办类型-->
+		<choose>
+			<when test="@Ognl@isNotEmpty(supervisionTypeArray)">
+				AND T6.SUPERVISION_TYPE IN
+				<foreach collection="supervisionTypeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(supervisionType)">
+				AND T6.SUPERVISION_TYPE = #{supervisionType,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<!--督办/催办时间-->
+		<if test="@Ognl@isNotEmpty(remindDateStart)">
+  			AND T6.REMIND_DATE <![CDATA[>=]]>TO_DATE(#{remindDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="@Ognl@isNotEmpty(remindDateEnd)">
+	   		AND T6.REMIND_DATE <![CDATA[<]]>TO_DATE(#{remindDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	   	<if test="isCapSupervisedOrReminded != null and isCapSupervisedOrReminded == true">
+	   		AND (T6.REMIND_MARK = '1' OR T6.SUPERVISE_MARK = '1')
+	   	</if>
+		<!-- 是否获取我督办过的事件 -->
+  		<if test="isCapMySupervised != null and isCapMySupervised == true ">
+  			AND EXISTS (
+  				SELECT 1
+  				FROM ${dbuser.workflow}.WF_REMIND T15
+  				WHERE T15.INSTANCE_ID = T3.INSTANCE_ID
+  				AND T15.STATUS = '2' AND T15.REMIND_USER_ID = #{superviseUserId,jdbcType=DECIMAL}
+  			)
+  		</if>
+  		
+		<!-- 判断是否自采自结(只有具有结案环节且结案环节是task8是地市此项查询才生效,流程走向是结案-评价-归档的模式可启用) -->
+  		<if test="@Ognl@isNotEmpty(isSelfCollectSettle)">
+  			AND T1.STATUS IN ('03','04')
+  			AND EXISTS (SELECT 1
+		          FROM ${dbuser.workflow}.WF_TASK T8_1
+		          LEFT JOIN ${dbuser.workflow}.WF_TASK T8_2
+		            ON T8_2.PRE_TASK_ID = T8_1.TASK_ID
+		         WHERE T8_1.TASK_NAME IN ('task8', 'task1')
+		           AND DECODE(T8_1.TRANSACTOR_ID, T3.USER_ID, '1', '0') = #{isSelfCollectSettle,jdbcType=VARCHAR}
+		           AND T8_1.INSTANCE_ID = T3.INSTANCE_ID
+		           AND ((T8_2.TASK_ID IS NOT NULL AND T8_2.OPERATE_TYPE = '1' AND
+		               T8_1.TASK_NAME = 'task8') OR T8_2.TASK_ID IS NULL))
+  		</if>
+  		
+  		<!-- 经办或者待办 -->
+  		<if test="eventOrgOrgId != null ">
+			AND (
+		  	EXISTS (
+		      	SELECT 1
+		      	FROM ${dbuser.workflow}.JBPM4_TASK T4, ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		      	WHERE T4.PROCINST_ = T3.INSTANCE_ID AND T4.DBID_ = T5.TASK_
+		      	AND (
+		      		(T5.USERID_ = #{eventOrgOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR 
+		      		(
+		      			T5.GROUPID_ = #{eventOrgOrgId,jdbcType=VARCHAR} 
+		      			<if test="eventOrgUserId != null ">
+		      				AND T5.USERID_ = #{eventOrgUserId,jdbcType=VARCHAR}
+		      			</if>
+		      			AND T5.TYPE_ = '3'
+		      		)
+		      	)
+		  	)
+		  	OR
+		  	EXISTS (
+		      	SELECT 1
+		      	FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		      	WHERE T8.INSTANCE_ID = T3.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID
+		      	AND (
+		      		(T9.USER_ID = #{eventOrgOrgId,jdbcType=VARCHAR} AND T9.USER_TYPE = '1') OR 
+		      		(
+		      		<!-- 由于WF_TASK_PARTICIPATION中有在列USER_ID、ORG_ID、USER_TYPE中增添索引IDX_TASK_PAR_USER_TYPE_ID -->
+		      			<if test="eventOrgUserId != null ">
+		      				T9.USER_ID = #{eventOrgUserId,jdbcType=VARCHAR} AND
+		      			</if>
+		      			T9.ORG_ID = #{eventOrgOrgId,jdbcType=VARCHAR} 
+		      			AND T9.USER_TYPE = '3'
+		      		)
+		      	)
+		 	 )
+		)
+		</if>
+		
+	</sql>
+	
+	<!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		ORDER BY 
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(sourceToppingField)">
+  				(CASE WHEN T1.SOURCE = #{sourceToppingField,jdbcType=VARCHAR} THEN 1 ELSE 0 END) DESC,
+  			</when>
+  			<when test="@Ognl@isNotEmpty(typeToppingField)">
+  				(CASE WHEN T1.TYPE_ = #{typeToppingField,jdbcType=VARCHAR} THEN 1 ELSE 0 END) DESC,
+  			</when>
+  		</choose>
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			T1.EVENT_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+</mapper>

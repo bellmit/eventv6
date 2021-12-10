@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.prob.PersonProbMapper">
+     <!-- 列表查询列 -->
+	<sql id="list_column">
+		T.PROB_ID                   "probId",
+		T.PROB_TITLE                "probTitle",
+		T.VIOLATION_MONEY_TYPE      "violationMoneyType",
+		T.VIOLATION_MONEY           "violationMoney",
+	    T.VIOLATION_TYPE            "violationType",
+		T.VIOLATION_DATE            "violationDate",
+	    T.AMOUNT_INVOLVED           "amountInvolved",
+	    T.CASE_BRIEF                "caseBrief",
+	    T.BLAME_FLAG                "blameFlag",
+	    T.AMOUNT_OF_RECOVERY        "amountOfRecovery",
+	    T.SHAPE                     "shape"
+	</sql>
+	<!-- 查询个人列 -->
+	<sql id="detail_person">
+		<include refid="list_column"></include>,
+		T2.NAME                     "name",
+		T2.SEX_                     "sex",
+		T2.POLITICS                 "politics",
+		T2.WORK_UNIT                "workUnit",
+		T2.PROFESSION               "profession",
+		T2.PROFESSION_TYPE          "professionType",
+		T.PARTY_FLAG                "partyFlag",
+		T.DISCIPLINE_FLAG           "disciplineyFlag",
+	    T.DISCIPLINARY_PUNISHMENT   "disciplinaryPunishment",
+	    T.ORG_PROC_TYPE             "orgProcType",
+	    T.PROC_RESULT               "procResult",
+        T.TRANSFER_JUSTICE_FLAG     "transferJusticeFlag"    
+	</sql>
+    <!--查询个人问题总数-->
+    <select id="findCount4Person" resultType="java.lang.Integer">
+        SELECT COUNT(1) 
+        <include refid="personListSql"></include>
+    </select>
+    
+    <!--查询个人问题总数-->
+    <select id="findPageList4Person" resultType="java.util.Map">
+        SELECT
+	        <include refid="detail_person"></include>
+        <include refid="personListSql"></include>
+        <include refid="order_by"></include>
+    </select>
+    
+    <!--根据Id查询-->
+    <select id="searchById" resultType="java.util.Map">
+        SELECT
+	        <include refid="detail_person"></include>
+        FROM T_PROBLEM T , T_ZZ_INVOLVED_PEOPLE T2
+		
+		WHERE  T2.BIZ_ID = T.PROB_ID AND T2.BIZ_TYPE = '08' AND T.PROB_ID = #{id,jdbcType=INTEGER} AND T.VIOLATION_OBJ_TYPE = '2'
+    </select>
+    
+    <!-- 个人事件列表语句 -->
+    <sql id="personListSql">
+        FROM T_PROBLEM T , T_ZZ_INVOLVED_PEOPLE T2
+		
+		WHERE  T2.BIZ_ID = T.PROB_ID AND T2.BIZ_TYPE = '08' AND T.VIOLATION_OBJ_TYPE = '2'
+		<include refid="find_where"></include>
+    </sql>
+     <sql id="find_where">
+    	AND T.STATUS_ = '1'
+    	<if test="regionCode != null and regionCode != '' ">
+    		AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+    	</if>
+    	 <if test="violationDateStart != null and violationDateStart != '' ">
+	  		AND T.VIOLATION_DATE <![CDATA[>=]]>TO_DATE(#{violationDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+	  	</if>
+	   	<if test="violationDateEnd != null and violationDateEnd != '' ">
+	   		AND T.VIOLATION_DATE <![CDATA[<]]>TO_DATE(#{violationDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd')+1
+	   	</if>
+    </sql>
+    <sql id="order_by">
+  		ORDER BY T.PROB_ID DESC
+  	</sql>
+</mapper>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="cn.ffcs.zhsq.mybatis.persistence.administrationPenalty.AdministrationPenaltyMapper">
+    <resultMap id="BaseResultMap"
+               type="cn.ffcs.zhsq.mybatis.domain.administrationPenalty.AdministrationPenalty">
+        <id column="PENALTY_ID" property="penaltyId" jdbcType="DECIMAL"></id>
+        <result column="REGISTRATION_ID" property="registrationId" jdbcType="VARCHAR"></result>
+        <result column="ENTERPRISE_NAME" property="enterpriseName" jdbcType="VARCHAR"></result>
+        <result column="ENTERPRISE_ADDRESS" property="enterpriseAddress" jdbcType="VARCHAR"></result>
+        <result column="DECISION_INSTRUMENT" property="decisionInstrument" jdbcType="VARCHAR"></result>
+        <result column="PENALTY_CAUSE" property="penaltyCause" jdbcType="VARCHAR"></result>
+        <result column="PENALTY_BASES" property="penaltyBases" jdbcType="VARCHAR"></result>
+        <result column="PENALTY_CONCLUSION" property="penaltyConclusion" jdbcType="VARCHAR"></result>
+        <result column="PENALTY_DATE" property="penaltyDate" jdbcType="TIMESTAMP"></result>
+        <result column="PENALTY_DATESTR" property="penaltyDateStr" jdbcType="VARCHAR"></result>
+        <result column="CREATOR" property="creator" jdbcType="DECIMAL"></result>
+        <result column="CREATEDTIME" property="createdTime" jdbcType="TIMESTAMP"></result>
+        <result column="CREATORNAME" property="creatorName" jdbcType="VARCHAR"></result>
+        <result column="UPDATER" property="updater" jdbcType="DECIMAL"></result>
+        <result column="UPDATEDTIME" property="updatedTime" jdbcType="TIMESTAMP"></result>
+        <result column="UPDATERNAME" property="updaterName" jdbcType="VARCHAR"></result>
+        <result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR"></result>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"></result>
+        <result column="SYEAR" property="syear" jdbcType="DECIMAL"></result>
+        <result column="SMONTH" property="smonth" jdbcType="DECIMAL"></result>
+
+        <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"></result><!-- 所属网格 -->
+        <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR"></result><!-- 网格编码 -->
+        <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR"></result><!-- 网格名称 -->
+        <result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR"></result><!-- 网格名称 -->
+    </resultMap>
+
+    <!--列表总数-->
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE
+        AND G.status = '001'
+        WHERE T.STATUS = '1'
+        <include refid="find_where" />
+    </select>
+
+    <!-- 列表(分页) -->
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT T.*,
+        G.GRID_NAME,
+        G.GRID_PATH,
+        G.GRID_CODE
+        FROM ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE AND G.status='001'
+        WHERE T.STATUS = '1'
+
+        <include refid="find_where" />
+        ORDER BY
+        T.PENALTY_ID DESC
+    </select>
+
+    <select id="findPenaltyByYM" resultMap="BaseResultMap" parameterType="map">
+        SELECT T.*
+        FROM ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        WHERE T.STATUS = '1'
+
+       <include refid="find_where"/>
+        ORDER BY
+        T.PENALTY_ID DESC
+    </select>
+
+    <!--列表(条件查询) -->
+    <sql id="find_where">
+        <if test="gridCode != null and gridCode != ''">
+            AND G.INFO_ORG_CODE LIKE '%' || #{gridCode} || '%'
+        </if>
+        <if test="enterpriseName != null and enterpriseName != ''">
+            AND T.ENTERPRISE_NAME LIKE '%' || #{enterpriseName} || '%'
+        </if>
+        <if test="enterpriseAddress != null and enterpriseAddress != ''">
+            AND T.ENTERPRISE_ADDRESS LIKE '%' || #{enterpriseAddress} || '%'
+        </if>
+        <if test="syear != null and syear != ''">
+            AND T.SYEAR = #{syear}
+        </if>
+        <if test="smonth != null and smonth != ''">
+            AND T.SMONTH = #{smonth}
+        </if>
+    </sql>
+
+    <!-- 新增行政处罚信息 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.administrationPenalty.AdministrationPenalty">
+        <selectKey keyProperty="penaltyId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_ADMINISTRATION_PENALTY_ID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY
+        (
+        PENALTY_ID,
+        REGISTRATION_ID,
+        ENTERPRISE_NAME,
+        ENTERPRISE_ADDRESS,
+        DECISION_INSTRUMENT,
+        PENALTY_CAUSE,
+        PENALTY_BASES,
+        PENALTY_CONCLUSION,
+        PENALTY_DATE,
+        PENALTY_DATESTR,
+        CREATOR,
+        CREATEDTIME,
+        CREATORNAME,
+        UPDATER,
+        UPDATEDTIME,
+        UPDATERNAME,
+        REGION_CODE,
+        STATUS,
+        SYEAR,
+        SMONTH
+        )VALUES (
+        #{penaltyId,jdbcType=DECIMAL},
+        #{registrationId,jdbcType=VARCHAR},
+        #{enterpriseName,jdbcType=VARCHAR},
+        #{enterpriseAddress,jdbcType=VARCHAR},
+        #{decisionInstrument,jdbcType=TIMESTAMP},
+        #{penaltyCause,jdbcType=VARCHAR},
+        #{penaltyBases,jdbcType=VARCHAR},
+        #{penaltyConclusion,jdbcType=VARCHAR},
+        #{penaltyDate,jdbcType=TIMESTAMP},
+        #{penaltyDateStr,jdbcType=VARCHAR},
+        #{creator,jdbcType=DECIMAL},
+        #{createdTime,jdbcType=TIMESTAMP},
+        #{creatorName,jdbcType=VARCHAR},
+        #{updater,jdbcType=DECIMAL},
+        #{updatedTime,jdbcType=TIMESTAMP},
+        #{updaterName,jdbcType=VARCHAR},
+        #{regionCode,jdbcType=VARCHAR},
+        '1',
+        #{syear,jdbcType=DECIMAL},
+        #{smonth,jdbcType=DECIMAL}
+        )
+
+
+    </insert>
+
+    <!--根据行政处罚Id查找行政处罚信息-->
+    <select id="findById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT T.*,
+        G.GRID_NAME,
+        G.GRID_PATH,
+        G.GRID_CODE
+        FROM ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE
+        WHERE
+        PENALTY_ID = #{penaltyId,jdbcType=DECIMAL}
+    </select>
+
+    <!--查询12个月-->
+    <select id="findChart12Month" resultType="map" parameterType="map">
+        SELECT T.smonth,count(*)s1
+        FROM ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        WHERE T.syear=#{syear} AND T.status='1'
+        GROUP BY T.smonth
+        ORDER BY T.smonth
+    </select>
+
+    <!--修改行政处罚信息-->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.administrationPenalty.AdministrationPenalty">
+        UPDATE
+        ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY
+        <set>
+            <if test="registrationId != null">
+                REGISTRATION_ID = #{registrationId,jdbcType=VARCHAR},
+            </if>
+            <if test="enterpriseName != null">
+                ENTERPRISE_NAME = #{enterpriseName,jdbcType=VARCHAR},
+            </if>
+            <if test="enterpriseAddress != null">
+                ENTERPRISE_ADDRESS = #{enterpriseAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="decisionInstrument != null">
+                DECISION_INSTRUMENT = #{decisionInstrument,jdbcType=TIMESTAMP},
+            </if>
+            <if test="penaltyCause != null">
+                PENALTY_CAUSE = #{penaltyCause,jdbcType=VARCHAR},
+            </if>
+            <if test="penaltyBases != null">
+                PENALTY_BASES = #{penaltyBases,jdbcType=VARCHAR},
+            </if>
+            <if test="penaltyConclusion != null">
+                PENALTY_CONCLUSION = #{penaltyConclusion,jdbcType=VARCHAR},
+            </if>
+            <if test="penaltyDate != null">
+                PENALTY_DATE = #{penaltyDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="penaltyDateStr != null">
+                PENALTY_DATESTR = #{penaltyDateStr,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null">
+                CREATOR = #{creator,jdbcType=DECIMAL},
+            </if>
+            <if test="createdTime != null">
+                CREATEDTIME = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATORNAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updater != null">
+                UPDATER = #{updater,jdbcType=DECIMAL},
+            </if>
+            <if test="updatedTime != null">
+                UPDATEDTIME = #{updatedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updaterName != null">
+                UPDATERNAME = #{updaterName,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="syear != null">
+                SYEAR = #{syear,jdbcType=DECIMAL},
+            </if>
+            <if test="smonth != null">
+                SMONTH = #{smonth,jdbcType=DECIMAL}
+            </if>
+        </set>
+        WHERE
+        PENALTY_ID = #{penaltyId,jdbcType=DECIMAL}
+    </update>
+
+
+
+    <!-- 伪删除行政处罚信息 -->
+    <delete id="delete"
+            parameterType="cn.ffcs.zhsq.mybatis.domain.administrationPenalty.AdministrationPenalty">
+        UPDATE ${dbuser.zhsq_szzg}.ZG_ADMINISTRATION_PENALTY T
+        <set>
+            T.STATUS = '0',
+            T.UPDATEDTIME = SYSDATE
+        </set>
+        WHERE
+        PENALTY_ID = #{penaltyId,jdbcType=DECIMAL}
+    </delete>
+
+</mapper>

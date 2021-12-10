@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.peopleLivelihoodInfo.PeopleLivelihoodInfoMapper">
+	
+	<!-- 事件列表查询列 -->
+	<sql id="eventColumn">
+		T.INFO_ID						"infoId",
+		T.INFO_SEQ_ID					"infoSeqId",
+		P.INSTANCE_ID					"instanceId",
+		T.INFO_TITLE					"infoTitle",
+		T.GRID_ID						"gridId",
+		T.INFO_ORG_CODE					"infoOrgCode",
+		G.GRID_NAME						"gridName",
+		G.GRID_PATH						"gridPath",
+		T.INFO_TYPE						"infoType",
+		T.INFO_TRENDS_TYPE				"infoTrendsType",
+		T.URGENCE_DEGREE				"urgenceDegree",
+		T.HAPPEN_TIME					"happenTime",
+		T.OCCURRED						"occurred",
+		T.INFO_CONTENT					"infoContent",
+		T.USER_NAME						"userName",
+		T.STATUS						"status",
+		T.SUB_STATUS					"subStatus",
+		T.IS_VALID						"isValid",
+		T.CREATOR						"creator",
+		T.CREATE_TIME					"createTime",
+		T.UPDATOR						"updator",
+		T.UPDATE_TIME					"updateTime"
+	</sql>
+	
+	<!-- 列表（总数）草稿 -->	
+	<select id="countDraftList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+		ON T.GRID_ID=G.GRID_ID 
+		AND G.STATUS='001'
+		AND T.CREATOR = #{userId,jdbcType=DECIMAL}
+		LEFT JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		ON T.INFO_SEQ_ID=P.FORM_ID
+		AND P.FORM_TYPE_ID=601
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（总数）待办 -->	
+	<select id="countTodoList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+		ON T.GRID_ID=G.GRID_ID 
+		AND G.STATUS='001'
+		AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		ON T.INFO_SEQ_ID=P.FORM_ID
+		AND P.FORM_TYPE_ID=601
+		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+		  ON P.INSTANCE_ID = T4.PROCINST_
+		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		  ON T4.DBID_ = T5.TASK_
+		 AND ((T5.USERID_ = #{orgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR (T5.GROUPID_ = #{orgId,jdbcType=VARCHAR} AND T5.USERID_ = #{userId,jdbcType=VARCHAR} AND T5.TYPE_ = '3'))
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（总数）经办 -->	
+	<select id="countDoneList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+		ON T.GRID_ID=G.GRID_ID 
+		AND G.STATUS='001'
+		AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		ON T.INFO_SEQ_ID=P.FORM_ID
+		AND P.FORM_TYPE_ID=601
+		AND EXISTS (
+		    SELECT 1
+		    FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		    WHERE T8.INSTANCE_ID = P.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID
+		    AND T9.USER_ID = #{userId,jdbcType=DECIMAL} AND T9.ORG_ID = #{orgId,jdbcType=DECIMAL} AND T9.USER_TYPE = '3'
+		    AND T9.ISDONE = '1'
+		)
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（总数）所有 -->	
+	<select id="countAllList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+		ON T.GRID_ID=G.GRID_ID 
+		AND G.STATUS='001'
+		AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		ON T.INFO_SEQ_ID=P.FORM_ID
+		AND P.FORM_TYPE_ID=601
+		<if test="@Ognl@isNotEmpty(limitTask)">
+			AND EXISTS (
+				SELECT 1 FROM ${dbuser.workflow}.WF_TASK T8_1
+				WHERE T8_1.INSTANCE_ID=P.INSTANCE_ID
+				AND T8_1.OPERATE_TYPE='1'
+				AND T8_1.TASK_NAME=#{limitTask,jdbcType=VARCHAR}
+			)
+		</if>
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页）草稿 -->	
+	<select id="searchDraftList"  resultType="map">
+		SELECT
+			<include refid="eventColumn"></include>
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+			AND T.CREATOR = #{userId,jdbcType=DECIMAL}
+		LEFT JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+			ON T.INFO_SEQ_ID=P.FORM_ID
+			AND P.FORM_TYPE_ID=601
+		<include refid="find_where" />
+		<include refid="order_by"></include>
+	</select>
+	
+	
+	<!-- 列表（分页）待办 -->	
+	<select id="searchTodoList"  resultType="map">
+		SELECT
+			<include refid="eventColumn"></include>
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+			AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+			ON T.INFO_SEQ_ID=P.FORM_ID
+			AND P.FORM_TYPE_ID=601
+		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+		  	ON P.INSTANCE_ID = T4.PROCINST_
+		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+			ON T4.DBID_ = T5.TASK_
+			AND ((T5.USERID_ = #{orgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR (T5.GROUPID_ = #{orgId,jdbcType=VARCHAR} AND T5.USERID_ = #{userId,jdbcType=VARCHAR} AND T5.TYPE_ = '3'))
+		<include refid="find_where" />
+		<include refid="order_by"></include>
+	</select>
+	
+	<!-- 列表（分页）经办 -->	
+	<select id="searchDoneList"  resultType="map">
+		SELECT
+			<include refid="eventColumn"></include>
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+			AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+			ON T.INFO_SEQ_ID=P.FORM_ID
+			AND P.FORM_TYPE_ID=601
+			AND EXISTS (
+			    SELECT 1
+			    FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+			    WHERE T8.INSTANCE_ID = P.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID
+			    AND T9.USER_ID = #{userId,jdbcType=DECIMAL} AND T9.ORG_ID = #{orgId,jdbcType=DECIMAL} AND T9.USER_TYPE = '3'
+			    AND T9.ISDONE = '1'
+			)
+		<include refid="find_where" />
+		<include refid="order_by"></include>
+	</select>
+	
+	<!-- 列表（分页）辖区 -->	
+	<select id="searchAllList"  resultType="map">
+		SELECT
+			<include refid="eventColumn"></include>
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+			AND T.STATUS IN ('00','01','04')
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+			ON T.INFO_SEQ_ID=P.FORM_ID
+			AND P.FORM_TYPE_ID=601
+		<if test="@Ognl@isNotEmpty(limitTask)">
+			AND EXISTS (
+				SELECT 1 FROM ${dbuser.workflow}.WF_TASK T8_1
+				WHERE T8_1.INSTANCE_ID=P.INSTANCE_ID
+				AND T8_1.OPERATE_TYPE='1'
+				AND T8_1.TASK_NAME=#{limitTask,jdbcType=VARCHAR}
+			)
+		</if>
+		<include refid="find_where" />
+		<include refid="order_by"></include>
+	</select>
+	
+	<!-- 列表（不分页） -->	
+	<select id="searchListByParams"  resultType="map">
+		SELECT
+			T.INFO_ID						"infoId",
+			T.INFO_SEQ_ID					"infoSeqId",
+			P.INSTANCE_ID					"instanceId",
+			T.INFO_TITLE					"infoTitle",
+			T.GRID_ID						"gridId",
+			T.INFO_ORG_CODE					"infoOrgCode",
+			G.GRID_NAME						"gridName",
+			G.GRID_PATH						"gridPath",
+			T.INFO_TYPE						"infoType",
+			T.INFO_TRENDS_TYPE				"infoTrendsType",
+			T.URGENCE_DEGREE				"urgenceDegree",
+			T.HAPPEN_TIME					"happenTime",
+			T.OCCURRED						"occurred",
+			T.INFO_CONTENT					"infoContent",
+			T.USER_NAME						"userName",
+			T.STATUS						"status",
+			T.SUB_STATUS					"subStatus",
+			T.IS_VALID						"isValid",
+			T.CREATOR						"creator",
+			T.CREATE_TIME					"createTime",
+			T.UPDATOR						"updator",
+			T.UPDATE_TIME					"updateTime"
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+		LEFT JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+			ON T.INFO_SEQ_ID=P.FORM_ID
+			AND P.FORM_TYPE_ID=601
+		<include refid="find_where" />
+		<include refid="order_by"></include>
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="@Ognl@isNotEmpty(infoTitle)" >
+				AND T.INFO_TITLE LIKE '%'||#{infoTitle,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="@Ognl@isNotEmpty(infoOrgCode)" >
+				AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<choose>
+				<when test="@Ognl@isNotEmpty(infoTypeArray)">
+					AND T.INFO_TYPE IN
+					<foreach collection="infoTypeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(infoType)">
+					AND T.INFO_TYPE = #{infoType,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(infoTrendsTypeArray)">
+					AND T.INFO_TRENDS_TYPE IN
+					<foreach collection="infoTrendsTypeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(infoTrendsType)">
+					AND T.INFO_TRENDS_TYPE = #{infoTrendsType,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="@Ognl@isNotEmpty(urgenceDegreeArray)">
+					AND T.URGENCE_DEGREE IN
+					<foreach collection="urgenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(urgenceDegree)">
+					AND T.URGENCE_DEGREE = #{urgenceDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			
+			<if test="@Ognl@isNotEmpty(happenTimeStart)">
+				AND T.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		  	</if>
+		   	<if test="@Ognl@isNotEmpty(happenTimeEnd)">
+		   		AND T.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		   	</if>
+			
+			<if test="@Ognl@isNotEmpty(occurred)" >
+				AND T.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="@Ognl@isNotEmpty(infoContent)" >
+				AND T.INFO_CONTENT LIKE '%'||#{infoContent,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="@Ognl@isNotEmpty(userName)" >
+				AND T.USER_NAME LIKE '%'||#{userName,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="@Ognl@isNotEmpty(keyWord)">
+				AND (
+					T.INFO_CONTENT LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T.INFO_TITLE LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				)
+			</if>
+			<if test="@Ognl@isNotEmpty(multKeyWord)">
+				AND (
+					REGEXP_LIKE(T.INFO_CONTENT,#{multKeyWord ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T.OCCURRED,#{multKeyWord ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T.INFO_TITLE,#{multKeyWord ,jdbcType=VARCHAR})
+				)
+			</if>
+			<choose>
+				<when test="@Ognl@isNotEmpty(statusArray)">
+					AND T.STATUS IN
+					<foreach collection="statusArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(status)">
+					AND T.STATUS = #{status,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(subStatusArray)">
+					AND T.SUB_STATUS IN
+					<foreach collection="subStatusArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(subStatus)">
+					AND T.SUB_STATUS = #{subStatus,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="@Ognl@isNotEmpty(infoIdArray)">
+					AND T.INFO_ID IN
+					<foreach collection="infoIdArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(infoId)">
+					AND T.INFO_ID = #{infoId,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="@Ognl@isNotEmpty(infoSeqIdArray)">
+					AND T.INFO_SEQ_ID IN
+					<foreach collection="infoSeqIdArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(infoSeqId)">
+					AND T.INFO_SEQ_ID = #{infoId,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			
+			<choose>
+				<when test="@Ognl@isNotEmpty(isValid)">
+					AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND T.IS_VALID='1'
+				</otherwise>
+			</choose>
+			
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(createTimeStart)">
+				AND T.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		  	</if>
+		   	<if test="@Ognl@isNotEmpty(createTimeEnd)">
+		   		AND T.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		   	</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(updateTimeStart)">
+				AND T.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		  	</if>
+		   	<if test="@Ognl@isNotEmpty(updateTimeEnd)">
+		   		AND T.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		   	</if>
+		</where>
+	</sql>
+	
+	
+	
+	
+	<!-- 新增 -->	
+	<insert id="insert">
+		<selectKey keyProperty="infoSeqId,infoId" resultType="java.util.Map" order="BEFORE">
+			SELECT SEQ_T_PEOPLE_LIVELIHOOD_INFO.NEXTVAL "infoSeqId", SYS_GUID() "infoId" FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_PEOPLE_LIVELIHOOD_INFO
+		(
+			INFO_ID,
+			INFO_SEQ_ID,
+			INFO_TITLE,
+			GRID_ID,
+			INFO_ORG_CODE,
+			INFO_TYPE,
+			INFO_TRENDS_TYPE,
+			URGENCE_DEGREE,
+			HAPPEN_TIME,
+			OCCURRED,
+			INFO_CONTENT,
+			USER_NAME,
+			STATUS,
+			SUB_STATUS,
+			IS_VALID,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME
+		) VALUES (
+			#{infoId,jdbcType=VARCHAR},
+			#{infoSeqId,jdbcType=DECIMAL},
+			#{infoTitle,jdbcType=VARCHAR},
+			#{gridId,jdbcType=DECIMAL},
+			#{infoOrgCode,jdbcType=VARCHAR},
+			#{infoType,jdbcType=VARCHAR},
+			#{infoTrendsType,jdbcType=VARCHAR},
+			#{urgenceDegree,jdbcType=VARCHAR},
+			#{happenTime,jdbcType=TIMESTAMP},
+			#{occurred,jdbcType=VARCHAR},
+			#{infoContent,jdbcType=VARCHAR},
+			#{userName,jdbcType=VARCHAR},
+			'99',
+			#{subStatus,jdbcType=VARCHAR},
+			'1',
+			#{creator,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updator,jdbcType=DECIMAL},
+			SYSDATE
+		)
+	</insert>
+	
+	
+	
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="map">
+		UPDATE
+			T_PEOPLE_LIVELIHOOD_INFO
+		<set> 
+			<if test="infoTitle != null " >
+				INFO_TITLE=#{infoTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="gridId != null " >
+				GRID_ID=#{gridId,jdbcType=DECIMAL},
+			</if>
+			<if test="infoOrgCode != null " >
+				INFO_ORG_CODE=#{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="infoType != null " >
+				INFO_TYPE=#{infoType,jdbcType=VARCHAR},
+			</if>
+			<if test="infoTrendsType != null " >
+				INFO_TRENDS_TYPE=#{infoTrendsType,jdbcType=VARCHAR},
+			</if>
+			<if test="urgenceDegree != null " >
+				URGENCE_DEGREE=#{urgenceDegree,jdbcType=VARCHAR},
+			</if>
+			<if test="happenTime != null " >
+				HAPPEN_TIME=#{happenTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="occurred != null " >
+				OCCURRED=#{occurred,jdbcType=VARCHAR},
+			</if>
+			<if test="infoContent != null " >
+				INFO_CONTENT=#{infoContent,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null " >
+				USER_NAME=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="subStatus != null " >
+				SUB_STATUS=#{subStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<choose>
+				<when test="updateTime != null ">
+					UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+				</when>
+				<otherwise>
+					UPDATE_TIME=SYSDATE,
+				</otherwise>
+			</choose>
+		</set>
+		WHERE
+			INFO_ID= #{infoId,jdbcType=VARCHAR} 
+	</update>
+	
+	
+	
+	
+	<!-- 修改 -->	
+	<update id="updateBySeqId" parameterType="map">
+		UPDATE
+			T_PEOPLE_LIVELIHOOD_INFO
+		<set> 
+			<if test="infoTitle != null " >
+				INFO_TITLE=#{infoTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="gridId != null " >
+				GRID_ID=#{gridId,jdbcType=DECIMAL},
+			</if>
+			<if test="infoOrgCode != null " >
+				INFO_ORG_CODE=#{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="infoType != null " >
+				INFO_TYPE=#{infoType,jdbcType=VARCHAR},
+			</if>
+			<if test="infoTrendsType != null " >
+				INFO_TRENDS_TYPE=#{infoTrendsType,jdbcType=VARCHAR},
+			</if>
+			<if test="urgenceDegree != null " >
+				URGENCE_DEGREE=#{urgenceDegree,jdbcType=VARCHAR},
+			</if>
+			<if test="happenTime != null " >
+				HAPPEN_TIME=#{happenTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="occurred != null " >
+				OCCURRED=#{occurred,jdbcType=VARCHAR},
+			</if>
+			<if test="infoContent != null " >
+				INFO_CONTENT=#{infoContent,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null " >
+				USER_NAME=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="subStatus != null " >
+				SUB_STATUS=#{subStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<choose>
+				<when test="updateTime != null ">
+					UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+				</when>
+				<otherwise>
+					UPDATE_TIME=SYSDATE,
+				</otherwise>
+			</choose>
+		</set>
+		WHERE
+			INFO_SEQ_ID= #{infoSeqId,jdbcType=DECIMAL} 
+	</update>
+	
+	
+	
+	<!-- 删除 -->	
+	<update id="delete" parameterType="map">
+		UPDATE
+			T_PEOPLE_LIVELIHOOD_INFO
+		SET IS_VALID='0',UPDATE_TIME=SYSDATE,UPDATOR=#{updator,jdbcType=DECIMAL}
+		WHERE
+			INFO_ID= #{infoId,jdbcType=VARCHAR} 
+	</update>
+	
+	
+	
+	
+	<!-- 根据业务id查询数据-->	
+	<select id="searchById"  resultType="map">
+		SELECT
+			T.INFO_ID						"infoId",
+			T.INFO_SEQ_ID					"infoSeqId",
+			T.INFO_TITLE					"infoTitle",
+			T.GRID_ID						"gridId",
+			T.INFO_ORG_CODE					"infoOrgCode",
+			G.GRID_NAME						"gridName",
+			G.GRID_PATH						"gridPath",
+			T.INFO_TYPE						"infoType",
+			T.INFO_TRENDS_TYPE				"infoTrendsType",
+			T.URGENCE_DEGREE				"urgenceDegree",
+			T.HAPPEN_TIME					"happenTime",
+			T.OCCURRED						"occurred",
+			T.INFO_CONTENT					"infoContent",
+			T.USER_NAME						"userName",
+			T.STATUS						"status",
+			T.SUB_STATUS					"subStatus",
+			T.IS_VALID						"isValid",
+			T.CREATOR						"creator",
+			T.CREATE_TIME					"createTime",
+			T.UPDATOR						"updator",
+			T.UPDATE_TIME					"updateTime"
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+		WHERE INFO_ID= #{infoId,jdbcType=VARCHAR}
+	</select>
+	
+	
+	
+	
+	<!-- 根据业务id查询数据-->	
+	<select id="searchBySeqId"  resultType="map">
+		SELECT
+			T.INFO_ID						"infoId",
+			T.INFO_SEQ_ID					"infoSeqId",
+			T.INFO_TITLE					"infoTitle",
+			T.GRID_ID						"gridId",
+			T.INFO_ORG_CODE					"infoOrgCode",
+			G.GRID_NAME						"gridName",
+			G.GRID_PATH						"gridPath",
+			T.INFO_TYPE						"infoType",
+			T.INFO_TRENDS_TYPE				"infoTrendsType",
+			T.URGENCE_DEGREE				"urgenceDegree",
+			T.HAPPEN_TIME					"happenTime",
+			T.OCCURRED						"occurred",
+			T.INFO_CONTENT					"infoContent",
+			T.USER_NAME						"userName",
+			T.STATUS						"status",
+			T.SUB_STATUS					"subStatus",
+			T.IS_VALID						"isValid",
+			T.CREATOR						"creator",
+			T.CREATE_TIME					"createTime",
+			T.UPDATOR						"updator",
+			T.UPDATE_TIME					"updateTime"
+		FROM
+			T_PEOPLE_LIVELIHOOD_INFO T
+		INNER JOIN T_DC_GRID G
+			ON T.GRID_ID=G.GRID_ID 
+			AND G.STATUS='001'
+		WHERE INFO_SEQ_ID= #{infoSeqId,jdbcType=DECIMAL}
+	</select>
+	
+	
+	
+	<!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T.UPDATE_TIME DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+	
+</mapper>

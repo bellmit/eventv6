@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.water.ZgWaterMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.water.ZgWater">
+		<id column="SEQ_ID" property="seqId" jdbcType="DECIMAL" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" /> <!--检测点名称-->
+		<result column="ORG_CODE" property="orgCode" /><!--组织编码-->
+		<result column="DATETIME" property="datetime" jdbcType="VARCHAR" /> <!--检测时间-->
+		<result column="PHVALUE" property="phvalue" jdbcType="VARCHAR" />
+		<result column="RJY" property="rjy" jdbcType="VARCHAR" />
+		<result column="MGZS" property="mgzs" jdbcType="VARCHAR" />
+		<result column="AL" property="al" jdbcType="VARCHAR" />
+		<result column="SZLB" property="szlb" jdbcType="VARCHAR" /> <!--质量级别-->
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR" /> <!--经度-->
+		<result column="DIMENSIONS" property="dimensions" jdbcType="VARCHAR" /> <!--纬度-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" /> <!--创建人id-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" /> <!--更新人id-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态：1正常0删除-->
+		<result column="START_TIME" property="startTime" jdbcType="TIMESTAMP" /> <!--开始时间-->
+		<result column="END_TIME" property="endTime" jdbcType="TIMESTAMP" /> <!--结束时间-->
+		
+		<!--冗余字段-->
+		<result column="ORG_NAME" property="orgName" /><!--组织名称-->
+	</resultMap>
+	
+	<sql id="common_columns">
+			ORG.ORG_NAME,
+			T.SEQ_ID,
+			T.NAME,
+			T.ORG_CODE,
+			T.DATETIME,
+			T.PHVALUE,
+			T.RJY,
+			T.MGZS,
+			T.AL,
+			T.SZLB,
+			T.LONGITUDE,
+			T.DIMENSIONS,
+			T.CREATE_TIME,
+			T.CREATE_USER_ID,
+			T.UPDATE_TIME,
+			T.UPDATE_USER_ID,
+			T.STATUS,
+			T.START_TIME,
+			T.END_TIME
+	</sql>
+	
+	 <sql id="commSql">
+		FROM
+		${dbuser.zhsq_szzg}.ZG_WATER T
+		
+		LEFT JOIN T_DC_ORG_ENTITY_INFO ORG
+		ON T.ORG_CODE=ORG.ORG_CODE AND ORG.STATUS='001'
+	 </sql>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="int">
+		SELECT COUNT(1) 
+		<include refid="commSql" />
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="common_columns" />
+			<include refid="commSql" />
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="@Ognl@isNotEmpty(name)">
+				AND NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+			</if> 
+			<if test="@Ognl@isNotEmpty(orgCode)"> 
+				AND T.ORG_CODE like #{orgCode,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="@Ognl@isNotEmpty(szlb)"> 
+				AND T.SZLB = #{szlb,jdbcType=VARCHAR} 
+			</if>
+			<if test="@Ognl@isNotEmpty(startTime)">  
+				AND T.START_TIME = #{startTime,jdbcType=TIMESTAMP} 
+			</if>
+			<if test="@Ognl@isNotEmpty(endTime)">
+				AND T.END_TIME = #{endTime,jdbcType=TIMESTAMP} 
+			</if>
+			AND T.STATUS='1'
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.water.ZgWater">
+		<selectKey keyProperty="seqId" resultType="long" order="BEFORE"> 
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_WATER.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			${dbuser.zhsq_szzg}.ZG_WATER(
+			SEQ_ID,
+			NAME,
+			ORG_CODE,
+			DATETIME,
+			PHVALUE,
+			RJY,
+			MGZS,
+			AL,
+			SZLB,
+			LONGITUDE,
+			DIMENSIONS,
+			CREATE_TIME,
+			CREATE_USER_ID,
+			STATUS,
+			START_TIME,
+			END_TIME
+		) VALUES (#{seqId,jdbcType=DECIMAL},
+			#{name,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{datetime,jdbcType=VARCHAR},
+			#{phvalue,jdbcType=VARCHAR},
+			#{rjy,jdbcType=VARCHAR},
+			#{mgzs,jdbcType=VARCHAR},
+			#{al,jdbcType=VARCHAR},
+			#{szlb,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{dimensions,jdbcType=VARCHAR},
+			sysdate,
+			#{createUserId,jdbcType=DECIMAL},
+			'1',
+			#{startTime,jdbcType=TIMESTAMP},
+			#{endTime,jdbcType=TIMESTAMP})
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.water.ZgWater">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_WATER
+		<set> 
+			<if test="name != null" >
+				NAME=#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null" >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="datetime != null" >
+				DATETIME=#{datetime,jdbcType=VARCHAR},
+			</if>
+			<if test="phvalue != null" >
+				PHVALUE=#{phvalue,jdbcType=VARCHAR},
+			</if>
+			<if test="rjy != null" >
+				RJY=#{rjy,jdbcType=VARCHAR},
+			</if>
+			<if test="mgzs != null" >
+				MGZS=#{mgzs,jdbcType=VARCHAR},
+			</if>
+			<if test="al != null" >
+				AL=#{al,jdbcType=VARCHAR},
+			</if>
+			<if test="szlb != null" >
+				SZLB=#{szlb,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null" >
+				LONGITUDE=#{longitude,jdbcType=VARCHAR},
+			</if>
+			<if test="dimensions != null" >
+				DIMENSIONS=#{dimensions,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME=sysdate,
+			<if test="updateUserId != null" >
+				UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null" >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null" >
+				START_TIME=#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null" >
+				END_TIME=#{endTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		WHERE
+			SEQ_ID= #{seqId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="common_columns" />
+			<include refid="commSql" />
+		WHERE
+			T.SEQ_ID= #{seqId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.water.ZgWater">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_WATER
+		SET
+			STATUS='0'
+		WHERE
+			SEQ_ID= #{seqId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<select id="findCountByParams"  resultType="int">
+		SELECT COUNT(1) 
+		<include refid="commSql" />
+        WHERE   T.STATUS='1'
+		<if test="name != null" >
+			AND T.NAME = #{name,jdbcType=VARCHAR}
+		</if> 
+		<if test="orgCode != null" > 
+			AND T.ORG_CODE = #{orgCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="startTime != null" > 
+			AND T.START_TIME = #{startTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="endTime != null" > 
+			AND T.END_TIME = #{endTime,jdbcType=TIMESTAMP} 
+		</if>
+		
+		<if test="seqId != null" >
+			AND T.SEQ_ID != #{seqId,jdbcType=VARCHAR}
+		</if> 
+	</select>
+	
+	<select id="findListByMaxEndTime"  resultMap="BaseResultMap">
+	 SELECT 
+	 <include refid="common_columns" />
+	 <include refid="commSql" />
+	 WHERE 1=1
+	 AND T.END_TIME=(select max(End_Time) from ${dbuser.zhsq_szzg}.ZG_WATER WHERE ORG_CODE = #{orgCode,jdbcType=VARCHAR} AND STATUS='1' )
+	 AND T.ORG_CODE = #{orgCode,jdbcType=VARCHAR} 
+	 AND T.STATUS='1'
+	 ORDER BY T.ORG_CODE ASC
+	</select>
+	
+	<!-- 
+	<select id="getDay" resultType="BaseResultMap">
+
+	 select to_char(day,  'mm"月"dd"日"') datetime, nvl(a.phvalue,0) phvalue, nvl(a.rjy,0) rjy,nvl(a.mgzs,0) mgzs,nvl(a.al,0) al  from 
+       ( 
+           SELECT to_date(to_char(trunc(sysdate, 'dd'), 'yyyy-mm-dd'), 'yyyy-mm-dd') - rownum  as day
+          FROM dual  CONNECT BY ROWNUM  &lt;= 14 
+       ) t1
+  
+    left join  ${dbuser.zhsq_szzg}.zg_water a on t1.day=a.end_time
+    and a.org_code=#{orgCode,jdbcType=VARCHAR}  and a.status='1'
+    order by a.end_time asc
+	</select>
+	 -->
+</mapper>

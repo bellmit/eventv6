@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.moduleRela.ModuleRelaMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.moduleRela.ModuleRela">
+        <id column="RELA_ID" 				property="relaId" 			jdbcType="DECIMAL" /> <!--关联编号，序列为：SEQ_RELA_ID-->
+        <result column="MODULE_CODE_LEFT" 	property="moduleCodeLeft" 	jdbcType="VARCHAR" /> <!--左方模块编码，001 扫黑除恶_线索管理；-->
+        <result column="MODULE_ID_LEFT" 	property="moduleIdLeft" 	jdbcType="DECIMAL" /> <!--左方模块编号-->
+        <result column="MODULE_CODE_RIGHT"	property="moduleCodeRight"	jdbcType="VARCHAR" /> <!--右方模块编码，001 扫黑除恶_黑恶团伙管理-->
+        <result column="MODULE_ID_RIGHT" 	property="moduleIdRight" 	jdbcType="DECIMAL" /> <!--右方模块编号-->
+        <result column="STATUS" 			property="status" 			jdbcType="VARCHAR" /> <!--状态，1 有效；0 无效-->
+        <result column="CREATE_DATE" 		property="createDate" 		jdbcType="TIMESTAMP" /> <!--登记时间-->
+        <result column="CREATOR_ID" 		property="creatorId" 		jdbcType="DECIMAL" /> <!--登记人员-->
+        <result column="UPDATE_DATE" 		property="updateDate" 		jdbcType="TIMESTAMP" /> <!--更新时间-->
+        <result column="UPDATER_ID" 		property="updaterId" 		jdbcType="DECIMAL" /> <!--更新人员-->
+    </resultMap>
+	
+	<!-- 查询列 -->
+	<sql id="sameColumn">
+		T.RELA_ID,
+		T.MODULE_CODE_LEFT,
+		T.MODULE_ID_LEFT,
+		T.MODULE_CODE_RIGHT,
+		T.MODULE_ID_RIGHT,
+		T.STATUS,
+		T.CREATE_DATE,
+		T.CREATOR_ID,
+		T.UPDATE_DATE,
+		T.UPDATER_ID
+	</sql>
+	
+    <!-- 新增 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO T_EVENT_MODULE_RELA (
+	        RELA_ID,
+	        MODULE_CODE_LEFT,
+	        MODULE_ID_LEFT,
+	        MODULE_CODE_RIGHT,
+	        MODULE_ID_RIGHT,
+	        STATUS,
+	        CREATE_DATE,
+	        CREATOR_ID
+        )
+        SELECT SEQ_RELA_ID.NEXTVAL, A.* FROM (
+          <foreach collection="list" item="item" index="index" separator="union all">
+              SELECT
+	              #{item.moduleCodeLeft,jdbcType=VARCHAR},
+	              #{item.moduleIdLeft,jdbcType=DECIMAL},
+	              #{item.moduleCodeRight,jdbcType=VARCHAR},
+	              #{item.moduleIdRight,jdbcType=DECIMAL},
+	              '1',
+	              SYSDATE,
+	              #{item.creatorId,jdbcType=DECIMAL}
+              FROM DUAL
+          </foreach>
+        ) A
+    </insert>
+
+    <!-- 依据关联记录id删除 -->
+    <delete id="delete">
+        UPDATE T_EVENT_MODULE_RELA T
+        <set>
+            <if test="delUserId != null ">
+                T.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+            </if>
+            T.STATUS = '0',
+            T.UPDATE_DATE = SYSDATE
+        </set>
+        WHERE T.RELA_ID = #{relaId,jdbcType=DECIMAL}
+    </delete>
+    
+    <!-- 依据左方信息删除 -->
+    <delete id="deleteByLeft">
+        UPDATE T_EVENT_MODULE_RELA T
+        <set>
+            <if test="updaterId != null ">
+                T.UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+            </if>
+            T.STATUS = '0',
+            T.UPDATE_DATE = SYSDATE
+        </set>
+        WHERE MODULE_ID_LEFT = #{moduleIdLeft,jdbcType=DECIMAL}
+        AND MODULE_CODE_LEFT = #{moduleCodeLeft,jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 依据左方信息获取关联关系 -->
+    <select id="findModuleRelaByLeft" resultMap="BaseResultMap">
+    	SELECT
+    		<include refid="sameColumn"></include> 
+    	FROM T_EVENT_MODULE_RELA T
+    	WHERE 1 = 1
+    	<include refid="find_where"></include>
+    </select>
+    
+    <!-- 查询条件 -->
+    <sql id="find_where">
+    	AND T.STATUS = '1'
+    	<if test="moduleIdLeft != null ">
+    		AND T.MODULE_ID_LEFT = #{moduleIdLeft,jdbcType=DECIMAL}
+    	</if>
+    	<if test="moduleCodeLeft != null and moduleCodeLeft != '' ">
+    		AND T.MODULE_CODE_LEFT = #{moduleCodeLeft,jdbcType=VARCHAR}
+    	</if>
+    	<if test="moduleIdRight != null ">
+    		AND T.MODULE_ID_RIGHT = #{moduleIdRight,jdbcType=DECIMAL}
+    	</if>
+    	<if test="moduleCodeRight != null and moduleCodeRight != '' ">
+    		AND T.MODULE_CODE_RIGHT = #{moduleCodeRight,jdbcType=VARCHAR}
+    	</if>
+    </sql>
+</mapper>

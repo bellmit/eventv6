@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.GisStatConfigMapper">
+	<resultMap id="BaseResultMap"
+		type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatConfig">
+		<id column="STAT_CFG_ID" jdbcType="DECIMAL" property="statCfgId" /> <!-- 统计配置ID -->
+		<result column="STAT_TYPE" jdbcType="VARCHAR" property="statType" /> <!-- 统计方式，0：框选；1：周边资源检索 -->
+		<result column="BIZ_TYPE" jdbcType="VARCHAR" property="bizType" /> <!-- 业务编码，保持与地图首页类型一致 -->
+		<result column="REGION_CODE" jdbcType="VARCHAR" property="regionCode" /> <!-- 地域编码 -->
+		<result column="CATEGORIES" jdbcType="VARCHAR" property="categories" /> <!-- 统计分类，支持英文逗号分隔，如：人,地,事,物,情 -->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!-- 创建人ID -->
+		<result column="CREATED" property="created" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+		<result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR" /> <!-- 创建人姓名 -->
+		<result column="UPDATER" property="updater" jdbcType="DECIMAL" /> <!-- 修改人ID -->
+		<result column="UPDATED" property="updated" jdbcType="TIMESTAMP" /> <!-- 修改时间 -->
+		<result column="UPDATER_NAME" property="updaterName" jdbcType="VARCHAR" /> <!-- 修改人姓名 -->
+		<result column="STATUS_" property="status" jdbcType="VARCHAR" /> <!-- 状态，0：删除；1：启用；2：禁用 -->
+		<result column="CLASSIFICATION" property="classification" jdbcType="VARCHAR" /> <!-- 是否分类，0：不分类；1：分类 -->
+	</resultMap>
+	
+  	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatConfig">
+	    <selectKey keyProperty="statCfgId" resultType="long" order="BEFORE">
+			SELECT SEQ_GIS_STAT_CFG_ID.NEXTVAL FROM DUAL
+		</selectKey>
+	    INSERT INTO T_GIS_STAT_CFG (
+	         STAT_CFG_ID,STAT_TYPE,BIZ_TYPE,REGION_CODE,CATEGORIES,
+	         CREATOR,CREATED,CREATOR_NAME,STATUS_,CLASSIFICATION
+	    )
+	    values (
+	        #{statCfgId,jdbcType=DECIMAL},#{statType,jdbcType=VARCHAR},#{bizType,jdbcType=DECIMAL},#{regionCode,jdbcType=DECIMAL},#{categories,jdbcType=VARCHAR},
+	        #{creator,jdbcType=DECIMAL},SYSDATE,#{creatorName,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{classification,jdbcType=VARCHAR}
+	    )
+  	</insert><!-- 添加框选周边配置信息  -->
+	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatConfig">
+		UPDATE T_GIS_STAT_CFG 
+			SET STATUS_ = #{status,jdbcType=VARCHAR},
+			UPDATER = #{updater,jdbcType=VARCHAR},
+			UPDATED = SYSDATE,
+			UPDATER_NAME = #{updaterName,jdbcType=VARCHAR}
+		WHERE STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+	</delete><!-- 删除框选周边配置  状态，0：删除；1：启用；2：禁用 -->
+	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatConfig">
+		UPDATE T_GIS_STAT_CFG
+		<set>
+			<if test="regionCode != null and regionCode!= ''">
+        		REGION_CODE = #{regionCode,jdbcType=DECIMAL},
+      		</if> 
+			<if test="categories != null and categories!= ''">
+        		CATEGORIES = #{categories,jdbcType=DECIMAL},
+      		</if> 
+			<if test="updater != null and updater != ''">
+        		UPDATER = #{updater,jdbcType=DECIMAL},
+      		</if>
+			<if test="updaterName != null and updaterName != ''">
+        		UPDATER_NAME = #{updaterName,jdbcType=VARCHAR},
+      		</if> 
+			<if test="statType != null and statType != ''">
+        		STAT_TYPE = #{statType,jdbcType=VARCHAR},
+      		</if> 
+			<if test="bizType != null and bizType != ''">
+        		BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+      		</if> 
+			<if test="status != null and status != ''">
+        		STATUS_ = #{status,jdbcType=VARCHAR},
+      		</if> 
+			<if test="classification != null and classification != ''">
+        		CLASSIFICATION = #{classification,jdbcType=VARCHAR},
+      		</if>
+			UPDATED = SYSDATE
+		</set>
+		WHERE STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+	</update><!-- 更新框选周边配置信息  -->
+	
+	<select id="getGisStatConfig" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_STAT_CFG T
+		WHERE 1 = 1
+		<if test="statType != null and statType != ''">
+			AND T.STAT_TYPE = #{statType,jdbcType=VARCHAR}
+		</if>
+		<if test="bizType != null and bizType != ''">
+			AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND T.REGION_CODE in
+		       (SELECT T3.ORG_CODE
+		          FROM T_DC_ORG_ENTITY_INFO T3
+		         WHERE T3.STATUS = '001'
+		         START WITH T3.ORG_CODE = #{regionCode,jdbcType=DECIMAL}
+		        CONNECT BY PRIOR T3.PARENT_ORG_ID = T3.ORG_ID)
+		</if>
+		AND T.STATUS_ = 1
+		ORDER BY T.REGION_CODE DESC
+	</select><!-- 获取框选周边配置对象 -->
+	
+	<select id="getCatagories" resultType="java.lang.String">
+		SELECT T.CATEGORIES FROM T_GIS_STAT_CFG T
+		WHERE 1 = 1
+		<if test="statCfgId != null and statCfgId != ''">
+			AND T.STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+		</if>
+		AND T.STATUS_ = '1'
+	</select><!-- 获取分类 -->
+	
+	<select id="getGisStatConfigById" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_STAT_CFG T
+		WHERE 1 = 1
+		<if test="statCfgId != null and statCfgId != ''">
+			AND T.STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+		</if>
+	</select><!-- 根据主键id获取框选周边配置对象 -->
+	
+	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+			SELECT COUNT(*)
+		  	FROM T_GIS_STAT_CFG T
+		  	WHERE 1 = 1
+	  	<include refid="find_where"/>
+	</select><!-- 获取记录数 -->
+	
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT T.*
+	  	FROM T_GIS_STAT_CFG T
+	  	WHERE 1 = 1
+	  	<include refid="find_where"/>
+	</select><!-- 获取记录 -->
+	
+	<sql id="find_where">
+		<if test="statType != null and statType != ''">
+			AND T.STAT_TYPE = #{statType,jdbcType=DECIMAL}
+		</if>
+		<if test="regionCode != null and regionCode != ''">
+			AND (T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%' OR T.REGION_CODE = '-1')
+		</if>
+		<choose>
+     		<when test="status != null and status != '' ">
+	     		AND T.STATUS_ = #{status,jdbcType=VARCHAR}
+     		</when>
+     		<otherwise>
+     			AND T.STATUS_ IN ('1','2')
+     		</otherwise>
+     	</choose>
+     	ORDER BY T.REGION_CODE
+	</sql><!-- 查询条件 -->
+	
+	<select id="repeatCountForBizType" parameterType="java.util.HashMap" resultType="java.lang.Integer" >
+    	SELECT COUNT(*) FROM T_GIS_STAT_CFG T
+     		WHERE 1 = 1
+		<if test="regionCode != null and regionCode != ''">
+			AND T.REGION_CODE = #{regionCode,jdbcType=VARCHAR}
+		</if>
+		<if test="statType != null and statType != ''">
+			AND T.STAT_TYPE = #{statType,jdbcType=VARCHAR}
+		</if>
+		<if test="bizType != null and bizType != ''">
+			AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+		</if>
+     	AND T.STATUS_ IN ('1', '2')
+	</select><!-- 判断同一个地域下是否存在相同的框选周边配置 -->
+</mapper><!-- 框选周边可配置xml -->

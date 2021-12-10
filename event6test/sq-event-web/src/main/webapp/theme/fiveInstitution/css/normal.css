@@ -1,0 +1,32 @@
+body{font-size: 12px;color: #707070;margin:0 auto; background:#fff; font-family:"宋体","Arial Narrow";}
+a{text-decoration: none;color: #707070;}
+a:hover {text-decoration:underline;color: #707070;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom;}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.pic img{width:120px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.top{background:url(../images/back_01.png); height:70px;}
+.top .fl{width:700px; margin:7px 0 0 10px;}
+.top .fr{line-height:70px; color:#fff; font-size:14px; padding-right:10px;}
+.top .fr span{color:#fdff4f;}
+.menu{background:url(../images/back_02.png) right; height:38px;}
+.menu ul li{float:left; width:140px; height:38px; line-height:38px; color:#fff; text-align:center; font-size:16px; font-family:"微软雅黑"; cursor:pointer;}
+.menu ul li img{vertical-align:middle; width:24px; height:24px; margin-right:10px; margin-top:-4px;}
+.menu ul li.current{background-color:rgba(0, 33, 148, 0.6); filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8c002194',endColorstr='#8c002194');}
+.menu ul li:hover{background-color:rgba(0, 0, 0, 0.5); filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8c000000',endColorstr='#8c000000');}
+
+.mechanism .NorModel{width:288px; height:207px; margin:8px 8px 18px 5px;}
+.mechanism .box{border:1px solid #ddd; height:219px; padding:0 10px;}
+.mechanism .box .title{border-bottom:1px solid #ddd; height:35px; line-height:35px; color:#d30000; font-size:16px; font-family:"微软雅黑"; padding:0 10px;}
+.mechanism .box .con{padding:10px 10px 0 10px;}
+.mechanism .list{line-height:21px; font-size:14px; margin-left:133px;}
+.mechanism .list a:hover{color:#b60000;}
+.mechanism .list ul li{background:url(../images/dot.png) no-repeat 0 12px; padding-left:15px; height:32px; overflow:hidden;}
+.BoxShadow{background:url(../images/135_03.png) no-repeat; height:6px; text-align:right;}

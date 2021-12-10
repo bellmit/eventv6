@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.reportMsgCCCfg.ReportMsgCCCfgMapper" >
+	<!-- 详情列表查询列 -->
+	<sql id="detail_column">
+		<include refid="page_column"></include>,
+		T1.BENCHMARK_ORG_CODE	"benchmarkOrgCode",
+		T1.PROFESSION_CODE	"professionCode"
+	</sql>
+	
+	<!-- 分页列表查询列 -->
+	<sql id="page_column">
+		<include refid="list_column"></include>,
+		T1.WORKFLOW_NAME		"workflowName",
+		T1.WF_START_NODE_NAME	"wfStartNodeName",
+		T1.WF_END_NODE_NAME		"wfEndNodeName",
+		T1.CFG_STATUS			"cfgStatus",
+		T1.REMARK				"remark"
+	</sql>
+	
+	<!-- 列表查询列 -->
+	<sql id="list_column">
+		T1.CFG_UUID			"cfgUUID",
+		T1.ORG_CHIEF_LEVEL	"orgChiefLevel", 
+		T1.ORG_CODE			"orgCode", 
+		T1.CC_TYPE			"ccType",
+		T1.CFG_TYPE			"cfgType",
+		T1.CFG_VALUE		"cfgValue"
+	</sql>
+	
+	<!-- 新增消息人员配置信息 -->
+	<insert id="insert">
+		<selectKey keyProperty="cfgUUID" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_MSG_CC_CFG(
+			CFG_UUID, ORG_CHIEF_LEVEL, ORG_CODE,
+			BENCHMARK_ORG_CODE, PROFESSION_CODE,
+			WORKFLOW_NAME, 
+			<if test="@Ognl@isNotEmpty(wfStartNodeName)">
+			WF_START_NODE_NAME, 
+			</if>
+			WF_END_NODE_NAME, 
+			CC_TYPE, CFG_TYPE, CFG_VALUE, REMARK, 
+			<if test="@Ognl@isNotEmpty(cfgStatus)">
+				CFG_STATUS,
+			</if>
+			CREATOR, CREATE_TIME, UPDATOR, UPDATE_TIME
+		) VALUES (
+			#{cfgUUID,jdbcType=VARCHAR}, NULLIF(#{orgChiefLevel,jdbcType=VARCHAR}, ''), NULLIF(#{orgCode,jdbcType=VARCHAR}, ''),
+			NULLIF(#{benchmarkOrgCode,jdbcType=VARCHAR}, ''), NULLIF(#{professionCode,jdbcType=VARCHAR}, ''),
+			NULLIF(#{workflowName,jdbcType=VARCHAR}, ''), 
+			<if test="@Ognl@isNotEmpty(wfStartNodeName)">
+				#{wfStartNodeName,jdbcType=VARCHAR}, 
+			</if>
+			NULLIF(#{wfEndNodeName,jdbcType=VARCHAR}, ''),
+			NULLIF(#{ccType,jdbcType=VARCHAR}, ''), NULLIF(#{cfgType,jdbcType=VARCHAR}, ''), #{cfgValue,jdbcType=DECIMAL}, NULLIF(#{remark,jdbcType=VARCHAR}, ''),
+			<if test="@Ognl@isNotEmpty(cfgStatus)">
+				#{cfgStatus,jdbcType=VARCHAR},
+			</if>
+			#{creator,jdbcType=DECIMAL}, SYSDATE, #{updator,jdbcType=DECIMAL}, SYSDATE
+		)
+	</insert>
+	
+	<!-- 更新消息人员配置信息 -->
+	<update id="update">
+		UPDATE T_EVENT_MSG_CC_CFG T1
+		<set>
+			<choose>
+				<when test="@Ognl@isNotEmpty(orgChiefLevel)">
+					T1.ORG_CHIEF_LEVEL = #{orgChiefLevel,jdbcType=VARCHAR},
+					T1.ORG_CODE = NULL,
+				</when>
+				<when test="@Ognl@isNotEmpty(orgCode)">
+					T1.ORG_CODE = #{orgCode,jdbcType=VARCHAR},
+					T1.ORG_CHIEF_LEVEL = NULL,
+				</when>
+			</choose>
+			<if test="benchmarkOrgCode != null ">
+				T1.BENCHMARK_ORG_CODE = NULLIF(#{benchmarkOrgCode,jdbcType=VARCHAR}, ''),
+			</if>
+			<if test="professionCode != null ">
+				T1.PROFESSION_CODE = NULLIF(#{professionCode,jdbcType=VARCHAR}, ''),
+			</if>
+			<if test="@Ognl@isNotEmpty(workflowName)">
+				T1.WORKFLOW_NAME = #{workflowName,jdbcType=VARCHAR},
+			</if>
+			<if test="wfStartNodeName != null ">
+				<choose>
+					<when test="wfStartNodeName == '' ">
+						T1.WF_START_NODE_NAME = DEFAULT,
+					</when>
+					<otherwise>
+						T1.WF_START_NODE_NAME = #{wfStartNodeName,jdbcType=VARCHAR},
+					</otherwise>
+				</choose>
+			</if>
+			<if test="@Ognl@isNotEmpty(wfEndNodeName)">
+				T1.WF_END_NODE_NAME = #{wfEndNodeName,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(ccType)">
+				T1.CC_TYPE = #{ccType,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(cfgType)">
+				T1.CFG_TYPE = #{cfgType,jdbcType=VARCHAR},
+			</if>
+			<if test="cfgValue != null ">
+				T1.CFG_VALUE = #{cfgValue,jdbcType=DECIMAL},
+			</if>
+			<if test="@Ognl@isNotEmpty(cfgStatus)">
+				T1.CFG_STATUS = #{cfgStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null ">
+				T1.REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.CFG_UUID = #{cfgUUID,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 删除人员配置信息 -->
+	<delete id="delete">
+		UPDATE T_EVENT_MSG_CC_CFG T1
+		<set>
+			T1.IS_VALID = '0',
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.CFG_UUID = #{cfgUUID,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 依据cfgUUID获取人员配置信息 -->
+	<select id="findCfgByUUID" resultType="java.util.Map">
+  		SELECT
+  			<include refid="detail_column"></include>
+  		FROM T_EVENT_MSG_CC_CFG T1
+  		<include refid="find_where"></include>
+  	</select>
+	
+	<!-- 获取消息人员配置数量 -->
+	<select id="findCfg4Count" resultType="java.lang.Integer">
+  		SELECT COUNT(1)
+  		FROM T_EVENT_MSG_CC_CFG T1
+  		<include refid="find_where"></include>
+  	</select>
+  	
+  	<!-- 分页获取人员配置信息 -->
+  	<select id="findCfg4Pagination" resultType="java.util.Map">
+  		SELECT
+  			<include refid="page_column"></include>
+  		FROM T_EVENT_MSG_CC_CFG T1
+  		<include refid="find_where"></include>
+  	</select>
+  	
+	<!-- 获取消息人员配置信息 -->
+  	<select id="findCfg4List" resultType="java.util.Map">
+  		SELECT
+  			<include refid="detail_column"></include>
+  		FROM T_EVENT_MSG_CC_CFG T1
+  		<include refid="find_where"></include>
+  	</select>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where">
+  		WHERE T1.IS_VALID = '1'
+  		<if test="@Ognl@isNotEmpty(cfgUUID)">
+  			AND T1.CFG_UUID = #{cfgUUID,jdbcType=VARCHAR}
+  		</if>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(orgChiefLevel)">
+  				AND T1.ORG_CHIEF_LEVEL = #{orgChiefLevel,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(orgCode)">
+  				AND T1.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+  			</when>
+  		</choose>
+  		<if test="@Ognl@isNotEmpty(professionCode)">
+  			AND T1.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+  		</if>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(workflowName)">
+  				AND T1.WORKFLOW_NAME = #{workflowName,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(workflowNameFuzzy)">
+  				AND T1.WORKFLOW_NAME LIKE '%' || #{workflowNameFuzzy,jdbcType=VARCHAR} || '%'
+  			</when>
+  		</choose>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(wfNodeNameList)">
+  				AND 
+  				<foreach collection="wfNodeNameList" index="index" item="item" open="(" separator="OR" close=")">
+  					(T1.WF_START_NODE_NAME = #{item.wfStartNodeName} AND T1.WF_END_NODE_NAME = #{item.wfEndNodeName})
+				</foreach>
+  			</when>
+  			<when test="@Ognl@isNotEmpty(wfStartNodeName) and @Ognl@isNotEmpty(wfEndNodeName)">
+  				AND T1.WF_START_NODE_NAME = #{wfStartNodeName,jdbcType=VARCHAR}
+  				AND T1.WF_END_NODE_NAME = #{wfEndNodeName,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(wfEndNodeName)">
+  				AND T1.WF_END_NODE_NAME = #{wfEndNodeName,jdbcType=VARCHAR}
+  			</when>
+  		</choose>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(ccType)">
+  				AND T1.CC_TYPE = #{ccType,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(ccTypeArray)">
+  				AND T1.CC_TYPE IN 
+  				<foreach collection="ccTypeArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+  			</when>
+  		</choose>
+  		<if test="@Ognl@isNotEmpty(cfgStatus)">
+  			AND T1.CFG_STATUS = #{cfgStatus,jdbcType=VARCHAR}
+  		</if>
+  		<if test="cfgValue != null ">
+  			AND T1.CFG_VALUE = #{cfgValue,jdbcType=DECIMAL}
+  		</if>
+  	</sql>
+</mapper>

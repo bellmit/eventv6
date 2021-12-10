@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.greenManager.GreenBeltMapper">
+
+    <resultMap id="greenMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.greenManager.GreenBeltBO">
+        <result column="SEQID" property="seqid" jdbcType="INTEGER"/>
+        <result column="SYEAR" property="syear" jdbcType="VARCHAR"/>
+        <result column="G_NAME" property="gName" jdbcType="VARCHAR"/>
+        <result column="G_AREA" property="gArea" jdbcType="VARCHAR"/>
+        <result column="G_TYPE" property="gType" jdbcType="VARCHAR"/>
+        <result column="G_TYPE_NAME" property="gTypeName" jdbcType="VARCHAR"/>
+        <result column="G_RATE" property="gRate" jdbcType="VARCHAR"/>
+        <result column="G_COVERAREA" property="gCoverarea" jdbcType="VARCHAR"/>
+        <result column="G_COVERRATE" property="gCoverrate" jdbcType="VARCHAR"/>
+        <result column="LOCATION" property="location" jdbcType="VARCHAR"/>
+        <result column="PLANT" property="plant" jdbcType="VARCHAR"/>
+        <result column="PLANTDATE" property="plantdate" jdbcType="VARCHAR"/>
+        <result column="G_SUBTYPE" property="gSubtype" jdbcType="VARCHAR"/>
+        <result column="G_SUBTYPENAME" property="gSubtypename" jdbcType="VARCHAR"/>
+        <result column="STD" property="std" jdbcType="VARCHAR"/>
+        <result column="X" property="x" jdbcType="VARCHAR"/>
+        <result column="Y" property="y" jdbcType="VARCHAR"/>
+        <result column="LONGITUDE" property="longitude" jdbcType="VARCHAR"/>
+        <result column="DIMENSIONS" property="dimensions" jdbcType="VARCHAR"/>
+        <result column="GEOMETRY" property="geometry" jdbcType="VARCHAR"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR"/>
+        <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR"/>
+        <result column="ORG_PATH" property="orgPath" jdbcType="VARCHAR"/>
+        <result column="EXTATTR1" property="extattr1" jdbcType="VARCHAR"/>
+        <result column="EXTATTR2" property="extattr2" jdbcType="VARCHAR"/>
+        <result column="EXTATTR3" property="extattr3" jdbcType="VARCHAR"/>
+        <result column="EXTATTR4" property="extattr4" jdbcType="VARCHAR"/>
+        <result column="EXTATTR5" property="extattr5" jdbcType="VARCHAR"/>
+
+        <result column="OPDATE" property="opdate" jdbcType="DATE"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="DATE"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="findGreenByParams" resultMap="greenMap">
+        select t.*,d.dict_name as g_type_name from ${dbuser.zhsq_szzg}.zg_green t
+        left join t_bas_datadict d on d.dict_code=t.g_type and d.status='001'
+        where t.status = '1'
+        <if test="@Ognl@isNotEmpty(gName)">
+            and (t.g_name LIKE '%' || #{gName, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(gType)">
+            and t.g_type = #{gType}
+        </if>
+        <if test="@Ognl@isNotEmpty(location)">
+            and (t.location LIKE '%' || #{location, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(std)">
+            and t.std = #{std}
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and (t.org_code like #{orgCode,jdbcType=VARCHAR} || '%')
+        </if>
+    </select>
+
+    <select id="findCountByCriteria" resultType="int">
+        select count(*) from ${dbuser.zhsq_szzg}.zg_green t
+        <include refid="conditions"/>
+    </select>
+    <select id="findPageListByCriteria" resultMap="greenMap">
+        select t.*,d.dict_name as g_type_name,d1.grid_path as org_path from ${dbuser.zhsq_szzg}.zg_green t
+        left join t_bas_datadict d on d.dict_code=t.g_type and d.status='001'
+        left join t_dc_grid d1 on d1.info_org_code = t.org_code and d1.status='001'
+        <include refid="conditions"/>
+        order by opdate desc
+    </select>
+    <sql id="conditions">
+        where t.status = '1'
+        <if test="@Ognl@isNotEmpty(gName)">
+            and (t.g_name LIKE '%' || #{gName, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(gType)">
+            and t.g_type = #{gType}
+        </if>
+        <if test="@Ognl@isNotEmpty(location)">
+            and (t.location LIKE '%' || #{location, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(std)">
+            and t.std = #{std}
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and (t.org_code like #{orgCode,jdbcType=VARCHAR}|| '%')
+        </if>
+
+    </sql>
+
+    <select id="findById" resultMap="greenMap">
+		select t.*,d.dict_name as g_type_name
+
+		from ${dbuser.zhsq_szzg}.zg_green t
+		left join t_bas_datadict d on d.dict_code=t.g_type and d.status='001'
+		where t.seqid=#{seqid} and t.status &lt;&gt;'0'
+	</select>
+
+    <update id="update">
+        update ${dbuser.zhsq_szzg}.zg_green
+        <set>
+            update_time = sysdate
+            <if test="gName != null">
+                ,G_NAME = #{gName}
+            </if>
+            <if test="gArea != null">
+                ,G_AREA = #{gArea}
+            </if>
+            <if test="gType != null">
+                ,G_TYPE = #{gType}
+            </if>
+            <if test="gRate != null">
+                ,G_RATE = #{gRate}
+            </if>
+            <if test="gCoverarea != null">
+                ,G_COVERAREA = #{gCoverarea}
+            </if>
+            <if test="gCoverrate != null">
+                ,G_COVERRATE = #{gCoverrate}
+            </if>
+            <if test="location != null">
+                ,LOCATION = #{location}
+            </if>
+            <if test="plant != null">
+                ,PLANT = #{plant}
+            </if>
+            <if test="plantdate != null">
+                ,PLANTDATE = #{plantdate}
+            </if>
+            <if test="std != null">
+                ,STD = #{std}
+            </if>
+            <if test="x != null">
+                ,x = #{x}
+            </if>
+            <if test="y != null">
+                ,y = #{y}
+            </if>
+            <if test="orgCode != null">
+                ,ORG_CODE = #{orgCode}
+            </if>
+            <if test="orgName != null">
+                ,ORG_NAME = #{orgName}
+            </if>
+            <if test="extattr1 != null">
+                ,EXTATTR1 = #{extattr1}
+            </if>
+            <if test="extattr2 != null">
+                ,EXTATTR2 = #{extattr2}
+            </if>
+            <if test="remark != null">
+                ,REMARK = #{remark}
+            </if>
+        </set>
+        where seqid=#{seqid}
+    </update>
+
+
+    <update id="del">
+		UPDATE ${dbuser.zhsq_szzg}.zg_green t
+		SET t.status = '0',
+		t.update_time=sysdate
+		WHERE t.seqid = #{seqid}
+	</update>
+    <insert id="insert">
+        <selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+            select ${dbuser.zhsq_szzg}.seq_zg_green_id.NEXTVAL from DUAL
+        </selectKey>
+		insert into ${dbuser.zhsq_szzg}.zg_green (seqid,syear, g_name, g_area, g_type, g_rate, g_coverarea, g_coverrate, location, plant,
+		plantdate, g_subtype, g_subtypename, std, x, y, longitude, dimensions, geometry, remark, org_code, org_name,
+		extattr1, extattr2, extattr3, extattr4, extattr5, opdate, status, update_time)
+		values(#{seqid},#{syear},#{gName},#{gArea},#{gType},#{gRate},#{gCoverarea},
+		#{gCoverrate},#{location},#{plant},#{plantdate},#{gSubtype},#{gSubtypename},#{std},
+		#{x},#{y},#{longitude},#{dimensions},#{geometry},#{remark},#{orgCode},#{orgName},
+		#{extattr1},#{extattr2},#{extattr3},#{extattr4},#{extattr5},sysdate,'1',null)
+	</insert>
+</mapper>

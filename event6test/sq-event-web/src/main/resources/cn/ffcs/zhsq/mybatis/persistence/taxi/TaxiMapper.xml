@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.taxi.TaxiMapper">
+	<resultMap id="BaseResultMap_CarInfo" type="cn.ffcs.zhsq.mybatis.domain.map.taxi.CarInfo">
+		<id column="BUSLINE_ID" property="buslineId" jdbcType="DECIMAL" /> <!--车队id-->
+		<result column="BUSLINE_NAME" property="buslineName" jdbcType="VARCHAR" /> <!--车队名称-->
+		<result column="CAR_BXNO" property="carBxno" jdbcType="VARCHAR" /> <!--波箱系列号-->
+		<result column="CAR_DJRQ" property="carDjrq" jdbcType="VARCHAR" /> <!--登记日期-->
+		<result column="CAR_DJZH" property="carDjzh" jdbcType="VARCHAR" /> <!--登记证号-->
+		<result column="CAR_DPH" property="carDph" jdbcType="VARCHAR" /> <!--底盘号-->
+		<result column="CAR_FDJH" property="carFdjh" jdbcType="VARCHAR" /> <!--发动机号-->
+		<result column="CAR_FZRQ" property="carFzrq" jdbcType="VARCHAR" /> <!--发证日期-->
+		<result column="CAR_GRSJ" property="carGrsj" jdbcType="VARCHAR" /> <!--购入时间-->
+		<result column="CAR_GZZH" property="carGzzh" jdbcType="VARCHAR" /> <!--购置证号-->
+		<result column="CAR_HSLX" property="carHslx" jdbcType="VARCHAR" /> <!--核算类型-->
+		<result column="CAR_ID" property="carId" jdbcType="DECIMAL" /> <!--车辆id-->
+		<result column="CAR_KTHM" property="carKthm" jdbcType="VARCHAR" /> <!--空调号码-->
+		<result column="CAR_NO" property="carNo" jdbcType="VARCHAR" /> <!--车牌号-->
+		<result column="CAR_QYRQ" property="carQyrq" jdbcType="VARCHAR" /> <!--启用日期-->
+		<result column="CAR_SIZE" property="carSize" jdbcType="DECIMAL" /> <!--座位数/吨位-->
+		<result column="CAR_YYZH" property="carYyzh" jdbcType="VARCHAR" /> <!--营运证号-->
+		<result column="CAR_ZBH" property="carZbh" jdbcType="VARCHAR" /> <!--自编号-->
+		<result column="CARDJ_ID" property="cardjId" jdbcType="DECIMAL" /> <!--车辆等级-->
+		<result column="CARDJ_MEMO" property="cardjMemo" jdbcType="VARCHAR" /> <!--营运类型-->
+		<result column="CARTYPE_ID" property="cartypeId" jdbcType="DECIMAL" /> <!--终端类型id-->
+		<result column="CARTYPE_NAME" property="cartypeName" jdbcType="VARCHAR" /> <!--终端类型-->
+		<result column="DEV_ID" property="devId" jdbcType="VARCHAR" /> <!--设备id-->
+		<result column="OIL_TYPE_NAME" property="oilTypeName" jdbcType="VARCHAR" /> <!--油箱类型名称-->
+		<result column="OWNER_USER_ID" property="ownerUserId" jdbcType="DECIMAL" /> <!--创建者用户ID-->
+		<result column="OWNER_USER_NAME" property="ownerUserName" jdbcType="VARCHAR" /> <!--创建者-->
+		<result column="RES_ID" property="resId" jdbcType="DECIMAL" /> <!--图片ID-->
+		<result column="ZPDJ_ID" property="zpdjId" jdbcType="DECIMAL" /> <!--装配等级-->
+		<result column="ZPDJ_NAME" property="zpdjName" jdbcType="VARCHAR" /> <!--公司名称-->
+		<result column="CAR_KIND_ID" property="carKindId" jdbcType="DECIMAL" /> <!--1:英伦 2：BYD-->
+		<result column="CAR_KIND_NAME" property="carKindName" jdbcType="VARCHAR" /> <!--车辆类型名称-->
+		<result column="TAXI_TYPE" property="taxiType" jdbcType="DECIMAL" /> <!--1:电召专用车  2：普通出租车-->
+		<result column="ISGRAVITYSENSOR" property="isgravitysensor" jdbcType="VARCHAR" /> <!--是否安装重力感应传感器   1：已安装-->
+		<result column="CAR_MODELS_ID" property="carModelsId" jdbcType="DECIMAL" /> <!--车辆模型ID-->
+		<result column="CAR_MODELS_NAME" property="carModelsName" jdbcType="VARCHAR" /> <!--车辆模型名称-->
+		<result column="KT_DEV_ID" property="ktDevId" jdbcType="VARCHAR" /> <!--科泰设备ID(用于与车牌号组合为鉴权码)-->
+		<result column="LINE_CODES" property="lineCodes" jdbcType="VARCHAR" /> <!--城际快车线路代码,如”123;315;46”-->
+		<result column="LINE_NAMES" property="lineNames" jdbcType="VARCHAR" /> <!--城际快车线路名称,如”asj;ajal”-->
+	</resultMap>
+	
+	<update id="batchMergeCarInfo">
+		MERGE INTO T_NP_TAIX T
+	    USING (
+    	<foreach collection="list" item="item" separator="union all">
+			SELECT
+				#{item.buslineId,jdbcType=DECIMAL} BUSLINE_ID,
+				#{item.buslineName,jdbcType=VARCHAR} BUSLINE_NAME,
+				#{item.carBxno,jdbcType=VARCHAR} CAR_BXNO,
+				#{item.carDjrq,jdbcType=VARCHAR} CAR_DJRQ,
+				#{item.carDjzh,jdbcType=VARCHAR} CAR_DJZH,
+				#{item.carDph,jdbcType=VARCHAR} CAR_DPH,
+				#{item.carFdjh,jdbcType=VARCHAR} CAR_FDJH,
+				#{item.carFzrq,jdbcType=VARCHAR} CAR_FZRQ,
+				#{item.carGrsj,jdbcType=VARCHAR} CAR_GRSJ,
+				#{item.carGzzh,jdbcType=VARCHAR} CAR_GZZH,
+				#{item.carHslx,jdbcType=VARCHAR} CAR_HSLX,
+				#{item.carId,jdbcType=DECIMAL} CAR_ID,
+				#{item.carKthm,jdbcType=VARCHAR} CAR_KTHM,
+				#{item.carNo,jdbcType=VARCHAR} CAR_NO,
+				#{item.carQyrq,jdbcType=VARCHAR} CAR_QYRQ,
+				#{item.carSize,jdbcType=DECIMAL} CAR_SIZE,
+				#{item.carYyzh,jdbcType=VARCHAR} CAR_YYZH,
+				#{item.carZbh,jdbcType=VARCHAR} CAR_ZBH,
+				#{item.cardjId,jdbcType=DECIMAL} CARDJ_ID,
+				#{item.cardjMemo,jdbcType=VARCHAR} CARDJ_MEMO,
+				#{item.cartypeId,jdbcType=DECIMAL} CARTYPE_ID,
+				#{item.cartypeName,jdbcType=VARCHAR} CARTYPE_NAME,
+				#{item.devId,jdbcType=VARCHAR} DEV_ID,
+				#{item.oilTypeName,jdbcType=VARCHAR} OIL_TYPE_NAME,
+				#{item.ownerUserId,jdbcType=DECIMAL} OWNER_USER_ID,
+				#{item.ownerUserName,jdbcType=VARCHAR} OWNER_USER_NAME,
+				#{item.resId,jdbcType=DECIMAL} RES_ID,
+				#{item.zpdjId,jdbcType=DECIMAL} ZPDJ_ID,
+				#{item.zpdjName,jdbcType=VARCHAR} ZPDJ_NAME,
+				#{item.carKindId,jdbcType=DECIMAL} CAR_KIND_ID,
+				#{item.carKindName,jdbcType=VARCHAR} CAR_KIND_NAME,
+				#{item.taxiType,jdbcType=DECIMAL} TAXI_TYPE,
+				#{item.isgravitysensor,jdbcType=VARCHAR} ISGRAVITYSENSOR,
+				#{item.carModelsId,jdbcType=DECIMAL} CAR_MODELS_ID,
+				#{item.carModelsName,jdbcType=VARCHAR} CAR_MODELS_NAME,
+				#{item.ktDevId,jdbcType=VARCHAR} KT_DEV_ID,
+				#{item.lineCodes,jdbcType=VARCHAR} LINE_CODES,
+				#{item.lineNames,jdbcType=VARCHAR} LINE_NAMES
+			FROM DUAL
+		</foreach>
+		) oData
+	    ON (t.CAR_ID = oData.CAR_ID)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.BUSLINE_ID = oData.BUSLINE_ID,
+				T.BUSLINE_NAME = oData.BUSLINE_NAME,
+				T.CAR_BXNO = oData.CAR_BXNO,
+				T.CAR_DJRQ = oData.CAR_DJRQ,
+				T.CAR_DJZH = oData.CAR_DJZH,
+				T.CAR_DPH = oData.CAR_DPH,
+				T.CAR_FDJH = oData.CAR_FDJH,
+				T.CAR_FZRQ = oData.CAR_FZRQ,
+				T.CAR_GRSJ = oData.CAR_GRSJ,
+				T.CAR_GZZH = oData.CAR_GZZH,
+				T.CAR_HSLX = oData.CAR_HSLX,
+				T.CAR_KTHM = oData.CAR_KTHM,
+				T.CAR_NO = oData.CAR_NO,
+				T.CAR_QYRQ = oData.CAR_QYRQ,
+				T.CAR_SIZE = oData.CAR_SIZE,
+				T.CAR_YYZH = oData.CAR_YYZH,
+				T.CAR_ZBH = oData.CAR_ZBH,
+				T.CARDJ_ID = oData.CARDJ_ID,
+				T.CARDJ_MEMO = oData.CARDJ_MEMO,
+				T.CARTYPE_ID = oData.CARTYPE_ID,
+				T.CARTYPE_NAME = oData.CARTYPE_NAME,
+				T.DEV_ID = oData.DEV_ID,
+				T.OIL_TYPE_NAME = oData.OIL_TYPE_NAME,
+				T.OWNER_USER_ID = oData.OWNER_USER_ID,
+				T.OWNER_USER_NAME = oData.OWNER_USER_NAME,
+				T.RES_ID = oData.RES_ID,
+				T.ZPDJ_ID = oData.ZPDJ_ID,
+				T.ZPDJ_NAME = oData.ZPDJ_NAME,
+				T.CAR_KIND_ID = oData.CAR_KIND_ID,
+				T.CAR_KIND_NAME = oData.CAR_KIND_NAME,
+				T.TAXI_TYPE = oData.TAXI_TYPE,
+				T.ISGRAVITYSENSOR = oData.ISGRAVITYSENSOR,
+				T.CAR_MODELS_ID = oData.CAR_MODELS_ID,
+				T.CAR_MODELS_NAME = oData.CAR_MODELS_NAME,
+				T.KT_DEV_ID = oData.KT_DEV_ID,
+				T.LINE_CODES = oData.LINE_CODES,
+				T.LINE_NAMES = oData.LINE_NAMES
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		BUSLINE_ID,
+				BUSLINE_NAME,
+				CAR_BXNO,
+				CAR_DJRQ,
+				CAR_DJZH,
+				CAR_DPH,
+				CAR_FDJH,
+				CAR_FZRQ,
+				CAR_GRSJ,
+				CAR_GZZH,
+				CAR_HSLX,
+				CAR_ID,
+				CAR_KTHM,
+				CAR_NO,
+				CAR_QYRQ,
+				CAR_SIZE,
+				CAR_YYZH,
+				CAR_ZBH,
+				CARDJ_ID,
+				CARDJ_MEMO,
+				CARTYPE_ID,
+				CARTYPE_NAME,
+				DEV_ID,
+				OIL_TYPE_NAME,
+				OWNER_USER_ID,
+				OWNER_USER_NAME,
+				RES_ID,
+				ZPDJ_ID,
+				ZPDJ_NAME,
+				CAR_KIND_ID,
+				CAR_KIND_NAME,
+				TAXI_TYPE,
+				ISGRAVITYSENSOR,
+				CAR_MODELS_ID,
+				CAR_MODELS_NAME,
+				KT_DEV_ID,
+				LINE_CODES,
+				LINE_NAMES
+			) VALUES(
+	      		oData.BUSLINE_ID,
+				oData.BUSLINE_NAME,
+				oData.CAR_BXNO,
+				oData.CAR_DJRQ,
+				oData.CAR_DJZH,
+				oData.CAR_DPH,
+				oData.CAR_FDJH,
+				oData.CAR_FZRQ,
+				oData.CAR_GRSJ,
+				oData.CAR_GZZH,
+				oData.CAR_HSLX,
+				oData.CAR_ID,
+				oData.CAR_KTHM,
+				oData.CAR_NO,
+				oData.CAR_QYRQ,
+				oData.CAR_SIZE,
+				oData.CAR_YYZH,
+				oData.CAR_ZBH,
+				oData.CARDJ_ID,
+				oData.CARDJ_MEMO,
+				oData.CARTYPE_ID,
+				oData.CARTYPE_NAME,
+				oData.DEV_ID,
+				oData.OIL_TYPE_NAME,
+				oData.OWNER_USER_ID,
+				oData.OWNER_USER_NAME,
+				oData.RES_ID,
+				oData.ZPDJ_ID,
+				oData.ZPDJ_NAME,
+				oData.CAR_KIND_ID,
+				oData.CAR_KIND_NAME,
+				oData.TAXI_TYPE,
+				oData.ISGRAVITYSENSOR,
+				oData.CAR_MODELS_ID,
+				oData.CAR_MODELS_NAME,
+				oData.KT_DEV_ID,
+				oData.LINE_CODES,
+				oData.LINE_NAMES
+	      )
+	</update>
+	
+	<!-- 列表（总数） -->	
+	<select id="countCarInfoList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_TAIX T
+		<include refid="find_where_CarInfo" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchCarInfoList"  resultMap="BaseResultMap_CarInfo">
+		SELECT
+			T.BUSLINE_ID,
+			T.BUSLINE_NAME,
+			T.CAR_BXNO,
+			T.CAR_DJRQ,
+			T.CAR_DJZH,
+			T.CAR_DPH,
+			T.CAR_FDJH,
+			T.CAR_FZRQ,
+			T.CAR_GRSJ,
+			T.CAR_GZZH,
+			T.CAR_HSLX,
+			T.CAR_ID,
+			T.CAR_KTHM,
+			T.CAR_NO,
+			T.CAR_QYRQ,
+			T.CAR_SIZE,
+			T.CAR_YYZH,
+			T.CAR_ZBH,
+			T.CARDJ_ID,
+			T.CARDJ_MEMO,
+			T.CARTYPE_ID,
+			T.CARTYPE_NAME,
+			T.DEV_ID,
+			T.OIL_TYPE_NAME,
+			T.OWNER_USER_ID,
+			T.OWNER_USER_NAME,
+			T.RES_ID,
+			T.ZPDJ_ID,
+			T.ZPDJ_NAME,
+			T.CAR_KIND_ID,
+			T.CAR_KIND_NAME,
+			T.TAXI_TYPE,
+			T.ISGRAVITYSENSOR,
+			T.CAR_MODELS_ID,
+			T.CAR_MODELS_NAME,
+			T.KT_DEV_ID,
+			T.LINE_CODES,
+			T.LINE_NAMES
+		FROM
+			T_NP_TAIX T
+		<include refid="find_where_CarInfo" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_CarInfo">
+		<where>
+			<if test="buslineId != null and buslineId != ''" >
+				<![CDATA[ AND T.BUSLINE_ID = #{buslineId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="buslineName != null and buslineName != ''" >
+				<![CDATA[ AND T.BUSLINE_NAME LIKE '%'||#{buslineName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="carId != null and carId != ''" >
+				<![CDATA[ AND T.CAR_ID = #{carId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="carNo != null and carNo != ''" >
+				<![CDATA[ AND T.CAR_NO LIKE '%'||#{carNo,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="devId != null and devId != ''" >
+				<![CDATA[ AND T.DEV_ID = #{devId,jdbcType=VARCHAR} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	<!-- 详情 -->	
+	<select id="searchCarInfoById" parameterType="long"  resultMap="BaseResultMap_CarInfo">
+		SELECT
+			T.BUSLINE_ID,
+			T.BUSLINE_NAME,
+			T.CAR_BXNO,
+			T.CAR_DJRQ,
+			T.CAR_DJZH,
+			T.CAR_DPH,
+			T.CAR_FDJH,
+			T.CAR_FZRQ,
+			T.CAR_GRSJ,
+			T.CAR_GZZH,
+			T.CAR_HSLX,
+			T.CAR_ID,
+			T.CAR_KTHM,
+			T.CAR_NO,
+			T.CAR_QYRQ,
+			T.CAR_SIZE,
+			T.CAR_YYZH,
+			T.CAR_ZBH,
+			T.CARDJ_ID,
+			T.CARDJ_MEMO,
+			T.CARTYPE_ID,
+			T.CARTYPE_NAME,
+			T.DEV_ID,
+			T.OIL_TYPE_NAME,
+			T.OWNER_USER_ID,
+			T.OWNER_USER_NAME,
+			T.RES_ID,
+			T.ZPDJ_ID,
+			T.ZPDJ_NAME,
+			T.CAR_KIND_ID,
+			T.CAR_KIND_NAME,
+			T.TAXI_TYPE,
+			T.ISGRAVITYSENSOR,
+			T.CAR_MODELS_ID,
+			T.CAR_MODELS_NAME,
+			T.KT_DEV_ID,
+			T.LINE_CODES,
+			T.LINE_NAMES
+		FROM
+			T_NP_TAIX T
+		WHERE
+			CAR_ID= #{buslineId,jdbcType=DECIMAL} 
+	</select>
+	
+</mapper>

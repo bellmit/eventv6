@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.DisputeMediationResMapper">
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationRes">
+    <id column="MEDIATION_RES_ID" jdbcType="DECIMAL" property="mediationResId" />
+    <result column="MEDIATION_ID" jdbcType="DECIMAL" property="mediationId" />
+    <result column="MEDIATION_RESULT" jdbcType="VARCHAR" property="mediationResult" />
+    <result column="MEDIATOR" jdbcType="VARCHAR" property="mediator" />
+    <result column="UPDATE_ID" jdbcType="DECIMAL" property="updateId" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="IS_SUCCESS" jdbcType="CHAR" property="isSuccess" />
+    <result column="AGREE_TYPE" jdbcType="VARCHAR" property="agreeType" />
+    <result column="MEDIATION_ORG_NAME" jdbcType="VARCHAR" property="mediationOrgName" />
+    <result column="MEDIATOR_TEL" jdbcType="VARCHAR" property="mediationTel" />
+    <result column="HJ_CERT_NUMBER" jdbcType="VARCHAR" property="hjCertNumber"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    MEDIATION_RES_ID, MEDIATION_ID, MEDIATION_RESULT, MEDIATOR, UPDATE_ID, UPDATE_TIME, 
+    STATUS, IS_SUCCESS, AGREE_TYPE, MEDIATION_ORG_NAME, MEDIATOR_TEL,HJ_CERT_NUMBER
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_ZZ_DISPUTE_MEDIATION_RES
+    where MEDIATION_RES_ID = #{mediationResId,jdbcType=DECIMAL}
+  </select>
+  <select id="selectByMediationId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_ZZ_DISPUTE_MEDIATION_RES
+    where MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from T_ZZ_DISPUTE_MEDIATION_RES
+    where MEDIATION_RES_ID = #{mediationResId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationRes">
+  	<selectKey keyProperty="mediationResId" resultType="long" order="BEFORE">
+		SELECT  SEQ_DISPUTE_MEDIATION_RES_ID.NEXTVAL from DUAL
+	</selectKey>
+    insert into T_ZZ_DISPUTE_MEDIATION_RES (MEDIATION_RES_ID, MEDIATION_ID, MEDIATION_RESULT, 
+      MEDIATOR, UPDATE_ID, UPDATE_TIME, 
+      STATUS, IS_SUCCESS, AGREE_TYPE, MEDIATION_ORG_NAME, MEDIATOR_TEL,HJ_CERT_NUMBER
+      )
+    values (#{mediationResId,jdbcType=DECIMAL}, #{mediationId,jdbcType=DECIMAL}, #{mediationResult,jdbcType=VARCHAR}, 
+      #{mediator,jdbcType=VARCHAR}, #{updateId,jdbcType=DECIMAL}, SYSDATE, 
+      #{status,jdbcType=DECIMAL}, #{isSuccess,jdbcType=CHAR}, #{agreeType,jdbcType=VARCHAR}, 
+      #{mediationOrgName,jdbcType=VARCHAR}, #{mediationTel,jdbcType=VARCHAR},#{hjCertNumber,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationRes">
+    insert into T_ZZ_DISPUTE_MEDIATION_RES
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mediationResId != null">
+        MEDIATION_RES_ID,
+      </if>
+      <if test="mediationId != null">
+        MEDIATION_ID,
+      </if>
+      <if test="mediationResult != null">
+        MEDIATION_RESULT,
+      </if>
+      <if test="mediator != null">
+        MEDIATOR,
+      </if>
+      <if test="updateId != null">
+        UPDATE_ID,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="isSuccess != null">
+        IS_SUCCESS,
+      </if>
+      <if test="agreeType != null">
+        AGREE_TYPE,
+      </if>
+      <if test="agreeType != null">
+        MEDIATION_ORG_NAME,
+      </if>
+      <if test="agreeType != null">
+        MEDIATOR_TEL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mediationResId != null">
+        #{mediationResId,jdbcType=DECIMAL},
+      </if>
+      <if test="mediationId != null">
+        #{mediationId,jdbcType=DECIMAL},
+      </if>
+      <if test="mediationResult != null">
+        #{mediationResult,jdbcType=VARCHAR},
+      </if>
+      <if test="mediator != null">
+        #{mediator,jdbcType=VARCHAR},
+      </if>
+      <if test="updateId != null">
+        #{updateId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        SYSDATE,
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="isSuccess != null">
+        #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="agreeType != null">
+        #{agreeType,jdbcType=VARCHAR},
+      </if>
+      <if test="mediationOrgName != null">
+        #{mediationOrgName,jdbcType=VARCHAR},
+      </if>
+      <if test="mediationTel != null">
+        #{mediationTel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationRes">
+    update T_ZZ_DISPUTE_MEDIATION_RES
+    <set>
+      <if test="mediationId != null">
+        MEDIATION_ID = #{mediationId,jdbcType=DECIMAL},
+      </if>
+      <if test="mediationResult != null">
+        MEDIATION_RESULT = #{mediationResult,jdbcType=VARCHAR},
+      </if>
+      <if test="mediator != null">
+        MEDIATOR = #{mediator,jdbcType=VARCHAR},
+      </if>
+      <if test="updateId != null">
+        UPDATE_ID = #{updateId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = SYSDATE,
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="isSuccess != null">
+        IS_SUCCESS = #{isSuccess,jdbcType=CHAR},
+      </if>
+      <if test="agreeType != null">
+        AGREE_TYPE = #{agreeType,jdbcType=VARCHAR},
+      </if>
+      <if test="mediationOrgName != null">
+        MEDIATION_ORG_NAME = #{mediationOrgName,jdbcType=VARCHAR},
+      </if>
+      <if test="mediationTel != null">
+        MEDIATOR_TEL = #{mediationTel,jdbcType=VARCHAR},
+      </if>
+      <if test="hjCertNumber != null">
+        HJ_CERT_NUMBER = #{hjCertNumber,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MEDIATION_RES_ID = #{mediationResId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationRes">
+    update T_ZZ_DISPUTE_MEDIATION_RES
+    set MEDIATION_ID = #{mediationId,jdbcType=DECIMAL},
+      MEDIATION_RESULT = #{mediationResult,jdbcType=VARCHAR},
+      MEDIATOR = #{mediator,jdbcType=VARCHAR},
+      UPDATE_ID = #{updateId,jdbcType=DECIMAL},
+      UPDATE_TIME = SYSDATE,
+      STATUS = #{status,jdbcType=DECIMAL},
+      IS_SUCCESS = #{isSuccess,jdbcType=CHAR},
+      AGREE_TYPE = #{agreeType,jdbcType=VARCHAR}
+    where MEDIATION_RES_ID = #{mediationResId,jdbcType=DECIMAL}
+  </update>
+</mapper>

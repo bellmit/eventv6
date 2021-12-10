@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.buildaddress.BuildAddressMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.buildaddress.BuildAddress" >
+	<id column="BUILDING_ID" jdbcType="DECIMAL" property="buildingId" />
+	<result column="ADDRESS_ID" jdbcType="DECIMAL" property="addressId" />
+	<result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+    <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    <result column="BUILDING_NAME" jdbcType="VARCHAR" property="buildingName" />
+	<result column="BUILDING_ADDRESS" jdbcType="VARCHAR" property="buildingAddress" />
+</resultMap>
+	<!-- 2015-9-23 liushi add 查询列表数据 -->
+	<select id="findPageBuildAddressCriteria" resultMap="BaseResultMap">
+		select T1.BUILDING_ID,
+	       T1.BUILDING_NAME,
+	       T1.BUILDING_ADDRESS,
+	       T2.GRID_NAME,
+	       T2.GRID_ID,
+	       T3.ADDRESS_ID
+	  from T_DC_AREA_BUILDING_INFO T1
+	  left join T_DC_GRID T2 on T1.GRID_ID = T2.GRID_ID and t2.status = '001'
+	  left join T_GIS_BUILD_ADDRESS T3 ON T1.BUILDING_ID = T3.BUILDING_ID
+	 WHERE T1.STATUS = '001'
+	 <if test="infoOrgCode != null and infoOrgCode !='' ">
+	   AND T2.INFO_ORG_CODE LIKE CONCAT(#{infoOrgCode, jdbcType = VARCHAR}, '%')
+	 </if>
+	 <if test="buildingName != null and buildingName !=''">
+	   AND T2.BUILDING_NAME LIKE CONCAT(#{buildingName, jdbcType = VARCHAR}, '%')
+	 </if>
+	 <choose>
+		 <when test="isRelationValue=='1' ">
+		   AND T3.ADDRESS_ID IS NOT NULL
+		 </when>
+		 <when test="isRelationValue=='0' ">
+		   AND T3.ADDRESS_ID IS NULL
+		 </when>
+	 </choose>
+	</select>
+	<select id="findCountBuildAddressCriteria" resultType="java.lang.Integer">
+		select COUNT(*)
+	  from T_DC_AREA_BUILDING_INFO T1
+	  left join T_DC_GRID T2 on T1.GRID_ID = T2.GRID_ID and t2.status = '001'
+	  left join T_GIS_BUILD_ADDRESS T3 ON T1.BUILDING_ID = T3.BUILDING_ID
+	 WHERE T1.STATUS = '001'
+	 <if test="infoOrgCode != null">
+	   AND T2.INFO_ORG_CODE LIKE CONCAT(#{infoOrgCode, jdbcType = VARCHAR}, '%')
+	 </if>
+	 <if test="buildingName != null and buildingName !=''">
+	   AND T2.BUILDING_NAME LIKE CONCAT(#{buildingName, jdbcType = VARCHAR}, '%')
+	 </if>
+	 <choose>
+		 <when test="isRelationValue=='1' ">
+		   AND T3.ADDRESS_ID IS NOT NULL
+		 </when>
+		 <when test="isRelationValue=='0' ">
+		   AND T3.ADDRESS_ID IS NULL
+		 </when>
+	 </choose>
+	</select>
+	<select id="findBuildAddressByBuildingId" resultMap="BaseResultMap">
+		select T.BUILDING_ID, T.ADDRESS_ID
+		  from T_GIS_BUILD_ADDRESS T
+		 where T.BUILDING_ID =#{buildingId, jdbcType = DECIMAL}
+	</select>	
+	<insert id="insertBuildAddress" parameterType="cn.ffcs.zhsq.mybatis.domain.map.buildaddress.BuildAddress">
+		
+		INSERT INTO T_GIS_BUILD_ADDRESS 
+	      (ADDRESS_ID,BUILDING_ID,UPDATE_TIME
+	      )
+	    VALUES(#{addressId,jdbcType=DECIMAL},#{buildingId,jdbcType=DECIMAL},sysdate
+		)
+	</insert>
+	
+	<update id="updateBuildAddress" parameterType="cn.ffcs.zhsq.mybatis.domain.map.buildaddress.BuildAddress">
+		UPDATE T_GIS_BUILD_ADDRESS T
+		SET T.ADDRESS_ID = #{addressId,jdbcType=DECIMAL}
+		WHERE T.BUILDING_ID = #{buildingId,jdbcType=DECIMAL}
+	</update>
+	
+</mapper>

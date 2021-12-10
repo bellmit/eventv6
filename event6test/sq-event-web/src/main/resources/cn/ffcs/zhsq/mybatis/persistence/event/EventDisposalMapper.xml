@@ -1,0 +1,1065 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposalMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventDisposal" >
+    <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+    <result column="CODE_" property="code" jdbcType="VARCHAR" />
+    <result column="TYPE_" property="type" jdbcType="VARCHAR" />
+    <result column="TYPE_NAME" property="typeName" jdbcType="VARCHAR" />
+    <result column="BIG_TYPE" property="bigType" jdbcType="VARCHAR" />
+    <result column="TEL" property="tel" jdbcType="VARCHAR" />
+	<result column="CONTENT_" property="content" jdbcType="VARCHAR" />
+    <result column="OCCURRED" property="occurred" jdbcType="VARCHAR" />
+    <result column="HANDLE_DATE" property="handleDate" jdbcType="TIMESTAMP" />
+    <result column="HAPPEN_TIME" property="happenTime" jdbcType="TIMESTAMP"/>
+    <result column="CONTACT_USER" property="contactUser" jdbcType="VARCHAR"/>
+    <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"/>
+    <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR"/>
+    <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR"/>
+	<result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR"/>
+    <result column="SOURCE" property="source" jdbcType="VARCHAR"/>
+    <result column="SOURCE_NAME" property="sourceName" jdbcType="VARCHAR"/>
+    <result column="COLLECT_WAY" property="collectWay" jdbcType="VARCHAR"/>
+    <result column="INVOLVED_NUM" property="involvedNum" jdbcType="VARCHAR"/>
+    <result column="INVOLVED_NUM_INT" property="involvedNumInt" jdbcType="DECIMAL"/>
+    <result column="INVOLVED_PERSION" property="involvedPersion" jdbcType="VARCHAR"/>
+    <result column="INFLUENCE_DEGREE" property="influenceDegree" jdbcType="VARCHAR"/>
+    <result column="INFLUENCE_DEGREE_NAME" property="influenceDegreeName" jdbcType="VARCHAR"/>
+    <result column="URGENCY_DEGREE" property="urgencyDegree" jdbcType="VARCHAR"/>
+    <result column="URGENCY_DEGREE_NAME" property="urgencyDegreeName" jdbcType="VARCHAR"/>
+    <result column="STATUS" property="status" jdbcType="VARCHAR"/>    
+    <result column="STATUS_NAME" property="statusName" jdbcType="VARCHAR"/>   
+    <result column="SUB_STATUS" property="subStatus" jdbcType="VARCHAR"/>
+	<result column="UPDATOR_ID" property="updatorId" jdbcType="DECIMAL"/>
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+    <result column="HANDLE_DATE_STATUS" property="handleDateStatus" jdbcType="VARCHAR"/>   
+    <result column="CREATOR_ID" property="creatorId" jdbcType="DECIMAL"/>
+    <result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    <result column="FIN_TIME" property="finTime" jdbcType="TIMESTAMP" />
+    <result column="BIZ_PLATFORM" property="bizPlatform" jdbcType="VARCHAR"/>  
+    
+    <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    <result column="RESULT" property="result" jdbcType="VARCHAR"/>
+    <result column="END_TIME_STR" property="endTimeStr" jdbcType="VARCHAR"/>
+    <result column="HAPPEN_TIME_STR" property="happenTimeStr" jdbcType="VARCHAR"/>
+    <result column="HANDLE_DATE_STR" property="handleDateStr" jdbcType="VARCHAR"/>
+    <result column="CREATE_TIME_STR" property="createTimeStr" jdbcType="VARCHAR"/>
+    <result column="FIN_TIME_STR" property="finTimeStr" jdbcType="VARCHAR"/>
+
+    <result column="START_WORK_FLOW" property="startWorkFlow" jdbcType="VARCHAR"/>
+
+    <result column="EVENT_NATURE" property="eventNature" jdbcType="VARCHAR" />
+	<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+	<result column="INVOLVED_MONEY" property="involvedMoney" jdbcType="DECIMAL" />
+	<result column="ATTR_FLAG" property="attrFlag" jdbcType="VARCHAR" /><!-- 附件标记，1：照片；2：语音；3：视频； -->
+	<result column="HANDLE_DATE_FLAG" property="handleDateFlag" jdbcType="VARCHAR" /><!-- 处理时限标识 1：正常；2：将到期；3：已过期 -->
+	<result column="EVENT_FLAG" property="eventFlag" jdbcType="VARCHAR" />
+	<result column="D_BEGIN_TIME" property="dBeginTime" jdbcType="VARCHAR" /><!-- 双随机事件抽取时间 -->
+	<result column="D_END_TIME" property="dEndTime" jdbcType="VARCHAR" /><!-- 双随机事件复核截止时间 -->
+	<result column="D_JUDGE_RESULT" property="dJudgeResult" jdbcType="VARCHAR" /><!-- 双随机事件评价结果 -->
+	<result column="D_ID" property="dId" jdbcType="DECIMAL" /><!-- 双随机事件评价结果 -->
+	<result column="D_TASK_TYPE" property="dTaskType" jdbcType="VARCHAR" /><!-- 双随机任务类型 -->
+	
+	<result column="INFORMANT" property="informant" jdbcType="VARCHAR"/>
+	<result column="INFORMANT_TEL" property="informantTel" jdbcType="VARCHAR"/>
+	
+	<result column="IS_ADOPTED" property="isAdopted" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap id="EventInterResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventInter" >
+  </resultMap>
+
+  <resultMap id="eventdisposalEsResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventDisposalEs">
+	  <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+	  <result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" />
+	  <result column="CONTENT_" property="content" jdbcType="VARCHAR" />
+	  <result column="OCCURRED" property="occurred" jdbcType="VARCHAR" />
+	  <result column="CODE_" property="code" jdbcType="VARCHAR" />
+	  <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"/>
+	  <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR"/>
+	  <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+	  <result column="HAPPEN_TIME" property="happenTime" jdbcType="TIMESTAMP"/>
+	  <result column="CONTACT_USER" property="contactUser" jdbcType="VARCHAR"/>
+	  <result column="TEL" property="tel" jdbcType="VARCHAR" />
+	  <result column="TYPE_" property="type" jdbcType="VARCHAR" />
+	  <result column="SOURCE" property="source" jdbcType="VARCHAR"/>
+	  <result column="INFLUENCE_DEGREE" property="influenceDegree" jdbcType="VARCHAR"/>
+	  <result column="URGENCY_DEGREE" property="urgencyDegree" jdbcType="VARCHAR"/>
+	  <result column="ATTR_FLAG" property="attrFlag" jdbcType="VARCHAR" /><!-- 附件标记，1：照片；2：语音；3：视频； -->
+	  <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="viewCol">
+  	T1.EVENT_ID,
+    T1.CODE_,
+    T1.EVENT_NAME,
+    T1.TYPE_,
+    T1.CONTENT_,
+    T1.OCCURRED,
+    T1.HAPPEN_TIME,
+    TO_CHAR(T1.HAPPEN_TIME, 'YYYY-MM-DD HH24:MI:SS') HAPPEN_TIME_STR,
+    TO_CHAR(T1.END_TIME, 'YYYY-MM-DD HH24:MI:SS') END_TIME_STR,
+    T1.GRID_ID,
+    T2.GRID_NAME,
+    T2.GRID_PATH,
+    T1.GRID_CODE,
+    T1.EVENT_NATURE, 
+    T1.SOURCE,
+    T1.INVOLVED_PERSION,
+    T1.INFLUENCE_DEGREE,
+    T1.URGENCY_DEGREE,
+    T1.CONTACT_USER,
+    T1.STATUS,
+    T1.SUB_STATUS,
+    T1.CREATE_TIME,
+    TO_CHAR(T1.CREATE_TIME, 'YYYY-MM-DD HH24:MI:SS') CREATE_TIME_STR,
+    T1.FIN_TIME,
+    TO_CHAR(T1.FIN_TIME, 'YYYY-MM-DD HH24:MI:SS') FIN_TIME_STR,
+    T1.BIZ_PLATFORM,
+    T1.INVOLVED_MONEY,
+    T1.COLLECT_WAY,
+    T1.HANDLE_DATE,
+    T1.RESULT,
+    T1.REMARK,
+    TO_CHAR(T1.HANDLE_DATE, 'YYYY-MM-DD HH24:MI:SS') HANDLE_DATE_STR
+  </sql>
+  <sql id="sameCol">
+  	T1.EVENT_ID,
+    T1.CODE_,
+    T1.EVENT_NAME,
+    T1.TYPE_,
+    T1.CONTENT_,
+    T1.OCCURRED,
+    T1.HAPPEN_TIME,
+    TO_CHAR(T1.HAPPEN_TIME, 'YYYY-MM-DD HH24:MI:SS') HAPPEN_TIME_STR,
+    TO_CHAR(T1.END_TIME, 'YYYY-MM-DD HH24:MI:SS') END_TIME_STR,
+    T1.GRID_ID,
+    T2.GRID_NAME,
+    T2.GRID_PATH,
+    T1.GRID_CODE,
+    T1.EVENT_NATURE, 
+    T1.SOURCE,
+    T1.INVOLVED_NUM,
+    T1.INVOLVED_PERSION,
+    T1.INFLUENCE_DEGREE,
+    T1.URGENCY_DEGREE,
+    T1.TEL,
+    T1.CONTACT_USER,
+    T1.STATUS,
+    T1.SUB_STATUS,
+    T1.CREATE_TIME,
+    T1.CREATOR_ID,
+    TO_CHAR(T1.CREATE_TIME, 'YYYY-MM-DD HH24:MI:SS') CREATE_TIME_STR,
+    T1.FIN_TIME,
+    TO_CHAR(T1.FIN_TIME, 'YYYY-MM-DD HH24:MI:SS') FIN_TIME_STR,
+    T1.BIZ_PLATFORM,
+    T1.INVOLVED_MONEY,
+    T1.COLLECT_WAY,
+    T1.HANDLE_DATE,
+    T1.RESULT,
+    TO_CHAR(T1.HANDLE_DATE, 'YYYY-MM-DD HH24:MI:SS') HANDLE_DATE_STR,
+    T1.ATTR_FLAG,
+    T1.HANDLE_DATE_FLAG
+  </sql>
+  <sql id="sameColSimple">
+  	T1.EVENT_ID,
+    T1.CODE_,
+    T1.EVENT_NAME,
+    T1.TYPE_,
+    T1.CONTENT_,
+    T1.OCCURRED,
+    T1.HAPPEN_TIME,
+    T1.END_TIME,
+    T1.GRID_ID,
+    T2.GRID_NAME,
+    T2.GRID_PATH,
+    T1.GRID_CODE,
+    T1.EVENT_NATURE, 
+    T1.SOURCE,
+    T1.INVOLVED_NUM,
+    T1.INVOLVED_NUM_INT,
+    T1.INVOLVED_PERSION,
+    T1.INFLUENCE_DEGREE,
+    T1.URGENCY_DEGREE,
+    T1.TEL,
+    T1.CONTACT_USER,
+    T1.STATUS,
+    T1.SUB_STATUS,
+    T1.CREATOR_ID,
+    T1.CREATOR_NAME,
+    T1.CREATE_TIME,
+    T1.FIN_TIME,
+    T1.BIZ_PLATFORM,
+    T1.INVOLVED_MONEY,
+    T1.COLLECT_WAY,
+    T1.HANDLE_DATE,
+    T1.RESULT,
+    T1.ATTR_FLAG,
+    T1.HANDLE_DATE_FLAG,
+    T1.INFORMANT,
+    T1.INFORMANT_TEL,
+    T1.IS_ADOPTED
+  </sql>
+  
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventDisposal" >
+  	<selectKey keyProperty="eventId" resultType="long" order="BEFORE">
+		select SEQ_EVENT_ID.NEXTVAL FROM DUAL
+	</selectKey>
+	INSERT INTO T_EVENT
+	  (EVENT_ID, CODE_,  EVENT_NAME, TYPE_, CONTENT_,
+	   OCCURRED,  HAPPEN_TIME, GRID_ID, GRID_CODE,
+	   EVENT_NATURE, SOURCE, INVOLVED_NUM,INVOLVED_NUM_INT, INFLUENCE_DEGREE,
+	   URGENCY_DEGREE, TEL, CONTACT_USER, STATUS,
+	   CREATOR_ID, CREATOR_NAME, CREATE_TIME, UPDATE_TIME,
+	   INFORMANT, INFORMANT_TEL,
+	   INVOLVED_MONEY, COLLECT_WAY, INVOLVED_PERSION, RESULT, REMARK, END_TIME, BIZ_PLATFORM, FIN_TIME, HANDLE_DATE)
+	VALUES
+	  (
+	  	#{eventId,jdbcType=DECIMAL},#{code,jdbcType=VARCHAR},#{eventName,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},
+	  	#{content,jdbcType=VARCHAR},#{occurred,jdbcType=VARCHAR},#{happenTime,jdbcType=TIMESTAMP},#{gridId,jdbcType=DECIMAL},
+	  	#{gridCode,jdbcType=VARCHAR},#{eventNature,jdbcType=VARCHAR},#{source,jdbcType=VARCHAR},#{involvedNum,jdbcType=VARCHAR},#{involvedNumInt,jdbcType=DECIMAL},
+	  	#{influenceDegree,jdbcType=VARCHAR},#{urgencyDegree,jdbcType=VARCHAR},#{tel,jdbcType=VARCHAR},#{contactUser,jdbcType=VARCHAR},
+	  	#{status,jdbcType=VARCHAR},#{creatorId,jdbcType=DECIMAL},#{creatorName,jdbcType=VARCHAR},
+	  	<choose>
+	  		<when test="createTime != null ">
+	  			#{createTime,jdbcType=TIMESTAMP},
+	  		</when>
+	  		<otherwise>
+	  			SYSDATE,
+	  		</otherwise>
+	  	</choose>
+	  	<choose>
+	  		<when test="updateTime != null ">
+	  			#{updateTime,jdbcType=TIMESTAMP},
+	  		</when>
+	  		<otherwise>
+	  			SYSDATE,
+	  		</otherwise>
+	  	</choose>
+	  	#{informant,jdbcType=VARCHAR}, #{informantTel,jdbcType=VARCHAR},
+	  	#{involvedMoney,jdbcType=DECIMAL},#{collectWay,jdbcType=VARCHAR},#{involvedPersion,jdbcType=VARCHAR},
+	  	#{result,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},SYSDATE,#{bizPlatform,jdbcType=VARCHAR},
+	  	<choose>
+	  		<when test="finTime != null">
+	  			#{finTime,jdbcType=TIMESTAMP},
+	  		</when>
+	  		<otherwise>
+	  			NULL,
+	  		</otherwise>
+	  	</choose>
+	  	<choose>
+	  		<when test="handleDateInterval!=null and handleDateInterval!=0 ">
+	  			(SYSDATE+#{handleDateInterval,jdbcType=DECIMAL})
+	  		</when>
+	  		<when test="handleDate != null">
+	  			#{handleDate,jdbcType=TIMESTAMP}
+	  		</when>
+	  		<otherwise>
+	  			NULL
+	  		</otherwise>
+	  	</choose>
+	  )
+  </insert>
+  
+  <update id="update">
+  	UPDATE T_EVENT T1 
+	<set>
+		<if test="code != null">
+			T1.CODE_ = #{code,jdbcType=VARCHAR},
+		</if>
+		<if test="eventName != null">
+			T1.EVENT_NAME = #{eventName,jdbcType=VARCHAR},
+		</if>
+		<if test="type != null">
+			T1.TYPE_ = #{type,jdbcType=VARCHAR},
+		</if>
+		<if test="content != null">
+			T1.CONTENT_ = #{content,jdbcType=VARCHAR},
+		</if>
+		<if test="result != null">
+			T1.RESULT = #{result,jdbcType=VARCHAR},
+		</if>
+		<if test="remark != null">
+			T1.REMARK = #{remark,jdbcType=VARCHAR},
+		</if>
+		<if test="occurred != null">
+			T1.OCCURRED = #{occurred,jdbcType=VARCHAR},
+		</if>
+		<if test="happenTime != null">
+			T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP},
+		</if>
+		
+		<choose>
+			<when test="handleDateStr == '' and handleDate == null ">
+				T1.HANDLE_DATE = NULL,
+			</when>
+			<when test="handleDate != null ">
+				T1.HANDLE_DATE = #{handleDate,jdbcType=TIMESTAMP},
+			</when>
+		</choose>
+		<if test="handleDateFlag != null and handleDateFlag != '' ">
+			T1.HANDLE_DATE_FLAG = #{handleDateFlag,jdbcType=VARCHAR},
+		</if>
+		<choose>
+			<when test="finTimeStr == '' and finTime == null ">
+				T1.FIN_TIME = NULL,
+			</when>
+			<when test="finTime != null ">
+				T1.FIN_TIME = #{finTime,jdbcType=TIMESTAMP},
+			</when>
+		</choose>
+		<if test="gridId != null">
+			T1.GRID_ID = #{gridId,jdbcType=DECIMAL},
+		</if>
+		<if test="gridCode != null">
+			T1.GRID_CODE = #{gridCode,jdbcType=VARCHAR},
+		</if>
+		<if test="eventNature != null">
+			T1.EVENT_NATURE = #{eventNature,jdbcType=VARCHAR},
+		</if>
+		<if test="source != null">
+			T1.SOURCE = #{source,jdbcType=VARCHAR},
+		</if>
+		<if test="involvedNum != null">
+			T1.INVOLVED_NUM = #{involvedNum,jdbcType=VARCHAR},
+		</if>
+		<if test="involvedNumInt != null">
+			T1.INVOLVED_NUM_INT = #{involvedNumInt,jdbcType=DECIMAL},
+		</if>
+		<if test="influenceDegree != null">
+			T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR},
+		</if>
+		<if test="urgencyDegree != null">
+			T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR},
+		</if>
+		<if test="tel != null">
+			T1.TEL = #{tel,jdbcType=VARCHAR},
+		</if>
+		<if test="contactUser != null">
+			T1.CONTACT_USER = #{contactUser,jdbcType=VARCHAR},
+		</if>
+		<if test="informantTel != null">
+			T1.INFORMANT_TEL = #{informantTel,jdbcType=VARCHAR},
+		</if>
+		<if test="informant != null">
+			T1.INFORMANT = #{informant,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null">
+			T1.STATUS = #{status,jdbcType=VARCHAR},
+		</if>
+		<if test="subStatus != null">
+			T1.SUB_STATUS = #{subStatus,jdbcType=VARCHAR},
+		</if>
+		<if test="involvedMoney != null">
+			T1.INVOLVED_MONEY = #{involvedMoney,jdbcType=DECIMAL},
+		</if>
+		<if test="collectWay != null and collectWay != '' ">
+			T1.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR},
+		</if>
+		<if test="involvedPersion != null">
+			T1.INVOLVED_PERSION = #{involvedPersion,jdbcType=VARCHAR},
+		</if>
+		<if test="attrFlag!=null and attrFlag!='' ">
+			T1.ATTR_FLAG = #{attrFlag,jdbcType=VARCHAR},
+		</if>
+		<if test="createTime != null ">
+			T1.CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updatorId != null ">
+			T1.UPDATOR_ID = #{updatorId,jdbcType=DECIMAL},
+		</if>
+		<if test="bizPlatform != null and bizPlatform != '' ">
+			T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR},
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(isAdopted)">
+				T1.IS_ADOPTED = #{isAdopted,jdbcType=VARCHAR},
+			</when>
+			<when test="isAdopted == '' ">
+				T1.IS_ADOPTED = DEFAULT,
+			</when>
+		</choose>
+	  	
+		T1.UPDATE_TIME = SYSDATE
+	</set>
+	
+	WHERE T1.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </update>
+  
+  <delete id="delete">
+  	UPDATE T_EVENT T1
+  	SET T1.STATUS = '06', T1.UPDATE_TIME = SYSDATE,T1.UPDATOR_ID= #{updatorId,jdbcType=DECIMAL}
+  	WHERE T1.EVENT_ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  
+  <!-- 依据事件id获取事件信息 -->
+  <select id="findById" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="sameColSimple"/>
+  	FROM T_EVENT T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001' 
+  	<choose>
+  		<when test="isIgnoreStatus != null and isIgnoreStatus == true "></when>
+  		<otherwise>
+  			AND T1.STATUS != '06'
+  		</otherwise>
+  	</choose>
+  	AND T1.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </select>
+  
+  <select id="findTodoCountViewByCriteria" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM V_EVENT T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND ((T1.EVENT_FLAG = '0' AND T1.STATUS IN ('01','02')) OR (T1.EVENT_FLAG = '1' AND T1.STATUS IN ('01','02')))
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findPageTodoViewByCriteria" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="viewCol"/>
+  	FROM V_EVENT T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND ((T1.EVENT_FLAG = '0' AND T1.STATUS IN ('01','02')) OR (T1.EVENT_FLAG = '1' AND T1.STATUS IN ('01','02')))
+  	<include refid="find_where"/>
+  	ORDER BY T1.HAPPEN_TIME DESC
+  </select>
+  
+  <select id="findCountHistoryViewByCriteria" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM V_EVENT T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND ((T1.EVENT_FLAG = '0' AND T1.STATUS IN ('03','04')) OR (T1.EVENT_FLAG = '1' AND T1.STATUS = '04'))
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findPageHistoryViewByCriteria" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="viewCol"/>
+  	FROM V_EVENT T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND ((T1.EVENT_FLAG = '0' AND T1.STATUS IN ('03','04')) OR (T1.EVENT_FLAG = '1' AND T1.STATUS = '04'))
+  	<include refid="find_where"/>
+  	<choose>
+  		<when test="orderByField != null and orderByField != '' ">
+  			ORDER BY ${orderByField}
+  		</when>
+  		<otherwise>
+  			ORDER BY T1.CREATE_TIME DESC
+  		</otherwise>
+  	</choose>
+  </select>
+  
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM T_EVENT T1
+	INNER JOIN T_DC_GRID T2
+  	ON T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	WHERE T1.STATUS != '06'
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findPageListByCriteria" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="sameCol"/>
+  	FROM T_EVENT T1
+	INNER JOIN T_DC_GRID T2
+  	ON T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	WHERE 1 = 1
+  	<include refid="find_where"/>
+  	<choose>
+  		<when test="@Ognl@isNotEmpty(orderByField)">
+  			ORDER BY ${orderByField}
+  		</when>
+  		<otherwise>
+  			ORDER BY T1.CREATE_TIME DESC
+  		</otherwise>
+  	</choose>
+  </select>
+  
+  <!-- 依据涉及人员信息统计事件记录 -->
+  <select id="countEventByInvolvedPeople" resultType="java.lang.Integer" >
+  	SELECT COUNT(1) 
+  	FROM T_EVENT T1
+	INNER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+	LEFT JOIN T_ZZ_INVOLVED_PEOPLE T4
+		ON T1.EVENT_ID = T4.BIZ_ID and t4.status='1'
+	WHERE 1 = 1
+  	<include refid="find_where_involved_people"/>
+  </select>
+  <!-- 依据涉及人员信息获取事件列表 -->
+  <select id="findEventByInvolvedPeople" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="sameCol"/>
+  	FROM T_EVENT T1
+	INNER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+	LEFT JOIN T_ZZ_INVOLVED_PEOPLE T4
+		ON T1.EVENT_ID = T4.BIZ_ID and t4.status='1'
+	WHERE 1 = 1
+	<include refid="find_where_involved_people"/>
+	ORDER BY T1.HAPPEN_TIME DESC
+  </select>
+  <!-- 依据涉及人员信息获取事件查询条件 -->
+  <sql id="find_where_involved_people">
+  	AND T2.STATUS = '001' 
+  	<choose>
+  		<when test="eventStatusList != null and (eventStatusList.size > 0)">
+  			AND T1.STATUS IN
+  			<foreach collection="eventStatusList" index="index" item="item" open="(" separator="," close=")">
+  				#{item}
+  			</foreach>
+  		</when>
+  		<otherwise>
+  			AND 1 = 2
+  		</otherwise>
+  	</choose>
+	<if test="eventName != null and eventName != '' ">
+		AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="eventType != null and eventType != '' ">
+		AND T1.TYPE_ LIKE #{eventType,jdbcType=VARCHAR}||'%'
+	</if>
+  	<if test="involvedPeopleBizType != null and involvedPeopleBizType != '' ">
+		AND T4.BIZ_TYPE = #{involvedPeopleBizType,jdbcType=VARCHAR}
+	</if>
+  	<if test="idCard != null and idCard != '' ">
+		AND T4.ID_CARD = #{idCard,jdbcType=VARCHAR}
+	</if>
+	<if test="infoOrgCode != null and infoOrgCode != '' ">
+		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+	</if>
+  </sql>
+  
+  <select id="findCountWithEventInter" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM T_EVENT T1
+  	INNER JOIN T_DC_GRID T2
+  		ON T1.GRID_ID = T2.GRID_ID
+  	LEFT JOIN T_SJ_EVENT_INTER T3
+  		ON T1.EVENT_ID = T3.OWN_SIDE_EVENT_CODE 
+  	WHERE T2.STATUS = '001'
+  	<if test="eventSrc != null">
+  		AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+  	</if>
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findClosedEventListWithEventInter" resultType="map">
+  	SELECT
+  		T1.EVENT_ID,
+  		T1.RESULT,
+  		T3.OPPO_SIDE_BUSI_CODE,
+  		T3.EVENT_SRC
+  	FROM T_EVENT T1
+  	INNER JOIN T_DC_GRID T2
+  		ON T1.GRID_ID = T2.GRID_ID
+  	LEFT JOIN T_SJ_EVENT_INTER T3
+  		ON T1.EVENT_ID = T3.OWN_SIDE_EVENT_CODE
+  	WHERE T2.STATUS = '001' AND T3.REC_STATUS = '0'
+  	<if test="eventSrc != null">
+  		AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+  	</if>
+  	<include refid="find_where"/>
+  	ORDER BY T1.CREATE_TIME DESC
+  </select>
+  
+  <select id="findReportEventListWithEventInter" resultType="map">
+  	SELECT
+  		T1.EVENT_ID,
+       	T1.EVENT_NAME,
+       	T1.CONTACT_USER,
+       	T1.TEL,
+       	T1.OCCURRED,
+       	TO_CHAR(T1.HAPPEN_TIME, 'YYYY-MM-DD HH24:MI:SS') HAPPEN_TIME_STR,
+       	TO_CHAR(T1.UPDATE_TIME, 'YYYY-MM-DD HH24:MI:SS') UPDATE_TIME_STR,
+       	T1.CONTENT_,
+       	T1.CREATOR_ID,
+       	T3.EVENT_SRC
+  	FROM T_EVENT T1
+  	INNER JOIN T_DC_GRID T2
+  		ON T1.GRID_ID = T2.GRID_ID
+  	LEFT JOIN T_SJ_EVENT_INTER T3
+  		ON T1.EVENT_ID = T3.OWN_SIDE_EVENT_CODE
+  	WHERE T2.STATUS = '001' AND T3.REC_STATUS = '0'
+  	<if test="eventSrc != null">
+  		AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+  	</if>
+  	<include refid="find_where"/>
+  	ORDER BY T1.CREATE_TIME DESC
+  </select>
+  
+  <insert id="eventInterInsert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventInter" >
+  	<selectKey keyProperty="interId" resultType="long" order="BEFORE">
+		select SEQ_SJ_EVENT_INTER_ID.NEXTVAL from DUAL
+	</selectKey>
+		INSERT INTO T_SJ_EVENT_INTER
+		  (INTER_ID, OPPO_SIDE_BUSI_CODE, OPPO_SIDE_BUSI_TYPE, OWN_SIDE_EVENT_CODE,
+		   OWN_SIDE_EVENT_STATUS, INTERACTIVE_STATUS, REC_STATUS, EVENT_SRC,
+		   CREATOR, CRATED, UPDATER, UPDATED, STATUS)
+		VALUES
+		  (
+		   #{interId,jdbcType=DECIMAL},#{oppoSideBusiCode,jdbcType=VARCHAR},#{oppoSideBusiType,jdbcType=VARCHAR},
+		   #{ownSideEventCode,jdbcType=VARCHAR},#{ownSideEventStatus,jdbcType=VARCHAR},#{interactiveStatus,jdbcType=VARCHAR},
+		   #{recStatus,jdbcType=VARCHAR},#{eventSrc,jdbcType=VARCHAR},#{creator,jdbcType=DECIMAL},
+		   SYSDATE,#{updater,jdbcType=DECIMAL},#{updated,jdbcType=TIMESTAMP},#{status,jdbcType=VARCHAR}
+		  )
+  </insert>
+  
+  <select id="findEventInterList" resultMap="EventInterResultMap">
+  	SELECT T3.INTER_ID,
+	       T3.OWN_SIDE_EVENT_CODE,
+	       T3.INTERACTIVE_STATUS,
+	       T3.REC_STATUS,
+	       T3.STATUS
+    FROM T_SJ_EVENT_INTER T3
+    WHERE 1 = 1 
+    <include refid="eventInter_find_where"/>
+  </select>
+  
+  <update id="updateEventInter">
+  	UPDATE T_SJ_EVENT_INTER T3
+    <set>
+    	<if test="recStatus != null and recStatus != '' ">
+	    	T3.REC_STATUS = #{recStatus,jdbcType=VARCHAR},
+	    </if>
+    	T3.UPDATED = SYSDATE
+    </set>
+    WHERE T3.OWN_SIDE_EVENT_CODE = #{ownSideEventCode,jdbcType=VARCHAR}
+    	AND T3.OPPO_SIDE_BUSI_CODE = #{oppoSideBusiCode,jdbcType=VARCHAR}
+    	AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="updateEventInterOppoSideBusiCode">
+  	UPDATE T_SJ_EVENT_INTER T3
+    <set>
+    	<if test="recStatus != null and recStatus != '' ">
+	    	T3.REC_STATUS = #{recStatus,jdbcType=VARCHAR},
+	    </if>
+	    <if test="oppoSideBusiCode != null and oppoSideBusiCode != '' ">
+	    	T3.OPPO_SIDE_BUSI_CODE = #{oppoSideBusiCode,jdbcType=VARCHAR},
+	    </if>
+    	T3.UPDATED = SYSDATE
+    </set>
+    WHERE T3.OWN_SIDE_EVENT_CODE = #{ownSideEventCode,jdbcType=VARCHAR}
+    	AND T3.OPPO_SIDE_BUSI_CODE IS NULL
+    	AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+  </update>
+  
+  <sql id="eventInter_find_where">
+  	<if test="interId != null">
+    	AND T3.INTER_ID = #{interId,jdbcType=DECIMAL}
+    </if>
+    <if test="ownSideEventCode != null">
+    	AND T3.OWN_SIDE_EVENT_CODE = #{ownSideEventCode,jdbcType=VARCHAR}
+    </if>
+    <choose>
+		<when test="oppoSideBusiCode == '' ">
+			AND T3.OPPO_SIDE_BUSI_CODE IS NULL
+		</when>
+		<otherwise>
+			<if test="oppoSideBusiCode != null">
+				AND T3.OPPO_SIDE_BUSI_CODE = #{oppoSideBusiCode,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+    <if test="oppoSideBusiType != null">
+    	AND T3.OPPO_SIDE_BUSI_TYPE = #{oppoSideBusiType,jdbcType=VARCHAR}
+    </if>
+    <if test="eventSrc != null">
+    	AND T3.EVENT_SRC = #{eventSrc,jdbcType=VARCHAR}
+    </if>
+    <if test="interactiveStatus != null">
+    	AND T3.INTERACTIVE_STATUS = #{interactiveStatus,jdbcType=VARCHAR}
+    </if>
+    <if test="recStatus != null">
+    	AND T3.REC_STATUS = #{recStatus,jdbcType=VARCHAR}
+    </if>
+	<if test="status != null">
+		AND T3.STATUS = #{status,jdbcType=VARCHAR}
+	</if>
+  </sql>
+  
+  <sql id="find_where">
+  	<if test="@Ognl@isNotEmpty(code)">
+		AND T1.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+	</if>
+  	<if test="@Ognl@isNotEmpty(bizPlatform)">
+		AND T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+	</if>
+	<if test="@Ognl@isNotEmpty(eventName)">
+		AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="@Ognl@isNotEmpty(type)">
+		AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="@Ognl@isNotEmpty(content)">
+		AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="@Ognl@isNotEmpty(occurred)">
+		AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+	</if>
+	<if test="happenTime != null">
+		AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+	</if>
+	<choose>
+		<when test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</when>
+		<when test="gridId != null ">
+			AND T1.GRID_ID IN 
+			(SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.STATUS = '001' START WITH G.GRID_ID = #{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR G.GRID_ID = G.PARENT_GRID_ID)
+		</when>
+	</choose>
+	<if test="@Ognl@isNotEmpty(eventNature)">
+		AND T1.EVENT_NATURE = #{eventNature,jdbcType=VARCHAR}
+	</if>
+	<if test="@Ognl@isNotEmpty(source)">
+		AND T1.SOURCE IN (${source})
+	</if>
+	<if test="involvedNum != null">
+		AND T1.INVOLVED_NUM = #{involvedNum,jdbcType=DECIMAL}
+	</if>
+	<if test="@Ognl@isNotEmpty(influenceDegree)">
+		AND T1.INFLUENCE_DEGREE IN (${influenceDegree})
+	</if>
+	<if test="@Ognl@isNotEmpty(urgencyDegree)">
+		AND T1.URGENCY_DEGREE IN (${urgencyDegree})
+	</if>
+	<if test="@Ognl@isNotEmpty(tel)">
+		AND T1.TEL = #{tel,jdbcType=VARCHAR}
+	</if>
+	<if test="contactUser != null">
+		AND T1.CONTACT_USER = #{contactUser,jdbcType=VARCHAR}
+	</if>
+	<if test="creatorId != null">
+		AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+	</if>
+	
+	<if test="handleStatus != null">
+		<if test="handleStatus ==  '01'">
+			AND SYSDATE > T1.HANDLE_DATE 
+		</if>
+	</if>
+	<choose>
+		<when test="@Ognl@isNotEmpty(statusList)">
+			AND T1.STATUS IN
+			<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+		    	#{item}
+		    </foreach>
+		</when>
+		<otherwise>
+			<if test="@Ognl@isNotEmpty(status)">
+				AND T1.STATUS = #{status,jdbcType=VARCHAR}
+			</if>
+		</otherwise>
+	</choose>
+	<if test="involvedMoney != null">
+		AND T1.INVOLVED_MONEY = #{involvedMoney,jdbcType=DECIMAL}
+	</if>
+	<if test="@Ognl@isNotEmpty(collectWay)">
+		AND T1.COLLECT_WAY IN (${collectWay})
+	</if>
+	<if test="(bigTypes!=null) or (smallTypes!=null) ">
+		AND (
+			<choose>
+				<when test="bigTypes != null">
+					SUBSTR(T1.TYPE_,0,2) IN (${bigTypes}) 
+				</when>
+				<otherwise>
+					1 != 1 
+				</otherwise>
+			</choose>
+			
+			<choose>
+				<when test="smallTypes != null">
+					OR T1.TYPE_ IN (${smallTypes})
+				</when>
+				<otherwise>
+					OR 1 != 1 
+				</otherwise>
+			</choose>
+		)
+	</if>
+	<choose>
+		<when test="@Ognl@isNotEmpty(removeTypeArray)">
+			AND
+			<foreach collection="removeTypeArray" index="index" item="item" open="(" separator="AND" close=")">
+		     T1.TYPE_ NOT LIKE #{item}||'%'
+		    </foreach>
+		</when>
+		<when test="@Ognl@isNotEmpty(removeTypeList)">
+			AND
+			<foreach collection="removeTypeList" index="index" item="item" open="(" separator="AND" close=")">
+		     T1.TYPE_ NOT LIKE #{item}||'%'
+		    </foreach>
+		</when>
+	</choose>
+	
+	<if test="@Ognl@isNotEmpty(involvedPersion)">
+		AND T1.INVOLVED_PERSION LIKE '%'||#{involvedPersion,jdbcType=VARCHAR}||'%'
+	</if>
+	
+	<if test="@Ognl@isNotEmpty(generalSearch)">
+		AND (
+		  T1.CONTENT_ LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+		  OR
+		  T1.OCCURRED LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+		  OR
+		  T1.INVOLVED_PERSION LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+	  )
+  </if>
+   <if test="@Ognl@isNotEmpty(keyWord)">
+		AND (
+		  T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+		  OR
+		  T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+		   OR
+		  T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+	  )
+  </if>
+  <if test="startHappenTime != null">
+		AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  </if>
+   <if test="endHappenTime != null">
+   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   </if>
+  <if test="happenTimeStart != null">
+		AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  </if>
+   <if test="happenTimeEnd != null">
+   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   </if>
+  <if test="createTimeStart!=null">
+  		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  </if>
+   <if test="createTimeEnd != null">
+   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   </if>
+  <if test="updateTimeStart != null">
+  		AND T1.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  </if>
+   <if test="updateTimeEnd != null">
+   		AND T1.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   </if>
+  <if test="handleDateStart != null">
+  		AND T1.HANDLE_DATE <![CDATA[>=]]>TO_DATE(#{handleDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+   </if>
+   <if test="handleDateEnd != null">
+   		AND T1.HANDLE_DATE <![CDATA[<]]>TO_DATE(#{handleDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   </if>
+   <if test="@Ognl@isNotEmpty(handleDateFlag)">
+   		AND T1.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+   </if>
+   <if test="@Ognl@isNotEmpty(eventLabelList)"><!-- 晋江市个性化查询 -->
+   		AND EXISTS
+ 			(SELECT T16.EVENT_ID
+          		FROM T_EVENT_LABEL_RELA T16
+         		WHERE T16.EVENT_ID = T1.EVENT_ID
+           		AND T16.IS_VALID = '1'
+           		AND T16.LABEL_NAME IN
+				<foreach collection="eventLabelList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			)
+	</if>
+  </sql>
+  
+  <select id="countEventDataForCommon" resultType="java.lang.Integer">
+  	<if test="queryKey != null and queryKey == 'SJCJ'">
+  		SELECT COUNT(D.EVENT_ID)
+		  FROM t_event D
+		 WHERE D.CREATOR_ID = #{userId,jdbcType=DECIMAL}
+		   AND D.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		   AND D.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		   AND D.TYPE_ IS NOT NULL
+		   AND D.STATUS NOT IN ('06', '99')
+  	</if>
+  	<if test="queryKey != null and queryKey == 'SJBJ'">
+  		SELECT count(distinct d.EVENT_ID)
+		  FROM t_event D
+		  LEFT JOIN T_EVENT_PROCESS P
+		    ON D.EVENT_ID = P.EVENT_ID
+		 WHERE D.TYPE_ IS NOT NULL
+		   AND D.STATUS NOT IN ('06', '99') 
+		   AND P.STATUS IN ('03') 
+		   AND P.USER_ID = #{userId,jdbcType=DECIMAL} 
+		   AND P.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') 
+		   AND P.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+  	</if>
+  	<if test="queryKey != null and (queryKey == 'L3_HANDLE' or queryKey == 'L4_HANDLE' or queryKey == 'L5_HANDLE' or queryKey == 'L6_HANDLE')"><!-- 社区处理 -->
+  		SELECT count(0)
+		  FROM WORKFLOW.WF_PROCESS_INSTANCE I
+		  LEFT JOIN WORKFLOW.WF_TASK WT
+		    ON WT.INSTANCE_ID = I.INSTANCE_ID
+		  LEFT JOIN WORKFLOW.WF_NODE WN 
+	        ON WN.NODE_ID=WT.NODE_ID
+		  LEFT JOIN T_DC_ORG_SOCIAL_INFO O
+		    ON WT.ORG_ID = O.ORG_ID
+		   AND O.STATUS = '001'
+		  LEFT JOIN T_DC_ORG_ENTITY_INFO O2
+		    ON O.LOCATION_ORG_ID = O2.ORG_ID
+		   AND O2.STATUS = '001'
+		  LEFT JOIN T_EVENT T1
+		    ON I.FORM_ID = T1.EVENT_ID
+		   AND T1.STATUS NOT IN ('06', '99')
+		  LEFT JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 WHERE I.FORM_TYPE_ID = 300
+		   AND WN.NODE_NAME_ZH = '结案'
+		   AND O2.ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		   AND T1.STATUS IN ('03', '04')
+		   AND T1.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		   AND T1.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		   <choose>
+		   	<when test="queryKey == 'L3_HANDLE'">AND LENGTH(O2.ORG_CODE) = 6</when>
+		   	<when test="queryKey == 'L4_HANDLE'">AND LENGTH(O2.ORG_CODE) = 9</when>
+		   	<when test="queryKey == 'L5_HANDLE'">AND LENGTH(O2.ORG_CODE) = 12</when>
+		   	<when test="queryKey == 'L6_HANDLE'">AND LENGTH(O2.ORG_CODE) = 15</when>
+		   </choose>
+  	</if>
+  </select>
+  
+  <select id="findEventDataForCommon" resultMap="BaseResultMap">
+  	<if test="queryKey != null and queryKey == 'SJCJ'">
+  		SELECT <include refid="viewCol"/>
+		  FROM t_event T1
+		  left join t_dc_grid t2
+		    on t1.GRID_ID = t2.grid_id
+		   and t2.status = '001'
+		 WHERE t2.info_org_code like
+		       (SELECT g.info_org_code FROM T_DC_GRID g WHERE g.status = '001' and g.GRID_ID = #{gridId,jdbcType=DECIMAL}) || '%'
+		   AND T1.CREATOR_ID = #{userId,jdbcType=DECIMAL}
+		   AND T1.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		   AND T1.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		   AND T1.TYPE_ IS NOT NULL
+		   AND T1.STATUS NOT IN ('06', '99')
+  	</if>
+  	<if test="queryKey != null and queryKey == 'SJBJ'">
+  		SELECT distinct <include refid="viewCol"/>
+		  FROM t_event t1
+		  left join t_dc_grid t2
+		    on t1.GRID_ID = t2.grid_id
+		   and t2.status = '001'
+		  LEFT JOIN T_EVENT_PROCESS P
+		    ON t1.EVENT_ID = P.EVENT_ID
+		 WHERE t1.TYPE_ IS NOT NULL
+		   AND t1.STATUS NOT IN ('06', '99') AND
+		       P.STATUS IN ('03') AND P.USER_ID = #{userId,jdbcType=DECIMAL} AND
+		       P.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') AND
+		       P.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		 ORDER BY T1.HAPPEN_TIME, T1.EVENT_ID DESC
+  	</if>
+  	<if test="queryKey != null and (queryKey == 'L3_HANDLE' or queryKey == 'L4_HANDLE' or queryKey == 'L5_HANDLE' or queryKey == 'L6_HANDLE')"><!-- 社区处理 -->
+  		SELECT <include refid="sameCol"/>
+		  FROM WORKFLOW.WF_PROCESS_INSTANCE I
+		  LEFT JOIN WORKFLOW.WF_TASK WT
+		    ON WT.INSTANCE_ID = I.INSTANCE_ID
+		  LEFT JOIN WORKFLOW.WF_NODE WN 
+	        ON WN.NODE_ID=WT.NODE_ID 
+		  LEFT JOIN T_DC_ORG_SOCIAL_INFO O
+		    ON WT.ORG_ID = O.ORG_ID
+		   AND O.STATUS = '001'
+		  LEFT JOIN T_DC_ORG_ENTITY_INFO O2
+		    ON O.LOCATION_ORG_ID = O2.ORG_ID
+		   AND O2.STATUS = '001'
+		  LEFT JOIN T_EVENT T1
+		    ON I.FORM_ID = T1.EVENT_ID
+		   AND T1.STATUS NOT IN ('06', '99')
+		  LEFT JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 WHERE I.FORM_TYPE_ID = 300
+		   AND WN.NODE_NAME_ZH = '结案'
+		   AND O2.ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		   AND T1.STATUS IN ('03', '04')
+		   AND T1.CREATE_TIME >= TO_DATE(#{startTime, jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		   AND T1.CREATE_TIME &lt; TO_DATE(#{endTime, jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		   <choose>
+		   	<when test="queryKey == 'L3_HANDLE'">AND LENGTH(O2.ORG_CODE) = 6</when>
+		   	<when test="queryKey == 'L4_HANDLE'">AND LENGTH(O2.ORG_CODE) = 9</when>
+		   	<when test="queryKey == 'L5_HANDLE'">AND LENGTH(O2.ORG_CODE) = 12</when>
+		   	<when test="queryKey == 'L6_HANDLE'">AND LENGTH(O2.ORG_CODE) = 15</when>
+		   </choose>
+  	</if>
+  </select>
+
+	<select id="findEvent4Year" resultType="map">
+		select sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '01', 1, 0)) M1,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '02', 1, 0)) M2,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '03', 1, 0)) M3,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '04', 1, 0)) M4,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '05', 1, 0)) M5,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '06', 1, 0)) M6,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '07', 1, 0)) M7,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '08', 1, 0)) M8,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '09', 1, 0)) M9,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '10', 1, 0)) M10,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '11', 1, 0)) M11,
+		sum(DECODE(TO_CHAR(t1.CREATE_TIME, 'MM'), '12', 1, 0)) M12
+		from t_event t1 left join t_dc_grid g on t1.grid_code = g.info_org_code	 and g.status = '001'
+		WHERE T1.STATUS != '06'
+		and g.info_org_code like #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		AND TO_CHAR(T1.CREATE_TIME, 'yyyy') = #{year, jdbcType=VARCHAR}
+	</select>
+
+	<select id="findTop10OfEventType4Month" resultType="map">
+		select *
+		from (select substr(t.type_,0,8) event_type, count(t.event_id) as num
+		from t_event t left join t_dc_grid g on t.grid_code = g.info_org_code and g.status = '001'
+		where to_char(t.create_time, 'YYYY-MM') = #{month, jdbcType=VARCHAR}
+		and t.type_ is not null
+		and t.status != '06'
+		and g.info_org_code like #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		group by substr(t.type_,0,8)
+		order by count(t.event_id) desc)
+		where rownum <![CDATA[<]]> 11
+	</select>
+
+	<select id="findGrid4Month" resultType="map">
+		select a.grid_name, a.info_org_code, DECODE(b.event_num, null, 0, b.event_num) event_num
+		  from t_dc_grid a
+		 left join (SELECT t2.info_org_code, count(t1.event_id) event_num
+					   FROM T_EVENT T1, T_DC_GRID T2
+					  WHERE T1.GRID_ID = T2.GRID_ID
+						AND T2.STATUS = '001'
+						AND T1.STATUS != '06'
+						AND to_char(t1.create_time, 'YYYY-MM') = #{month, jdbcType=VARCHAR}
+						and t2.parent_grid_id =
+							(select g.grid_id
+							   from t_dc_grid g
+							  where g.info_org_code = #{infoOrgCode, jdbcType=VARCHAR}
+								and g.status = '001')
+					  group by t2.info_org_code
+					  order by t2.info_org_code) b
+			on a.info_org_code = b.info_org_code
+		 where a.status = '001'
+		 and a.parent_grid_id =
+							(select g.grid_id
+							   from t_dc_grid g
+							  where g.info_org_code = #{infoOrgCode, jdbcType=VARCHAR}
+								and g.status = '001')
+	</select>
+
+	<select id="findCountByEventType" resultType="java.lang.Integer" >
+		select count(1)
+		  from (SELECT COUNT(*)
+				  FROM T_EVENT T1, T_DC_GRID T2
+				 WHERE T1.GRID_ID = T2.GRID_ID
+				   AND T2.STATUS = '001'
+				   AND T1.STATUS != '06'
+				   AND T2.INFO_ORG_CODE LIKE '35' || '%'
+				 group by t1.type_)
+	</select>
+
+	<!--查找event es相应实体-->
+	<select id="findEventDisposalEsById" parameterType="long" resultMap="eventdisposalEsResultMap">
+		SELECT  EVENT_ID,EVENT_NAME,CONTENT_,OCCURRED,CODE_,GRID_ID,GRID_CODE,CREATE_TIME,HAPPEN_TIME,
+				CONTACT_USER,TEL,TYPE_,SOURCE,INFLUENCE_DEGREE,URGENCY_DEGREE,ATTR_FLAG,STATUS
+		FROM T_EVENT T
+		WHERE T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+	</select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowNPSGridMapper" >
+	<!-- 事件查询列 -->
+	<sql id="eventColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn"></include>
+	</sql>
+	
+	<!-- 事件扩展表查询列 -->
+	<sql id="eventExtendColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventExtendColumn"></include>
+	</sql>
+	
+	<!-- 事件列表扩展查询列 -->
+	<sql id="eventAdditionalColumn">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventAdditionalColumn"></include>
+	</sql>
+	
+  	<!-- 统计经办事件数量 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer" >
+  		SELECT COUNT(DISTINCT T1.EVENT_ID)
+		<include refid="eventHandledSql"></include>
+  	</select>
+  	
+  	<!-- 获取经办事件列表 -->
+  	<select id="findPageList4Handled" resultType="java.util.Map">
+  		SELECT DISTINCT <include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.eventColumn4Handled"></include>
+  		<include refid="eventHandledSql"></include>
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.order_by"></include>
+  	</select>
+  	
+  	<!-- 经办事件语句 -->
+  	<sql id="eventHandledSql">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		INNER JOIN ${dbuser.workflow}.WF_TASK T8
+		  ON T8.INSTANCE_ID = T3.INSTANCE_ID
+		INNER JOIN ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		  ON T8.TASK_ID = T9.TASK_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6
+		  ON T3.INSTANCE_ID = T6.INSTANCE_ID
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_handled"></include>
+  	</sql>
+  	
+  	<!-- 事件查询条件 -->
+  	<sql id="find_where_event">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_event"></include>
+  	</sql>
+  	
+  	<!-- 拓展表过滤条件 -->
+  	<sql id="find_where_extend">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_extend"></include>
+  	</sql>
+  	
+  	<!-- 工作流相关查询条件 -->
+  	<sql id="find_where_workflow">
+  		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_workflow"></include>
+  	</sql>
+  	
+</mapper>

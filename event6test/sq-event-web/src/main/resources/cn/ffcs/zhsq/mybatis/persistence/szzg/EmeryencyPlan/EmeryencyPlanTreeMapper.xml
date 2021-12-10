@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.EmeryencyPlan.EmeryencyPlanTreeMapper" >
+  <resultMap id="EmeryencyPlanTree" type="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanTree" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="DECIMAL" />
+    <result column="PARENT_NAME" property="parentName" jdbcType="VARCHAR" />
+    <result column="PRIORITY" property="priority" jdbcType="DECIMAL" />
+    <result column="STATUS" property="status" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t.ID,t.NAME,t.PARENT_ID, t.PRIORITY,t.STATUS
+  </sql>
+  <!-- 整颗树 -->
+  <select id="fingdTree" resultMap="EmeryencyPlanTree" parameterType="map">
+    select <include refid="Base_Column_List" />,l.name as parent_name
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree t  left join  ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree l on t.parent_id =l.id
+    where t.status = '1'
+    <if test="@Ognl@isNotEmpty(id)">
+      and t.id =  #{id, jdbcType=DECIMAL}
+    </if>
+
+    <if test="@Ognl@isNotEmpty(name)">
+      and t.name LIKE  #{name, jdbcType=VARCHAR}
+    </if>
+
+    <if test="@Ognl@isNotEmpty(parentId)">
+      and  t.PARENT_ID=#{parentId} or t.ID=#{parentId}
+    </if>
+
+
+    <if test="@Ognl@isNotEmpty(key)">
+      and (t.name LIKE '%' || #{key, jdbcType=VARCHAR} || '%')
+    </if>
+    order by t.PARENT_ID,t.PRIORITY
+  </select>
+
+  <!-- 整颗树 -->
+  <select id="findTreeById" resultMap="EmeryencyPlanTree" parameterType="map">
+    select <include refid="Base_Column_List" />,l.name as parent_name
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree t  left join  ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree l on t.parent_id =l.id where t.id= #{id, jdbcType=DECIMAL}
+
+  </select>
+
+  <select id="findCountByCriteria" resultType="int">
+    select count(*) from ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree t
+    <include refid="conditions"/>
+  </select>
+
+  <select id="findPageListByCriteria" resultMap="EmeryencyPlanTree" parameterType="map">
+    select <include refid="Base_Column_List" />,l.name as parent_name
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree t  left join  ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree l on t.parent_id =l.id   <include refid="conditions"/>
+    order by t.PARENT_ID,t.PRIORITY
+  </select>
+
+  <sql id="conditions">
+    where t.status in('0','1')
+    <if test="@Ognl@isNotEmpty(id)">
+      and t.id =  #{id, jdbcType=DECIMAL}
+    </if>
+
+    <if test="@Ognl@isNotEmpty(name)">
+      and t.name LIKE  #{name, jdbcType=VARCHAR}
+    </if>
+
+    <if test="@Ognl@isNotEmpty(parentId)">
+      and  t.PARENT_ID=#{parentId} or t.ID=#{parentId}
+    </if>
+
+
+    <if test="@Ognl@isNotEmpty(key)">
+      and (t.name LIKE '%' || #{key, jdbcType=VARCHAR} || '%')
+    </if>
+
+  </sql>
+
+
+  <!-- 根据parentId  -->
+  <select id="fingdTreeByParent" resultMap="EmeryencyPlanTree" parameterType="map">
+  	select <include refid="Base_Column_List" />,l.name as parent_name  from ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree t  left join  ${dbuser.zhsq_szzg}.zg_emeryencyplan_tree l on t.parent_id =l.id  where  t.PARENT_ID=#{parentId} or t.ID=#{parentId}
+    order by t.PRIORITY asc
+  </select>
+  
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanTree" >
+    <selectKey keyProperty="id" resultType="long" order="BEFORE">
+      select ${dbuser.zhsq_szzg}.SEQ_ZG_EMERYENCYPLAN_TREE.NEXTVAL from DUAL
+    </selectKey>
+    insert into ${dbuser.zhsq_szzg}.ZG_EMERYENCYPLAN_TREE  (ID, NAME, PARENT_ID,
+      PRIORITY, STATUS)
+    values (#{id,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, #{parentId,jdbcType=DECIMAL},
+      #{priority,jdbcType=DECIMAL}, '1')
+  </insert>
+  
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanTree" >
+    insert into ${dbuser.zhsq_szzg}.ZG_EMERYENCYPLAN_TREE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="parentId != null" >
+        PARENT_ID,
+      </if>
+      <if test="priority != null" >
+        PRIORITY,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=DECIMAL},
+      </if>
+      <if test="priority != null" >
+        #{priority,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanTree" >
+
+          update ${dbuser.zhsq_szzg}.ZG_EMERYENCYPLAN_TREE T <set>
+          t.NAME = #{name,jdbcType=VARCHAR},t.PRIORITY = #{priority,jdbcType=DECIMAL},
+          t.STATUS = #{status,jdbcType=CHAR} </set>  where t.ID = #{id,jdbcType=DECIMAL}
+
+  </update>
+
+  <update id="delete">
+    update  ${dbuser.zhsq_szzg}.ZG_EMERYENCYPLAN_TREE t
+    set t.status='2'
+    WHERE t.id = #{id}
+  </update>
+</mapper>

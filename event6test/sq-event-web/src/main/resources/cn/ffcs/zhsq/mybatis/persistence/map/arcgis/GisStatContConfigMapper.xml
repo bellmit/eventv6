@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.GisStatContConfigMapper">
+	<resultMap id="BaseResultMap"
+		type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatContConfig">
+		<id column="CONT_CFG_ID" jdbcType="DECIMAL" property="contCfgId" /> <!-- 内容配置ID -->
+		<result column="STAT_OBJ_NAME" jdbcType="VARCHAR" property="statObjName" /> <!-- 统计对象 -->
+		<result column="OBJ_CLASS" jdbcType="VARCHAR" property="objClass" /> <!-- 所属类别 -->
+		<result column="LAY_CFG_ID" jdbcType="DECIMAL" property="layCfgId" /> <!-- 图层配置ID -->
+		<result column="STAT_CFG_ID" jdbcType="DECIMAL" property="statCfgId" /> <!-- 关联统计配置ID -->
+		<result column="DISPLAY_ORDER" property="displayOrder" jdbcType="DECIMAL" /> <!-- 显示序号 -->
+		<result column="STATUS_" property="status" jdbcType="VARCHAR" /> <!-- 状态，0：删除；1：启用；2：禁用 -->
+	</resultMap>
+	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatContConfig">
+	    <selectKey keyProperty="contCfgId" resultType="long" order="BEFORE">
+			SELECT SEQ_GIS_STAT_CONT_CFG_ID.NEXTVAL FROM DUAL
+		</selectKey>
+	    INSERT INTO T_GIS_STAT_CONT_CFG (
+	         CONT_CFG_ID,STAT_OBJ_NAME,OBJ_CLASS,LAY_CFG_ID,
+	         STAT_CFG_ID,DISPLAY_ORDER,STATUS_
+	    )
+	    VALUES (
+	        #{contCfgId,jdbcType=DECIMAL},#{statObjName,jdbcType=VARCHAR},#{objClass,jdbcType=VARCHAR},#{layCfgId,jdbcType=DECIMAL},
+	        #{statCfgId,jdbcType=DECIMAL},#{displayOrder,jdbcType=DECIMAL},#{status,jdbcType=VARCHAR}
+	    )
+  	</insert><!-- 添加框选周边统计内容信息  -->
+	
+	<delete id="deleteByStatCfgId" parameterType="java.util.Map">
+		UPDATE T_GIS_STAT_CONT_CFG 
+			SET STATUS_ = #{status,jdbcType=VARCHAR}
+		WHERE STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+	</delete><!-- 删除框选周边统计内容信息  状态，0：删除；1：启用；2：禁用 -->
+	
+	<delete id="deleteGisStatContConfigs">
+		DELETE FROM T_GIS_STAT_CONT_CFG 
+		WHERE STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+	</delete><!-- 删除框选周边统计内容信息 -->
+	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.GisStatContConfig">
+		UPDATE T_GIS_STAT_CONT_CFG
+		<set>
+			<if test="statObjName != null and statObjName != ''">
+        		STAT_OBJ_NAME = #{statObjName,jdbcType=VARCHAR},
+      		</if> 
+			<if test="objClass != null and objClass != ''">
+        		OBJ_CLASS = #{objClass,jdbcType=VARCHAR}
+      		</if> 
+			<if test="displayOrder != null and displayOrder != ''">
+        		DISPLAY_ORDER = #{displayOrder,jdbcType=DECIMAL}
+      		</if> 
+		</set>
+		WHERE CONT_CFG_ID = #{contCfgId,jdbcType=DECIMAL}
+	</update><!-- 更新框选周边统计内容信息  -->
+	
+	<select id="getGisStatContConfigs" resultMap="BaseResultMap">
+		SELECT T2.* 
+			FROM T_GIS_STAT_CFG T1, T_GIS_STAT_CONT_CFG T2
+		WHERE T1.STAT_CFG_ID = T2.STAT_CFG_ID
+		<if test="statCfgId != null and statCfgId != ''">
+			AND T2.STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+		</if>
+		<if test="objClass != null and objClass != ''">
+			AND T2.OBJ_CLASS = #{objClass,jdbcType=VARCHAR}
+		</if>
+		AND T2.STATUS_ = 1
+		ORDER BY T2.DISPLAY_ORDER
+	</select><!-- 获取框选统计内容信息 -->
+	
+	<select id="getNoObjClassGisStatContConfigs" resultMap="BaseResultMap">
+		SELECT T2.* 
+			FROM T_GIS_STAT_CFG T1, T_GIS_STAT_CONT_CFG T2
+		WHERE T1.STAT_CFG_ID = T2.STAT_CFG_ID
+		<if test="statCfgId != null and statCfgId != ''">
+			AND T2.STAT_CFG_ID = #{statCfgId,jdbcType=DECIMAL}
+		</if>
+		AND T2.OBJ_CLASS IS NULL
+		ORDER BY T2.DISPLAY_ORDER
+	</select><!-- 获取框选统计内容信息 -->
+</mapper><!-- 框选周边内容可配置xml  -->

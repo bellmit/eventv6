@@ -1,0 +1,59 @@
+@CHARSET "UTF-8";
+/**************************** 重置浏览器默认样式 ****************************/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, 
+strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, 
+tfoot, thead, tr, th, td ,textarea {margin:0; padding:0;}
+address,cite,dfn,em,var, i {font-style:normal;}
+body {font-size:14px;font-family:'Microsoft Yahei','simsun','arial','tahoma';color:#333;background:#fff;}
+table {border-collapse:collapse;border-spacing:0;}
+h1,h2,h3,h4,h5,h6,th {font-size:100%;font-weight:normal;}
+button,input,select,textarea {font-size:100%;}
+fieldset,img {border:0;}
+a {text-decoration:none;color:#fff;background:none;}
+a:hover,a:visited,a:link,a:active {text-decoration:none;color:#fff;}
+ul,ol,dl {list-style:none;}
+:focus {outline:none;}
+.clearfix {zoom:1;}
+.clearfix:after {content:"";display:table;clear:both;}
+.clear {clear:both;}
+.fl {float:left;}
+.fr {float:right;}
+/**************************** 重置浏览器默认样式-end ****************************/
+
+/**************************** 公共样式 ****************************/
+/*margin-top*/
+.mt10{margin-top:10px;}.mt15{margin-top:15px;}.mt20{margin-top:20px;}.mt25{margin-top:25px;}.mt30{margin-top:30px;}.mt35{margin-top:35px;}.mt40{margin-top:40px;}.mt45{margin-top:45px;}.mt50{margin-top:50px;}.mt55{margin-top:55px;}.mt60{margin-top:60px;}
+/*margin-bottom*/
+.mb10{margin-bottom:10px;}.mb15{margin-bottom:15px;}.mb20{margin-bottom:20px;}.mb25{margin-bottom:25px;}.mb30{margin-bottom:30px;}.mb35{margin-bottom:35px;}.mb40{margin-bottom:40px;}.mb45{margin-bottom:45px;}.mb50{margin-bottom:50px;}.mb55{margin-bottom:55px;}.mb60{margin-bottom:60px;}
+/*margin-left*/
+.ml10{margin-left:10px;}.ml15{margin-left:15px;}.ml20{margin-left:20px;}.ml25{margin-left:25px;}.ml30{margin-left:30px;}.ml35{margin-left:35px;}.ml40{margin-left:40px;}.ml45{margin-left:45px;}.ml50{margin-left:50px;}.ml55{margin-left:55px;}.ml60{margin-left:60px;}
+/*margin-right*/
+.mr10{margin-right:10px;}.mr15{margin-right:15px;}.mr20{margin-right:20px;}.mr25{margin-right:25px;}.mr30{margin-right:30px;}.mr35{margin-right:35px;}.mr40{margin-right:40px;}.mr45{margin-right:45px;}.mr50{margin-right:50px;}.mr55{margin-right:55px;}.mr60{margin-right:60px;}
+/*padding-top*/
+.pt10{padding-top:10px;}.pt15{padding-top:15px;}.pt20{padding-top:20px;}.pt25{padding-top:25px;}.pt30{padding-top:30px;}.pt35{padding-top:35px;}.pt40{padding-top:40px;}
+/*padding-bottom*/
+.pb10{padding-bottom:10px;}.pb15{padding-bottom:15px;}.pb20{padding-bottom:20px;}.pb25{padding-bottom:25px;}.pb30{padding-bottom:30px;}.pb35{padding-bottom:35px;}.pb40{padding-bottom:40px;}
+/*padding-left*/
+.pl10{padding-left:10px;}.pl15{padding-left:15px;}.pl20{padding-left:20px;}.pl25{padding-left:25px;}.pl30{padding-left:30px;}.pl35{padding-left:35px;}.pl40{padding-left:40px;}
+/*padding-right*/
+.pr10{padding-right:10px;}.pr15{padding-right:15px;}.pr20{padding-right:20px;}.pr25{padding-right:25px;}.pr30{padding-right:30px;}.pr35{padding-right:35px;}.pr40{padding-right:40px;}
+
+/*预定义 弹性盒子 样式 start*/
+.flex {display:-webkit-flex;display:flex;}
+.flex1 {-webkit-flex:1;flex:1;}
+.flex-jc {-webkit-justify-content:center;justify-content:center;}
+.flex-jb {-webkit-justify-content:space-between;justify-content:space-between;}
+.flex-js {-webkit-justify-content:flex-start;justify-content:flex-start;}
+.flex-je {-webkit-justify-content:flex-end;justify-content:flex-end;}
+.flex-jr {-webkit-justify-content:space-around;justify-content:space-around;}
+.flex-ac {-webkit-align-items:center;align-items:center;}
+.flex-clm {-webkit-flex-flow:column;flex-flow:column;}
+.flex-wrap {-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+/*预定义 弹性盒子 样式 end*/
+
+/*响应式布局*/
+.xw-com5{ width: 20%;}
+.xw-com4{ width: 25%;}
+.xw-com3{ width: 33.33%;}
+.xw-com2{ width: 50%;}
+.xw-com1{ width: 100%;}

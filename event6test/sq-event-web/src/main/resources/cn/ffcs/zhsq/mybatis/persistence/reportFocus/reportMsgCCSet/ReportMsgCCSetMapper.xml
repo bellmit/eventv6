@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.reportMsgCCSet.ReportMsgCCSetMapper" >
+	<!-- 新增消息已配送人员信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="setUUID" resultType="String" order="BEFORE">
+  			SELECT SYS_GUID() FROM DUAL
+  		</selectKey>
+  		INSERT INTO T_EVENT_MSG_CC_SET(
+  			SET_UUID, TASK_ID, 
+  			<if test="@Ognl@isNotEmpty(ccType)">
+  			CC_TYPE, 
+  			</if>
+  			ORG_ID, ORG_NAME,
+  			USER_ID, USER_NAME,
+  			REMARK,
+  			CREATOR, CREATE_TIME,
+  			UPDATOR, UPDATE_TIME
+  		) VALUES(
+  			#{setUUID,jdbcType=VARCHAR}, #{taskId,jdbcType=DECIMAL},
+  			<if test="@Ognl@isNotEmpty(ccType)">
+  			#{ccType,jdbcType=VARCHAR},
+  			</if>
+  			#{orgId,jdbcType=DECIMAL},
+  			NULLIF(#{orgName,jdbcType=VARCHAR}, ''), 
+  			#{userId,jdbcType=DECIMAL},
+  			NULLIF(#{userName,jdbcType=VARCHAR}, ''), 
+  			NULLIF(#{remark,jdbcType=VARCHAR}, ''), 
+  			#{creator,jdbcType=DECIMAL}, SYSDATE, 
+        	#{updator,jdbcType=DECIMAL}, SYSDATE
+  		)
+  	</insert>
+  	
+  	<!-- 列表查询列 -->
+  	<sql id="list_column">
+  		T1.TASK_ID		"taskId",
+  		T1.CC_TYPE		"ccType",
+  		T1.USER_ID		"userId",
+  		T1.USER_NAME	"userName",
+  		T1.ORG_ID		"orgId",
+  		T1.ORG_NAME		"orgName"
+  	</sql>
+  	
+  	<!-- 查找已配送的人员信息 -->
+  	<select id="findMsgCCSetByParams" resultType="java.util.Map">
+  		SELECT
+  			<include refid="list_column"></include>
+  		FROM T_EVENT_MSG_CC_SET T1
+  		WHERE T1.IS_VALID = '1'
+  		<include refid="find_where"></include>
+  	</select>
+  	
+  	<!-- 依据实例id获取配送人员信息 -->
+  	<select id="findMsgCCSetByInstanceId" resultType="java.util.Map">
+  		SELECT
+  			<include refid="list_column"></include>
+  		FROM T_EVENT_MSG_CC_SET T1, ${dbuser.workflow}.WF_PROCESS_INSTANCE T2, ${dbuser.workflow}.WF_TASK T3
+  		WHERE T2.INSTANCE_ID = T3.INSTANCE_ID AND T3.TASK_ID = T1.TASK_ID AND T1.IS_VALID = '1'
+  		<if test="instanceId != null ">
+  			AND T2.INSTANCE_ID = #{instanceId,jdbcType=DECIMAL}
+  		</if>
+  		<include refid="find_where"></include>
+  	</select>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where">
+  		<if test="taskId != null ">
+  			AND T1.TASK_ID = #{taskId,jdbcType=DECIMAL}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(ccType)">
+  			AND T1.CC_TYPE = #{ccType,jdbcType=VARCHAR}
+  		</if>
+  	</sql>
+</mapper>

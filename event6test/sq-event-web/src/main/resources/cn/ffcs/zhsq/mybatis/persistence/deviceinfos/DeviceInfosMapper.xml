@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.deviceinfos.DeviceInfosMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.deviceinfos.DeviceInfos">
+		<id column="DEVICE_ID" property="deviceId" jdbcType="DECIMAL" /> <!--设备ID-->
+		<result column="DEVICE_NAME" property="deviceName" jdbcType="VARCHAR" /> <!--设备名称-->
+		<result column="DEVICE_SERVICE_ID" property="deviceServiceId" jdbcType="VARCHAR" /> <!--设备业务标识-->
+		<result column="DEVICE_INSTALL_ADDRESS" property="deviceInstallAddress" jdbcType="VARCHAR" /> <!--设备地址-->
+		<result column="LATITUDE_" property="latitude" jdbcType="VARCHAR" /> <!--设备定位信息(纬度)-->
+		<result column="LONGITUDE_" property="longitude" jdbcType="VARCHAR" /> <!--设备定位信息(经度)-->
+		<result column="MANUFACTURERS_NO" property="manufacturersNo" jdbcType="VARCHAR" /> <!--设备厂商 10001  福水智联10002  骐驭10003  星海10004  三鑫隆10005  狄奈克10006  冠林10007  逸充-->
+		<result column="DEVICE_TYPE" property="deviceType" jdbcType="VARCHAR" /> <!--设备类型 100001  水表（小）100002  水表（大）100003  消防栓100004  烟感100005  井盖100006  门禁100007  地磁100008  梯控100009  梯口机100010  车辆识别100011  路灯100012  电动车充电桩100013  井盖井下设备100014  井盖路面积水设备100015  井盖浊度设备100016  井盖流速设备-->
+		<result column="DEVICE_IMAGE" property="deviceImage" jdbcType="VARCHAR" /> <!--设备图片-->
+		<result column="STATUS_" property="status" jdbcType="VARCHAR" />
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" />
+		<result column="CREATED" property="created" jdbcType="TIMESTAMP" />
+		<result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR" />
+		<result column="UPDATER" property="updater" jdbcType="DECIMAL" />
+		<result column="UPDATED" property="updated" jdbcType="TIMESTAMP" />
+		<result column="UPDATER_NAME" property="updaterName" jdbcType="VARCHAR" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		
+		<result column="REGION_CODE" jdbcType="VARCHAR" property="regionCode" /> <!-- 地域编码 -->
+		<result column="REGION_NAME" jdbcType="VARCHAR" property="regionName" /> <!--地域名称 -->
+	</resultMap>
+	
+	<resultMap id="ArcgisInfoMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="SUB_BUSI_TYPE" jdbcType="VARCHAR" property="subBusiType" />
+   </resultMap>
+   
+    <sql id="baseCol">
+    		T.DEVICE_ID,
+			T.DEVICE_NAME,
+			T.DEVICE_SERVICE_ID,
+			T.DEVICE_INSTALL_ADDRESS,
+			T.LATITUDE_,
+			T.LONGITUDE_,
+			T.MANUFACTURERS_NO,
+			T.DEVICE_TYPE,
+			T.DEVICE_IMAGE,
+			T.STATUS_,
+			T.CREATOR,
+			T.CREATED,
+			T.CREATOR_NAME,
+			T.UPDATER,
+			T.UPDATED,
+			T.UPDATER_NAME,
+			T.BIZ_TYPE,
+			T.REGION_CODE,
+			G.GRID_PATH REGION_NAME
+    </sql>
+    <sql id="baseSql">
+			FROM T_DEVICE_INFO T
+			 LEFT JOIN T_DC_GRID G
+      		ON T.REGION_CODE=G.INFO_ORG_CODE AND G.STATUS='001'
+    </sql>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_DEVICE_INFO T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="baseCol" />
+		<include refid="baseSql" />
+		
+		<include refid="find_where" />
+		ORDER BY 
+			T.DEVICE_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="deviceName != null and deviceName != ''" >
+				<![CDATA[ AND T.DEVICE_NAME LIKE '%'||#{deviceName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="deviceInstallAddress != null and deviceInstallAddress != ''" >
+				<![CDATA[ AND T.DEVICE_INSTALL_ADDRESS LIKE '%'||#{deviceInstallAddress,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="manufacturersNo != null and manufacturersNo != ''" >
+				<![CDATA[ AND T.MANUFACTURERS_NO = #{manufacturersNo,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="deviceType != null and deviceType != ''" >
+				<![CDATA[ AND T.DEVICE_TYPE = #{deviceType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="regionCode != null and regionCode != ''" >
+				<![CDATA[ AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%' ]]>
+			</if> 
+			
+			<if test="bizType != null and bizType != ''" >
+				<![CDATA[ AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="deviceServiceId != null and deviceServiceId != ''">
+				 AND T.DEVICE_SERVICE_ID = #{deviceServiceId,jdbcType=VARCHAR}
+			</if>
+			<if test="parentDeviceServiceId != null and parentDeviceServiceId != ''" >
+				AND T.DEVICE_SERVICE_ID IN (SELECT   REF_DEVICE_SERVICE_ID D  FROM  T_REF_DEVICE D where D.DEVICE_SERVICE_ID=#{parentDeviceServiceId,jdbcType=VARCHAR})
+			</if>
+			AND T.STATUS_='1'
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.deviceinfos.DeviceInfos">
+		<selectKey keyProperty="deviceId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_DEVICE_INFO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_DEVICE_INFO
+		(
+			DEVICE_ID,
+			DEVICE_NAME,
+			DEVICE_SERVICE_ID,
+			DEVICE_INSTALL_ADDRESS,
+			LATITUDE_,
+			LONGITUDE_,
+			MANUFACTURERS_NO,
+			DEVICE_TYPE,
+			DEVICE_IMAGE,
+			STATUS_,
+			CREATOR,
+			CREATED,
+			CREATOR_NAME,
+			UPDATER,
+			UPDATED,
+			UPDATER_NAME,
+			BIZ_TYPE
+		) VALUES (
+			#{deviceId,jdbcType=DECIMAL},
+			#{deviceName,jdbcType=VARCHAR},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{deviceInstallAddress,jdbcType=VARCHAR},
+			#{latitude,jdbcType=VARCHAR},
+			#{longitude,jdbcType=VARCHAR},
+			#{manufacturersNo,jdbcType=VARCHAR},
+			#{deviceType,jdbcType=VARCHAR},
+			#{deviceImage,jdbcType=VARCHAR},
+			'1',
+			#{creator,jdbcType=DECIMAL},
+			#{created,jdbcType=TIMESTAMP},
+			#{creatorName,jdbcType=VARCHAR},
+			#{updater,jdbcType=DECIMAL},
+			#{updated,jdbcType=TIMESTAMP},
+			#{updaterName,jdbcType=VARCHAR},
+			#{bizType,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.deviceinfos.DeviceInfos">
+		UPDATE
+			T_DEVICE_INFO
+		<set> 
+			<if test="deviceName != null " >
+				DEVICE_NAME=#{deviceName,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceServiceId != null " >
+				DEVICE_SERVICE_ID=#{deviceServiceId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceInstallAddress != null " >
+				DEVICE_INSTALL_ADDRESS=#{deviceInstallAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="latitude != null " >
+				LATITUDE_=#{latitude,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null " >
+				LONGITUDE_=#{longitude,jdbcType=VARCHAR},
+			</if>
+			<if test="manufacturersNo != null " >
+				MANUFACTURERS_NO=#{manufacturersNo,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceType != null " >
+				DEVICE_TYPE=#{deviceType,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceImage != null " >
+				DEVICE_IMAGE=#{deviceImage,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null " >
+				STATUS_=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="created != null " >
+				CREATED=#{created,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creatorName != null " >
+				CREATOR_NAME=#{creatorName,jdbcType=VARCHAR},
+			</if>
+			<if test="updater != null " >
+				UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+			<if test="updated != null " >
+				UPDATED=#{updated,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updaterName != null " >
+				UPDATER_NAME=#{updaterName,jdbcType=VARCHAR},
+			</if>
+			<if test="bizType != null " >
+				BIZ_TYPE=#{bizType,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			DEVICE_ID= #{deviceId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="baseCol" />
+		<include refid="baseSql" />
+		WHERE
+			T.DEVICE_ID= #{deviceId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.deviceinfos.DeviceInfos">
+		UPDATE
+			T_DEVICE_INFO
+		SET
+			STATUS_='0'
+		WHERE
+			DEVICE_ID= #{deviceId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<select id="getArcgisDeviceInfosDataListByIds" resultMap="ArcgisInfoMap"><!-- 提供地图定位数据 -->
+	
+	SELECT 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.DEVICE_NAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+  	FROM T_ZY_RES_MARKER T
+   LEFT JOIN T_DEVICE_INFO T1 ON T.RESOURCES_ID = T1.DEVICE_ID
+   WHERE T1.DEVICE_ID IN (${ids}) 
+   AND T.MAP_TYPE =#{mapt,jdbcType=DECIMAL}  
+   and t.marker_type = #{markerType,jdbcType=VARCHAR}
+  order  by t.x
+</select>
+
+	<select id="countStatus" resultType="java.lang.Long"><!-- 提供正常,异常,告警的设备数 -->
+		    select count(*)
+		    from T_DEVICE_INFO t
+		        left join t_device_collect_alert a
+		        on t.device_service_id = a.device_service_id
+		    WHERE  t.device_type='100004' AND t.STATUS_=1 
+		           <if test="regionCode != null and regionCode != ''" >
+				      <![CDATA[ AND t.region_code = #{regionCode,jdbcType=VARCHAR} ]]>
+				   </if> 
+		           <if test="alertFlagType == '0'.toString() " >
+		               and (a.alert_flag is null or a.alert_flag = '0')
+		           </if>
+		           <if test="alertFlagType == '1'.toString() " >
+		               and a.alert_flag = '1'
+		           </if>
+		           <if test="alertFlagType == '2'.toString() " >
+		               and a.alert_flag = '2'
+		           </if>
+	
+	</select>
+	
+	<select id="getSmokeCountBYStatus" resultType="java.util.HashMap">
+	  select
+		  NVL(SUM (CASE WHEN ( a.last_alert_info = '上线' or a.last_alert_info = '烟雾告警解除' or a.last_alert_info = '火警解除' or a.last_alert_info = '电量正常' or a.last_alert_info is null) THEN 1  ELSE 0 END),0)  NORMAL_NUM, 
+	      NVL(SUM (CASE WHEN ( a.last_alert_info = '失联' ) THEN 1  ELSE 0 END),0)  LOST_NUM,
+	      NVL(SUM (CASE WHEN ( a.last_alert_info = '烟雾告警') THEN 1  ELSE 0 END),0)  SMOKEALERT_NUM,
+	      NVL(SUM (CASE WHEN ( a.last_alert_info = '火警') THEN 1  ELSE 0 END),0)  FIREALET_NUM,
+	      NVL(SUM (CASE WHEN ( a.last_alert_info = '电量低') THEN 1  ELSE 0 END) ,0) POWERLOW_NUM,
+	      NVL(SUM (CASE WHEN ( a.last_alert_info = '自检故障') THEN 1  ELSE 0 END),0) BREAKDOWN_NUM
+	  from T_DEVICE_INFO t
+	      left join t_device_collect_alert a
+	      on t.device_service_id = a.device_service_id
+	  WHERE  t.device_type='100004' AND t.STATUS_=1 
+	       <if test="regionCode != null and regionCode != ''" >
+		      <![CDATA[ AND t.region_code = #{regionCode,jdbcType=VARCHAR} ]]>
+		   </if> 
+	
+	
+	</select>
+	
+	
+	
+<select id="getLightingCountBYStatus" resultType="java.util.HashMap">
+	<![CDATA[
+	select 
+	 SUM (CASE WHEN ( c.collect_time>=sysdate-1 and c.collect_item_value = '0') THEN 1  ELSE 0 END)  ON_NUM ,
+	 SUM (CASE WHEN  ( c.collect_time>=sysdate-1 and c.collect_item_value = '1') THEN 1  ELSE 0 END)  OFF_NUM, 
+	 SUM (CASE WHEN (c.collect_time<sysdate-1 or c.collect_item_value is null) THEN 1  ELSE 0 END)  ERROR_NUM,
+	 COUNT(1) TOTAL_NUM
+	 from  t_device_info t left join t_device_collect_data c
+	on t.device_service_id=c.device_service_id and c.collect_item_code ='lighting_status' AND C.STATUS_=1 
+	where 1=1
+	  ]]>
+	<if test="deviceType != null and deviceType != ''" >
+		<![CDATA[ AND T.DEVICE_TYPE = #{deviceType,jdbcType=VARCHAR} ]]>
+	</if> 
+	<if test="regionCode != null and regionCode != ''" >
+		<![CDATA[ AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%' ]]>
+	</if> 
+	
+	<if test="bizType != null and bizType != ''" >
+		<![CDATA[ AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR} ]]>
+	</if> 
+	AND T.STATUS_=1  
+</select>
+
+	<select id="searchByMsgId" parameterType="long"  resultType="java.util.HashMap">
+		SELECT
+			T.ID,
+			T.DEVICE_ID,
+			T.MSG_ID,
+			T.TYPE,
+			T.ALERT_TIME,
+			T.ALERT_CONTENT,
+			T.IS_DEL
+		FROM
+			T_BAS_MSG_DEVICE T
+		WHERE
+			MSG_ID= #{id,jdbcType=VARCHAR} 
+	</select>
+
+</mapper>

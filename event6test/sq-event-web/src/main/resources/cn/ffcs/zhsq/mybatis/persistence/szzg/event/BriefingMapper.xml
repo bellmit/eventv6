@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.event.BriefingMapper">
+
+    <!-- 通过简报表Id查询简报表 -->
+    <select id="findById" parameterType="java.util.Map" resultType="java.util.Map">
+             SELECT
+                   T.REPORT_ID,
+                   T.GRID_ID,
+                   T.INFOORGCODE,
+                   T.DATE_,
+                   T.WORD_URL,
+                   T.PDF_URL,
+                   T.IS_VALID,
+                   T.CREATE_TIME,
+                   T.CREATOR,
+                   T.UPDATOR,
+                   T.UPDATE_TIME
+             FROM T_DC_BRIEF_REPORT T
+             WHERE REPORT_ID = #{reportId,jdbcType=DECIMAL}
+    </select>
+
+    <!-- 查询简报表列表 -->
+    <select id="getBriefingList" parameterType="java.util.Map" resultType="java.util.Map">
+         SELECT
+               T.REPORT_ID,
+               T.GRID_ID,
+               G.INFO_ORG_CODE,
+               G.GRID_NAME,
+               T.WORD_URL,
+               T.PDF_URL,
+               t.date_ 
+         FROM T_DC_BRIEF_REPORT T
+         INNER JOIN T_DC_GRID G
+         ON T.GRID_ID=G.GRID_ID
+         AND g.status='001'
+         WHERE 1=1 
+         <include refid="list_where"></include>
+         ORDER BY t.report_id desc
+        
+    </select>
+	<sql id="list_where"> 
+	
+        <if test="gridId != null " >
+            AND T.GRID_ID=#{gridId,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(infoOrgCode)" > 
+           and (t.infoorgcode=#{infoOrgCode,jdbcType=VARCHAR} or
+          t.grid_id=(SELECT g.parent_grid_id FROM t_dc_grid g where  g.status='001' and g.info_org_code=#{infoOrgCode,jdbcType=VARCHAR} ))
+        </if>
+        <if test="@Ognl@isNotEmpty(gridCode)" > 
+           and  t.infoorgcode=#{gridCode,jdbcType=VARCHAR}  
+        </if>
+        <if test="@Ognl@isNotEmpty(dateStart)" >
+            AND T.DATE_ <![CDATA[>=]]>
+            TO_DATE(#{dateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(dateEnd)" >
+            AND T.DATE_ <![CDATA[<=]]>
+            TO_DATE(#{dateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+        <if test="@Ognl@isNotEmpty(wordUrl)" >
+            AND T.WORD_URL like '%' || #{wordUrl,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(pdfUrl)" >
+            AND T.PDF_URL like '%' || #{pdfUrl,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(isValid)" >
+            AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeStart)" >
+            AND T.CREATE_TIME <![CDATA[>=]]>
+            TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+            AND T.CREATE_TIME <![CDATA[<]]>
+            TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+        <if test="creator != null" >
+            AND T.CREATOR=#{creator,jdbcType=DECIMAL}
+        </if>
+        <if test="updator != null" >
+            AND T.UPDATOR=#{updator,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(updateTimeStart)">
+            AND T.UPDATE_TIME <![CDATA[>=]]>
+            TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+            AND T.UPDATE_TIME <![CDATA[<]]>
+            TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if> 
+	</sql>
+    <!-- 查询简报表总数 -->
+    <select id="getBriefingCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1)
+        FROM T_DC_BRIEF_REPORT T
+        INNER JOIN T_DC_GRID G
+        ON T.GRID_ID=G.GRID_ID
+        AND G.STATUS='001'
+        WHERE 1=1
+        <include refid="list_where"></include>
+    </select>
+
+    <!-- 修改简报表 -->
+    <update id="update" parameterType="java.util.Map">
+            UPDATE
+            T_DC_BRIEF_REPORT T
+            <set>
+                <if test="gridId != null " >
+                    T.GRID_ID=#{gridId,jdbcType=DECIMAL},
+                </if>
+                <if test="@Ognl@isNotEmpty(infoOrgCode)" >
+                    T.INFOORGCODE = #{infoOrgCode,jdbcType=VARCHAR},
+                </if>
+                <if test="@Ognl@isNotEmpty(date)">
+                    T.DATE = #{date,jdbcType=VARCHAR},
+                </if>
+                <if test="@Ognl@isNotEmpty(wordUrl) " >
+                    T.WORD_URL = #{wordUrl,jdbcType=VARCHAR},
+                </if>
+                <if test="pdfUrl != null " >
+                    T.PDF_URL = #{pdfUrl,jdbcType=VARCHAR},
+                </if>
+                <if test="@Ognl@isNotEmpty(isValid) " >
+                    T.IS_VALID = #{isValid,jdbcType=VARCHAR},
+                </if>
+                <if test="creator != null " >
+                    T.CREATOR=#{updator,jdbcType=DECIMAL},
+                </if>
+                <if test="updator != null " >
+                    T.UPDATOR=#{updator,jdbcType=DECIMAL},
+                </if>
+                <if test="@Ognl@isNotEmpty(updateTime)">
+                    T.UPDATE_TIME=TO_DATE(SYSDATE(),'YY/MM/DD HH24:MI:SS)
+                </if>
+            </set>
+            WHERE
+            REPORT_ID = #{reportId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 查询简报编辑信息 -->
+    <select id="getEditMessageList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        T.VKV_ID,
+        T.KEY_,
+        T.VAL_,
+        T.BIZ_ID,
+        T.BIZ_TYPE,
+        T.REGION_CODE,
+        T.STATUS_,
+        T.CREATOR,
+        T.CREATE_TIME,
+        T.UPDATER,
+        T.UPDATED
+        FROM T_ZZ_VILLAGE_K_V T
+        INNER JOIN T_DC_BRIEF_REPORT R
+        ON T.BIZ_ID=R.REPORT_ID
+        AND R.IS_VALID='1'
+        AND T.BIZ_TYPE='BR'
+        WHERE 1=1
+        <if test="vkvId != null " >
+            AND T.VKV_ID=#{vkvId,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(key)" >
+            AND T.KEY_ like '%' || #{key,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(val)" >
+            AND T.VAL_ like '%' || #{val,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="bizId != null" >
+            AND T.BIZ_ID=#{bizId,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(bizType)" >
+            AND T.BIZ_TYPE like '%' || #{bizType,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(regionCode)" >
+            AND T.REGION_CODE like '%' || #{regionCode,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(status)" >
+            AND T.STATUS_ = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="creator != null" >
+            AND T.CREATOR=#{creator,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeStart)" >
+            AND T.CREATE_TIME <![CDATA[>=]]>
+            TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+            AND T.CREATE_TIME <![CDATA[<]]>
+            TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+        <if test="updater != null" >
+            AND T.UPDATER=#{updater,jdbcType=DECIMAL}
+        </if>
+        <if test="@Ognl@isNotEmpty(updatedStart)">
+            AND T.UPDATED <![CDATA[>=]]>
+            TO_DATE(#{updatedStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(updatedEnd)">
+            AND T.UPDATED <![CDATA[<]]>
+            TO_DATE(#{updatedEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+    </select>
+
+    <!-- 删除简报编辑信息 -->
+    <delete id="deleteEditMessage">
+        DELETE FROM T_ZZ_VILLAGE_K_V T
+        WHERE
+        T.BIZ_ID = #{bizId,jdbcType=DECIMAL}
+        AND
+        T.BIZ_TYPE = 'BR'
+    </delete>
+
+    <!-- 增加简报编辑信息 -->
+    <insert id="addEditMessage" parameterType="java.util.Map">
+        <foreach collection="dataList" item="item" open="BEGIN" separator=";" close=";END;">
+        INSERT
+        INTO T_ZZ_VILLAGE_K_V T(
+          T.VKV_ID,
+          T.KEY_,
+          T.VAL_,
+          T.BIZ_ID,
+          T.BIZ_TYPE,
+          T.REGION_CODE,
+          T.STATUS_,
+          T.CREATOR,
+          T.CREATE_TIME,
+          T.UPDATER,
+          T.UPDATED
+        )VALUES (
+          SEQ_T_ZZ_VILLAGE_K_V.NEXTVAL,
+          #{item.key,jdbcType=VARCHAR},
+          #{item.val,jdbcType=VARCHAR},
+          #{item.bizId,jdbcType=DECIMAL},
+          'BR',
+          #{item.regionCode,jdbcType=VARCHAR},
+          '1',
+          #{item.creator,jdbcType=DECIMAL},
+          sysdate,
+          #{item.updater,jdbcType=DECIMAL},
+          sysdate
+        )
+        </foreach>
+    </insert>
+
+
+    <!-- 条件查询事件数 -->
+   <!--  <select id="queryEventCount" parameterType="java.util.Map" resultType="java.util.Map">
+      select
+            nvl(sum(decode(t1.report_date,#{lastMonth,jdbcType=VARCHAR},nvl(t1.report_total_,0),0)),0) AS "lastReportTotal",
+            nvl(sum(decode(t1.report_date,#{thisMonth,jdbcType=VARCHAR},nvl(t1.report_total_,0),0)),0) AS "thisReportTotal",
+            nvl(sum(decode(t1.report_date,#{thisMonth,jdbcType=VARCHAR},nvl(t1.end_total_,0),0)),0) AS "thisDisposalCounts"
+         from zhsq.t_bi_br_event_stat T1
+         where T1.INFOORGCODE = #{infoOrgCode,jdbcType=VARCHAR}
+               and T1.REPORT_DATE in (#{lastMonth,jdbcType=VARCHAR},#{thisMonth,jdbcType=VARCHAR})
+         <if test="eventType=='peopleLife'">
+               and REGEXP_LIKE(T1.EVENT_TYPE,'^(01|02|03|04|05|06|08|99)')
+         </if>
+         <if test="eventType=='peopleSafe'">
+               and REGEXP_LIKE(T1.EVENT_TYPE,'^(07|DM)')
+         </if>
+    </select> -->
+    <!--  valid -->
+    <select id="queryEventCountByType" parameterType="java.util.Map" resultType="java.util.Map">
+ SELECT dict_general_code ,
+sum(t.thisallcounts) "thisAllCounts",
+ sum(t.lastreporttotal) "lastReportTotal",
+sum(t.thisreporttotal) "thisReportTotal",
+sum(t.thisdisposalcounts) "thisDisposalCounts"  ,
+sum(t.lastallcounts) "lastAllCounts"  ,
+sum(t.lastdisposalcounts) "lastDisposalCounts"  
+ FROM T_BI_JX_M_REPORT_ONE t 
+  where t.infoorgcode=#{infoOrgCode,jdbcType=VARCHAR} and t.report_date=#{thisMonth,jdbcType=VARCHAR} GROUP BY t.dict_general_code 
+    </select>
+    
+     <!--  valid -->
+    <select id="queryEventCountBySmallType" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT event_type,
+       sum(t.allCounts) "allCounts",
+       sum(t.lastReportCounts) "lastReportCounts",
+       sum(t.reportCounts) "reportCounts",
+       sum(t.disposalcounts) "disposalCounts",
+       sum(t.overdue) "overdue"
+  FROM T_BI_JX_M_REPORT_TWO t
+ where t.infoorgcode=#{infoOrgCode,jdbcType=VARCHAR} and t.report_date=#{thisMonth,jdbcType=VARCHAR}
+ GROUP BY t.event_type   
+ ORDER BY "reportCounts"   desc,
+          "disposalCounts" desc,
+          "overdue",
+          "allCounts"
+           
+    </select>
+     <!--  valid -->
+    <select id="queryEventByGrid" parameterType="java.util.Map" resultType="java.util.Map"> 
+    WITH ORGLE AS
+ (SELECT '综治责任单位' channel, 8 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '平安志愿者' channel, 7 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '网格员' channel, 6 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '村级综治中心' channel, 5 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '乡镇综治中心' channel, 4 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '县级综治中心' channel, 3 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '市级综治中心' channel, 2 ORGLEVEL
+    FROM DUAL
+  UNION ALL
+  SELECT '省级综治中心' channel, 1 ORGLEVEL FROM DUAL)
+SELECT e.channel "channel",
+       nvl(sum(t.allCounts), 0) "allCounts",
+       nvl(sum(t.reportCounts), 0) "reportCounts",
+       nvl(sum(t.disposalcounts), 0) "disposalCounts",
+       nvl(sum(t.overdue), 0) "overdue"
+  FROM ORGLE e
+  left join T_BI_JX_M_REPORT_THREE t
+    on e.channel = t.channel
+   and t.info_org_code = #{infoOrgCode,jdbcType=VARCHAR}
+   and t.report_date = #{thisMonth,jdbcType=VARCHAR}
+ GROUP BY e.channel
+ ORDER BY max(e.ORGLEVEL)
+    </select>
+     <!--  valid -->
+    <select id="queryEventByVolunteer" parameterType="java.util.Map" resultType="java.util.Map">
+        <!-- SELECT "channel", "reportCounts", "disposalCounts", "overdue","allCounts"
+            FROM (SELECT '平安志愿者' "channel",
+               NVL(SUM(t1.report_total_), 0) AS "reportCounts",
+               NVL(SUM(t1.end_total_), 0) AS "disposalCounts",
+               NVL(SUM(T1.invalid_total_+T1.REPORT_TOTAL_),0) AS "allCounts",
+               NVL(SUM(t1.time_out_total_2) +
+                   SUM(t1.time_out_total_7),
+                   0) AS "overdue"
+
+          FROM ZHSQ.T_BI_BR_EVENT_LEVEL T1
+         WHERE T1.REPORT_DATE = #{thisMonth,jdbcType=VARCHAR}
+           AND T1.BIZ_PLATFORM = '36001'
+           AND T1.INFOORGCODE like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+
+        UNION ALL
+  
+        SELECT '综治责任单位' "channel",
+
+               NVL(SUM(t1.report_total_), 0) AS "reportCounts",
+               NVL(SUM(t1.end_total_), 0) AS "disposalCounts",
+               NVL(SUM(T1.invalid_total_+T1.REPORT_TOTAL_),0) AS "allCounts",
+               NVL(SUM(t1.time_out_total_2) +
+                   SUM(t1.time_out_total_7),0) AS "overdue"
+
+          FROM ZHSQ.T_BI_BR_EVENT_LEVEL T1
+         WHERE T1.REPORT_DATE = #{thisMonth,jdbcType=VARCHAR}
+           AND T1.ORG_TYPE = '0'
+           AND T1.BIZ_PLATFORM = '0'
+           AND T1.INFOORGCODE like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+           ) -->
+    </select>
+   <!--    设区市事件信息    valid  -->
+    <select id="queryEventByCity" parameterType="java.util.Map" resultType="java.util.Map">
+     SELECT  G.INFO_ORG_CODE,
+        G.GRID_NAME  AS "gridName",
+      nvl(  T.reportCounts,0) AS  "reportCounts",
+      nvl( allCounts,0) AS  "allCounts",
+     nvl( disposalCounts,0) AS "disposalCounts"         
+        FROM T_BI_JX_M_REPORT_SEVEN t right join T_DC_GRID G on t.info_org_code=g.info_org_code 
+        and t.report_date=#{thisMonth,jdbcType=VARCHAR}
+        where g.status='001' 
+        <choose>
+			<when test="@Ognl@isNotEmpty( thisCity )">
+				and g.grid_id=#{gridId} 
+			</when>
+			<otherwise>
+				and g.parent_grid_id=#{gridId} 
+			</otherwise>
+		</choose>
+        
+         ORDER BY   "reportCounts" DESC, G.INFO_ORG_CODE
+    </select>
+    <!--    设区市综治中心事件信息 valid -->
+    <select id="queryEventByCMDGrid" parameterType="java.util.Map" resultType="java.util.Map">
+ SELECT G.INFO_ORG_CODE,
+        max(G.GRID_NAME) AS "gridName",
+             nvl(SUM(t.cmdreportcounts),0)  AS "cmdReportCounts",
+     nvl(SUM(t.cmdallcounts),0)  AS "cmdAllCounts",
+    nvl(SUM(t.cmddisposalcounts ),0)  AS "cmdDisposalCounts",
+    
+    nvl(SUM(gridManReportCounts),0)  AS "gridManReportCounts",
+    nvl(SUM(gridManAllCounts),0)  AS "gridManAllCounts",
+    nvl(SUM(gridManDisposalCounts),0)  AS "gridManDisposalCounts",
+    
+    nvl(SUM(volunteerReportCounts),0)  AS "volunteerReportCounts",
+    nvl(SUM(volunteerAllCounts),0)  AS "volunteerAllCounts",
+    nvl(SUM(volunteerDisposalCounts),0)  AS "volunteerDisposalCounts",
+    
+    nvl(SUM(dutyCenterReportCounts),0)  AS "dutyCenterReportCounts",
+    nvl(SUM(dutyCenterAllCounts),0)  AS "dutyCenterAllCounts",
+    nvl(SUM(dutyCenterDisposalCounts),0)  AS "dutyCenterDisposalCounts" 
+         FROM ZHSQ.T_DC_GRID G left join T_BI_JX_M_REPORT_FIVE t on g.info_org_code=t.info_org_code 
+and t.report_date=#{thisMonth,jdbcType=VARCHAR}
+ where  G.PARENT_GRID_ID = #{gridId}
+           AND G.STATUS = '001' 
+           GROUP BY g.info_org_code  order by max(g.order_id),g.info_org_code
+           
+    </select>
+    <!--    设区市综治中心类别事件信息 valid-->
+    <select id="queryEventByCMDGridType" parameterType="java.util.Map" resultType="java.util.Map">
+	SELECT  DICT_GENERAL_CODE,
+	         SUM(t.cmdreportcounts)  AS "cmdReportCounts",
+	 SUM(t.cmdallcounts)  AS "cmdAllCounts",
+	SUM(t.cmddisposalcounts )  AS "cmdDisposalCounts",
+	
+	SUM(gridManReportCounts)  AS "gridManReportCounts",
+	SUM(gridManAllCounts)  AS "gridManAllCounts",
+	SUM(gridManDisposalCounts)  AS "gridManDisposalCounts",
+	
+	SUM(volunteerReportCounts)  AS "volunteerReportCounts",
+	SUM(volunteerAllCounts)  AS "volunteerAllCounts",
+	SUM(volunteerDisposalCounts)  AS "volunteerDisposalCounts",
+	
+	SUM(dutyCenterReportCounts)  AS "dutyCenterReportCounts",
+	SUM(dutyCenterAllCounts)  AS "dutyCenterAllCounts",
+	SUM(dutyCenterDisposalCounts)  AS "dutyCenterDisposalCounts" 
+	         FROM   T_BI_JX_M_REPORT_SIX t  
+	          join t_dc_grid g on t.info_org_code=g.info_org_code 
+   where t.report_date=#{thisMonth,jdbcType=VARCHAR} 
+   and g.parent_grid_id=#{gridId} and g.status='001'  
+	           GROUP BY   DICT_GENERAL_CODE 
+    </select>
+	<!--valid-->
+    <select id="queryEventByCounty" parameterType="java.util.Map" resultType="java.util.Map">
+         SELECT G.INFO_ORG_CODE,
+        max(G.GRID_NAME) AS "gridName",
+       max(t.constantPeople) AS "constantPeople",
+        SUM(T.reportCounts) "reportCounts",
+        SUM(t.allCounts) "allCounts",
+        SUM(T.disposalCounts) "disposalCounts"
+   FROM ZHSQ.T_DC_GRID G 
+   JOIN T_BI_JX_M_REPORT_SEVEN T
+     ON T.Info_Org_Code = G.INFO_ORG_CODE 
+  WHERE G.GRID_LEVEL = 3  and g.status='001'   AND T.REPORT_DATE = #{thisMonth,jdbcType=VARCHAR}
+    AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+  GROUP BY G.INFO_ORG_CODE 
+  ORDER BY "reportCounts" DESC,
+           MAX(G.ORDER_ID),
+           G.INFO_ORG_CODE
+
+    </select>
+    <!--valid-->
+    <select id="queryEventByCountyOverdue" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT G.INFO_ORG_CODE,
+                 max(G.GRID_NAME) AS "gridName",
+                SUM(T.reportCounts) "reportCounts",
+                SUM(T.allCounts) "allCounts",
+                SUM(T.twoOverdue) "twoOverdue",
+                SUM(T.weekOverdue) "weekOverdue",
+                SUM ( overdueTotal ) "overdueTotal"
+           FROM  T_DC_GRID G 
+            JOIN T_BI_JX_M_REPORT_EIGHT T
+             ON T.Info_Org_Code = G.INFO_ORG_CODE 
+            WHERE T.REPORT_DATE = #{thisMonth,jdbcType=VARCHAR}
+          and  G.GRID_LEVEL = 3
+            AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+            AND G.STATUS ='001'
+          GROUP BY G.INFO_ORG_CODE 
+          ORDER BY "reportCounts" DESC,
+                   MAX(G.ORDER_ID),
+                   G.INFO_ORG_CODE 
+    </select>
+    <!--valid-->
+    <select id="queryCityValidRate" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT G.INFO_ORG_CODE,
+                  G.GRID_NAME  AS "gridName",
+                T.allCounts "allCounts",
+                t.disposalcounts "disposalCounts",
+                T.reportCounts "reportCounts", t.invalid1_total_ "invalid1",
+                t.invalid2_total_ "invalid2",
+                t.invalid3_total_ "invalid3",
+            case when t.allcounts=0 then 0 else round(  T.reportCounts/ T.allCounts,4)*100 end "rate"
+           FROM  T_DC_GRID G 
+            JOIN T_BI_JX_M_REPORT_SEVEN T
+             ON T.Info_Org_Code = G.INFO_ORG_CODE 
+            WHERE T.REPORT_DATE =  #{thisMonth,jdbcType=VARCHAR}
+          and  G.GRID_LEVEL = 3
+            AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+            AND G.STATUS ='001'          
+          ORDER BY "rate" DESC,
+                   G.INFO_ORG_CODE
+    </select>
+    
+    
+    <select id="getEventListCount"  resultType="long">
+        SELECT COUNT(1)
+		  FROM ZHSQ.T_EVENT T
+		 INNER JOIN t_bi_event_org_list e
+		    ON T.event_id = e.EVENT_ID  
+		 INNER JOIN ZHSQ.T_DC_GRID G
+		    ON T.GRID_ID = G.GRID_ID
+		   AND G.STATUS = '001' 
+		 <include refid="report_table"/>
+		 WHERE e.type_='1' 
+		<include refid="find_where_event"/>
+    </select>
+	 <sql id="report_table"> 
+		 <if test="@Ognl@isNotEmpty( chiefLevel )">
+			 join t_dc_org_social_info s on e.org_id=s.org_id  
+			  and s.chief_level=#{chiefLevel} and s.org_type='0' 
+		  </if>
+	 </sql>
+    <select id="getEventListData"  resultType="map">
+        SELECT 
+        	T.EVENT_ID "eventId", 				T.EVENT_NAME "eventName", 
+			T.HAPPEN_TIME "happenTime", 		T.HANDLE_DATE "handleDate", 
+			T.TYPE_ "type", 					
+			G.GRID_ID	"gridId",				G.GRID_PATH "gridPath", 
+			T.STATUS "status", 					T.SUB_STATUS "subStatus", 
+		   	T.CREATE_TIME "createTime", 		T.INFLUENCE_DEGREE "influenceDegree", 
+		   	T.URGENCY_DEGREE "urgencyDegree", 	T.HANDLE_DATE_FLAG "handleDateFlag",
+		   	T.CONTENT_ "content",				T.BIZ_PLATFORM "bizPlatform",
+		   	T.CONTACT_USER	"contactUser",		T.TEL	"tel",
+			T.CODE_ "code",						T.OCCURRED	"occurred",
+			T.SOURCE "source", 					T.INVOLVED_PERSION "involvedPersion",
+			T.COLLECT_WAY		"collectWay",	T.FIN_TIME	"finTime",
+		   	e.INSTANCE_ID "instanceId" --, 		P.CUR_ORG			"curOrgName",
+		   --	P.WORKFLOW_ID "workflowId",P.USER_NAME "creatorName",P.CUR_NODE			"curNodeName"
+		  FROM ZHSQ.T_EVENT T
+		 INNER JOIN t_bi_event_org_list e
+		    ON T.event_id = e.EVENT_ID  
+		 INNER JOIN ZHSQ.T_DC_GRID G
+		    ON T.GRID_ID = G.GRID_ID
+		   AND G.STATUS = '001' 
+		 <include refid="report_table"/>
+		 WHERE e.type_='1' 
+		<include refid="find_where_event"/>
+        ORDER BY T.EVENT_ID DESC
+    </select>
+
+    <sql id="find_where_event">
+		
+		<if test="@Ognl@isNotEmpty(keyWord)">
+			AND (
+				T.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				OR
+				T.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				OR
+				T.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+			)
+		</if>
+		<if test="@Ognl@isNotEmpty(code)">
+  			AND T.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+  		</if>
+		<if test="@Ognl@isNotEmpty(type)">
+			AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND INSTR(G.INFO_ORG_CODE, #{infoOrgCode,jdbcType=VARCHAR}) = 1
+		</if>
+		
+	   	<if test="@Ognl@isNotEmpty(createTimeStart)">
+	  		AND e.CREATE_TIME <![CDATA[>=]]> #{createTimeStart,jdbcType=VARCHAR} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty(createTimeEnd)">
+	  		AND e.CREATE_TIME <![CDATA[<=]]> #{createTimeEnd,jdbcType=VARCHAR} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( department )">
+	  		and e.chief_level in ('1','2','3','4','5')  
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( departmentAndGrid )">
+	  		and e.chief_level in ('1','2','3','4','5','6')  
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( orgLevel )">
+	  		and e.chief_level =#{orgLevel}
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( bizPlatform )">
+	  		and e.source_ =#{bizPlatform}
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( orgType )">
+	  		and e.org_type= #{orgType,jdbcType=VARCHAR} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( status )"><!--1:归档,0:待办  -->
+	  		 and e.task_id = #{status} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( orgId )"><!--  -->
+	  		 and e.org_Id = #{orgId} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( otherType )"><!-- 1:正规事件,0:其他类型事件(包括null) -->
+	  		 and e.create_time_mi = #{otherType} 
+	  	</if>
+	</sql>
+
+    <!--    表一表二表三办结查询语句-->
+    <select id="getEventListCountByDisposal"  resultType="long">
+        SELECT COUNT(1)
+        FROM ZHSQ.T_BI_BR_EVENT_END_LIST P
+        INNER JOIN ZHSQ.T_EVENT T
+        ON T.EVENT_ID = P.EVENT_ID
+        INNER JOIN ZHSQ.T_DC_GRID G
+        ON T.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE W
+        ON T.EVENT_ID = W.FORM_ID
+        AND W.FORM_TYPE_ID = 300
+        INNER JOIN ZHSQ.T_DC_ORG_SOCIAL_INFO O
+        ON O.ORG_ID = P.ORG_ID
+        <if test="@Ognl@isNotEmpty(infoOrgId)">
+            AND O.LOCATION_ORG_ID = #{infoOrgId,jdbcType=VARCHAR}
+            AND O.ORG_TYPE = '0'
+            AND O.STATUS = '001'
+        </if>
+        WHERE 1 = 1
+        <include refid="find_where_event_disposal"/>
+    </select>
+    <select id="getEventListDataByDisposal"  resultType="map">
+        SELECT T.EVENT_ID         "eventId",
+        T.EVENT_NAME       "eventName",
+        T.HAPPEN_TIME      "happenTime",
+        T.HANDLE_DATE      "handleDate",
+        T.TYPE_            "type",
+        G.GRID_ID          "gridId",
+        G.GRID_PATH        "gridPath",
+        T.STATUS           "status",
+        T.SUB_STATUS       "subStatus",
+        T.CREATE_TIME      "createTime",
+        T.INFLUENCE_DEGREE "influenceDegree",
+        T.URGENCY_DEGREE   "urgencyDegree",
+        T.HANDLE_DATE_FLAG "handleDateFlag",
+        T.CONTENT_         "content",
+        T.BIZ_PLATFORM     "bizPlatform",
+        T.CONTACT_USER     "contactUser",
+        T.TEL              "tel",
+        T.CODE_            "code",
+        T.OCCURRED         "occurred",
+        T.SOURCE           "source",
+        T.INVOLVED_PERSION "involvedPersion",
+        T.COLLECT_WAY      "collectWay",
+        T.FIN_TIME         "finTime",
+        W.INSTANCE_ID      "instanceId"
+        FROM ZHSQ.T_BI_BR_EVENT_END_LIST P
+        INNER JOIN ZHSQ.T_EVENT T
+        ON T.EVENT_ID = P.EVENT_ID
+        INNER JOIN ZHSQ.T_DC_GRID G
+        ON T.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE W
+        ON T.EVENT_ID = W.FORM_ID
+        AND W.FORM_TYPE_ID = 300
+        INNER JOIN ZHSQ.T_DC_ORG_SOCIAL_INFO O
+        ON O.ORG_ID = P.ORG_ID
+        <if test="@Ognl@isNotEmpty(infoOrgId)">
+            AND O.LOCATION_ORG_ID = #{infoOrgId,jdbcType=VARCHAR}
+            AND O.ORG_TYPE = '0'
+            AND O.STATUS = '001'
+        </if>
+        WHERE 1 = 1
+        <include refid="find_where_event_disposal"/>
+        ORDER T.EVENT_ID DESC
+    </select>
+    <sql id="find_where_event_disposal">
+
+        <if test="@Ognl@isNotEmpty(orgId)">
+            AND P.ORG_ID =  #{orgId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="@Ognl@isNotEmpty(orgType)">
+            AND O.ORG_TYPE= #{orgType,jdbcType=VARCHAR}
+        </if>
+        <choose>
+            <when test="@Ognl@isNotEmpty(orgLevelArray)">
+                AND o.chief_level IN
+                <foreach collection="orgLevelArray" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <when test="@Ognl@isNotEmpty(orgLevel)">
+                AND o.chief_level = #{orgLevel,jdbcType=VARCHAR}
+            </when>
+        </choose>
+        <if test="@Ognl@isNotEmpty(keyWord)">
+            AND (
+            T.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            OR
+            T.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            OR
+            T.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            )
+        </if>
+        <if test="@Ognl@isNotEmpty(code)">
+            AND T.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(type)">
+            AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+        </if>
+        <if test="@Ognl@isNotEmpty(infoOrgCode)">
+            AND INSTR(P.INFO_ORG_CODE, #{infoOrgCode,jdbcType=VARCHAR}) = 1
+        </if>
+
+        <if test="@Ognl@isNotEmpty(createTimeStart)">
+            AND TO_DATE(P.CREATE_TIME,'yyyyMMdd') <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+
+        <if test="@Ognl@isNotEmpty(createDateTimeEnd)">
+            AND TO_DATE(P.CREATE_TIME,'yyyyMMdd') <![CDATA[<=]]>TO_DATE(#{createDateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+
+        <choose>
+            <when test="@Ognl@isNotEmpty(bizPlatformArray)">
+                AND T.BIZ_PLATFORM IN
+                <foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <when test="@Ognl@isNotEmpty(bizPlatform)">
+                AND T.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+            </when>
+        </choose>
+
+    </sql>
+    <!--    表二待办查询语句-->
+    <select id="getEventListCountByTimeDisposal"  resultType="long">
+        SELECT COUNT(1)
+        FROM ZHSQ.T_BI_EVENT_ORG_LIST P
+        INNER JOIN ZHSQ.T_EVENT T
+        ON T.EVENT_ID = P.EVENT_ID
+        INNER JOIN ZHSQ.T_DC_GRID G
+        ON T.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE W
+        ON T.EVENT_ID = W.FORM_ID
+        AND W.FORM_TYPE_ID = 300
+        INNER JOIN ZHSQ.T_DC_ORG_SOCIAL_INFO O
+        ON O.ORG_ID = P.ORG_ID
+        AND O.STATUS = '001'
+        WHERE 1 = 1
+        AND P.TYPE_='9'
+        <include refid="find_where_event_timeDisposal"/>
+    </select>
+    <select id="getEventListDataByTimeDisposal"  resultType="map">
+        SELECT T.EVENT_ID         "eventId",
+                T.EVENT_NAME       "eventName",
+                T.HAPPEN_TIME      "happenTime",
+                T.HANDLE_DATE      "handleDate",
+                T.TYPE_            "type",
+                G.GRID_ID          "gridId",
+                G.GRID_PATH        "gridPath",
+                T.STATUS           "status",
+                T.SUB_STATUS       "subStatus",
+                T.CREATE_TIME      "createTime",
+                T.INFLUENCE_DEGREE "influenceDegree",
+                T.URGENCY_DEGREE   "urgencyDegree",
+                T.HANDLE_DATE_FLAG "handleDateFlag",
+                T.CONTENT_         "content",
+                T.BIZ_PLATFORM     "bizPlatform",
+                T.CONTACT_USER     "contactUser",
+                T.TEL              "tel",
+                T.CODE_            "code",
+                T.OCCURRED         "occurred",
+                T.SOURCE           "source",
+                T.INVOLVED_PERSION "involvedPersion",
+                T.COLLECT_WAY      "collectWay",
+                T.FIN_TIME         "finTime",
+                W.INSTANCE_ID      "instanceId"
+                FROM ZHSQ.T_BI_EVENT_ORG_LIST P
+                INNER JOIN ZHSQ.T_EVENT T
+                ON T.EVENT_ID = P.EVENT_ID
+                INNER JOIN ZHSQ.T_DC_GRID G
+                ON T.GRID_ID = G.GRID_ID
+                AND G.STATUS = '001'
+                INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE W
+                ON T.EVENT_ID = W.FORM_ID
+                AND W.FORM_TYPE_ID = 300
+                INNER JOIN ZHSQ.T_DC_ORG_SOCIAL_INFO O
+                ON O.ORG_ID = P.ORG_ID
+                AND O.STATUS = '001'
+                WHERE 1 = 1
+                AND P.TYPE_='9'
+        <include refid="find_where_event_timeDisposal"/>
+        ORDER T.EVENT_ID DESC
+    </select>
+    <sql id="find_where_event_timeDisposal">
+
+        <if test="@Ognl@isNotEmpty(type)">
+            AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+        </if>
+        <if test="@Ognl@isNotEmpty(keyWord)">
+            AND (
+            T.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            OR
+            T.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            OR
+            T.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+            )
+        </if>
+        <if test="@Ognl@isNotEmpty(code)">
+            AND T.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            AND O.ORG_CODE LIKE  #{orgCode,jdbcType=VARCHAR}||'%'
+        </if>
+        <if test="@Ognl@isNotEmpty(orgType)">
+            AND O.ORG_TYPE =  #{orgType,jdbcType=VARCHAR}
+        </if>
+        <choose>
+            <when test="@Ognl@isNotEmpty(orgLevelArray)">
+                AND o.chief_level IN
+                <foreach collection="orgLevelArray" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <when test="@Ognl@isNotEmpty(orgLevel)">
+                AND o.chief_level = #{orgLevel,jdbcType=VARCHAR}
+            </when>
+        </choose>
+
+        <if test="@Ognl@isNotEmpty(orgId)">
+            AND P.ORG_ID =  #{orgId,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(infoOrgId)">
+            AND P.ORG_ID in  (select L.ORG_ID from zhsq.t_dc_org_social_info L
+                                    where L.LOCATION_ORG_ID = #{infoOrgId,jdbcType=VARCHAR}
+                                    AND L.ORG_TYPE = '0'
+                                    AND L.STATUS = '001')
+        </if>
+        <if test="@Ognl@isNotEmpty(happenTimeStart)">
+            AND T.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(happenTimeEnd)">
+            AND T.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeStart)">
+            AND T.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <choose>
+            <when test="@Ognl@isNotEmpty(createTimeEnd)">
+                AND T.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+            </when>
+            <when test="@Ognl@isNotEmpty(createDateTimeEnd)">
+                AND T.CREATE_TIME <![CDATA[<=]]>TO_DATE(#{createDateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+            </when>
+        </choose>
+        <choose>
+            <when test="@Ognl@isNotEmpty(bizPlatformArray)">
+                AND T.BIZ_PLATFORM IN
+                <foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <when test="@Ognl@isNotEmpty(bizPlatform)">
+                AND T.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+            </when>
+        </choose>
+
+    </sql>
+</mapper>

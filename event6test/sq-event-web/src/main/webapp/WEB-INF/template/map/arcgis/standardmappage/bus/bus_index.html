@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 禁止用户缩放页面,确保地图的缩放 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="renderer" content="webkit">
+<title>公交路线</title>
+<script src="${rc.getContextPath()}/js/jquery-1.8.2.min.js"></script>
+<script src="${rc.getContextPath()}/js/jquery.blockUI.js" type="text/javascript"></script>
+<script src="http://api.map.baidu.com/api?v=2.0&ak=OBm0kGjTPSEXKjr3igMrjT9Hgml8fGPP" type="text/javascript"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+<script src="${rc.getContextPath()}/js/map/bMap/bMapTools.js?v=1.0.019" type="text/javascript"></script>
+<script src="${rc.getContextPath()}/js/layer/layer.js" type="text/javascript"></script>
+<style type="text/css">
+html,body{height:100%;width:100%;margin:0;padding:0;overflow: hidden;}
+#map1{height:100%;}
+#busList{width:250px;height:80%;position: absolute;bottom:10px;left:5px;}
+.layui-layer-title{cursor: move;height: 30px;line-height: 30px;background: rgba(0,0,0,.3);color: #fff;}
+.layui-layer-setwin{ top: 10px;}
+ul.wraper-index{list-style: none;padding: 0;margin: 0;}
+ul.wraper-index>li{width: 50%;display: inline-block;list-style: none;letter-spacing: normal;
+	float: left;
+    background: #fff;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    box-sizing: border-box;
+    cursor:pointer;
+}
+ul.wraper-index>li:first-child{border-right: 1px solid #ddd;}
+ul.wraper-index li.selected{border-bottom: 1px solid #0075a9;color:#607D8B;font-weight: bold;}
+.t-clo{
+	cursor:pointer;
+	display: inline-block;
+	border-left:10px solid transparent;
+	border-right:10px solid transparent;
+	position: absolute;
+    right: 5px;
+    top: 5px;
+}
+.t-clo.down{
+	border-top: 10px solid rgba(255, 0, 102,1);
+	border-bottom: 10px solid rgba(68, 138, 202,.2)
+}
+.t-clo.up{
+	border-top: 10px solid rgba(255, 0, 102,.2);
+	border-bottom: 10px solid rgba(68, 138, 202,1)
+}
+</style>
+
+</head>
+<body>
+	<div id="map1"></div>
+	<div id="busList">
+		<ul class="wraper-index">
+			<li class="selected">公交</li>
+			<li>出租车</li>
+			<div style="clear:both"></div>
+			<div title="关闭" class="t-clo down"></div>
+		</ul>
+		<div style="width: 100%;height:92%;">
+			<iframe id="busIframe" name="busIframe" height="100%" width="100%" frameborder="0" src="${rc.getContextPath()}/zhsq/map/bus/list.jhtml" ></iframe>
+			<iframe style="display:none;" id="taxiIframe" name="taxiIframe" height="100%" width="100%" frameborder="0" src="${rc.getContextPath()}/zhsq/map/taix/taxiList.jhtml" ></iframe>
+		</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+$(function(){
+	$(".wraper-index").on("click","li",function(){
+		$(".wraper-index li").removeClass("selected");
+		if(lushu){
+			lushu.stop();
+		}
+		markerMap.clear();
+		carMap.clear();
+		map.clearOverlays();//清除所有覆盖物
+		if($(this).addClass("selected").index()==0){
+			for(var i = 0 ; i <= currTaxiTipLayer ; i++)
+				layer.close(i);
+			$("#busIframe").show();
+			$("#taxiIframe").hide();
+		}else{
+			$("#busIframe").hide();
+			$("#taxiIframe").show();
+		}
+	});
+	toggleContent();
+});
+function toggleContent(){
+	$(".t-clo").click(function(){
+    	var self = $(this);
+    	if(self.hasClass("up")){
+    		closeOrOpenList('open');
+    		self.removeClass("up");
+    		self.addClass("down");
+    		self.attr("title","关闭");
+    	}else{//关闭
+    		closeOrOpenList('close');
+    		self.removeClass("down");
+    		self.addClass("up");
+    		self.attr("title","打开");
+    	}
+    });
+}
+var currentN = 1;
+
+var x = '${x}!';
+var y = '${y}!';
+
+var map = new BMap.Map("map1");
+var oaMap = new oa.BMap(map);
+
+//var initPoint = oaMap.getPoint(110.394965,18.801054);
+var initPoint = oaMap.getPoint(x,y);
+
+
+map.centerAndZoom(initPoint, 12);
+map.enableScrollWheelZoom();//允许鼠标滚轮缩放
+map.addControl(new BMap.NavigationControl({enableGeolocation: false,anchor:BMAP_ANCHOR_TOP_RIGHT}));//平移缩放控件
+map.addControl(new BMap.ScaleControl());//比例尺
+map.addControl(new BMap.OverviewMapControl({isOpen:true}));//小视窗
+
+function analysisOfElementsCollection(){}
+function clearSpecialLayer(){}
+function getArcgisDataOfCases(){}
+function closeMaxJqueryWindow(){}
+function showMaxJqueryWindowByParams(){}
+function closeOrOpenList(type){
+	if(type=='close'){
+		$('#busList').animate({height:'25px'},500);
+	}else{
+		$('#busList').animate({height:'80%'},500);
+	}
+}
+//根据线路显示详情信息
+function showDetailInfo(buslineId){
+	layer.open({
+		  type: 2,
+		  title: '详情信息',
+		  shadeClose: true,
+		  shade: 0,
+		  area: ['380px', '320px'],
+		  skin: 'layui-layer-rim',
+		  content: '${rc.getContextPath()}/zhsq/map/bus/buslineDetail.jhtml?buslineId='+buslineId
+	});
+}
+
+function toFixNum(num){
+	return new Number(num/1000000).toFixed(6);
+}
+
+var carMap = new Map();
+function getNewMap(){
+	return new Map();
+}
+//获取比较的值
+function getCompareValue(v1,v2,mode){
+	if(mode=='min'){
+		if(v1<v2)
+			return v1;
+		return v2;
+	}else{
+		if(v1<v2)
+			return v2;
+		return v1;
+	}
+}
+//判断第一个值是否小于第二个值
+function isSmallerThan(v1,v2){
+	return v1<v2;
+}
+//根据DrivingRoute获取线路的点
+function getPointAtRoute(point1,point2,size,callback,devId,routeType){
+	var driving = new BMap.DrivingRoute(map, {
+		//policy:BMAP_DRIVING_POLICY_LEAST_DISTANCE,//策略为最短路线策略
+        onSearchComplete: function(results){
+            if (driving.getStatus() == BMAP_STATUS_SUCCESS){//0
+                // 获取第一条方案
+                var plan = results.getPlan(0);
+                // 获取方案的驾车线路
+                var route = plan.getRoute(0);
+                //返回路线的地理坐标点数组。（自 1.2 新增）
+                var points = route.getPath();
+                var nPoints = [];
+                //nPoints = points;
+                var tempPoint = [];
+                if(points.length>1 && points.length<10){
+	                for(var i=0,len=points.length;i<len-1;i++){//此处是<len-1而不是len
+	                	tempPoint = getPointArrAtLine(points[i],points[i+1],size);
+	                	for(var j=0,llen=tempPoint.length;j<llen;j++){
+	                		nPoints.push(tempPoint[j]);
+	                	}
+	                }
+                }else{
+                	nPoints = getPointArrAtLine(point1,point2,size);
+                }
+                callback(nPoints);
+            }else{
+            	var nPoints = getPointArrAtLine(point1,point2,size);
+            	callback(nPoints);
+            }
+        }
+        //,renderOptions:{map: map, autoViewport: true}
+    });
+	driving.search(point1,point2);
+}
+//根据2点获取出个数为size的一系列的点
+function getPointArrAtLine(point1,point2,size){
+	var pointA = [];
+	var lngInteval = Math.abs(point1.lng-point2.lng)/size;
+	var latInteval = Math.abs(point1.lat-point2.lat)/size;
+	if(isSmallerThan(point1.lng,point2.lng) && isSmallerThan(point1.lat,point2.lat)){
+		for(var i=0;i<size;i++){
+			pointA.push(oaMap.getPoint(point1.lng+(i+1)*lngInteval,point1.lat+(i+1)*latInteval));
+		}
+	}else if(isSmallerThan(point1.lng,point2.lng) && !isSmallerThan(point1.lat,point2.lat)){
+		for(var i=0;i<size;i++){
+			pointA.push(oaMap.getPoint(point1.lng+(i+1)*lngInteval,point1.lat-(i+1)*latInteval));
+		}
+	}else if(!isSmallerThan(point1.lng,point2.lng) && !isSmallerThan(point1.lat,point2.lat)){
+		for(var i=0;i<size;i++){
+			pointA.push(oaMap.getPoint(point1.lng-(i+1)*lngInteval,point1.lat-(i+1)*latInteval));
+		}
+	}else{
+		for(var i=0;i<size;i++){
+			pointA.push(oaMap.getPoint(point1.lng-(i+1)*lngInteval,point1.lat+(i+1)*latInteval));
+		}
+	}
+	return pointA;
+}
+//奔跑吧,兄弟
+function runNow(devId,inteval,marker,poa,markerMap,isDrawLine){
+//debugger;
+	var size = poa.length;
+	//var runSpeed = inteval/size;
+	window.clearInterval(markerMap.get(devId).tt);
+	var curentIndex = 0;//当前位置
+	markerMap.get(devId).tt = setInterval(function(){
+		var addSelf = function(){
+			curentIndex++;
+		}
+		//if(!poa[curentIndex+1]) 
+		if(poa && poa[curentIndex] && !!(poa[curentIndex].lng) && !!(poa[curentIndex+1]) && !!(poa[curentIndex+1].lng) && poa[curentIndex].lng != 0 && poa[curentIndex].lat !=0 && poa[curentIndex+1].lng != 0){
+			marker.setPosition(poa[curentIndex]);
+			setRunDeg(poa[curentIndex],poa[curentIndex+1],marker,map);
+			if(isDrawLine){
+				if(!map.getBounds().containsPoint(poa[curentIndex])){
+                	map.setCenter(poa[curentIndex]);
+            	}  
+			}
+			 
+			if(isDrawLine == 1){
+				var linePoints = [];
+					linePoints.push(poa[curentIndex]);
+					linePoints.push(poa[curentIndex+1]);
+					addLine(linePoints);
+			}
+		}
+		addSelf();
+		if(curentIndex == size-1){
+			window.clearInterval(markerMap.get(devId).tt);
+		}
+	},inteval/(size+1));
+}
+
+function setRunDeg(curPos,targetPos,marker,map){//lat:纬度
+	var me = marker;
+    var deg = 0;
+    //curPos =  map.pointToPixel(curPos);
+    //targetPos =  map.pointToPixel(targetPos);   
+    curPos.x = curPos.lat;
+    curPos.y = curPos.lng;
+    targetPos.x = targetPos.lat;
+    targetPos.y = targetPos.lng;
+    var deg = null;
+    if(targetPos.x != curPos.x){
+            var tan = (targetPos.y - curPos.y)/(targetPos.x - curPos.x),
+            atan  = Math.atan(tan);
+            deg = atan*360/(2*Math.PI);
+            //degree  correction;
+            if(targetPos.x < curPos.x){
+                deg = -deg + 90 + 90;
+            } else {
+                deg = -deg;
+            }
+            deg = -deg;
+            //console.log(-deg);
+            //marker.setRotation(-deg);
+    }else {
+            var disy = targetPos.y- curPos.y ;
+            var bias = 0;
+            if(disy > 0)
+                bias=-1
+            else
+                bias = 1
+            deg = -bias * 90;
+            //marker.setRotation(-bias * 90);  
+    }
+    marker.setRotation(deg+90);
+    return;
+}
+//var socketURL = 'ws://'+location.host+'${rc.getContextPath()}/websocket/init/bus';
+var socketURL = '${busWebSocketUrl}/websocket/init/bus';
+//var socketURL = 'ws://27.155.101.233:10016/websocket/init/bus';
+var socket;
+var markerMap = new Map();
+var runMap = new Map();
+if (typeof WebSocket == 'undefined') {
+	alert("当前浏览器不支持WebSocket");
+}else{
+	socket = new WebSocket(socketURL);
+	socket.onmessage = function(res){
+		var resData = JSON.parse(res.data);
+		if(carMap.get(resData.devId) != null){
+			var point = oaMap.getPoint(toFixNum(resData.lng),toFixNum(resData.lat));
+			var icon = oaMap.getIcon('${rc.getContextPath()}/images/bus-t.png',30,30);
+			oaMap.GPS2BD(point,function(data){
+				if(data.status==0){
+					var mapMarker = null;
+					$.each(oaMap.getMap().getOverlays(),function(i,item){
+						if(item.devId && item.devId==resData.devId){
+							console.log(item.devId+'-----------'+data.points[0].lng+'-------------'+data.points[0].lat);
+							mapMarker = item;//地图上的marker
+							var mapData = markerMap.get(resData.devId);//markerMap是Map
+							window.clearInterval(mapData.tt);
+							//mapMarker.setRotation(resData.dir);//行驶过程中更改方向
+							var inteval = new Date(resData.time.replace(/-/g,'/')).getTime()-new Date(mapData.time.replace(/-/g,'/')).getTime()
+							inteval = inteval;
+							var size = 50;
+							//var poa = getPointArrAtLine(mapData.getPosition(),data.points[0],size);
+							//runNow(resData.devId,inteval,mapMarker,size,poa);
+							getPointAtRoute(mapMarker.getPosition(),data.points[0],size,function(res2){
+								runNow(resData.devId,inteval,mapMarker,res2,markerMap);
+							},resData.devId);
+							
+							var marker = oaMap.getMarker(data.points[0],icon);
+							marker.devId = resData.devId;
+							marker.time = resData.time;
+							markerMap.put(resData.devId,marker);//存放到Map数据中
+						}
+					});
+					if(mapMarker == null){
+						//oaMap.getMap().removeOverlay(markerMap.get(resData.devId));
+						var marker = oaMap.getMarker(data.points[0],icon);
+						marker.devId = resData.devId;
+						marker.time = resData.time;
+						marker.setTitle(resData.devId);
+						marker.setRotation(resData.dir+90);
+						//marker.setPosition(data.points[0]);
+						var label = new BMap.Label(carMap.get(resData.devId),{offset:new BMap.Size(20,-10)});
+						marker.setLabel(label);
+						markerMap.put(resData.devId,marker);
+						oaMap.addMarker(markerMap.get(resData.devId));
+					}
+				}
+			});
+		}
+	}
+}
+var glo_socket_count = 0;
+var initWebSocket = function(){//重复初始化websocket,直至成功
+	glo_socket_count++;
+	socket = new WebSocket(socketURL);
+	setTimeout(function(){
+		if(socket.readyState != '1' && glo_socket_count<100){
+			initWebSocket();
+		}else if(glo_socket_count>100){
+			layer.msg('网络异常,3s后将自动刷新浏览器',{zIndex:21});
+    		setTimeout(function(){
+    			window.location.reload();
+    		},3000);
+		}
+	},300);
+};
+var tHeart = null;
+var heartBeat = function(){
+	if(tHeart != null)
+		window.clearInterval(tHeart);
+	tHeart = setInterval(function(){
+		$.getJSON('${rc.getContextPath()}/zhsq/map/bus/runSocket.jhtml',{},function(){});
+		if(socket && socket.readyState != '1'){
+			initWebSocket();
+		}else{
+			socket.send('heartBeat');//发送心跳包
+		}
+	},3*60*1000);
+}
+heartBeat();
+//根据点数组获取bounds对象
+function getBoundsByPoints(points){
+	var sw,ne;//左下角和右上角
+	var minLng=999999,maxLng=0,minLat=999999,maxLat=0;
+	for(var i=0,len=points.length;i<len;i++){
+		minLng = getCompareValue(minLng,points[i].lng,'min');
+		minLat = getCompareValue(minLat,points[i].lat,'min');
+		maxLng = getCompareValue(maxLng,points[i].lng,'max');
+		maxLat = getCompareValue(maxLat,points[i].lat,'max');
+	}
+	sw = new BMap.Point(minLng, minLat);
+	ne = new BMap.Point(maxLng, maxLat);
+	return new BMap.Bounds(sw,ne);
+}
+//获取bounds中,包含array点的个数,array为points的数组
+function getBoundsContainsPointCount(bounds,pointArr){
+	var count = 0;
+	for(var i=0,len=pointArr.length;i<len;i++){
+		if (bounds.containsPoint(pointArr[i]))
+			count++;
+	}
+	return count;
+}
+function busService(pArray,opt){//改造先找驾车导航,不直接使用工具线路
+	var defOpt = {strokeColor:'#0c6',strokeWeight:6,strokeOpacity:0.5,strokeStyle:'solid'};
+	opt = $.extend({},defOpt,opt);
+	var driving = new BMap.WalkingRoute(map, {
+		//policy:BMAP_DRIVING_POLICY_LEAST_DISTANCE,//去除策略
+		//renderOptions:{map:map},
+        onSearchComplete: function(results){
+        	//return;
+            if (driving.getStatus() == BMAP_STATUS_SUCCESS){
+            	var plan = results.getPlan(0);
+                var route = plan.getRoute(0);
+                var points = route.getPath();
+                var polyline = new BMap.Polyline(points,opt);
+                //debugger;
+            	if(results.getNumPlans()>1){//多条线路使用公交线路
+            		//debugger;
+            		var transit = new BMap.TransitRoute(map, {
+            			onSearchComplete:function(busResult){
+            				if (transit.getStatus() == BMAP_STATUS_SUCCESS){
+            					var busPoints = busResult.getPlan(0).getRoute(0).getPath();
+            					var needDriveRoute = {};//获取需要的第n条线路
+            					var temp = 0;
+            					for(var j=0,len=results.getNumPlans();j<len;j++){
+            						for(var z=0,llen=results.getPlan(j).getNumRoutes();z<llen;z++){
+            							var bounds = getBoundsByPoints(results.getPlan(j).getRoute(z).getPath());
+            							//找出匹配公交路线的线路,数量最多的为匹配的线路
+            							var c = getBoundsContainsPointCount(bounds,busPoints);
+            							if(c>temp){
+            								temp = c;
+            								needDriveRoute.j = j;
+            								needDriveRoute.z = z;
+            							}
+            						}
+            					}
+            					points = results.getPlan(needDriveRoute.j).getRoute(needDriveRoute.z).getPath();
+            					polyline = new BMap.Polyline(points,opt);
+            					map.addOverlay(polyline);
+            				}else{//公交线路没找到,使用随意一条线路
+            					map.addOverlay(polyline);
+            				}
+            			}
+            		});
+            		transit.search(points[0],points[points.length-1]);
+            	}else{//单条线路直接使用该线路
+	                map.addOverlay(polyline);
+            	}
+            }else{
+            	console.log('没有驾车路线.......不操作........');
+            }
+        }
+        //,renderOptions:{map: map, autoViewport: true}
+    });
+    for(var i=0;i<pArray.length-1;i++){
+		driving.search(pArray[i],pArray[i+1]);
+    }
+    //driving.search(pArray[6],pArray[7]);
+	return;
+	var transit = new BMap.TransitRoute(map, {
+		renderOptions: {map: map}
+	});
+	transit.search(p1, p2);
+	var myIcon = new BMap.Icon("http://lbsyun.baidu.com/jsdemo/img/location.gif", new BMap.Size(14,23));
+	transit.setMarkersSetCallback(function(result){
+		result[0].marker.setIcon(myIcon);
+		result[1].marker.setIcon(myIcon);
+	})
+	setTimeout(function(){
+		transit.search(p2, p1);
+	},300);
+}
+
+
+/******************************taxi相关******************************************/
+var taxiMarker;
+var lushu;
+
+var pointsArrayStore;
+
+function luShuFunc(points,title,content,runSpeed,isRotation){
+	
+	if(lushu){
+		lushu.stop();
+	}
+	
+	pointsArrayStore = [];
+	map.clearOverlays();//清除所有覆盖物
+
+	if(!points) return;
+	
+	var arrPois = [];
+	var len = points.length;
+	for(var i = 0 ; i < len ; i++){
+		var tmp = points[i];
+		if(!tmp.x || !tmp.y)
+			continue;
+		arrPois.push(new BMap.Point(tmp.x, tmp.y));
+		
+		pointsArrayStore.push({'x':tmp.x,'y':tmp.y,'locateTime':tmp.locateTime});
+	}
+	
+//  map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#111'})); //不画线
+	map.setViewport(arrPois);
+	taxiMarker = new BMap.Marker(arrPois[0], {
+		icon : new BMap.Icon(
+				'http://developer.baidu.com/map/jsdemo/img/car.png',
+				new BMap.Size(52, 26), {
+					anchor : new BMap.Size(27, 13)
+				})
+	});
+	var label = new BMap.Label(content, {
+		offset : new BMap.Size(0, -30)
+	});
+	label.setStyle({
+		border : "1px solid rgb(204, 204, 204)",
+		color : "rgb(0, 0, 0)",
+		borderRadius : "10px",
+		padding : "5px",
+		background : "rgb(255, 255, 255)",
+	});
+	taxiMarker.setLabel(label);
+	taxiMarker.setTitle(title);
+	//taxiMarker.setRotation(30);
+	
+	map.addOverlay(taxiMarker);
+	var j = 0 , progreeBarStep = parseFloat(100/len);
+	BMapLib.LuShu.prototype._move = function(initPos, targetPos, effect) {
+		var pointsArr = [ initPos, targetPos ]; //点数组
+		var me = this,
+		//当前的帧数
+		currentCount = 0,
+		//步长，米/秒
+		timer = 10, step = this._opts.speed / (1000 / timer),
+		//初始坐标
+		init_pos = this._projection.lngLatToPoint(initPos),
+		//获取结束点的(x,y)坐标
+		target_pos = this._projection.lngLatToPoint(targetPos),
+		//总的步长
+		count = Math.round(me._getDistance(init_pos, target_pos) / step);
+		//显示折线 syj201607191107
+		this._map.addOverlay(new BMap.Polyline(pointsArr, {
+			strokeColor : "blue",
+			strokeWeight : 5,
+			strokeOpacity : 0.5
+		})); // 画线  
+		//如果小于1直接移动到下一点
+		if (count < 1) {
+			me._moveNext(++me.i);
+			return;
+		}
+		me._intervalFlag = setInterval(function() {
+			//两点之间当前帧数大于总帧数的时候，则说明已经完成移动
+			if (currentCount >= count) {
+				clearInterval(me._intervalFlag);
+				//移动的点已经超过总的长度
+				if (me.i > me._path.length) {
+					return;
+				}
+				//运行下一个点
+				me._moveNext(++me.i);
+				setProgressBar(me.i-1,progreeBarStep);
+			} else {
+				currentCount++;
+				var x = effect(init_pos.x, target_pos.x, currentCount,count), 
+					y = effect(init_pos.y, target_pos.y, currentCount, count), 
+					pos = me._projection.pointToLngLat(new BMap.Pixel(x, y));
+				//设置marker
+				if (currentCount == 1) {
+					var proPos = null;
+					if (me.i - 1 >= 0) {
+						proPos = me._path[me.i - 1];
+					}
+					if(isRotation){
+						if (me._opts.enableRotation == true) {
+							me.setRotation(proPos, initPos, targetPos);
+						}
+					}
+					if (me._opts.autoView) {
+						if (!me._map.getBounds().containsPoint(pos)) {
+							me._map.setCenter(pos);
+						}
+					}
+				}
+				//正在移动
+				me._marker.setPosition(pos);
+				me._marker.setTitle(title);
+				//me._marker.setRotation(30);
+				//设置自定义overlay的位置
+				//console.log(pos);
+				me._setInfoWin(pos);
+			}
+		}, timer);
+	};
+	
+	
+	lushu = new BMapLib.LuShu(map, arrPois, {
+		defaultContent : content,
+		autoView : true,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+		icon : new BMap.Icon(
+				'${rc.getContextPath()}/images/taxi.png',
+				new BMap.Size(52, 26), {
+					anchor : new BMap.Size(27, 13)
+				}),
+		speed : runSpeed || 500,
+		enableRotation : true,//是否设置marker随着道路的走向进行旋转
+		landmarkPois:[]
+	});
+	
+	taxiMarker.addEventListener("click", function() {
+		taxiMarker.enableMassClear(); //设置后可以隐藏改点的覆盖物
+		taxiMarker.hide();
+		lushu.start();
+		//map.clearOverlays();	//清除所有覆盖物
+	});
+	
+	taxiMarker.enableMassClear(); //设置后可以隐藏该点的覆盖物
+	taxiMarker.hide();
+	lushu.start();
+}
+
+function stopLushu(){
+	if(lushu)
+		lushu.stop();
+}
+
+function getLushu(){
+	return lushu;
+}
+
+function getTaxiMarker(){
+	return taxiMarker;
+}
+
+function getPointsArrayStore(){
+	return pointsArrayStore;
+}
+
+function loading(){
+	$.blockUI({
+			   message: "加载中..." , 
+			   css: {
+				   		zIndex:99999999999999,
+				   		width:'150px',
+				   		height:'50px',
+				   		lineHeight:'50px',
+				   		top:'45%',
+				   		left:'45%',
+    					background:'url(${rc.getContextPath()}/css/loading.gif) no-repeat',
+    					textIndent:'20px'
+    		   },
+    		   overlayCSS:{
+    			   		zIndex:99999999999998,
+    			   		backgroundColor:'#fff'
+    		   }
+    });
+}
+
+function loadOver(){
+	$.unblockUI();
+}
+
+var currTaxiDetailLayer;
+/**
+ * 显示出租车详细信息
+ */
+function showTaxiDetailInfo(carId){
+	var index = layer.open({
+		  id: 'taxiDetailFrame',
+		  type: 2,
+		  title: '出租车详情',
+		  shadeClose: true,
+		  shade: 0,
+		  area: ['380px', '240px'],
+		  offset: ['180px', '260px'],
+		  skin: 'layui-layer-rim',
+		  content: '${rc.getContextPath()}/zhsq/map/taix/detail.jhtml?carId='+carId
+	});
+	currTaxiDetailLayer = index;
+}
+
+function closeLayer(){
+	layer.close(currTaxiDetailLayer);
+}
+
+var currTaxiTipLayer;
+function playTip(type){
+	return;
+	var index = layer.open({
+		  id: 'playTipFrame',
+		  type: 2,
+		  title: '轨迹回放',
+		  shadeClose: true,
+		  shade: 0,
+		  //area: ['320px', '80px'],
+		  area: ['520px', '140px'],
+		  //offset: ['85%', '40%'],
+		  offset: ['75%', '40%'],
+		  skin: 'layui-layer-rim',
+		  content: '${rc.getContextPath()}/zhsq/map/taix/playTip.jhtml'
+	});
+	//layer.close(currTaxiTipLayer);
+	currTaxiTipLayer= index;
+}
+
+function setProgressBar(j,precent){
+	var frameObj = document.getElementById('playTipFrame');
+	if(frameObj){
+		var frameId = frameObj.getElementsByTagName("iframe")[0].id;
+    	$('#'+frameId)[0].contentWindow.callFunc(j,j*precent);
+	}
+}
+
+var dynamicTimer;
+function stopTimer(){
+	var taxiDetailFrameObj = document.getElementById('taxiDetailFrame');
+	if(taxiDetailFrameObj){
+		var taxiDetailFrameId = taxiDetailFrameObj.getElementsByTagName("iframe")[0].id;
+    	$('#'+taxiDetailFrameId)[0].contentWindow.stopTimer();
+	}
+}
+
+/*********************************taxi实时轨迹**************************************/
+		function clearTaxiInterval(devId){
+			markerMap.each(function(k,v){
+				window.clearInterval(markerMap.get(k).tt);
+			})
+		}
+		var queue;
+	
+		// 获取随机数 
+		function getRandom(n){
+			return Math.floor(Math.random()*n+1);
+		}
+		
+		function getRandom(num,divNum){
+			return Math.floor(Math.random()*num+1)/divNum;
+		}
+
+		var isMarker = false;
+		var dymTaxiMarker ;
+		//在轨迹点上创建图标，并添加点击事件，显示轨迹点信息。points,数组。 
+		function addMarker(points,carNo,devId,inteval,direction){
+			//debugger;
+			var pointsLen = points.length;
+			if(pointsLen == 0){
+				return;
+			}
+			
+			if(!isMarker){
+				dymTaxiMarker = oaMap.getMarker(points[0],new BMap.Icon(
+							'${rc.getContextPath()}/images/taxi.png',
+							new BMap.Size(52, 26), {
+									offset: new BMap.Size(5, 5),    //相当于CSS精灵 
+									imageOffset: new BMap.Size(10, -5),    //图片的偏移量。为了是图片底部中心对准坐标点。
+									anchor : new BMap.Size(27, 13)
+				}));
+				var label = new BMap.Label(carNo, {
+					offset : new BMap.Size(0, -30)
+				});
+				label.setStyle({
+					border : "1px solid rgb(204, 204, 204)",
+					color : "rgb(0, 0, 0)",
+					borderRadius : "10px",
+					padding : "5px",
+					background : "rgb(255, 255, 255)",
+				});
+				dymTaxiMarker.setLabel(label);
+				dymTaxiMarker.setTitle('设备ID:'+devId);
+				isMarker = true;
+				
+				dymTaxiMarker.setRotation(direction); 
+				map.addOverlay(dymTaxiMarker); 
+				markerMap.put(devId,dymTaxiMarker);
+			} else {
+				if(pointsLen > 1)
+					runNow(devId,inteval,dymTaxiMarker,points,markerMap,2);
+			}
+		}  
+		
+		//添加线 
+		function addLine(points){
+
+			var linePoints = [],pointsLen = points.length,i,polyline;
+			if(pointsLen == 0){
+				return;
+			}
+			// 创建标注对象并添加到地图   
+			for(i = 0;i <pointsLen;i++){
+				linePoints.push(new BMap.Point(points[i].lng,points[i].lat));
+			}
+
+			polyline = new BMap.Polyline(linePoints, {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});   //创建折线 
+			map.addOverlay(polyline);   //增加折线 
+		}
+		
+var taxiFlag = false;
+		//随机生成新的点，加入到轨迹中。
+		function dynamicLine(result,carNo,devId,inteval,direction){
+			
+			var point = {};
+			var makerPoints = [];
+			var bPoints = [];
+			var len;
+			
+			for(var ki = 0 , kiLen = result.length; ki < kiLen ; ki++){
+				var lng = result[ki].lng, lat = result[ki].lat;
+				point = {"lng": lng ,"lat": lat};
+				makerPoints.push(point);			
+				bPoints.push(new BMap.Point(lng,lat));
+			}
+			
+			len = result.length;
+			addMarker(bPoints,carNo,devId,inteval,direction);//增加对应该的轨迹点 
+			//debugger;
+			//addLine(makerPoints);//增加轨迹线 
+			if(!taxiFlag){
+				taxiFlag = true;
+				setZoom(bPoints);
+			}
+		}
+
+		//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
+		//更新。设置不是每次增加点都重新设置显示范围。因为有可能会想放大了看。 
+		function setZoom(bPoints){
+			var view = map.getViewport(eval(bPoints));
+			if(map.oldView != JSON.stringify(view)){
+				var mapZoom = view.zoom; 
+				var centerPoint = view.center; 
+				map.centerAndZoom(centerPoint, 16);
+				map.oldView = JSON.stringify(view);
+			}
+
+		}
+		
+</script>

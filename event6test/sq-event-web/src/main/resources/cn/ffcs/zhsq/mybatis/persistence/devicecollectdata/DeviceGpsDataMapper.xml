@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.devicecollectdata.DeviceGpsDataMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceGpsData">
+		<id column="GPS_ID" property="gpsId" jdbcType="VARCHAR" /> <!--采集数据ID-->
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" /><!--业务类型，01执法记录仪-->
+		<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" /><!--业务主键-->
+		<result column="BIZ_UUID" property="bizUUID" jdbcType="VARCHAR" /><!--业务主键UUID-->
+		<result column="BIZ_CODE" property="bizCode" jdbcType="VARCHAR" /><!--业务编码-->
+		<result column="BIZ_NAME" property="bizName" jdbcType="VARCHAR" /><!--业务名称-->
+		<result column="LON" property="lon" jdbcType="VARCHAR" /><!--经度-->
+		<result column="LAT" property="lat" jdbcType="VARCHAR" /><!--纬度-->
+		<result column="MAPT" property="mapt" jdbcType="VARCHAR" /><!--地图类型-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /><!--定位时间-->
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" /><!--创建日期-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /><!--有效状态，1 有效；0 无效-->
+	</resultMap>
+		
+	<!-- 新增GPS日表数据 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceGpsData">
+		<selectKey keyProperty="gpsId" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO
+			GPS_LOCATE_DAY
+		(
+			GPS_ID,
+			BIZ_TYPE,
+			BIZ_ID,
+			BIZ_UUID,
+			BIZ_CODE,
+			BIZ_NAME,
+			LON,
+			LAT,
+			MAPT,
+			CREATE_TIME,
+			CREATE_DATE,
+			IS_VALID
+		) VALUES (
+			#{gpsId,jdbcType=VARCHAR},
+			#{bizType,jdbcType=VARCHAR},
+			#{bizId,jdbcType=DECIMAL},
+			#{bizUUID,jdbcType=VARCHAR},
+			#{bizCode,jdbcType=VARCHAR},
+			#{bizName,jdbcType=VARCHAR},
+			#{lon,jdbcType=VARCHAR},
+			#{lat,jdbcType=VARCHAR},
+			#{mapt,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			SYSDATE,
+			1
+		)
+	</insert>
+
+	<!-- 更新最新GPS信息 -->
+	<update id="updateLastestGpsData">
+		UPDATE GPS_LOCATE
+		<set>
+			<if test="bizType != null">
+				BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+			</if>
+			<if test="bizId != null">
+				BIZ_ID = #{bizId,jdbcType=DECIMAL},
+			</if>
+			<if test="bizUUID != null">
+				BIZ_UUID = #{bizUUID,jdbcType=VARCHAR},
+			</if>
+			<if test="bizName != null">
+				BIZ_NAME = #{bizName,jdbcType=VARCHAR},
+			</if>
+			<if test="lon != null">
+				LON = #{lon,jdbcType=VARCHAR},
+			</if>
+			<if test="lat != null">
+				LAT = #{lat,jdbcType=VARCHAR},
+			</if>
+			<if test="mapt != null">
+				MAPT = #{mapt,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null">
+				IS_VALID= isValid
+			</if>
+		</set>
+		WHERE BIZ_CODE = #{bizCode,jdbcType=VARCHAR}
+	</update>
+
+	<!-- 新增GPS最新数据 -->
+	<insert id="insertLastestGpsData" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.DeviceGpsData">
+		<selectKey keyProperty="gpsId" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO
+		GPS_LOCATE
+		(
+		GPS_ID,
+		BIZ_TYPE,
+		BIZ_ID,
+		BIZ_UUID,
+		BIZ_CODE,
+		BIZ_NAME,
+		LON,
+		LAT,
+		MAPT,
+		CREATE_TIME,
+		IS_VALID,<![CDATA[SDO]]>
+		) VALUES (
+		#{gpsId,jdbcType=VARCHAR},
+		#{bizType,jdbcType=VARCHAR},
+		#{bizId,jdbcType=DECIMAL},
+		#{bizUUID,jdbcType=VARCHAR},
+		#{bizCode,jdbcType=VARCHAR},
+		#{bizName,jdbcType=VARCHAR},
+		#{lon,jdbcType=VARCHAR},
+		#{lat,jdbcType=VARCHAR},
+		#{mapt,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		1,MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(#{lon,jdbcType=VARCHAR},#{lat,jdbcType=VARCHAR}, NULL), NULL, NULL)
+		)
+	</insert>
+
+	<!-- 根据条件查询gps日表数据 -->
+	<select id="searchGpsDataList" resultType="java.util.Map">
+		SELECT
+			GPS_ID "gpsId",
+			BIZ_TYPE "bizType",
+			BIZ_ID "bizId",
+			BIZ_UUID "bizUUID",
+			BIZ_CODE "bizCode",
+			BIZ_NAME "bizName",
+			LON "x",
+			LAT "y",
+			MAPT "mapt",
+			CREATE_TIME "createTime",
+			CREATE_DATE "createDate",
+			IS_VALID "isValid"
+	    FROM
+		GPS_LOCATE_DAY
+		<where>
+			AND IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(bizType)">
+				AND BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(resno)">
+				AND BIZ_CODE = #{resno,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(locateTimeBegin) and @Ognl@isEmpty(locateTimeEnd)">
+				AND CREATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+			</if>
+			<if test="@Ognl@isEmpty(locateTimeBegin) and @Ognl@isEmpty(locateTimeEnd)">
+				AND CREATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+			</if>
+			<if test="@Ognl@isNotEmpty(locateTimeBegin) and @Ognl@isNotEmpty(locateTimeEnd)">
+				AND CREATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+				AND CREATE_TIME <![CDATA[<]]>TO_DATE(#{locateTimeEnd,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+			</if>
+			<if test="@Ognl@isNotEmpty(mapt)">
+				AND MAPT = #{mapt,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY CREATE_TIME
+	</select>
+
+    <select id="selectOneLastestGpsData" resultType="java.util.Map">
+        SELECT
+			GPS_ID "gpsId",
+			BIZ_TYPE "bizType",
+			BIZ_ID "bizId",
+			BIZ_UUID "bizUUID",
+			BIZ_CODE "bizCode",
+			BIZ_NAME "bizName",
+			LON "x",
+			LAT "y",
+			MAPT "mapt",
+			CREATE_TIME "createTime",
+			IS_VALID "isValid"
+        FROM
+        	GPS_LOCATE
+		WHERE IS_VALID = '1'
+		AND BIZ_CODE = #{resno,jdbcType=VARCHAR}
+    </select>
+
+	<!--查询执法仪最新定位数据-->
+	<select id="fetchEnForceRecorderLatestLocateDataListByResno" resultType="java.util.Map">
+		SELECT
+			t1.RES_ID "id",
+			t1.RES_ID "wid",
+			t1.RES_NAME "name",
+			t2.BIZ_CODE "bizCode",
+			t2.LON "x",
+			t2.LAT "y",
+			t2.MAPT "mapt"
+		FROM T_ZY_RES_INFO t1,GPS_LOCATE t2
+		WHERE t1.RES_NO = t2.BIZ_CODE
+			AND t1.STATUS = '001'
+			AND t1.RES_NO=#{resno,jdbcType=VARCHAR}
+			AND t2.MAPT=#{mapt,jdbcType=VARCHAR}
+		ORDER BY t2.LON
+	</select>
+
+	<!--根据resIds和mapt获取多个执法仪的最新定位信息；onlineStatus -1 最新gps数据二十分钟之内更新，表示设备在线, 否则不在线 -->
+	<select id="fetchMoreEnForceRecorderLatestLocateDataList" resultType="java.util.Map">
+		SELECT
+			t1.RES_ID "id",
+			t1.RES_ID "wid",
+			t1.RES_NAME "name",
+			t1.RES_NO "bizCode",
+			t2.LON "x",
+			t2.LAT "y",
+			t2.MAPT "mapt",
+		sign((SYSDATE - t2.CREATE_TIME )*24*60-20) "onlineStatus"
+		FROM T_ZY_RES_INFO t1 left join GPS_LOCATE t2
+			ON t1.RES_NO = t2.BIZ_CODE
+			<if test="@Ognl@isNotEmpty(mapt)">
+				AND t2.MAPT = #{mapt,jdbcType=VARCHAR}
+			</if>
+		WHERE t1.STATUS = '001'
+			<choose>
+				<when test="@Ognl@isNotEmpty(resIdArray)">
+					AND t1.RES_ID IN
+					<foreach collection="resIdArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(resId)">
+					AND t1.RES_ID = #{resId,jdbcType=DECIMAL}
+				</when>
+			</choose>
+		ORDER BY t2.LON
+	</select>
+
+</mapper>

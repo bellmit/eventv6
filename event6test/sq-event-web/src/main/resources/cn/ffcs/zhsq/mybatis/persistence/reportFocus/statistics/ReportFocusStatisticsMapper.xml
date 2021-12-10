@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.statistics.ReportFocusStatisticsMapper" >
+
+    <!-- 无分页获取在办超期量 -->
+    <select id="findListData" resultType="java.util.Map">
+        SELECT
+            T1.REPORT_TYPE,
+            COUNT(1) AS TOTAL,
+            SUM(DECODE(T3.STATUS, '2', 1, 0)) BANJIE,
+            SUM(DECODE(T1.HANDLE_DATE_FLAG, '3', 1, 0)) CQ_TOTAL,
+            COUNT(CASE WHEN T3.STATUS='1' AND T1.HANDLE_DATE_FLAG='3' THEN 1 ELSE NULL END) ZBCQ,
+            COUNT(CASE WHEN T3.STATUS='2' AND T1.HANDLE_DATE_FLAG='3' THEN 1 ELSE NULL END) BJCQ ,
+            COUNT(CASE WHEN T4.SUPERVISE_MARK='1' THEN 1 ELSE NULL END) DUBAN
+        FROM T_EVENT_REPORT_FOCUS T1
+        INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE T3
+        ON T1.REPORT_ID = T3.FORM_ID
+        AND T3.FORM_TYPE_ID IN  (SELECT form_type_id FROM t_event_report_focus_type  where REPORT_TYPE  !='6' and status in (1,2) )
+        LEFT JOIN WORKFLOW.WF_INSTANCE_STATUS T4
+        ON T3.INSTANCE_ID = T4.INSTANCE_ID
+        WHERE T1.IS_VALID = '1'  and REPORT_TYPE IN  (SELECT REPORT_TYPE FROM t_event_report_focus_type  where REPORT_TYPE !='6' and status = 2 )
+        AND T1.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(beginTime)">
+            AND T1.REPORT_TIME <![CDATA[>=]]> TO_DATE(#{beginTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)" >
+            AND T1.REPORT_TIME <![CDATA[<]]> TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') + 1
+        </if>
+        GROUP BY T1.REPORT_TYPE
+        ORDER BY ZBCQ DESC,to_number(t1.report_type )
+    </select>
+
+    <select id="findCount4EpcOverdue" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1)
+        <include refid="sql4EpcOverdue"></include>
+    </select>
+
+    <select id="findList4EpcOverdue" resultType="java.util.Map">
+        SELECT
+        <include refid="list_column"></include>
+        <include refid="sql4EpcOverdue"></include>
+        <include refid="order_by"></include>
+    </select>
+
+    <sql id="sql4EpcOverdue">
+        FROM T_EVENT_EPC_OVERDUE T1
+        <include refid="find_where_epcOverdue"></include>
+    </sql>
+    <sql id="list_column">
+        T1.REPORT_TYPE      "reportType",
+        T1.INSTANCE_ID      "instanceId",
+        T1.REPORT_UUID      "reportUUID",
+        T1.REPORT_CODE		"reportCode",
+        T1.TASK_NAME		"taskName",
+        T1.TRANSACTOR		"transactor",
+        T1.INTER_TIME		"interTime",
+        T1.STREET_NAME		"streetName",
+        T1.COMMUNITY_NAME	"communityName",
+        TO_CHAR(T1.INTERVAL_TIME)	"intervalTime",
+        TO_CHAR(T1.PERIOD_TIME)	    "periodTime",
+        T1.TASK_TYPE	    "taskType",
+        T1.GRID_NAME		"gridName"
+    </sql>
+    <sql id="find_where_epcOverdue">
+        WHERE 1=1
+        <if test="@Ognl@isNotEmpty(reportType)">
+            AND T1.REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(infoOrgCode)">
+            AND T1.REGION_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+        </if>
+        <if test="@Ognl@isNotEmpty(beginTime)">
+            AND T1.REPORT_TIME <![CDATA[>=]]> TO_DATE(#{beginTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)" >
+            AND T1.REPORT_TIME <![CDATA[<]]> TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') + 1
+        </if>
+    </sql>
+    <!-- 排序字段 -->
+    <sql id="order_by">
+  		ORDER BY T1.REPORT_TIME DESC
+  	</sql>
+</mapper>

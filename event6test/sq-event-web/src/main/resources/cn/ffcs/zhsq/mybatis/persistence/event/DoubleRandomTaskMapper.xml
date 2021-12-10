@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.DoubleRandomTaskMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.task.DoubleRandomTask">
+		<id column="ID" property="id" jdbcType="DECIMAL" />
+		<result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" /> <!--事件ID-->
+		<result column="JUDGE_COMMENT" property="judgeComment" jdbcType="VARCHAR" /> <!--评价意见-->
+		<result column="JUDGE_RESULE" property="judgeResule" jdbcType="VARCHAR" /> <!--评价结果(1:合格,2:不合格)-->
+		<result column="JUDGE_PERSON" property="judgePerson" jdbcType="DECIMAL" /> <!--评价人-->
+		<result column="JUDGE_PERSON_GRID" property="judgePersonGridId" jdbcType="DECIMAL" /> <!--评价人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态.1:有效,0:无效-->
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+		<result column="CREATE_ORG_CODE" property="createOrgCode" jdbcType="VARCHAR" />
+		<result column="TASK_TYPE" property="taskType" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="StatisticsResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.task.DoubleRandomTaskStatistics">
+		<result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" />
+		<result column="REGION_NAME" property="regionName" jdbcType="VARCHAR" />
+		<result column="HGL" property="hgl" jdbcType="VARCHAR" /> <!--合格率-->
+		<result column="JSL" property="jsl" jdbcType="VARCHAR" /> <!--及时率-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_DOUBLE_RANDOM_TASK T
+		WHERE T.STATUS = '1'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.EVENT_ID,
+			T.JUDGE_COMMENT,
+			T.JUDGE_RESULE,
+			T.JUDGE_PERSON,
+			T.JUDGE_PERSON_GRID,
+			T.CREATE_TIME,
+			T.UPDATE_TIME,
+			T.STATUS,
+			T.CREATE_USER_ID,
+			T.CREATE_ORG_CODE,
+			T.TASK_TYPE
+		FROM
+			T_ZZ_DOUBLE_RANDOM_TASK T
+		WHERE T.STATUS = '1'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.task.DoubleRandomTask">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+			SELECT SEQ_ZZ_DOUBLE_RANDOM_TASK.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_ZZ_DOUBLE_RANDOM_TASK
+		(
+			ID,
+			EVENT_ID,
+			JUDGE_COMMENT,
+			JUDGE_RESULE,
+			JUDGE_PERSON,
+			JUDGE_PERSON_GRID,
+			CREATE_TIME,
+			UPDATE_TIME,
+			STATUS,
+			CREATE_USER_ID,
+			CREATE_ORG_CODE,
+			TASK_TYPE
+		) VALUES (
+			#{id,jdbcType=DECIMAL},
+			#{eventId,jdbcType=DECIMAL},
+			#{judgeComment,jdbcType=VARCHAR},
+			#{judgeResule,jdbcType=VARCHAR},
+			#{judgePerson,jdbcType=DECIMAL},
+			#{judgePersonGridId,jdbcType=DECIMAL},
+			sysdate,
+			sysdate,
+			'1',
+			#{createUserId,jdbcType=DECIMAL},
+			#{createOrgCode,jdbcType=VARCHAR},
+			#{taskType,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.event.task.DoubleRandomTask">
+		UPDATE
+			T_ZZ_DOUBLE_RANDOM_TASK
+		<set> 
+			<if test="eventId != null " >
+				EVENT_ID=#{eventId,jdbcType=DECIMAL},
+			</if>
+			<if test="judgeComment != null " >
+				JUDGE_COMMENT=#{judgeComment,jdbcType=VARCHAR},
+			</if>
+			<if test="judgeResule != null " >
+				JUDGE_RESULE=#{judgeResule,jdbcType=VARCHAR},
+			</if>
+			<if test="judgePerson != null " >
+				JUDGE_PERSON=#{judgePerson,jdbcType=DECIMAL},
+			</if>
+			<if test="judgePersonGridId != null " >
+				JUDGE_PERSON_GRID=#{judgePersonGridId,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.EVENT_ID,
+			T.JUDGE_COMMENT,
+			T.JUDGE_RESULE,
+			T.JUDGE_PERSON,
+			T.JUDGE_PERSON_GRID,
+			T.CREATE_TIME,
+			T.UPDATE_TIME,
+			T.STATUS,
+			T.CREATE_USER_ID,
+			T.CREATE_ORG_CODE,
+			T.TASK_TYPE
+		FROM
+			T_ZZ_DOUBLE_RANDOM_TASK T
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.event.task.DoubleRandomTask">
+		UPDATE
+			T_ZZ_DOUBLE_RANDOM_TASK
+		SET
+			STATUS='0',
+			UPDATE_TIME = sysdate
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</delete>
+
+  <!-- 随机获取N条已待办的事件数据,排除除双随机的事件 -->
+  <select id="getRandomEvent" resultMap="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposalMapper.BaseResultMap">
+    SELECT * FROM (
+	  SELECT
+      	<include refid="event_column"/>
+      FROM T_EVENT T1, T_DC_GRID T2,t_sj_eva_result s
+      WHERE T1.GRID_ID = T2.GRID_ID
+      AND s.object_id = t1.event_id 
+      AND s.eva_obj = '03' AND s.eva_level = '02' --抽取事件评价结果为满意的事件
+      AND T2.STATUS = '001'
+      AND T1.STATUS = '04'
+      AND T1.GRID_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+      AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+      AND T2.GRID_LEVEL <![CDATA[>=]]> 4 --街道数据
+      AND T1.fin_time BETWEEN to_date(#{startTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+		AND to_date(#{endTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss')
+	  AND NOT EXISTS (SELECT k.* FROM T_ZZ_DOUBLE_RANDOM_TASK k WHERE k.event_id = t1.event_id and k.status = '1')
+      ORDER BY DBMS_RANDOM.random
+	) WHERE ROWNUM <![CDATA[ <= ]]> #{size,jdbcType=DECIMAL} 
+  </select>
+  <!-- 我的待办/经办事件列表 -->
+  <select id="findEventPageList" resultMap="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposalMapper.BaseResultMap">
+	  	SELECT
+	  		<include refid="event_column"/>
+	  		,T.JUDGE_RESULE D_JUDGE_RESULT
+	  		,T.ID D_ID
+	  		,TO_CHAR(T.CREATE_TIME, 'YYYY-MM-DD HH24:MI:SS') D_BEGIN_TIME
+       		,TO_CHAR(T.CREATE_TIME+3, 'YYYY-MM-DD HH24:MI:SS') D_END_TIME,
+       		T.TASK_TYPE||'' D_TASK_TYPE
+	  	FROM T_EVENT T1, T_DC_GRID T2,T_ZZ_DOUBLE_RANDOM_TASK T
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T.EVENT_ID = T1.EVENT_ID
+	  	AND T.STATUS='1'
+	  	AND T2.STATUS = '001'
+	  	AND T1.STATUS = '04'
+	  	AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+	  	<include refid="find_where"/>
+	  	<include refid="find_where_event"/>
+	  	ORDER BY T1.CREATE_TIME DESC
+  </select>
+  <select id="countEventList" resultType="long">
+	  	SELECT
+	  		COUNT(*)
+	  	FROM T_EVENT T1, T_DC_GRID T2,T_ZZ_DOUBLE_RANDOM_TASK T
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T.EVENT_ID = T1.EVENT_ID
+	  	AND T2.STATUS = '001'
+	  	AND T1.STATUS = '04'
+	  	AND T.STATUS='1'
+	  	AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+	  	<include refid="find_where"/>
+	  	<include refid="find_where_event"/>
+  </select>
+  
+  <!-- 督查事件列表 -->
+  <select id="findDcEventPageList" resultMap="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposalMapper.BaseResultMap">
+	  	WITH D AS (
+	  		SELECT T.EVENT_ID,
+	  			   MAX(T.CREATE_TIME) CREATE_TIME,
+	  			   MAX(T.TASK_TYPE) TASK_TYPE,
+	  			   CASE 
+		               WHEN MIN(NVL(T.JUDGE_RESULE,'0'))='0' THEN '0'
+		               ELSE MAX(NVL(T.JUDGE_RESULE,'2'))
+		           END JUDGE_RESULT_DR
+	  		FROM T_ZZ_DOUBLE_RANDOM_TASK T 
+	  		WHERE T.STATUS = '1'
+	  		<include refid="find_where"/>
+	  		GROUP BY T.EVENT_ID
+	  	)
+	  	SELECT
+	  		<include refid="event_column"/>
+	  		,TO_CHAR(T.CREATE_TIME, 'YYYY-MM-DD HH24:MI:SS') D_BEGIN_TIME
+       		,TO_CHAR(T.CREATE_TIME+3, 'YYYY-MM-DD HH24:MI:SS') D_END_TIME,
+       		JUDGE_RESULT_DR D_JUDGE_RESULT,T.TASK_TYPE||'' D_TASK_TYPE
+	  	FROM T_EVENT T1, T_DC_GRID T2,D T
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T.EVENT_ID = T1.EVENT_ID
+	  	AND T2.STATUS = '001'
+	  	AND T1.STATUS = '04'
+	  	AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+	  	<include refid="find_where_event"/>
+	  	<if test="currStatusParam != null and currStatusParam != ''">
+	  		<choose>
+		  		<when test="currStatusParam == '0'.toString() ">
+		  			AND T.JUDGE_RESULT_DR = '0'
+		  		</when>
+		  		<otherwise>
+		  			AND T.JUDGE_RESULT_DR IN('1','2') 
+		  		</otherwise>
+		  	</choose>
+	  	</if>
+	  	<if test="dcResultParam != null and dcResultParam != ''">
+	  		AND T.JUDGE_RESULT_DR = #{dcResultParam,jdbcType=VARCHAR}
+	  	</if>
+	  	ORDER BY T1.CREATE_TIME DESC
+	  	
+  </select>
+  <select id="countDcEventList" resultType="long">
+	  	WITH D AS (
+	  		SELECT T.EVENT_ID,
+	  			   MAX(T.CREATE_TIME) CREATE_TIME,
+	  			   CASE 
+		               WHEN MIN(NVL(T.JUDGE_RESULE,'0'))='0' THEN '0'
+		               ELSE MAX(NVL(T.JUDGE_RESULE,'2'))
+		           END JUDGE_RESULT_DR
+	  		FROM T_ZZ_DOUBLE_RANDOM_TASK T 
+	  		WHERE T.STATUS = '1'
+	  		<include refid="find_where"/>
+	  		GROUP BY T.EVENT_ID
+	  	)
+	  	SELECT
+	  		COUNT(*)
+	  	FROM T_EVENT T1, T_DC_GRID T2,D T
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T.EVENT_ID = T1.EVENT_ID
+	  	AND T2.STATUS = '001'
+	  	AND T1.STATUS = '04'
+	  	AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+	  	<include refid="find_where_event"/>
+	  	<if test="currStatusParam != null and currStatusParam != ''">
+	  		<choose>
+		  		<when test="currStatusParam == '0'.toString() ">
+		  			AND T.JUDGE_RESULT_DR = '0'
+		  		</when>
+		  		<otherwise>
+		  			AND T.JUDGE_RESULT_DR IN('1','2') 
+		  		</otherwise>
+		  	</choose>
+	  	</if>
+	  	<if test="dcResultParam != null and dcResultParam != ''">
+	  		AND T.JUDGE_RESULT_DR = #{dcResultParam,jdbcType=VARCHAR}
+	  	</if>
+  </select>
+  
+  <!-- 获取指定已待办的事件数据,排除除双随机的事件 -->
+  <select id="getAssignEvent" resultMap="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposalMapper.BaseResultMap">
+	  SELECT
+      	<include refid="event_column"/>
+      FROM T_EVENT T1, T_DC_GRID T2,t_sj_eva_result s
+      WHERE T1.GRID_ID = T2.GRID_ID
+      AND s.object_id = t1.event_id 
+      AND s.eva_obj = '03' AND s.eva_level = '02' --抽取事件评价结果为满意的事件
+      AND T2.STATUS = '001'
+      AND T1.STATUS = '04'
+      AND T2.GRID_LEVEL <![CDATA[>=]]> 4 --街道数据
+      AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+      <include refid="find_where_event"/>
+	  AND NOT EXISTS (SELECT k.* FROM T_ZZ_DOUBLE_RANDOM_TASK k WHERE k.event_id = t1.event_id and k.status='1')
+      ORDER BY T1.CREATE_TIME DESC
+  </select>
+  
+  <select id="countAssignEvent" resultType="long">
+	  SELECT
+      	COUNT(*)
+      FROM T_EVENT T1, T_DC_GRID T2,t_sj_eva_result s
+      WHERE T1.GRID_ID = T2.GRID_ID
+      AND s.object_id = t1.event_id 
+      AND s.eva_obj = '03' AND s.eva_level = '02' --抽取事件评价结果为满意的事件
+      AND T2.STATUS = '001'
+      AND T1.STATUS = '04'
+      AND T2.GRID_LEVEL <![CDATA[>=]]> 4 --街道数据
+      AND (T1.biz_platform != '018' OR T1.biz_platform IS NULL) --上报至12345的剔除
+      <include refid="find_where_event"/>
+	  AND NOT EXISTS (SELECT k.* FROM T_ZZ_DOUBLE_RANDOM_TASK k WHERE k.event_id = t1.event_id and k.status='1')
+  </select>
+  
+  
+  <select id="statisticsByCountry" resultMap="StatisticsResultMap">
+		with grid as(
+		     select g.grid_id,g.grid_code,g.grid_name
+		     from t_dc_grid g 
+		     where length(g.grid_code) = 9
+		),D AS
+		 (SELECT CASE max(nvl(t.judge_resule,'2'))
+		           WHEN '1' THEN 1 ELSE 0 END hg_result, --1:合格,0:不合格
+		         t.event_id,
+		         SUBSTR(t2.grid_code, 0, 9) region_code
+		    FROM T_EVENT T1, T_DC_GRID T2, T_ZZ_DOUBLE_RANDOM_TASK t
+		   WHERE T1.GRID_ID = T2.GRID_ID
+		     AND T.EVENT_ID = T1.EVENT_ID
+		     AND T2.STATUS = '001'
+		     AND T1.STATUS = '04'
+		     AND t.status = '1'
+		     AND (t.TASK_TYPE IS NULL OR t.TASK_TYPE='1') --只统计市级登录账号录入数据
+		     AND t.create_time BETWEEN to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss') AND
+		         to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss')
+		   GROUP BY t.event_id, t2.grid_code),
+		E AS
+		 (SELECT d.*, i.org_name
+		    FROM D d, t_dc_org_entity_info i
+		   WHERE d.region_code = i.org_code
+		     AND i.status = '001')
+		select grid_code region_code , grid_name region_name, nvl(hgl,'-')hgl,nvl(js_percent,'-') jsl
+		from (
+		       select gr.*,g2.total_count,js_count,
+		             case 
+		               when (g2.total_count is null or g2.total_count = 0) then
+		                 '-'
+		               else
+		                 to_char(100 * js_count/g2.total_count, '990.99') ||'%'
+		               end js_percent
+		      from grid gr
+		      left join (
+		          select g.grid_id,g.grid_code,count(g.grid_id) total_count,sum(js_count) js_count
+		          from grid g 
+		          inner join (
+		               select dg.grid_code,rt.js_count
+		               from (
+		                    select t1.*,t2.js_count 
+		                    from T_ZZ_DOUBLE_RANDOM_TASK t1 
+		                    left join (
+		                        SELECT  CASE  WHEN (t.judge_resule IS NOT NULL AND ROUND(TO_NUMBER(t.update_time - t.create_time)) &lt;= 3)
+		                               THEN 1 ELSE  0 END js_count,t.id
+		                        FROM T_ZZ_DOUBLE_RANDOM_TASK T  WHERE T.STATUS = '1'
+		                    ) t2 on t1.status='1' and t1.id=t2.id
+		                    where t1.create_time BETWEEN to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss') 
+		                          AND to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-MM-dd hh24:mi:ss')
+		                          AND (t1.TASK_TYPE IS NULL OR t1.TASK_TYPE='1') --只统计市级登录账号录入数据
+		               ) rt , t_dc_grid dg
+		               where rt.judge_person_grid=dg.grid_id and rt.status='1' and dg.status='001'
+		          ) t2 on t2.grid_code like g.grid_code||'%'
+		          group by g.grid_id,g.grid_code,g.grid_name
+		      ) g2 on gr.grid_id = g2.grid_id
+		) tt1 left join (
+		    SELECT e.region_code,
+		           e.org_name region_name,
+		           to_char(100 * sum(hg_result) / COUNT(1), '990.99') || '%' hgl
+		      FROM E e
+		     GROUP BY e.region_code, e.org_name
+		) tt2 on tt1.grid_code = tt2.region_code
+		where (js_percent != '-' or hgl is not null)
+  </select>
+  
+  <sql id="find_where">
+		<if test="id != null and id != ''" >
+			<![CDATA[ AND T.ID = #{id,jdbcType=DECIMAL} ]]>
+		</if>
+		<choose>
+			<when test="taskType == null || taskType == '' || taskType =='1'.toString()">
+				AND (T.TASK_TYPE IS NULL OR T.TASK_TYPE='1')
+			</when>
+			<when test="taskType == 'all'"></when>
+			<otherwise>
+				<![CDATA[ AND T.TASK_TYPE = #{taskType,jdbcType=VARCHAR} ]]>
+			</otherwise>
+		</choose>
+		<if test="eventId != null and eventId != ''" >
+			<![CDATA[ AND T.EVENT_ID = #{eventId,jdbcType=DECIMAL} ]]>
+		</if> 
+		<if test="createUserId != null and createUserId != ''" >
+			<![CDATA[ AND T.CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL} ]]>
+		</if> 
+		<if test="judgeResule != null and judgeResule != ''" >
+			<choose>
+			<when test="judgeResule == 'is not null'">
+				<![CDATA[ AND T.JUDGE_RESULE IS NOT NULL ]]>
+			</when>
+			<when test="judgeResule == 'is null'">
+				<![CDATA[ AND T.JUDGE_RESULE IS NULL ]]>
+			</when>
+			<otherwise>
+				<![CDATA[ AND T.JUDGE_RESULE = #{judgeResule,jdbcType=VARCHAR} ]]>
+			</otherwise>
+			</choose>
+		</if> 
+		<if test="judgePerson != null and judgePerson != ''" >
+			<choose>
+				<when test="createOrgCode != null and createOrgCode != ''">
+					<choose>
+						<when test="unionType != null and unionType=='OR'">
+							AND (
+							T.JUDGE_PERSON_GRID = #{judgePerson,jdbcType=DECIMAL}--特别注意,这时候judgePerson存的是评价人的网格
+							OR
+							T.JUDGE_PERSON_GRID IN (SELECT T.GRID_ID  FROM T_DC_GRID T WHERE T.PARENT_GRID_ID = #{judgePerson,jdbcType=DECIMAL})
+							OR 
+							T.CREATE_ORG_CODE like #{createOrgCode,jdbcType=VARCHAR}||'%')
+						</when>
+						<otherwise>
+							AND T.JUDGE_PERSON = #{judgePerson,jdbcType=DECIMAL}
+						</otherwise>
+					</choose>
+				</when>
+				<otherwise>
+					AND T.JUDGE_PERSON = #{judgePerson,jdbcType=DECIMAL}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="createOrgCode != null and createOrgCode != '' and (judgePerson==null or judgePerson=='')">
+			AND T.CREATE_ORG_CODE like #{createOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="createTimeStart2 != null">
+	  		AND T.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart2,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="createTimeEnd2 != null">
+	   		AND T.CREATE_TIME <![CDATA[<=]]>TO_DATE(#{createTimeEnd2,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <!--  过期标识,1:过期,2:正常  -->
+	   <if test="outOfDateFlag != null">
+	   		<choose>
+	   			<when test="outOfDateFlag == '1' or outOfDateFlag == 1 ">
+	   				AND ((T.JUDGE_RESULE IS NOT NULL AND ROUND(TO_NUMBER(T.UPDATE_TIME-T.CREATE_TIME)) <![CDATA[<=]]> 3)
+	   					OR (T.JUDGE_RESULE IS NULL AND ROUND(TO_NUMBER(SYSDATE-T.CREATE_TIME)) <![CDATA[<=]]> 3))
+	   			</when>
+	   			<when test="outOfDateFlag == '2' or outOfDateFlag == 2 ">
+	   				AND ((T.JUDGE_RESULE IS NOT NULL AND ROUND(TO_NUMBER(T.UPDATE_TIME-T.CREATE_TIME)) <![CDATA[>]]> 3)
+	   					OR (T.JUDGE_RESULE IS NULL AND ROUND(TO_NUMBER(SYSDATE-T.CREATE_TIME)) <![CDATA[>]]> 3))
+	   			</when>
+	   		</choose>
+	   </if>
+  </sql>
+	
+  <sql id="event_column">
+	  	T1.EVENT_ID,
+	    T1.CODE_,
+	    T1.EVENT_NAME,
+	    T1.TYPE_,
+	    T1.CONTENT_,
+	    T1.OCCURRED,
+	    T1.HAPPEN_TIME,
+	    TO_CHAR(T1.HAPPEN_TIME, 'YYYY-MM-DD HH24:MI:SS') HAPPEN_TIME_STR,
+	    TO_CHAR(T1.END_TIME, 'YYYY-MM-DD HH24:MI:SS') END_TIME_STR,
+	    T1.GRID_ID,
+	    T2.GRID_NAME,
+	    T2.GRID_PATH,
+	    T1.GRID_CODE,
+	    T1.EVENT_NATURE, 
+	    T1.SOURCE,
+	    T1.INVOLVED_NUM,
+	    T1.INVOLVED_PERSION,
+	    T1.INFLUENCE_DEGREE,
+	    T1.URGENCY_DEGREE,
+	    T1.TEL,
+	    T1.CONTACT_USER,
+	    T1.STATUS,
+	    T1.SUB_STATUS,
+	    T1.CREATE_TIME,
+	    TO_CHAR(T1.CREATE_TIME, 'YYYY-MM-DD HH24:MI:SS') CREATE_TIME_STR,
+	    T1.FIN_TIME,
+	    TO_CHAR(T1.FIN_TIME, 'YYYY-MM-DD HH24:MI:SS') FIN_TIME_STR,
+	    T1.BIZ_PLATFORM,
+	    T1.INVOLVED_MONEY,
+	    T1.COLLECT_WAY,
+	    T1.HANDLE_DATE,
+	    T1.RESULT,
+	    TO_CHAR(T1.HANDLE_DATE, 'YYYY-MM-DD HH24:MI:SS') HANDLE_DATE_STR,
+	    T1.ATTR_FLAG,
+	    T1.HANDLE_DATE_FLAG
+  </sql>
+	
+  <sql id="find_where_event">
+	  	<if test="code != null and code != '' ">
+			AND T1.CODE_ = #{code,jdbcType=VARCHAR}
+		</if>
+	  	<if test="bizPlatform != null and bizPlatform != '' ">
+			AND T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+		</if>
+		<if test="eventName != null and eventName != '' ">
+			AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="type != null and type != '' ">
+			AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="content != null and content != '' ">
+			AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="occurred != null and occurred != '' ">
+			AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="happenTime != null">
+			AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+		</if>
+		<choose>
+			<when test="infoOrgCode != null and infoOrgCode != '' ">
+				AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="gridId != null ">
+				AND T1.GRID_ID IN 
+				(SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.STATUS = '001' START WITH G.GRID_ID = #{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR G.GRID_ID = G.PARENT_GRID_ID)
+			</when>
+		</choose>
+		<if test="eventNature != null and eventNature != '' ">
+			AND T1.EVENT_NATURE = #{eventNature,jdbcType=VARCHAR}
+		</if>
+		<if test="source != null and SOURCE != '' ">
+			AND T1.SOURCE IN (${source})
+		</if>
+		<if test="involvedNum != null">
+			AND T1.INVOLVED_NUM = #{involvedNum,jdbcType=DECIMAL}
+		</if>
+		<if test="influenceDegree != null and influenceDegree != '' ">
+			AND T1.INFLUENCE_DEGREE IN (${influenceDegree})
+		</if>
+		<if test="urgencyDegree != null and urgencyDegree != '' ">
+			AND T1.URGENCY_DEGREE IN (${urgencyDegree})
+		</if>
+		<if test="tel != null and tel != '' ">
+			AND T1.TEL = #{tel,jdbcType=VARCHAR}
+		</if>
+		<if test="contactUser != null">
+			AND T1.CONTACT_USER = #{contactUser,jdbcType=DECIMAL}
+		</if>
+		<if test="creatorId != null">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		
+		<if test="handleStatus != null">
+			<if test="handleStatus ==  '01'">
+				AND SYSDATE > T1.HANDLE_DATE 
+			</if>
+		</if>
+		<choose>
+			<when test="statusList != null">
+				AND T1.STATUS IN
+				<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<otherwise>
+				<if test="status!=null and status!=''">
+					AND T1.STATUS = #{status,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="involvedMoney != null">
+			AND T1.INVOLVED_MONEY = #{involvedMoney,jdbcType=DECIMAL}
+		</if>
+		<if test="collectWay != null and collectWay != '' ">
+			AND T1.COLLECT_WAY IN (${collectWay})
+		</if>
+		<if test="(bigTypes!=null) or (smallTypes!=null) ">
+			AND (
+				<choose>
+					<when test="bigTypes != null">
+						SUBSTR(T1.TYPE_,0,2) IN (${bigTypes}) 
+					</when>
+					<otherwise>
+						1 != 1 
+					</otherwise>
+				</choose>
+				
+				<choose>
+					<when test="smallTypes != null">
+						OR T1.TYPE_ IN (${smallTypes})
+					</when>
+					<otherwise>
+						OR 1 != 1 
+					</otherwise>
+				</choose>
+			)
+		</if>
+		<choose>
+			<when test="removeTypeArray != null and removeTypeArray.length > 0 ">
+				AND
+				<foreach collection="removeTypeArray" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+			<when test="removeTypeList != null and removeTypeList.size > 0 ">
+				AND
+				<foreach collection="removeTypeList" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+		</choose>
+		
+		<if test="involvedPersion != null and involvedPersion != '' ">
+			AND T1.INVOLVED_PERSION LIKE '%'||#{involvedPersion,jdbcType=VARCHAR}||'%'
+		</if>
+		
+		<if test="generalSearch != null and generalSearch != '' ">
+			AND (
+			  T1.CONTENT_ LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+			  OR
+			  T1.OCCURRED LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+			  OR
+			  T1.INVOLVED_PERSION LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}|| '%'
+		  )
+	  </if>
+	   <if test="keyWord != null and keyWord != '' ">
+			AND (
+			  T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			  OR
+			  T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			   OR
+			  T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+		  )
+	  </if>
+	  <if test="startHappenTime != null">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="endHappenTime != null">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	  <if test="happenTimeStart != null">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="happenTimeEnd != null">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	  <if test="createTimeStart!=null">
+	  		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="createTimeEnd != null">
+	   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	  <if test="updateTimeStart != null">
+	  		AND T1.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="updateTimeEnd != null">
+	   		AND T1.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	  <if test="handleDateStart != null">
+	  		AND T1.HANDLE_DATE <![CDATA[>=]]>TO_DATE(#{handleDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="handleDateEnd != null">
+	   		AND T1.HANDLE_DATE <![CDATA[<]]>TO_DATE(#{handleDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="handleDateFlag != null and handleDateFlag != '' ">
+	   		AND T1.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+	   </if>
+	   <if test="finStartTime != null">
+	  		AND T1.fin_time <![CDATA[>=]]>TO_DATE(#{finStartTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="finEndTIme != null">
+	   		AND T1.fin_time <![CDATA[<]]>TO_DATE(#{finEndTIme,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+  </sql>
+</mapper>

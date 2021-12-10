@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.InvolvedPeopleMapper" >
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.InvolvedPeople" >
+		<id column="IP_ID" property="ipId" jdbcType="DECIMAL" />
+		<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="CARD_TYPE" property="cardType" jdbcType="VARCHAR"/>
+		<result column="ID_CARD" property="idCard" jdbcType="VARCHAR" />
+		<result column="HOME_ADDR" property="homeAddr" jdbcType="VARCHAR" />
+		<result column="TEL" property="tel" jdbcType="VARCHAR" />
+		<result column="PEOPLE_PROP" property="peopleProp" jdbcType="VARCHAR" />
+		<result column="PEOPLE_TYPE" property="peopleType" jdbcType="VARCHAR" />
+		<result column="REMARK_" property="remark" jdbcType="VARCHAR" />
+		<result column="SEX_" property="sex" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="TIMESTAMP" />
+		<result column="AGE_" property="age" jdbcType="DECIMAL" />
+		<result column="PIC_URL" property="picUrl" jdbcType="VARCHAR" />
+		<result column="POLITICS" property="politics" jdbcType="VARCHAR" />
+		<result column="NATIONALITY" property="nationality" jdbcType="VARCHAR" />
+		<result column="NATION_" property="nation" jdbcType="VARCHAR" />
+		<result column="BIRTH_PLACE" property="birthPlace" jdbcType="VARCHAR" />
+		<result column="RELIGION" property="religion" jdbcType="VARCHAR" />
+		<result column="USED_NAME" property="usedName" jdbcType="VARCHAR" />
+		<result column="EDU_" property="edu" jdbcType="VARCHAR" />
+		<result column="MARRIAGE" property="marriage" jdbcType="VARCHAR" />
+		<result column="PROFESSION_TYPE" property="professionType" jdbcType="VARCHAR" />
+		<result column="PROFESSION" property="profession" jdbcType="VARCHAR" />
+		<result column="RE_ORG_CODE" property="reOrgCode" jdbcType="VARCHAR" />
+		<result column="REGIST_ADDR" property="registAddr" jdbcType="VARCHAR" />
+		<result column="LI_ORG_CODE" property="liOrgCode" jdbcType="VARCHAR" />
+		<result column="RESIDENCE_ADDR" property="residenceAddr" jdbcType="VARCHAR" />
+		<result column="HOME_PHONE" property="homePhone" jdbcType="VARCHAR" />
+		<result column="WORK_UNIT" property="workUnit" jdbcType="VARCHAR" />
+		<result column="IS_MENTAL_DISEASE" property="isMentalDisease" jdbcType="VARCHAR" />
+		<result column="IS_MINORS" property="isMinors" jdbcType="VARCHAR" />
+		<result column="IS_TEENAGER" property="isTeenager" jdbcType="VARCHAR" />
+		<result column="IS_SKELETON_STAFF" property="isSkeletonStaff" jdbcType="VARCHAR" />
+		<result column="CI_RS_ID" property="ciRsId" jdbcType="DECIMAL" />
+		<result column="PARTY_ID" property="partyId" jdbcType="DECIMAL" />
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+		
+		<result column="INVOLVED_PEOPLE_TYPE" property="involvedPeopleType" jdbcType="VARCHAR" /><!-- 当事人类型代码 -->
+		<result column="INVOLVED_PEOPLE_TYPE_STR" property="involvedPeopleTypeStr" jdbcType="VARCHAR" /><!-- 当事人类型代码 -->
+		
+	</resultMap>
+  
+  <sql id="same_column">
+  	T1.IP_ID, T1.BIZ_ID, T1.BIZ_TYPE, T1.NAME, T1.CARD_TYPE, T1.ID_CARD, T1.HOME_ADDR, T1.TEL, 
+  	T1.PEOPLE_PROP, T1.PEOPLE_TYPE, T1.REMARK_, T1.SEX_, T1.BIRTHDAY, T1.AGE_, T1.PIC_URL, T1.POLITICS, T1.NATIONALITY, 
+  	T1.NATION_, T1.BIRTH_PLACE, T1.RELIGION, T1.USED_NAME, T1.EDU_, T1.MARRIAGE, T1.PROFESSION_TYPE, T1.PROFESSION, 
+  	T1.RE_ORG_CODE, T1.REGIST_ADDR, T1.LI_ORG_CODE, T1.RESIDENCE_ADDR, T1.HOME_PHONE, T1.WORK_UNIT, T1.IS_MENTAL_DISEASE, T1.IS_MINORS, 
+  	T1.IS_TEENAGER, T1.IS_SKELETON_STAFF, T1.CI_RS_ID, T1.PARTY_ID,T1.INVOLVED_PEOPLE_TYPE,T1.INVOLVED_PEOPLE_TYPE_STR
+  </sql>
+
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.InvolvedPeople" >
+ 	<selectKey keyProperty="ipId" resultType="long" order="BEFORE">
+		SELECT SEQ_INVOLVED_PEOPLE_ID.NEXTVAL FROM DUAL
+	</selectKey>
+	INSERT INTO T_ZZ_INVOLVED_PEOPLE(
+		IP_ID, BIZ_ID, BIZ_TYPE, NAME, CARD_TYPE, ID_CARD, HOME_ADDR, TEL, PEOPLE_PROP, PEOPLE_TYPE, REMARK_, SEX_,
+		BIRTHDAY, AGE_, PIC_URL, POLITICS, NATIONALITY, NATION_, BIRTH_PLACE, RELIGION, USED_NAME, EDU_, MARRIAGE, PROFESSION_TYPE, PROFESSION,
+		RE_ORG_CODE, REGIST_ADDR, LI_ORG_CODE, RESIDENCE_ADDR, HOME_PHONE, WORK_UNIT, IS_MENTAL_DISEASE, IS_MINORS, IS_TEENAGER, IS_SKELETON_STAFF, 
+		CI_RS_ID, PARTY_ID, CREATE_USER_ID,CREATE_TIME,UPDATE_TIME, INVOLVED_PEOPLE_TYPE,INVOLVED_PEOPLE_TYPE_STR,UPDATE_USER_ID)
+	VALUES(
+		#{ipId,jdbcType=DECIMAL}, #{bizId,jdbcType=DECIMAL}, #{bizType,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{cardType,jdbcType=VARCHAR},
+		#{idCard,jdbcType=VARCHAR}, #{homeAddr,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{peopleProp,jdbcType=VARCHAR}, #{peopleType,jdbcType=VARCHAR},
+		#{remark,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{birthday,jdbcType=TIMESTAMP}, #{age,jdbcType=DECIMAL}, #{picUrl,jdbcType=VARCHAR}, #{politics,jdbcType=VARCHAR},
+		#{nationality,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR}, #{birthPlace,jdbcType=VARCHAR}, #{religion,jdbcType=VARCHAR},
+		#{usedName,jdbcType=VARCHAR}, #{edu,jdbcType=VARCHAR}, #{marriage,jdbcType=VARCHAR}, #{professionType,jdbcType=VARCHAR}, #{profession,jdbcType=VARCHAR},
+		#{reOrgCode,jdbcType=VARCHAR}, #{registAddr,jdbcType=VARCHAR}, #{liOrgCode,jdbcType=VARCHAR}, #{residenceAddr,jdbcType=VARCHAR}, #{homePhone,jdbcType=VARCHAR}, 
+		#{workUnit,jdbcType=VARCHAR}, #{isMentalDisease,jdbcType=VARCHAR}, #{isMinors,jdbcType=VARCHAR}, #{isTeenager,jdbcType=VARCHAR}, #{isSkeletonStaff,jdbcType=VARCHAR},
+		#{ciRsId,jdbcType=DECIMAL},#{partyId,jdbcType=DECIMAL},#{createUserId,jdbcType=DECIMAL}, SYSDATE, SYSDATE,
+		#{involvedPeopleType,jdbcType=VARCHAR},#{involvedPeopleTypeStr,jdbcType=VARCHAR}, #{createUserId,jdbcType=DECIMAL}
+	)	
+  </insert>
+  
+  <!-- 依据业务id或者ipId删除涉及人员信息 -->
+  <update id="delete">
+  		UPDATE 
+  			T_ZZ_INVOLVED_PEOPLE
+  		SET
+  			STATUS = '0'
+  		WHERE 1=1
+  			<if test="ipId != null">
+  				AND IP_ID = #{ipId,jdbcType=DECIMAL}
+  			</if>
+  			<if test="bizId != null and bizType != null and bizType != '' ">
+	  			AND BIZ_ID = #{bizId,jdbcType=DECIMAL}
+	  			AND BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+  			</if>
+  </update>
+
+
+	<!-- 依据业务id或者ipId删除涉及人员信息 -->
+	<update id="deleteByIpIdsAndGridCode">
+		UPDATE
+		T_ZZ_INVOLVED_PEOPLE t
+		SET
+		t.status = '0'
+		where exists (SELECT p.ip_id
+                     FROM T_ZZ_INVOLVED_PEOPLE p
+                     join T_ZZ_RELATED_EVENTS e
+                       on p.biz_id = e.re_id
+                    where e.status = '1'
+                      and p.status = '1'
+					  and t.ip_id = p.ip_id
+                      and p.ip_id in
+					<foreach collection="ipIdList" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+                      and e.grid_code LIKE #{gridCode ,jdbcType=VARCHAR}||'%')
+
+	</update>
+  <!--<delete id="delete" >
+  	DELETE FROM T_ZZ_INVOLVED_PEOPLE T1 
+  	WHERE
+  	<choose>
+  		<when test="ipId != null">
+  			T1.IP_ID = #{ipId,jdbcType=DECIMAL}
+  		</when>
+  		<when test="bizId != null and bizType != null and bizType != '' ">
+  			T1.BIZ_ID = #{bizId,jdbcType=DECIMAL}
+  			AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+  		</when>
+  	</choose> 
+  </delete>-->
+  
+  <!-- 依据bizId或者ipId更新涉及人员信息 -->
+  <update id="update">
+  	UPDATE T_ZZ_INVOLVED_PEOPLE T1
+  	<set>
+  		<if test="bizId != null">
+  			T1.BIZ_Id = #{bizId,jdbcType=DECIMAL},
+  		</if>
+  		<if test="bizType != null and bizType != '' ">
+  			T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+  		</if>
+  		<if test="name != null">
+  			T1.NAME = #{name,jdbcType=VARCHAR},
+  		</if>
+  		<if test="cardType != null">
+  			T1.CARD_TYPE = #{cardType,jdbcType=VARCHAR},
+  		</if>
+  		<if test="idCard != null">
+  			T1.ID_CARD = #{idCard,jdbcType=VARCHAR},
+  		</if>
+  		<if test="homeAddr != null">
+  			T1.HOME_ADDR = #{homeAddr,jdbcType=VARCHAR},
+  		</if>
+  		<if test="tel != null">
+  			T1.TEL = #{tel,jdbcType=VARCHAR},
+  		</if>
+  		<if test="peopleProp != null">
+  			T1.PEOPLE_PROP = #{peopleProp,jdbcType=VARCHAR},
+  		</if>
+  		<if test="peopleType != null">
+  			T1.PEOPLE_TYPE = #{peopleType,jdbcType=VARCHAR},
+  		</if>
+  		<if test="sex != null">
+  			T1.SEX_ = #{sex,jdbcType=VARCHAR},
+  		</if>
+  		<if test="birthday != null">
+  			T1.BIRTHDAY = #{birthday,jdbcType=TIMESTAMP},
+  		</if>
+  		<if test="age != null ">
+  			T1.AGE_ = #{age,jdbcType=DECIMAL},
+  		</if>
+  		<if test="picUrl != null">
+  			T1.PIC_URL = #{picUrl,jdbcType=VARCHAR},
+  		</if>
+  		<if test="politics != null">
+  			T1.POLITICS = #{politics,jdbcType=VARCHAR},
+  		</if>
+  		<if test="nationality != null">
+  			T1.NATIONALITY = #{nationality,jdbcType=VARCHAR},
+  		</if>
+  		<if test="nation != null">
+  			T1.NATION_ = #{nation,jdbcType=VARCHAR},
+  		</if>
+  		<if test="birthPlace != null">
+  			T1.BIRTH_PLACE = #{birthPlace,jdbcType=VARCHAR},
+  		</if>
+  		<if test="religion != null">
+  			T1.RELIGION = #{religion,jdbcType=VARCHAR},
+  		</if>
+  		<if test="usedName != null">
+  			T1.USED_NAME = #{usedName,jdbcType=VARCHAR},
+  		</if>
+  		<if test="edu != null">
+  			T1.EDU_ = #{edu,jdbcType=VARCHAR},
+  		</if>
+  		<if test="marriage != null">
+  			T1.MARRIAGE = #{marriage,jdbcType=VARCHAR},
+  		</if>
+  		<if test="professionType != null">
+  			T1.PROFESSION_TYPE = #{professionType,jdbcType=VARCHAR},
+  		</if>
+  		<if test="profession != null">
+  			T1.PROFESSION = #{profession,jdbcType=VARCHAR},
+  		</if>
+  		<if test="reOrgCode != null">
+  			T1.RE_ORG_CODE = #{reOrgCode,jdbcType=VARCHAR},
+  		</if>
+  		<if test="registAddr != null">
+  			T1.REGIST_ADDR = #{registAddr,jdbcType=VARCHAR},
+  		</if>
+  		<if test="liOrgCode != null">
+  			T1.LI_ORG_CODE = #{liOrgCode,jdbcType=VARCHAR},
+  		</if>
+  		<if test="residenceAddr != null">
+  			T1.RESIDENCE_ADDR = #{residenceAddr,jdbcType=VARCHAR},
+  		</if>
+  		<if test="homePhone != null">
+  			T1.HOME_PHONE = #{homePhone,jdbcType=VARCHAR},
+  		</if>
+  		<if test="workUnit != null">
+  			T1.WORK_UNIT = #{workUnit,jdbcType=VARCHAR},
+  		</if>
+  		<if test="isMentalDisease != null">
+  			T1.IS_MENTAL_DISEASE = #{isMentalDisease,jdbcType=VARCHAR},
+  		</if>
+  		<if test="isMinors != null">
+  			T1.IS_MINORS = #{isMinors,jdbcType=VARCHAR},
+  		</if>
+  		<if test="isTeenager != null">
+  			T1.IS_TEENAGER = #{isTeenager,jdbcType=VARCHAR},
+  		</if>
+  		<if test="isSkeletonStaff != null">
+  			T1.IS_SKELETON_STAFF = #{isSkeletonStaff,jdbcType=VARCHAR},
+  		</if>
+  		<if test="ciRsId != null">
+  			T1.CI_RS_ID = #{ciRsId,jdbcType=DECIMAL},
+  		</if>
+  		<if test="partyId != null">
+  			T1.PARTY_ID = #{partyId,jdbcType=DECIMAL},
+  		</if>
+  		<if test="updateUserId != null">
+  			T1.UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+  		</if>
+  		
+  		
+  		<if test="involvedPeopleType != null">
+  			T1.INVOLVED_PEOPLE_TYPE = #{involvedPeopleType,jdbcType=VARCHAR},
+  		</if>
+  		<if test="involvedPeopleTypeStr != null">
+  			T1.INVOLVED_PEOPLE_TYPE_STR = #{involvedPeopleTypeStr,jdbcType=VARCHAR},
+  		</if>
+  		T1.UPDATE_TIME = SYSDATE,
+  		T1.REMARK_ = #{remark,jdbcType=VARCHAR}
+  	</set>
+  	WHERE 
+  	<choose>
+  		<when test="ipId != null">
+  			T1.IP_ID = #{ipId,jdbcType=DECIMAL}
+  		</when>
+  		<when test="bizId != null and bizType != null and bizType != '' ">
+  			T1.BIZ_ID = #{bizId,jdbcType=DECIMAL}
+  			AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+  		</when>
+  	</choose>
+  	
+  </update>
+  
+  <!-- 依据主键查找涉及人员信息 -->
+  <select id="findById" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="same_column"/>
+  	FROM T_ZZ_INVOLVED_PEOPLE T1
+  	WHERE T1.IP_ID = #{ipId,jdbcType=DECIMAL}
+  	AND T1.STATUS = '1'
+  </select>
+  
+  <!-- 无分页查找涉及人员信息 -->
+  <select id="findInvolvedPeopleList" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="same_column"/>
+  	FROM T_ZZ_INVOLVED_PEOPLE T1
+  	WHERE 1 = 1
+  	<include refid="find_where"/>
+  	ORDER BY T1.IP_ID
+  </select>
+  
+  <!-- 统计涉及人员记录数 -->
+  <select id="findInvolvedPeopleCount" resultType="java.lang.Long">
+  	SELECT COUNT(1)
+  	FROM T_ZZ_INVOLVED_PEOPLE T1
+  	WHERE 1 = 1
+  	<include refid="find_where"/>
+  </select>
+  
+  <sql id="find_where">
+  	<if test="bizId != null">
+  		AND T1.BIZ_ID = #{bizId,jdbcType=DECIMAL}
+  	</if>
+  	<if test="bizType != null">
+  		AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+  	</if>
+  	<if test="name != null and name != '' ">
+  		AND T1.NAME LIKE '%'||#{name,jdbcType=VARCHAR}||'%'
+  	</if>
+  	<if test="cardType != null and cardType != '' ">
+  		AND T1.CARD_TYPE = #{cardType,jdbcType=VARCHAR}
+  	</if>
+  	<if test="idCard != null and idCard != '' ">
+  		AND T1.ID_CARD = #{idCard,jdbcType=VARCHAR}
+  	</if>
+  	<if test="startUpdateTime != null">
+		AND T1.UPDATE_TIME <![CDATA[>=]]> #{startUpdateTime ,jdbcType=TIMESTAMP}
+	</if>
+	<if test="endUpdateTime != null">
+		AND T1.UPDATE_TIME <![CDATA[<=]]> #{endUpdateTime ,jdbcType=TIMESTAMP}
+	</if>
+  	AND T1.STATUS = '1'
+  </sql>
+  
+  <!-- 批量删除 -->
+  <delete id="batchDelete" parameterType="map">
+		DELETE FROM T_ZZ_INVOLVED_PEOPLE
+		WHERE 
+		<if test="null != list and list.size > 0">
+		   IP_ID not 
+			in(
+			<foreach collection="list" item="item" index="index" separator="," > 
+				#{item.ipId,jdbcType=DECIMAL}
+			</foreach>
+			)    and 
+		</if>
+		
+		 BIZ_ID = #{gangId,jdbcType=DECIMAL}
+  </delete>
+  
+  <!-- 批量插入数据 -->
+  <insert id ="batchInsert" parameterType="java.util.List" >
+		INSERT INTO T_ZZ_INVOLVED_PEOPLE(
+		IP_ID, BIZ_ID, BIZ_TYPE, NAME, CARD_TYPE, ID_CARD, HOME_ADDR, TEL, PEOPLE_PROP, PEOPLE_TYPE, REMARK_, SEX_,
+		BIRTHDAY, AGE_, PIC_URL, POLITICS, NATIONALITY, NATION_, BIRTH_PLACE, RELIGION, USED_NAME, EDU_, MARRIAGE, PROFESSION_TYPE, PROFESSION,
+		RE_ORG_CODE, REGIST_ADDR, LI_ORG_CODE, RESIDENCE_ADDR, HOME_PHONE, WORK_UNIT, IS_MENTAL_DISEASE, IS_MINORS, IS_TEENAGER, IS_SKELETON_STAFF, 
+		CI_RS_ID, CREATE_USER_ID,CREATE_TIME,UPDATE_TIME,  INVOLVED_PEOPLE_TYPE,INVOLVED_PEOPLE_TYPE_STR,UPDATE_USER_ID)
+			SELECT SEQ_INVOLVED_PEOPLE_ID.NEXTVAL,A.* from(
+				<foreach collection="list" item="item" index="index" separator="union all" > 
+					SELECT
+					#{item.bizId,jdbcType=DECIMAL},#{item.bizType,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},
+					#{item.cardType,jdbcType=VARCHAR},
+					#{item.idCard,jdbcType=VARCHAR},#{item.homeAddr,jdbcType=VARCHAR},#{item.tel,jdbcType=VARCHAR},#{item.peopleProp,jdbcType=VARCHAR},
+					#{item.peopleType,jdbcType=VARCHAR},#{item.remark,jdbcType=VARCHAR},#{item.sex,jdbcType=VARCHAR},#{item.birthday,jdbcType=TIMESTAMP}, 
+					#{item.age,jdbcType=DECIMAL},#{item.picUrl,jdbcType=VARCHAR}, #{item.politics,jdbcType=VARCHAR},#{item.nationality,jdbcType=VARCHAR},
+					#{item.nation,jdbcType=VARCHAR},#{item.birthPlace,jdbcType=VARCHAR},#{item.religion,jdbcType=VARCHAR},
+					#{item.usedName,jdbcType=VARCHAR},#{item.edu,jdbcType=VARCHAR}, #{item.marriage,jdbcType=VARCHAR},
+					#{item.professionType,jdbcType=VARCHAR},#{item.profession,jdbcType=VARCHAR},#{item.reOrgCode,jdbcType=VARCHAR},#{item.registAddr,jdbcType=VARCHAR}, 
+					#{item.liOrgCode,jdbcType=VARCHAR},#{item.residenceAddr,jdbcType=VARCHAR},#{item.homePhone,jdbcType=VARCHAR}, 
+					#{item.workUnit,jdbcType=VARCHAR},#{item.isMentalDisease,jdbcType=VARCHAR},#{item.isMinors,jdbcType=VARCHAR},
+					#{item.isTeenager,jdbcType=VARCHAR},
+					#{item.isSkeletonStaff,jdbcType=VARCHAR},#{item.ciRsId,jdbcType=DECIMAL},#{item.createUserId,jdbcType=DECIMAL},SYSDATE, SYSDATE U,
+					
+					#{item.involvedPeopleType,jdbcType=VARCHAR},#{item.involvedPeopleTypeStr,jdbcType=VARCHAR},#{item.createUserId,jdbcType=DECIMAL}
+					FROM DUAL
+				</foreach>
+			) A
+	</insert>
+	
+	<!-- 批量修改 -->
+	<update id="batchUpdate"  parameterType="java.util.List">  
+	
+	  update T_ZZ_INVOLVED_PEOPLE
+        <trim prefix="set" suffixOverrides=",">
+       		 <trim prefix="NAME =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when IP_ID=#{item.ipId} then #{item.name,jdbcType=VARCHAR}
+                </foreach>
+             </trim>
+             <trim prefix="AGE_ =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when IP_ID=#{item.ipId} then #{item.age,jdbcType=VARCHAR}
+                </foreach>
+             </trim>
+             <trim prefix="IS_SKELETON_STAFF =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when IP_ID=#{item.ipId} then #{item.isSkeletonStaff,jdbcType=VARCHAR}
+                </foreach>
+             </trim>
+             <trim prefix="ID_CARD =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when IP_ID=#{item.ipId} then #{item.idCard,jdbcType=VARCHAR}
+                </foreach>
+             </trim>
+             <trim prefix="RESIDENCE_ADDR =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when IP_ID=#{item.ipId} then #{item.residenceAddr,jdbcType=VARCHAR}
+                </foreach>
+             </trim>
+           
+            UPDATE_TIME=SYSDATE,
+        </trim>
+        where IP_ID in
+        <foreach collection="list"   item="item" index="index" separator="," open="(" close=")">
+            #{item.ipId}
+        </foreach>
+   </update>
+
+	<!--批量新增或更新，记录存在则更新，不存在则新增-->
+	<insert id="batchSaveOrUpdate" parameterType="java.util.List">
+		MERGE INTO T_ZZ_INVOLVED_PEOPLE T
+		USING (
+		<foreach collection="list" item="item" index="index" separator="union">
+			(SELECT
+			#{item.ipId,jdbcType=DECIMAL} AS IP_ID,
+			#{item.bizId,jdbcType=DECIMAL} AS BIZ_ID,
+			#{item.bizType,jdbcType=VARCHAR} AS BIZ_TYPE,
+			#{item.name,jdbcType=VARCHAR} AS NAME,
+			#{item.cardType,jdbcType=VARCHAR} AS CARD_TYPE,
+			#{item.idCard,jdbcType=VARCHAR} AS ID_CARD,
+			#{item.homeAddr,jdbcType=VARCHAR} AS HOME_ADDR,
+			#{item.tel,jdbcType=VARCHAR} AS TEL,
+			#{item.peopleProp,jdbcType=VARCHAR} AS PEOPLE_PROP,
+			#{item.peopleType,jdbcType=VARCHAR} AS PEOPLE_TYPE,
+			#{item.remark,jdbcType=VARCHAR} AS REMARK_,
+			#{item.sex,jdbcType=VARCHAR} AS SEX_,
+			#{item.birthday,jdbcType=TIMESTAMP} AS BIRTHDAY,
+			#{item.age,jdbcType=VARCHAR} AS AGE_,
+			#{item.picUrl,jdbcType=VARCHAR} AS PIC_URL,
+			#{item.politics,jdbcType=VARCHAR} AS POLITICS,
+			#{item.nationality,jdbcType=VARCHAR} AS NATIONALITY,
+			#{item.nation,jdbcType=VARCHAR} AS NATION_,
+			#{item.birthPlace,jdbcType=VARCHAR} AS BIRTH_PLACE,
+			#{item.religion,jdbcType=VARCHAR} AS RELIGION,
+			#{item.usedName,jdbcType=VARCHAR} AS USED_NAME,
+			#{item.edu,jdbcType=VARCHAR} AS EDU_,
+			#{item.marriage,jdbcType=VARCHAR} AS MARRIAGE,
+			#{item.professionType,jdbcType=VARCHAR} AS PROFESSION_TYPE,
+			#{item.profession,jdbcType=VARCHAR} AS PROFESSION,
+			#{item.reOrgCode,jdbcType=VARCHAR} AS RE_ORG_CODE,
+			#{item.registAddr,jdbcType=VARCHAR} AS REGIST_ADDR,
+			#{item.liOrgCode,jdbcType=VARCHAR} AS LI_ORG_CODE,
+			#{item.residenceAddr,jdbcType=VARCHAR} AS RESIDENCE_ADDR,
+			#{item.homePhone,jdbcType=VARCHAR} AS HOME_PHONE,
+			#{item.workUnit,jdbcType=VARCHAR} AS WORK_UNIT,
+			#{item.isMentalDisease,jdbcType=VARCHAR} AS IS_MENTAL_DISEASE,
+			#{item.isMinors,jdbcType=VARCHAR} AS IS_MINORS,
+			#{item.isTeenager,jdbcType=VARCHAR} AS IS_TEENAGER,
+			#{item.isSkeletonStaff,jdbcType=VARCHAR} AS IS_SKELETON_STAFF,
+			#{item.ciRsId,jdbcType=DECIMAL} AS CI_RS_ID,
+			#{item.partyId,jdbcType=DECIMAL} AS PARTY_ID,
+			#{item.createUserId,jdbcType=DECIMAL} AS CREATE_USER_ID,
+			#{item.updateUserId,jdbcType=DECIMAL} AS UPDATE_USER_ID,
+			#{item.involvedPeopleType,jdbcType=VARCHAR} AS INVOLVED_PEOPLE_TYPE,
+			#{item.involvedPeopleTypeStr,jdbcType=VARCHAR} AS INVOLVED_PEOPLE_TYPE_STR
+			FROM DUAL)
+		</foreach>
+		) TEMP
+		ON(T.IP_ID = TEMP.IP_ID)
+		WHEN MATCHED THEN
+		UPDATE SET
+			T.BIZ_ID = TEMP.BIZ_ID,
+			T.BIZ_TYPE = TEMP.BIZ_TYPE,
+			T.NAME = TEMP.NAME,
+			T.CARD_TYPE = TEMP.CARD_TYPE,
+			T.ID_CARD = TEMP.ID_CARD,
+			T.HOME_ADDR = TEMP.HOME_ADDR,
+			T.TEL = TEMP.TEL,
+			T.PEOPLE_PROP = TEMP.PEOPLE_PROP,
+			T.PEOPLE_TYPE = TEMP.PEOPLE_TYPE,
+			T.REMARK_ = TEMP.REMARK_,
+			T.SEX_ = TEMP.SEX_,
+			T.BIRTHDAY = TEMP.BIRTHDAY,
+			T.AGE_ = TEMP.AGE_,
+			T.PIC_URL = TEMP.PIC_URL,
+			T.POLITICS = TEMP.POLITICS,
+			T.NATIONALITY = TEMP.NATIONALITY,
+			T.NATION_ = TEMP.NATION_,
+			T.BIRTH_PLACE = TEMP.BIRTH_PLACE,
+			T.RELIGION = TEMP.RELIGION,
+			T.USED_NAME = TEMP.USED_NAME,
+			T.EDU_ = TEMP.EDU_,
+			T.MARRIAGE = TEMP.MARRIAGE,
+			T.PROFESSION_TYPE = TEMP.PROFESSION_TYPE,
+			T.PROFESSION = TEMP.PROFESSION,
+			T.RE_ORG_CODE = TEMP.RE_ORG_CODE,
+			T.REGIST_ADDR = TEMP.REGIST_ADDR,
+			T.LI_ORG_CODE = TEMP.LI_ORG_CODE,
+			T.RESIDENCE_ADDR = TEMP.RESIDENCE_ADDR,
+			T.HOME_PHONE = TEMP.HOME_PHONE,
+			T.WORK_UNIT = TEMP.WORK_UNIT,
+			T.IS_MENTAL_DISEASE = TEMP.IS_MENTAL_DISEASE,
+			T.IS_MINORS = TEMP.IS_MINORS,
+			T.IS_TEENAGER = TEMP.IS_TEENAGER,
+			T.IS_SKELETON_STAFF = TEMP.IS_SKELETON_STAFF,
+			T.CI_RS_ID = TEMP.CI_RS_ID,
+			T.PARTY_ID = TEMP.PARTY_ID,
+			T.UPDATE_USER_ID = TEMP.UPDATE_USER_ID,
+			T.STATUS = '1',
+			T.INVOLVED_PEOPLE_TYPE = TEMP.INVOLVED_PEOPLE_TYPE,
+			T.INVOLVED_PEOPLE_TYPE_STR = TEMP.INVOLVED_PEOPLE_TYPE_STR,
+			T.UPDATE_TIME = SYSDATE
+		WHEN NOT MATCHED THEN
+		INSERT (
+			T.IP_ID,
+			T.BIZ_ID,
+			T.BIZ_TYPE,
+			T.NAME,
+			T.CARD_TYPE,
+			T.ID_CARD,
+			T.HOME_ADDR,
+			T.TEL,
+			T.PEOPLE_PROP,
+			T.PEOPLE_TYPE,
+			T.REMARK_,
+			T.SEX_,
+			T.BIRTHDAY,
+			T.AGE_,
+			T.PIC_URL,
+			T.POLITICS,
+			T.NATIONALITY,
+			T.NATION_,
+			T.BIRTH_PLACE,
+			T.RELIGION,
+			T.USED_NAME,
+			T.EDU_,
+			T.MARRIAGE,
+			T.PROFESSION_TYPE,
+			T.PROFESSION,
+			T.RE_ORG_CODE,
+			T.REGIST_ADDR,
+			T.LI_ORG_CODE,
+			T.RESIDENCE_ADDR,
+			T.HOME_PHONE,
+			T.WORK_UNIT,
+			T.IS_MENTAL_DISEASE,
+			T.IS_MINORS,
+			T.IS_TEENAGER,
+			T.IS_SKELETON_STAFF,
+			T.CI_RS_ID,
+			T.PARTY_ID,
+			T.CREATE_TIME,
+			T.UPDATE_TIME,
+			T.CREATE_USER_ID,
+			T.INVOLVED_PEOPLE_TYPE,
+			T.INVOLVED_PEOPLE_TYPE_STR
+		) VALUES(
+			SEQ_INVOLVED_PEOPLE_ID.NEXTVAL,
+			TEMP.BIZ_ID,
+			TEMP.BIZ_TYPE,
+			TEMP.NAME,
+			TEMP.CARD_TYPE,
+			TEMP.ID_CARD,
+			TEMP.HOME_ADDR,
+			TEMP.TEL,
+			TEMP.PEOPLE_PROP,
+			TEMP.PEOPLE_TYPE,
+			TEMP.REMARK_,
+			TEMP.SEX_,
+			TEMP.BIRTHDAY,
+			TEMP.AGE_,
+			TEMP.PIC_URL,
+			TEMP.POLITICS,
+			TEMP.NATIONALITY,
+			TEMP.NATION_,
+			TEMP.BIRTH_PLACE,
+			TEMP.RELIGION,
+			TEMP.USED_NAME,
+			TEMP.EDU_,
+			TEMP.MARRIAGE,
+			TEMP.PROFESSION_TYPE,
+			TEMP.PROFESSION,
+			TEMP.RE_ORG_CODE,
+			TEMP.REGIST_ADDR,
+			TEMP.LI_ORG_CODE,
+			TEMP.RESIDENCE_ADDR,
+			TEMP.HOME_PHONE,
+			TEMP.WORK_UNIT,
+			TEMP.IS_MENTAL_DISEASE,
+			TEMP.IS_MINORS,
+			TEMP.IS_TEENAGER,
+			TEMP.IS_SKELETON_STAFF,
+			TEMP.CI_RS_ID,
+			TEMP.PARTY_ID,
+			SYSDATE,
+			SYSDATE,
+			TEMP.CREATE_USER_ID,
+			TEMP.INVOLVED_PEOPLE_TYPE,
+			TEMP.INVOLVED_PEOPLE_TYPE_STR
+		)
+	</insert>
+	
+</mapper>

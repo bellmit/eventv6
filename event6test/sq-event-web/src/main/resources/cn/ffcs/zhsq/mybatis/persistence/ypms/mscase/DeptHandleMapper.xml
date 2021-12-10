@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.ypms.mscase.DeptHandleMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.DeptHandle">
+		<id column="RDH_ID" property="rdhId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="RELACASE_ID" property="relacaseId" jdbcType="DECIMAL" /> <!--案件ID-->
+		<result column="RD_ID" property="rdId" jdbcType="DECIMAL" /> <!--派发单位ID-->
+		<result column="RD_NAME" property="rdName" jdbcType="VARCHAR" /> <!--派发单位名称-->
+		<result column="RD_ORG_CODE" property="rdOrgCode" jdbcType="VARCHAR" /> <!--派发单位orgCode-->
+		<result column="HANDLE_PROCESS" property="handleProcess" jdbcType="VARCHAR" /> <!--处理过程-->
+		<result column="HANDLE_RESULT" property="handleResult" jdbcType="VARCHAR" /> <!--处理结果-->
+		<result column="CURR_STATUS" property="currStatus" jdbcType="VARCHAR" /> <!--当前状态-->
+		<result column="CREATE_NAME" property="createName" jdbcType="VARCHAR" /> <!--创建人姓名-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_ID" property="createId" jdbcType="DECIMAL" /> <!--创建人ID-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATE_ID" property="updateId" jdbcType="DECIMAL" /> <!--更新人ID-->
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" /> <!--伪删列-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_YP_MS_REC_DEPT_HANDLE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchListByParams"  resultMap="BaseResultMap">
+		SELECT
+			T.RDH_ID,
+			T.RELACASE_ID,
+			T.RD_ID,
+			T.RD_NAME,
+			T.RD_ORG_CODE,
+			T.HANDLE_PROCESS,
+			T.HANDLE_RESULT,
+			T.CURR_STATUS,
+			T.CREATE_NAME,
+			T.CREATE_TIME,
+			T.CREATE_ID,
+			T.UPDATE_TIME,
+			T.UPDATE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_REC_DEPT_HANDLE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.RDH_ID DESC ,
+			T.CREATE_TIME DESC 
+	</select>
+	
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.RDH_ID,
+			T.RELACASE_ID,
+			T.RD_ID,
+			T.RD_NAME,
+			T.RD_ORG_CODE,
+			T.HANDLE_PROCESS,
+			T.HANDLE_RESULT,
+			T.CURR_STATUS,
+			T.CREATE_NAME,
+			T.CREATE_TIME,
+			T.CREATE_ID,
+			T.UPDATE_TIME,
+			T.UPDATE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_REC_DEPT_HANDLE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.RDH_ID DESC ,
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="relacaseId != null and relacaseId != ''" >
+				<![CDATA[ AND T.RELACASE_ID = #{relacaseId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="rdId != null and rdId != ''" >
+				<![CDATA[ AND T.RD_ID = #{rdId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="rdOrgCode != null and rdOrgCode != ''" >
+				<![CDATA[ AND T.RD_ORG_CODE = #{rdOrgCode,jdbcType=VARCHAR} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.DeptHandle">
+		<selectKey keyProperty="rdhId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_YP_MS_REC_DEPT_HANDLE.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_REC_DEPT_HANDLE
+		(
+			RDH_ID,
+			RELACASE_ID,
+			RD_ID,
+			RD_NAME,
+			RD_ORG_CODE,
+			HANDLE_PROCESS,
+			HANDLE_RESULT,
+			CURR_STATUS,
+			CREATE_NAME,
+			CREATE_TIME,
+			CREATE_ID,
+			UPDATE_TIME,
+			UPDATE_ID,
+			DEL_FLAG
+		) VALUES (
+			#{rdhId,jdbcType=DECIMAL},
+			#{relacaseId,jdbcType=DECIMAL},
+			#{rdId,jdbcType=DECIMAL},
+			#{rdName,jdbcType=VARCHAR},
+			#{rdOrgCode,jdbcType=VARCHAR},
+			#{handleProcess,jdbcType=VARCHAR},
+			#{handleResult,jdbcType=VARCHAR},
+			#{currStatus,jdbcType=VARCHAR},
+			#{createName,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{createId,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{updateId,jdbcType=DECIMAL},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.DeptHandle">
+		UPDATE
+			T_YP_MS_REC_DEPT_HANDLE
+		<set> 
+			<if test="relacaseId != null " >
+				RELACASE_ID=#{relacaseId,jdbcType=DECIMAL},
+			</if>
+			<if test="rdId != null " >
+				RD_ID=#{rdId,jdbcType=DECIMAL},
+			</if>
+			<if test="rdName != null " >
+				RD_NAME=#{rdName,jdbcType=VARCHAR},
+			</if>
+			<if test="rdOrgCode != null " >
+				RD_ORG_CODE=#{rdOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="handleProcess != null " >
+				HANDLE_PROCESS=#{handleProcess,jdbcType=VARCHAR},
+			</if>
+			<if test="handleResult != null " >
+				HANDLE_RESULT=#{handleResult,jdbcType=VARCHAR},
+			</if>
+			<if test="currStatus != null " >
+				CURR_STATUS=#{currStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="createName != null " >
+				CREATE_NAME=#{createName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createId != null " >
+				CREATE_ID=#{createId,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateId != null " >
+				UPDATE_ID=#{updateId,jdbcType=DECIMAL},
+			</if>
+			<if test="delFlag != null " >
+				DEL_FLAG=#{delFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			RDH_ID= #{rdhId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 修改 -->	
+	<update id="updateByMore" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.DeptHandle">
+		UPDATE
+			T_YP_MS_REC_DEPT_HANDLE
+		<set> 
+			<if test="relacaseId != null " >
+				RELACASE_ID=#{relacaseId,jdbcType=DECIMAL},
+			</if>
+			<if test="rdId != null " >
+				RD_ID=#{rdId,jdbcType=DECIMAL},
+			</if>
+			<if test="rdName != null " >
+				RD_NAME=#{rdName,jdbcType=VARCHAR},
+			</if>
+			<if test="rdOrgCode != null " >
+				RD_ORG_CODE=#{rdOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="handleProcess != null " >
+				HANDLE_PROCESS=#{handleProcess,jdbcType=VARCHAR},
+			</if>
+			<if test="handleResult != null " >
+				HANDLE_RESULT=#{handleResult,jdbcType=VARCHAR},
+			</if>
+			<if test="currStatus != null " >
+				CURR_STATUS=#{currStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="createName != null " >
+				CREATE_NAME=#{createName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createId != null " >
+				CREATE_ID=#{createId,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateId != null " >
+				UPDATE_ID=#{updateId,jdbcType=DECIMAL},
+			</if>
+			<if test="delFlag != null " >
+				DEL_FLAG=#{delFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			RD_ID= #{rdId,jdbcType=DECIMAL} 
+			AND RELACASE_ID=#{relacaseId,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.RDH_ID,
+			T.RELACASE_ID,
+			T.RD_ID,
+			T.RD_NAME,
+			T.RD_ORG_CODE,
+			T.HANDLE_PROCESS,
+			T.HANDLE_RESULT,
+			T.CURR_STATUS,
+			T.CREATE_NAME,
+			T.CREATE_TIME,
+			T.CREATE_ID,
+			T.UPDATE_TIME,
+			T.UPDATE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_REC_DEPT_HANDLE T
+		WHERE
+			RDH_ID= #{rdhId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.DeptHandle">
+		UPDATE
+			T_YP_MS_REC_DEPT_HANDLE
+		SET
+			DEL_FLAG='0'
+		WHERE
+			RDH_ID= #{rdhId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

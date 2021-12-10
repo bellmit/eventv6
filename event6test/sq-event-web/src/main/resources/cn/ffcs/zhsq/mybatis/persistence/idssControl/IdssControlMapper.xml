@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.idssControl.IdssControlMapper" >
+	<!-- 布控申请 -->
+	<resultMap id="ApplyInfoMap" type="cn.ffcs.doorsys.bo.control.ControlApplyInfo" >
+		<result column="CONTROL_APPLY_ID" property="controlApplyId" jdbcType="DECIMAL" />
+	    <result column="CONTROL_NAME" property="controlName" jdbcType="VARCHAR" />
+	    <result column="CONTROL_BEGIN_TIME" property="controlBeginTime" jdbcType="TIMESTAMP" />
+	    <result column="CONTROL_END_TIME" property="controlEndTime" jdbcType="TIMESTAMP" />
+	    <result column="CAPTURE_TIMES" property="captureTimes" jdbcType="DECIMAL" />
+	    <result column="CONTROL_STATUS" property="controlStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 布控申请对象 -->
+	<resultMap id="BaseResultMap" type="cn.ffcs.doorsys.bo.control.ControlTargetRef" >
+		<result column="CONTROL_TARGET_ID" property="controlTargetId" jdbcType="DECIMAL" />
+	    <result column="CONTROL_APPLY_ID" property="controlApplyId" jdbcType="DECIMAL" />
+	    <result column="CONTROL_BEGIN_TIME" property="controlBeginTime" jdbcType="TIMESTAMP" />
+	    <result column="CONTROL_END_TIME" property="controlEndTime" jdbcType="TIMESTAMP" />
+	    <result column="CAPTURE_TIMES" property="captureTimes" jdbcType="DECIMAL" />
+	    <result column="CONTROL_TARGET_OBJECT" property="controlTargetObject" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 布控申请对象捕获消息 -->
+	<resultMap id="TargetRecordMap" type="cn.ffcs.doorsys.bo.control.ControlTargetRecord" >
+		<result column="RECORD_ID" property="recordId" jdbcType="DECIMAL" />
+		<result column="EVENT_BUSSINESS_TYPE" property="eventBussinessType" jdbcType="VARCHAR" />
+		<result column="EVENT_TIME" property="eventTime" jdbcType="TIMESTAMP" />
+		<result column="EVENT_PLACE" property="eventPlace" jdbcType="VARCHAR" />
+		<result column="EVENT_DEVOICE_ID" property="eventDevoiceId" jdbcType="DECIMAL" />
+		<result column="CONTROL_TARGET_TYPE" property="controlTargetType" jdbcType="VARCHAR" />
+		<result column="CONTROL_TARGET_OBJECT" property="controlTargetObject" jdbcType="VARCHAR" />
+		<result column="INFO_ORG_CODE" property="infoOrgCode" jdbcType="VARCHAR" />
+		<result column="EQP_NAME" property="eqpName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="sameCol">
+  	</sql>
+  	
+  	<!-- 获取布控申请列表 -->
+  	<select id="findApplyInfoByCriteria" resultMap="ApplyInfoMap">
+  		SELECT T2.CONTROL_APPLY_ID, T2.CONTROL_NAME, T2.CONTROL_STATUS,
+	  		   T2.CONTROL_BEGIN_TIME, T2.CONTROL_END_TIME,
+	  		   (
+			       SELECT COUNT(1)
+			       FROM T_IDSS_CONTROL_TARGET_RECORD T3, T_EQU T4
+			       WHERE T3.EVENT_DEVOICE_ID = T4.EQP_ID
+			       		 AND T3.CONTROL_APPLY_ID = T2.CONTROL_APPLY_ID 
+			       		 AND T3.STATUS = '001' AND T4.STATUS = '1'
+		       ) CAPTURE_TIMES
+		FROM T_IDSS_CONTROL_APPLY_INFO T2
+		WHERE 1 = 1
+		<include refid="find_where_applyInfo"></include>
+  	</select>
+  	
+  	<!-- 统计布控申请列表 -->
+  	<select id="findApplyInfoCount" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_IDSS_CONTROL_APPLY_INFO T2
+		WHERE 1 = 1
+		<include refid="find_where_applyInfo"></include>
+  	</select>
+  	
+  	<!-- 获取布控对象列表 -->
+  	<select id="findTargetRefByCriteria" resultMap="BaseResultMap">
+  		SELECT T1.CONTROL_TARGET_ID, T1.CONTROL_APPLY_ID, T1.CONTROL_TARGET_OBJECT,
+	  		   T2.CONTROL_BEGIN_TIME, T2.CONTROL_END_TIME,
+	  		   (
+		  		   SELECT COUNT(1)
+			       FROM T_IDSS_CONTROL_TARGET_RECORD T3, T_EQU T4
+			       WHERE T3.CONTROL_TARGET_ID = T1.CONTROL_TARGET_ID 
+			       		 AND T3.EVENT_DEVOICE_ID = T4.EQP_ID
+			       		 AND T3.CONTROL_APPLY_ID = T2.CONTROL_APPLY_ID 
+			       		 AND T3.STATUS = '001' AND T4.STATUS = '1'
+		       ) CAPTURE_TIMES
+		FROM T_IDSS_CONTROL_TARGET_REF T1
+		LEFT JOIN T_IDSS_CONTROL_APPLY_INFO T2
+		     ON T1.CONTROL_APPLY_ID = T2.CONTROL_APPLY_ID
+		WHERE 1 = 1
+		<include refid="find_where_targetRef"></include>
+  	</select>
+  	
+  	<!-- 统计布控对象 -->
+  	<select id="findTargetRefCount" resultType="java.lang.Integer">
+  		SELECT COUNT(1)
+		FROM T_IDSS_CONTROL_TARGET_REF T1
+		LEFT JOIN T_IDSS_CONTROL_APPLY_INFO T2
+		     ON T1.CONTROL_APPLY_ID = T2.CONTROL_APPLY_ID
+		WHERE 1 = 1
+		<include refid="find_where_targetRef"></include>
+  	</select>
+  	
+  	<!-- 获取布控对象捕获消息列表 -->
+  	<select id="findTargeRecordList" resultMap="TargetRecordMap">
+  		SELECT T3.RECORD_ID, T3.EVENT_BUSSINESS_TYPE, T3.EVENT_TIME, T3.EVENT_PLACE,
+	           T3.EVENT_DEVOICE_ID, T1.CONTROL_TARGET_OBJECT, T4.EQP_NAME
+	    FROM T_IDSS_CONTROL_TARGET_RECORD T3
+	    LEFT JOIN T_IDSS_CONTROL_TARGET_REF T1
+	    	ON T3.CONTROL_TARGET_ID = T1.CONTROL_TARGET_ID AND T3.CONTROL_APPLY_ID = T1.CONTROL_APPLY_ID
+	    INNER JOIN T_EQU T4
+	    	ON T3.EVENT_DEVOICE_ID = T4.EQP_ID
+	    WHERE T1.STATUS = '001' AND T3.STATUS = '001' AND T4.STATUS = '1'
+	    	  AND T3.CONTROL_APPLY_ID = #{controlApplyId,jdbcType=DECIMAL}
+	    	  <if test="controlTargetId != null ">
+	    	  	AND T3.CONTROL_TARGET_ID = #{controlTargetId,jdbcType=DECIMAL}
+	    	  </if>
+	   	ORDER BY T3.EVENT_TIME DESC
+  	</select>
+  	
+  	<!-- 布控申请查询条件 -->
+  	<sql id="find_where_applyInfo">
+  		AND T2.STATUS = '001' AND T2.CONTROL_STATUS IN ('003', '004')
+  		AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+  		<if test="controlBeginTime != null ">
+			AND T2.CONTROL_BEGIN_TIME &gt;= TO_DATE(#{controlBeginTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+		</if>
+		<if test="controlEndTime != null ">
+			AND T2.CONTROL_END_TIME &lt;= TO_DATE(#{controlEndTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+		</if>
+		<if test="controlName != null and controlName != '' ">
+			AND T2.CONTROL_NAME LIKE '%'||#{controlName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="controlStatus != null and controlStatus != '' ">
+			AND T2.CONTROL_STATUS = #{controlStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="controlStatusList != null">
+			AND T2.CONTROL_STATUS IN
+			<foreach collection="controlStatusList" index="index" item="item" open="(" separator="," close=")">
+		    	#{item}
+		    </foreach>
+		</if>
+  	</sql>
+  	
+  	<!-- 布控对象查询条件 -->
+  	<sql id="find_where_targetRef">
+  		AND T1.STATUS = '001' 
+		<if test="controlTargetObject != null and controlTargetObject != '' ">
+			AND T1.CONTROL_TARGET_OBJECT = #{controlTargetObject,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_applyInfo"></include>
+  	</sql>
+  	
+  	<select id="findTargeRecordById" resultMap="TargetRecordMap" parameterType="java.lang.Long">
+  		SELECT T3.RECORD_ID,
+	       T3.EVENT_BUSSINESS_TYPE,
+	       T3.EVENT_TIME,
+	       T3.EVENT_PLACE,
+	       T3.EVENT_DEVOICE_ID,
+       	   T1.CONTROL_TARGET_TYPE,
+	       T1.CONTROL_TARGET_OBJECT,
+	       T4.EQP_NAME,
+           T4.INFO_ORG_CODE,
+	       T4.EQP_ID
+	  FROM T_IDSS_CONTROL_TARGET_RECORD T3,
+	       T_IDSS_CONTROL_TARGET_REF    T1,
+	       T_EQU                        T4
+	 WHERE T3.CONTROL_TARGET_ID = T1.CONTROL_TARGET_ID
+	   AND T3.EVENT_DEVOICE_ID = T4.EQP_ID
+	   AND T1.STATUS = '001'
+	   AND T3.STATUS = '001'
+	   AND T4.STATUS = '1'
+	   AND T3.RECORD_ID = #{recordId,jdbcType=DECIMAL}
+  	</select>
+</mapper>

@@ -1,0 +1,48 @@
+﻿@charset "utf-8";
+/*修改 公共样式*/
+.xiu-body{
+    min-width: 648px;
+}
+input{
+    border: none;
+}
+.ta-l{
+    text-align: left !important;
+}
+.ta-r{
+    text-align: right !important;
+}
+a{
+    cursor: pointer;
+}
+/* table01 */
+html,
+body{
+	height: 100%;
+}
+.container-fluid{
+	padding: 0 20px;
+	box-sizing: border-box;
+	overflow: hidden;
+	min-height: 100%;
+	border: 1px red solid;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* 媒体查询 */
+@media screen and (max-width: 900px){
+    
+}
+@media screen and (min-width: 1600px){
+    
+}

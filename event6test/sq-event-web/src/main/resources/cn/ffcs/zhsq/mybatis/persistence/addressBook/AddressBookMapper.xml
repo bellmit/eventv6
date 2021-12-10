@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.addressBook.AddressBookMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.addressBook.AddressBook">
+		<id column="AB_ID" property="abId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="LD_ID" property="ldId" jdbcType="DECIMAL" /> <!--联动单位ID-->
+		<result column="AB_NAME" property="abName" jdbcType="VARCHAR" /> <!--姓名-->
+		<result column="AB_MOBILE" property="abMobile" jdbcType="VARCHAR" /> <!--联系方式-->
+		<result column="AB_ROLE" property="abRole" jdbcType="VARCHAR" /> <!--角色-->
+		<result column="AB_DUTY" property="abDuty" jdbcType="VARCHAR" /> <!--职务-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--组织编码-->
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" /> <!--组织ID-->
+		<result column="CREATER" property="creater" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATER" property="updater" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+		<result column="LD_NAME" property="ldName" jdbcType="VARCHAR" /> <!--部门名称-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_YP_MS_ADDRESS_BOOK T
+		LEFT JOIN 
+			T_DC_ORG_ENTITY_INFO G
+		ON T.ORG_CODE = G.ORG_CODE
+		LEFT JOIN
+			T_YP_MS_LD_ORG M
+		ON M.LD_ID =T.LD_ID
+		<include refid="find_where" />
+	</select>
+	
+	<sql id = "column_sql">
+			T.AB_ID,
+			T.LD_ID,
+			T.AB_NAME,
+			T.AB_MOBILE,
+			T.AB_ROLE,
+			T.AB_DUTY,
+			T.ORG_CODE,
+			T.ORG_ID,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS,
+			M.LD_NAME
+	</sql>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="column_sql" />
+		FROM
+			T_YP_MS_ADDRESS_BOOK T
+		LEFT JOIN 
+			T_DC_ORG_ENTITY_INFO G
+		ON T.ORG_CODE = G.ORG_CODE
+		LEFT JOIN
+			T_YP_MS_LD_ORG M
+		ON M.LD_ID = T.LD_ID
+		<include refid="find_where" />
+		ORDER BY 
+			T.AB_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="abId != null and abId != ''" >
+				AND T.AB_ID = #{abId,jdbcType=DECIMAL}
+			</if> 
+			<if test="ldId != null and ldId != ''" >
+				 AND T.LD_ID = #{ldId,jdbcType=DECIMAL}
+			</if> 
+			<if test="keyWord != null and keyWord != ''" >
+				AND (T.AB_NAME LIKE '%'|| #{keyWord,jdbcType=VARCHAR}||'%' 
+			  OR  M.LD_NAME LIKE '%'|| #{keyWord,jdbcType=VARCHAR}||'%' 
+			  OR  T.AB_DUTY LIKE '%'|| #{keyWord,jdbcType=VARCHAR}||'%')
+			</if>
+			<if test="telPhone != null and telPhone != ''" >
+				AND T.AB_MOBILE LIKE #{telPhone,jdbcType=VARCHAR} ||'%'
+			</if>
+			<if test="abRole != null and abRole != ''" >
+				AND T.AB_ROLE = #{abRole,jdbcType=VARCHAR}
+			</if> 
+			<if test="orgCode != null and orgCode != ''" >
+				AND T.ORG_CODE LIKE '%'||#{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="orgId != null and orgId != ''" >
+				AND T.ORG_ID = #{orgId,jdbcType=DECIMAL}
+			</if> 
+			AND T.STATUS ='1' and M.STATUS ='1' and G.STATUS ='001'
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.addressBook.AddressBook">
+		<selectKey keyProperty="abId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_YP_MS_ADDRESS_BOOK.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_ADDRESS_BOOK
+		(
+			AB_ID,
+			LD_ID,
+			AB_NAME,
+			AB_MOBILE,
+			AB_ROLE,
+			AB_DUTY,
+			ORG_CODE,
+			ORG_ID,
+			CREATER,
+			CREATE_TIME,
+			UPDATER,
+			UPDATE_TIME,
+			STATUS
+		) VALUES (
+			#{abId,jdbcType=DECIMAL},
+			#{ldId,jdbcType=DECIMAL},
+			#{abName,jdbcType=VARCHAR},
+			#{abMobile,jdbcType=VARCHAR},
+			#{abRole,jdbcType=VARCHAR},
+			#{abDuty,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{orgId,jdbcType=DECIMAL},
+			#{creater,jdbcType=DECIMAL},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updater,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.addressBook.AddressBook">
+		UPDATE
+			T_YP_MS_ADDRESS_BOOK
+		<set> 
+			<if test="ldId != null " >
+				LD_ID=#{ldId,jdbcType=DECIMAL},
+			</if>
+			<if test="abName != null " >
+				AB_NAME=#{abName,jdbcType=VARCHAR},
+			</if>
+			<if test="abMobile != null " >
+				AB_MOBILE=#{abMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="abRole != null " >
+				AB_ROLE=#{abRole,jdbcType=VARCHAR},
+			</if>
+			<if test="abDuty != null " >
+				AB_DUTY=#{abDuty,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orgId != null " >
+				ORG_ID=#{orgId,jdbcType=DECIMAL},
+			</if>
+			<if test="creater != null " >
+				CREATER=#{creater,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updater != null " >
+				UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			AB_ID= #{abId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="column_sql" />
+		FROM
+			T_YP_MS_ADDRESS_BOOK T
+		LEFT JOIN
+			T_YP_MS_LD_ORG M
+		ON M.LD_ID = T.LD_ID
+		WHERE
+			AB_ID= #{abId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 详情 -->	
+	<select id="searchByLdId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="column_sql" />
+		FROM
+			T_YP_MS_ADDRESS_BOOK T
+		LEFT JOIN
+			T_YP_MS_LD_ORG M
+		ON M.LD_ID = T.LD_ID
+		WHERE
+			T.LD_ID= #{ldId,jdbcType=DECIMAL} 
+			AND  T.STATUS = '1'
+	</select>
+	
+	<!-- 根据联动单位id获取联系人list zhangzhenhai -->	
+	<select id="searchListByLdId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.AB_ID,
+			T.LD_ID,
+			T.AB_NAME,
+			T.AB_MOBILE,
+			T.AB_ROLE,
+			T.AB_DUTY,
+			T.ORG_CODE,
+			T.ORG_ID,
+			T.CREATER,
+			T.CREATE_TIME,
+			T.UPDATER,
+			T.UPDATE_TIME,
+			T.STATUS
+		FROM
+			T_YP_MS_ADDRESS_BOOK T
+		WHERE
+			LD_ID= #{ldId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.addressBook.AddressBook">
+		UPDATE
+			T_YP_MS_ADDRESS_BOOK
+		SET
+			STATUS='0'
+		WHERE
+			AB_ID= #{abId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<!-- 删除 -->	
+	<update id="deleteByLdId" parameterType="cn.ffcs.zhsq.mybatis.domain.ldOrg.LdOrg">
+		UPDATE
+			T_YP_MS_ADDRESS_BOOK
+		SET
+			STATUS='0'
+		WHERE
+			LD_ID= #{ldId,jdbcType=DECIMAL} 
+	</update>
+</mapper>

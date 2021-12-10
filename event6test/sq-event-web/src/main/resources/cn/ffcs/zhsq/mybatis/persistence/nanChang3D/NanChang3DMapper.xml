@@ -1,0 +1,761 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.nanChang3D.NanChang3DMapper" >
+<resultMap id="ResultMapOfPoint" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+	<result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <!--<result column="GRID_CODE" jdbcType="VARCHAR" property="gridCode" />-->
+    <result column="INFO_ORG_CODE" jdbcType="VARCHAR" property="infoOrgCode" />
+    <!--<result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />-->
+    <result column="GRID_PATH" jdbcType="VARCHAR" property="gridPath" />
+    <!--<result column="MAP_CENTER_LEVEL" jdbcType="INTEGER" property="mapCenterLevel" />-->
+    
+     <result column="pointNo" jdbcType="VARCHAR" property="pointNo" />
+     <result column="pointAddress" jdbcType="VARCHAR" property="pointAddress" />
+     <result column="pointLevel" jdbcType="VARCHAR" property="pointLevel" />
+     <result column="pointType" jdbcType="VARCHAR" property="pointType" />
+     <result column="infoOrgCode" jdbcType="VARCHAR" property="infoOrgCode" />
+     <result column="pointManager" jdbcType="VARCHAR" property="pointManager" />
+     <result column="pmTel" jdbcType="VARCHAR" property="pmTel" />
+     <result column="checkType" jdbcType="VARCHAR" property="checkType" />
+     <result column="elementsCollectionStr" jdbcType="VARCHAR" property="elementsCollectionStr" />
+</resultMap>
+<select id="getPointGisByOrgCode" resultMap="ResultMapOfPoint">
+	select 
+			t1.point_id "id",
+			t.wid "wid",
+			t1.point_no "pointNo",
+	    	t1.point_name "name",
+	    	t1.point_address "pointAddress",
+			t.cen_lon "x",
+			t.cen_lat "y",
+			t.mapt,
+			t.hs,
+			t.line_color ,
+			t.line_width,
+			t.area_color ,
+			t.name_color ,
+			t.color_num ,
+			t1.point_level "pointLevel",
+			t1.point_type "pointType",
+			t1.info_org_code "infoOrgCode",
+		    t1.point_manager "pointManager",
+     	    t1.pm_tel "pmTel",
+     	    t1.point_check_type "checkType",
+			t2.GRID_PATH "GRID_PATH"
+	from MAP_WG_GIS t,t_zz_point_info t1,T_DC_GRID t2
+		where t1.point_id=t.wid
+		and t1.INFO_ORG_CODE=t2.INFO_ORG_CODE
+		and t1.is_valid='1'
+		and t.status='001'
+        <if test="pointName !='' and pointName != null ">
+			and t1.point_name LIKE  '%'||#{pointName}||'%' 
+	    </if>
+	    	<if test="sName != null and sName != ''" >
+			AND (T1.POINT_NAME  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')) or t1.point_address  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')) or t1.point_no  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')))
+		</if>
+	     <if test="infoOrgCode !='' and infoOrgCode != null ">
+			and t1.info_org_code LIKE  #{infoOrgCode}||'%' 
+	    </if>
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+   		and t.type='point'
+    <if test="pointLevels != null ">
+	     and t1.point_level in
+	    <foreach item="pointLevel" index="index" collection="pointLevels"
+		  open="(" separator="," close=")">
+		    #{pointLevel}
+		</foreach>
+	</if>
+	 <if test="pointTypes != null ">
+	     and t1.POINT_TYPE in
+	    <foreach item="pointType" index="index" collection="pointTypes"
+		  open="(" separator="," close=")">
+		    #{pointType}
+		</foreach>
+	</if>
+	<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+		AND  t.cen_lon BETWEEN  #{xmin} and  #{xmax}
+	</if>
+	<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+	  	AND  t.cen_lat BETWEEN  #{ymin} and  #{ymax}
+	</if>
+</select>
+<select id="countPointGisByOrgCode" resultType="java.lang.Integer">
+	select count(1)
+		from MAP_WG_GIS t,t_zz_point_info t1 
+		where t1.point_id=t.wid 
+	  	and t1.is_valid='1'
+		and t.status='001'
+        <if test="pointName !='' and pointName != null ">
+			and t1.point_name LIKE  '%'||#{pointName}||'%' 
+	    </if>
+	    	<if test="sName != null and sName != ''" >
+			AND (T1.POINT_NAME  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')) or t1.point_address  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')) or t1.point_no  LIKE CONCAT('%', CONCAT(#{sName,jdbcType=VARCHAR}, '%')))
+		</if>
+	     <if test="infoOrgCode !='' and infoOrgCode != null ">
+			and t1.info_org_code LIKE  #{infoOrgCode}||'%' 
+	    </if>
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+   		and t.type='point'
+    <if test="pointLevels != null ">
+	     and t1.point_level in
+	    <foreach item="pointLevel" index="index" collection="pointLevels"
+		  open="(" separator="," close=")">
+		    #{pointLevel}
+		</foreach>
+	</if>
+	 <if test="pointTypes != null ">
+	     and t1.POINT_TYPE in
+	    <foreach item="pointType" index="index" collection="pointTypes"
+		  open="(" separator="," close=")">
+		    #{pointType}
+		</foreach>
+	</if>
+	<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+		AND  t.cen_lon BETWEEN  #{xmin} and  #{xmax}
+	</if>
+	<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+	  	AND  t.cen_lat BETWEEN  #{ymin} and  #{ymax}
+	</if>
+</select>
+
+
+<select id="findFieldWorkData" resultMap="ResultMapOfPoint">
+SELECT t.field_work_standard elementsCollectionStr FROM T_ZZ_FIELD_WORK t where t.point_type=#{pointType} and t.is_valid='1'
+</select>
+<select id="findGridData" resultType="java.util.Map">
+	SELECT 
+		G.GRID_ID "gridId",
+		G.PARENT_GRID_ID "pId",
+		G.GRID_NAME "name",
+		G.INFO_ORG_CODE "infoOrgCode",
+		G.GRID_LEVEL "gridLevel",
+		M.CEN_LON "x",
+    	M.CEN_LAT "y",
+    	M.Map_Center_Level "mapCenterLevel"
+	FROM T_DC_GRID G 
+	LEFT JOIN MAP_BUS_GRID_GIS M ON M.WID = G.GRID_ID AND M.STATUS = '001'
+	WHERE 
+		G.INFO_ORG_CODE LIKE #{infoOrgCode}||'%'
+		AND G.STATUS = '001' AND G.GRID_LEVEL &lt; 5 
+	ORDER BY G.GRID_LEVEL,G.ORDER_ID,G.INFO_ORG_CODE
+</select>
+<select id="findMultipleCountiesData" resultType="java.util.Map">
+	SELECT G.GRID_NAME,G.INFO_ORG_CODE,G.ORDER_ID,NVL(SUM(T.TOTAL_),0) TOTAL_ FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT T ON G.INFO_ORG_CODE = T.ORG_CODE
+	AND T.EVENT_DATE &gt;= #{eventDateBegin}
+	AND T.EVENT_DATE &lt;= #{eventDateEnd}
+	AND T.TYPE_LEVEL = '2'
+	WHERE G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE = #{infoOrgCode})
+	AND G.STATUS = '001' 
+	GROUP BY G.GRID_NAME,G.INFO_ORG_CODE,G.ORDER_ID
+	ORDER BY TOTAL_ DESC,G.ORDER_ID,G.INFO_ORG_CODE
+</select>
+<select id="findMultipleCountiesDataByDay" resultType="java.util.Map">
+	SELECT G.GRID_NAME,G.INFO_ORG_CODE,G.ORDER_ID,NVL(SUM(T.TOTAL_),0) TOTAL_ FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT_DAY T ON G.INFO_ORG_CODE = T.ORG_CODE
+	AND T.EVENT_DATE &gt;= TO_DATE(#{eventDateBegin},'YYYY-MM-DD')
+    AND T.EVENT_DATE &lt; TO_DATE(#{eventDateEnd},'YYYY-MM-DD') +1
+	AND T.TYPE_LEVEL = '2'
+	WHERE G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE = #{infoOrgCode})
+	AND G.STATUS = '001' 
+	GROUP BY G.GRID_NAME,G.INFO_ORG_CODE,G.ORDER_ID
+	ORDER BY TOTAL_ DESC,G.ORDER_ID,G.INFO_ORG_CODE
+</select>
+<select id="findMultipleCountiesDataByDayAndRealTime" resultType="java.util.Map">
+	SELECT G1.INFO_ORG_CODE, NVL(COUNT(1),0) TOTAL_
+ 	 FROM T_EVENT T, T_DC_GRID G, T_DC_GRID G1
+	 WHERE T.GRID_ID = G.GRID_ID
+   AND T.STATUS IN ('00', '01', '02', '03', '04')
+   AND G.STATUS = '001'
+   AND T.CREATE_TIME >= TRUNC(SYSDATE)
+   AND G.INFO_ORG_CODE LIKE G1.INFO_ORG_CODE || '%'
+   AND G1.PARENT_GRID_ID =
+       (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE = #{infoOrgCode})
+ 	GROUP BY G1.INFO_ORG_CODE
+</select>
+<select id="findPointData" resultType="java.util.Map">
+	SELECT P.POINT_ID,P.POINT_NAME, NVL(SUM(T.TOTAL_),0) TOTAL_ FROM T_ZZ_POINT_INFO P
+	LEFT JOIN T_BI_POINT_INFO_STAT T  ON T.POINT_ID = P.POINT_ID  
+    <include refid="gis_column"></include>
+	<if test="date_ !='' and date_ != null ">
+		AND T.DATE_ =  #{date_} 
+	</if>
+	<if test="type !='' and type != null ">
+		AND T.TYPE_ =  #{type}
+	</if>
+	<if test="gridId !='' and gridId != null ">
+		AND T.PARENT_GRID_ID =  #{gridId}
+	</if>
+	
+	<include refid="find_where_point"></include>
+	GROUP BY P.POINT_ID,P.POINT_NAME
+	ORDER BY TOTAL_ DESC,POINT_ID
+</select>
+<select id="findPointDataByDay" resultType="java.util.Map">
+	SELECT P.POINT_ID,P.POINT_NAME, NVL(SUM(T.TOTAL_),0) TOTAL_ FROM T_ZZ_POINT_INFO P
+	LEFT JOIN T_BI_POINT_INFO_DAY T  ON T.POINT_ID = P.POINT_ID  
+	    <include refid="gis_column"></include>
+	<if test="date_ !='' and date_ != null ">
+		AND T.DATE_ =  #{date_} 
+	</if>
+	<if test="gridId !='' and gridId != null ">
+		AND T.PARENT_GRID_ID =  #{gridId}
+	</if>
+	<include refid="find_where_point"></include>
+	GROUP BY P.POINT_ID,P.POINT_NAME
+	ORDER BY TOTAL_ DESC,POINT_ID
+</select>
+
+<select id="findPointDataByDayRealTime" resultType="java.util.Map">
+	SELECT P.POINT_ID,P.POINT_NAME,COUNT(E.EVENT_ID) TOTAL_ FROM T_ZZ_POINT_INFO P 
+	LEFT JOIN T_EVENT_EXTEND ET ON ET.POINT_SELECTION = P.POINT_ID 
+	LEFT JOIN T_EVENT E ON ET.EVENT_ID = E.EVENT_ID
+     	AND E.STATUS IN ('00','01','02','03','04') 
+     	AND E.CREATE_TIME &gt;= TO_DATE(#{date_} ,'YYYYMMDD') 
+     	AND E.CREATE_TIME &lt; TO_DATE(#{date_} ,'YYYYMMDD') +1
+     	AND E.GRID_CODE LIKE #{infoOrgCode}||'%' 
+	LEFT JOIN T_DC_GRID G ON G.INFO_ORG_CODE = E.GRID_CODE AND G.STATUS = '001'
+	<include refid="gis_column"></include>
+	WHERE P.IS_VALID = '1' AND P.INFO_ORG_CODE LIKE #{infoOrgCode}||'%' 
+	<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+	  AND  w.cen_lon BETWEEN  #{xmin} and  #{xmax}
+	</if>
+	<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+	AND  w.cen_lat BETWEEN  #{ymin} and  #{ymax}
+	</if>
+	GROUP BY P.POINT_NAME,P.POINT_ID
+	ORDER BY TOTAL_ DESC,P.POINT_ID
+</select>
+
+<sql id="find_where_point">
+	<where>
+		P.IS_VALID = '1'
+		<if test="infoOrgCode !='' and infoOrgCode != null ">
+			AND P.INFO_ORG_CODE LIKE  #{infoOrgCode}||'%' 
+		</if>
+		<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+			 AND  w.cen_lon BETWEEN  #{xmin} and  #{xmax}
+		</if>
+		<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+		  AND  w.cen_lat BETWEEN  #{ymin} and  #{ymax}
+		</if>
+		
+		
+	</where>
+</sql>
+
+<sql id="gis_column">
+<if test="xmax !='' and xmax != null  and  ymax !='' and ymax != null ">
+LEFT JOIN  MAP_WG_GIS w on  p.point_id=w.wid and w.status='001'
+</if>
+</sql>
+
+<select id="findHeatWeightsDay" resultType="java.util.Map">
+SELECT t.POINT_ID, NVL(SUM(T.TOTAL_), 0)  total FROM  t_bi_point_info_day t 
+ <where>
+	T.INFO_ORG_CODE LIKE  #{infoOrgCode} ||'%' 
+  <if test="date_ !='' and date_ != null ">
+		AND T.DATE_ =  #{date_} 
+	</if>
+	</where>
+ GROUP BY t.POINT_ID
+</select>
+
+<select id="findHeatWeights" resultType="java.util.Map">
+SELECT t.POINT_ID, SUM(T.TOTAL_)  total FROM  T_BI_POINT_INFO_STAT t 
+ <where>
+	 T.INFO_ORG_CODE LIKE  #{infoOrgCode} ||'%' 
+	  <if test="date_ !='' and date_ != null ">
+		AND T.DATE_ =  #{date_} 
+	</if>
+	<if test="type !='' and type != null ">
+		AND T.TYPE_ =  #{type}
+	</if>
+	</where>
+ GROUP BY t.POINT_ID
+</select>
+
+<select id="findHeatWeightSrealTime" resultType="java.util.Map">
+    SELECT t1.point_id,
+         count(t4.event_id) total
+    FROM t_zz_point_info t1
+    join t_dc_grid t2
+      on t1.info_org_code = t2.info_org_code
+     and t2.status = '001'
+    join t_event_extend t3
+      on t1.point_id = t3.point_selection
+    join t_event t4
+      on t3.event_id = t4.event_id
+     and t4.status in ('00', '01', '02', '03', '04')
+   where t1.is_valid = '1'
+     and t2.info_org_code like #{infoOrgCode} ||'%' 
+    AND t4.create_time >=   trunc(sysdate)
+   group by t1.point_id
+
+</select>
+
+<select id="findCivilizedPerInfoData" resultType="java.util.Map">
+	 SELECT t.cpim_id ,t.name,t.mobile_telephone,g.org_name as grid_name FROM  T_DC_ORG_SOCIAL_INFO g 
+	 inner join t_Zz_Civilized_Per_Info_Manage t  on g.org_code=t.info_org_code 
+	 where t.duty='001' 
+	 
+	 <if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND t.INFO_ORG_CODE =  #{infoOrgCode} 
+	 </if>
+	 and t.is_valid='1' and g.status='001' order by  t.cpim_id desc
+</select>
+
+<select id="getMontiorStat" resultType="java.util.Map">
+	select count(1) total_mont,sum(case t.is_public when '1' then 1 else 0 end) total_on ,sum(case t.is_public when '0' then 1 else 0 end) total_off 
+	from CMS.CI_MONITOR t
+	join t_dc_grid g on t.org_code=g.info_org_code
+	where 1=1
+	 <if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND G.INFO_ORG_CODE
+		 <choose>
+		    <when test="gridLevel !='' and gridLevel != null and gridLevel =='4'.toString()">
+		     =  #{infoOrgCode} 
+		    </when>
+		    <otherwise>
+		    like #{infoOrgCode}||'%'
+		    </otherwise>
+		</choose>
+	 </if>
+	 and t.company_type ='04' and g.status='001' 
+</select>
+<select id="getPointStat" resultType="java.util.Map">
+	select   count(1) total_point,sum(case t.point_level when 'A' then 1 else 0 end) total_a ,sum(case t.point_level when 'B' then 1 else 0 end) total_b 
+	,sum(case t.point_level when 'C' then 1 else 0 end) total_c
+	from t_zz_point_info t
+	join t_dc_grid g on t.info_org_code=g.info_org_code
+	where  1=1 
+	 <if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND G.INFO_ORG_CODE
+		 <choose>
+		    <when test="gridLevel !='' and gridLevel != null and gridLevel =='4'.toString()">
+		     =  #{infoOrgCode} 
+		    </when>
+		    <otherwise>
+		    like #{infoOrgCode}||'%'
+		    </otherwise>
+		</choose>
+	 </if>
+	and t.is_valid='1'  
+	and g.status='001'
+</select>
+
+<select id="findGeometryData" resultType="java.util.Map">
+  SELECT G.info_org_code,m.CEN_LON X, m.CEN_LAT Y,NVL(SUM(T.TOTAL_),0) TOTAL FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT T ON G.INFO_ORG_CODE = T.ORG_CODE AND T.TYPE_LEVEL = '2'
+      <if test="beginTime !='' and beginTime != null ">
+		AND T.EVENT_DATE &gt;= #{beginTime}
+	</if>
+	<if test="endTime !='' and endTime != null ">
+		AND  T.EVENT_DATE &lt;= #{endTime}
+	</if>
+    LEFT JOIN map_bus_grid_gis m ON m.wid = G.grid_id  and  m.STATUS ='001'
+  where    G.STATUS = '001'
+   and G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE =  #{infoOrgCode})
+	GROUP BY G.info_org_code,m.CEN_LON , m.CEN_LAT
+</select>
+
+
+
+
+<select id="findGeometryMax" resultType="java.util.Map">
+
+SELECT NVL(Max(total),0)  max FROM(
+  SELECT G.info_org_code,m.CEN_LON , m.CEN_LAT,NVL(SUM(T.TOTAL_),0) TOTAL FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT T ON G.INFO_ORG_CODE = T.ORG_CODE AND T.TYPE_LEVEL = '2'
+     <if test="beginTime !='' and beginTime != null ">
+		AND T.EVENT_DATE &gt;= #{beginTime}
+	</if>
+	<if test="endTime !='' and endTime != null ">
+		AND  T.EVENT_DATE &lt;= #{endTime}
+	</if>
+   LEFT JOIN map_bus_grid_gis m ON m.wid = G.grid_id  and  m.STATUS ='001'
+ <where>
+   G.STATUS = '001'
+   and G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE =  #{infoOrgCode})
+	</where>
+	GROUP BY G.info_org_code,m.CEN_LON , m.CEN_LAT
+	)
+	
+</select>
+
+
+
+<select id="findGeometryDataDay" resultType="java.util.Map">
+
+	 SELECT G.info_org_code,m.CEN_LON X, m.CEN_LAT Y,NVL(SUM(T.TOTAL_),0) TOTAL FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT_DAY T ON G.INFO_ORG_CODE = T.ORG_CODE AND T.TYPE_LEVEL = '2'
+    AND T.EVENT_DATE &gt;= TO_DATE(#{beginTime},'YYYY-MM-DD')
+    AND T.EVENT_DATE &lt; TO_DATE(#{endTime},'YYYY-MM-DD') +1
+    LEFT JOIN map_bus_grid_gis m ON m.wid = G.grid_id  and  m.STATUS ='001'
+ WHERE G.STATUS = '001'
+   and G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE =  #{infoOrgCode})
+	GROUP BY G.info_org_code,m.CEN_LON , m.CEN_LAT
+
+</select>
+
+
+<select id="findGeometryMaxDay" resultType="java.util.Map">
+
+SELECT NVL(Max(total),0) max FROM(
+  SELECT G.info_org_code,m.CEN_LON X, m.CEN_LAT Y,NVL(SUM(T.TOTAL_),0) TOTAL FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT_DAY T ON G.INFO_ORG_CODE = T.ORG_CODE AND T.TYPE_LEVEL = '2'
+    AND T.EVENT_DATE &gt;= TO_DATE(#{beginTime},'YYYY-MM-DD')
+    AND T.EVENT_DATE &lt; TO_DATE(#{endTime},'YYYY-MM-DD') +1
+    LEFT JOIN map_bus_grid_gis m ON m.wid = G.grid_id  and  m.STATUS ='001'
+ WHERE G.STATUS = '001' 
+   and G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE =  #{infoOrgCode})
+	GROUP BY G.info_org_code,m.CEN_LON , m.CEN_LAT
+	)
+</select>
+
+
+
+<select id="findPointGisBy" resultType="java.util.Map">
+	select 
+			t1.point_id ,
+	    	t1.point_name "name",
+			t.cen_lon "X",
+			t.cen_lat "Y",
+			0 TOTAL,
+			t1.info_org_code "infoOrgCode"
+		from MAP_WG_GIS t,t_zz_point_info t1 
+		where t1.point_id=t.wid 
+	  	and t1.is_valid='1'
+		and t.status='001'
+	     <if test="infoOrgCode !='' and infoOrgCode != null ">
+			and t1.info_org_code LIKE  #{infoOrgCode}||'%' 
+	    </if>
+	    <if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+	    AND  t.cen_lon BETWEEN  #{xmin} and  #{xmax}
+	</if>
+	<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+	  AND  t.cen_lat BETWEEN  #{ymin} and  #{ymax}
+	</if>
+		and t.mapt=5
+   		and t.type='point'
+
+</select>
+
+
+
+
+<select id="findGeometryDataSrealTime" resultType="java.util.Map">
+	select g1.info_org_code,count(1) TOTAL from t_event t , t_dc_grid g ,t_dc_grid g1 where t.grid_id=g.grid_id and  
+    t.status in ('00', '01', '02', '03', '04') AND T.CREATE_TIME >= trunc(sysdate) 
+    and g.info_org_code like g1.info_org_code ||'%' 
+    and g1.parent_grid_id= (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE = #{infoOrgCode}) 
+    group by g1.info_org_code
+</select>
+
+
+
+<select id="findDCGridXY" resultType="java.util.Map">
+	SELECT G.info_org_code,m.CEN_LON X, m.CEN_LAT Y, 0 TOTAL   FROM  T_DC_GRID G
+    LEFT JOIN map_bus_grid_gis m ON m.wid = G.grid_id  and  m.STATUS ='001'
+ WHERE G.STATUS = '001' 
+   and G.PARENT_GRID_ID = (SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.INFO_ORG_CODE =  #{infoOrgCode})
+	GROUP BY G.info_org_code,m.CEN_LON , m.CEN_LAT
+</select>
+
+
+
+
+<!-- 事件统计 -->
+<select id="findEventStat" resultType="java.util.Map">
+	SELECT  NVL(SUM(T.TOTAL_),0) TOTAL_,NVL(sum(t.settles_total_),0) settles_total_
+	,NVL(sum(t.doing_total_),0) doing_total_
+	FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT T ON G.INFO_ORG_CODE = T.ORG_CODE
+	AND T.EVENT_DATE &gt;= #{eventDateBegin}
+	AND T.EVENT_DATE &lt;= #{eventDateEnd}
+	AND T.TYPE_LEVEL = '2'
+	where 1=1 
+	<if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND G.INFO_ORG_CODE=#{infoOrgCode}
+  	</if>
+	AND G.STATUS = '001' 
+ 
+</select>
+
+<select id="findEventStatByDay" resultType="java.util.Map">
+	SELECT NVL(SUM(T.TOTAL_),0) TOTAL_,NVL(sum(t.settles_total_),0) settles_total_
+	,NVL(sum(t.doing_total_),0) doing_total_
+	FROM  T_DC_GRID G
+    LEFT JOIN T_BI_EVENT_STAT_DAY T ON G.INFO_ORG_CODE = T.ORG_CODE
+	AND T.EVENT_DATE &gt;= TO_DATE(#{eventDateBegin},'YYYY-MM-DD')
+    AND T.EVENT_DATE &lt; TO_DATE(#{eventDateEnd},'YYYY-MM-DD') +1
+	AND T.TYPE_LEVEL = '2'
+	where 1=1 
+	<if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND G.INFO_ORG_CODE=#{infoOrgCode}
+  	</if>
+	AND G.STATUS = '001' 
+	
+</select>
+
+<select id="findEventStatByDayAndRealTime" resultType="java.util.Map">
+	SELECT NVL(COUNT(1),0) TOTAL_,NVL(COUNT(CASE
+                         WHEN T.status IN ('03', '04') THEN
+                          1
+                         ELSE
+                          NULL
+                       END),
+                 0)  settles_total_ 
+ 	 FROM T_EVENT T, T_DC_GRID G 
+	 WHERE T.GRID_ID = G.GRID_ID
+   AND T.STATUS IN ('00', '01', '02', '03', '04')
+   AND G.STATUS = '001'
+   AND T.CREATE_TIME >= TRUNC(SYSDATE)
+  <if test="infoOrgCode !='' and infoOrgCode != null ">
+		AND G.INFO_ORG_CODE like #{infoOrgCode}||'%'
+  	</if>
+</select>
+
+
+
+
+
+
+
+
+  <select id="findEventIdByDate" resultType="java.util.Map" parameterType="java.util.Map">
+
+   select min(t.event_id) min_id,max(t.event_id) max_id 
+   FROM t_event t  
+   join t_dc_grid g on t.grid_id=g.grid_id and g.status='001'
+   <where>
+      t.status in ('00','01','02','03','04') 
+    <if test="infoOrgCode !='' and infoOrgCode != null ">
+			AND g.INFO_ORG_CODE LIKE  #{infoOrgCode} ||'%' 
+  </if>
+   <if test="beginTime !='' and beginTime != null  and endTime !='' and endTime != null ">
+		 and t.end_time between to_date(#{beginTime},'yyyy-MM-dd hh24:mi:ss')
+         and to_date(#{endTime},'yyyy-MM-dd hh24:mi:ss')
+	</if>
+
+	</where>
+
+  </select>	
+
+<select id="getPointCheckTypeById" resultType="java.lang.String">
+	select t.point_check_type from t_zz_point_info t where t.point_id=#{pointId}
+</select>
+<select id="getPointGis" resultType="java.util.Map">
+	SELECT t.wid,t.cen_lon,t.cen_lat  FROM MAP_WG_GIS T 
+	WHERE t.type='point' AND  T.MAPT='5' and T.STATUS='001' 
+	<if test="pointId !='' and pointId != null ">
+		AND T.WID=#{pointId}
+	</if>
+	
+</select>
+
+<!-- 查询事件标签 -->
+<sql id="find_where_eventLabelContent">
+	<if test="eventLabelIdList != null and eventLabelIdList.size > 0">
+		AND EXISTS
+			(SELECT T16.EVENT_ID
+         		FROM T_EVENT_LABEL_RELA T16
+        		WHERE T16.EVENT_ID = T1.EVENT_ID
+          		AND T16.IS_VALID = '1'
+          		AND T16.LABEL_ID IN
+			<foreach collection="eventLabelIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		)
+	</if>
+</sql>
+
+
+<!-- 待办列表统计 -->
+
+    <sql id="eventTodoSql">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflownNanChangLargeDataMapper.eventTodoSql"></include>
+	</sql>
+    <sql id="eventColumn">
+		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+		T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+		T1.TYPE_ "type", 					
+		T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+		T1.STATUS "status", 				T1.CREATE_TIME "createTime", 		
+	   	T1.CONTENT_ "content",				T1.BIZ_PLATFORM "bizPlatform",
+	   	T14.PATROL_TYPE "patrolType",       T14.POINT_SELECTION "pointSelection", 
+       	T14.IS_NOTICE "isNotice"
+	   	<if test="isCapEventAdditionalColumn != null and isCapEventAdditionalColumn == true ">
+	   		,<include refid="eventAdditionalColumn"></include>
+	   	</if>
+	</sql>
+    <sql id="eventColumn4Todo">
+		<include refid="eventColumn"></include>,
+		T3.INSTANCE_ID		"instanceId", 			T3.WORKFLOW_ID	"workFlowId", 
+	   	T4.DBID_			"taskId"
+	</sql>
+    <sql id="order_by">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.order_by"></include>
+	</sql>
+    <sql id="eventTable4Todo">
+		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+		  ON T3.INSTANCE_ID = T4.PROCINST_
+		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		  ON T4.DBID_ = T5.TASK_
+		LEFT JOIN T_EVENT_EXTEND T14
+		  ON T1.EVENT_ID = T14.EVENT_ID AND T14.STATUS = '1' 
+	</sql>
+    <sql id="find_where_todo">
+		AND T3.STATUS = '1' AND T2.STATUS = '001'
+  		AND ((T5.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR (T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.TYPE_ = '3'))
+		<include refid="find_where_event"></include>
+	</sql>
+    <sql id="find_where_event">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_event"></include>
+	</sql>
+    <sql id="find_where_extend">
+		<include refid="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowMapper.find_where_extend"></include>
+	</sql>
+    <sql id="find_where_workflow">
+		<if test="archiveTimeStart != null and archiveTimeStart != '' ">
+  			AND T3.END_TIME <![CDATA[>=]]>TO_DATE(#{archiveTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="archiveTimeEnd != null and archiveTimeEnd != '' ">
+	   		AND T3.END_TIME <![CDATA[<]]>TO_DATE(#{archiveTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	</sql>
+	
+	<!-- 事件列表扩展查询列 -->
+	<sql id="eventAdditionalColumn">
+		T1.CONTACT_USER		"contactUser",	T1.TEL		"tel",
+		T1.CODE_			"code",	T1.OCCURRED			"occurred"
+	</sql>
+	
+	<!-- 事件扩展表查询列 -->
+	<sql id="eventExtendColumn"></sql>
+
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+  	select count(1) from (
+  	    (
+		SELECT T1.EVENT_ID "eventId"
+		<include refid="eventTodoSql"></include>
+		)
+		union all
+  	(select t15.event_verify_id "eventId"
+  FROM T_EVENT_VERIFY T15
+  LEFT JOIN T_DC_GRID T2
+    ON T15.INFO_ORG_CODE = T2.INFO_ORG_CODE
+   AND T2.STATUS = '001'
+ where t15.status_ = '01'
+<if test="removeBizplatformForVerifyArray != null ">
+		AND T15.BIZ_PLATFORM NOT IN
+	<foreach collection="removeBizplatformForVerifyArray" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</if>
+<if test="infoOrgCodeForVerify != null and infoOrgCodeForVerify != '' ">
+   AND T15.INFO_ORG_CODE LIKE #{infoOrgCodeForVerify,jdbcType=VARCHAR} || '%'
+</if>
+<if test="happenTimeStart != null and happenTimeStart != ''">
+	 AND T15.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+</if>
+<if test="happenTimeEnd != null and happenTimeEnd != '' ">
+	 AND T15.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+</if>
+<choose>
+<when test="bizplatformForQueryArray != null ">
+		AND T15.BIZ_PLATFORM IN
+	<foreach collection="bizplatformForQueryArray" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</when>
+<when test="bizplatformForQuery != null and bizplatformForQuery != '' ">
+	AND T15.BIZ_PLATFORM = #{bizplatformForQuery,jdbcType=VARCHAR}
+</when>
+</choose>
+)
+)	
+</select>
+	
+	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  	select * from (
+  		(
+  		SELECT <include refid="eventColumn4Todo"></include>
+  		<include refid="eventTodoSql"></include>
+  		) 
+  		union all
+  	(select t15.event_verify_id "eventId",
+       t15.event_name      "eventName",
+       t15.happen_time     "happenTime",
+       null                "handleDate",
+       null                "type",
+       T2.GRID_ID          "gridId",
+       T2.GRID_PATH        "gridPath",
+       T15.STATUS_         "status",
+       t15.create_time     "createTime",
+       null                "content",
+       t15.biz_platform    "bizPlatform",
+       null                "patrolType",       
+       null                "pointSelection", 
+       null                "isNotice",
+       t15.contact_user    "contactUser",
+       T15.TEL             "tel",
+       null                "code",
+       t15.occurred        "occurred",
+       null                "instanceId",
+       null                "workFlowId",
+       null                "taskId"
+  FROM T_EVENT_VERIFY T15
+  LEFT JOIN T_DC_GRID T2
+    ON T15.INFO_ORG_CODE = T2.INFO_ORG_CODE
+   AND T2.STATUS = '001'
+ where t15.status_ = '01'
+<if test="removeBizplatformForVerifyArray != null ">
+		AND T15.BIZ_PLATFORM NOT IN
+	<foreach collection="removeBizplatformForVerifyArray" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</if>
+<if test="infoOrgCodeForVerify != null and infoOrgCodeForVerify != '' ">
+   AND T15.INFO_ORG_CODE LIKE #{infoOrgCodeForVerify,jdbcType=VARCHAR} || '%'
+</if>
+<if test="happenTimeStart != null and happenTimeStart != ''">
+	 AND T15.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+</if>
+<if test="happenTimeEnd != null and happenTimeEnd != '' ">
+	 AND T15.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+</if>
+<choose>
+<when test="bizplatformForQueryArray != null ">
+		AND T15.BIZ_PLATFORM IN
+	<foreach collection="bizplatformForQueryArray" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</when>
+<when test="bizplatformForQuery != null and bizplatformForQuery != '' ">
+	AND T15.BIZ_PLATFORM = #{bizplatformForQuery,jdbcType=VARCHAR}
+</when>
+</choose>
+)
+) r order by r."createTime" desc
+  		
+  	</select>
+  	
+</mapper>

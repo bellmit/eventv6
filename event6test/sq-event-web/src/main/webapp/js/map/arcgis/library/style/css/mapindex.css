@@ -1,0 +1,269 @@
+
+.o_subst_info
+{
+	height:84%;
+}
+
+/* 由 F12 开发人员工具生成。这可能不是原始源文件的准确表示形式。
+
+
+.hotlabel_l {
+	HEIGHT: 17px; BACKGROUND-IMAGE: url(../images/b_tipl.gif); FLOAT: left; WIDTH: 8px
+}
+.hotlabel_r {
+	HEIGHT: 17px; BACKGROUND-IMAGE: url(../images/b_tipr.gif); FLOAT: left; COLOR: #ffffff; PADDING-LEFT: 5px; LINE-HEIGHT: 17px; PADDING-RIGHT: 5px; WIDTH: auto
+}
+.hotlabel {
+	HEIGHT: 17px; BACKGROUND-IMAGE: url(../images/hotlabel.png); COLOR: #ffffff; LINE-HEIGHT: 17px; PADDING-RIGHT: 5px; WIDTH: auto; TEXT-INDENT: 13px
+}
+
+.CloseBtnOut {
+	OVERFLOW: hidden; CURSOR: hand; HEIGHT: 13px; BACKGROUND-IMAGE: url(images/nc/CloseBtn.gif); RIGHT: 12px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-ATTACHMENT: scroll; POSITION: absolute; BACKGROUND-POSITION: left top; TOP: 6px; WIDTH: 13px
+}
+
+
+.hotdianpu_left
+{
+	width: 44px;
+	height: 62px;
+	margin-top: 38px;
+	float: left;
+	background-image: url("../images/substance_bk.png");
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: -691px;
+	position:relative;
+	z-index:1;
+	top:0;
+	right:-1px;
+}
+.hotdianpu_right
+{
+	float: left;
+}
+.hotdianpu_head
+{
+	height: 32px;
+	background-image:url(../images/map/img1.png);
+}
+.tsd
+{
+	color: #008dd7;
+	line-height: 26px;
+	padding-top: 4px;
+	padding-left: 2px;
+	font-size: 14px;
+	font-weight: 700;
+	float: left;
+}
+.detail
+{
+	color: #000;
+	line-height: 26px;
+	font-size: 12px;
+	font-weight: normal;
+	margin-left: 4px;
+	float: left;
+}
+.o_subst_close2
+{
+	top: 7px;
+	width: 28px;
+	height: 26px;
+	overflow: hidden;
+	float: right;
+	cursor: pointer;
+	background-image: url("../images/window/earth_04.png");
+	background-color: transparent;
+}
+.o_subst_info:after
+{
+	height: 0px;
+	clear: both;
+	float: left;
+	display: block;
+	visibility: hidden;
+	content: ".";
+}
+.o_subst_info .fig
+{
+	margin-top: 4px;
+	margin-right: 8px;
+	float: left;
+	display: block;
+}
+.o_subst_info .cond
+{
+	width: 270px;
+	line-height: 22px;
+	overflow: hidden;
+	float: left;
+}
+.o_fl
+{
+	width: 100%;
+	height: 22px;
+	line-height: 22px;
+	float: left;
+}
+.o_moreinfo_tab:after
+{
+	height: 0px;
+	clear: both;
+	font-size: 0px;
+	display: block;
+	visibility: hidden;
+	content: "";
+}
+.o_moreinfo_tab
+{
+	width: 337px;
+	height: 29px;
+	padding-left: 15px;
+	border-bottom-color: #ddd;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	float: left;
+	background-image: url("../images/substance_bk.png");
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: -34px;
+}
+.o_moreinfo_cont
+{
+	width: 352px;
+	height: 120px;
+	float: left;
+	overflow-x: hidden;
+	overflow-y: auto;
+	background-image: url("../images/substance_bk.png");
+	background-repeat: no-repeat;
+	background-position-x: 0px;
+	background-position-y: -34px;
+}
+.o_moreinfo_tab .item
+{
+	height: 24px;
+	color: #666;
+	line-height: 24px;
+	padding-left: 10px;
+	margin-top: 4px;
+	margin-right: 5px;
+	margin-bottom: 1px;
+	margin-left: 0px;
+	border-top-color: #ebebeb;
+	border-right-color: #ebebeb;
+	border-bottom-color: #ebebeb;
+	border-left-color: #ebebeb;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	float: left;
+	white-space: nowrap;
+	position: relative;
+	background-image: none;
+	background-attachment: scroll;
+	background-repeat: repeat;
+	background-position-x: 0%;
+	background-position-y: 0%;
+	background-color: rgb(255, 255, 255);
+}
+.o_moreinfo_tab .item B
+{
+	height: 24px;
+	color: #666;
+	line-height: 24px;
+	padding-right: 10px;
+	font-weight: 400;
+	float: left;
+}
+.o_moreinfo_tab .item_on
+{
+	height: 30px;
+	color: #666;
+	line-height: 30px;
+	padding-left: 11px;
+	margin-top: 0px;
+	margin-right: 5px;
+	margin-bottom: -1px;
+	margin-left: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	float: left;
+	background-image: url("../images/map/subst_bg.png");
+	background-attachment: scroll;
+	background-repeat: no-repeat;
+	background-position-x: left;
+	background-position-y: -120px;
+	background-color: transparent;
+}
+.o_moreinfo_tab .item_on B
+{
+	height: 30px;
+	color: #666;
+	line-height: 30px;
+	padding-right: 11px;
+	float: left;
+	background-image: url("../images/map/subst_bg.png");
+	background-attachment: scroll;
+	background-repeat: no-repeat;
+	background-position-x: right;
+	background-position-y: -120px;
+	background-color: transparent;
+}
+.hotmapdianpu_list
+{
+	width: 328px;
+	margin-top: 5px;
+	margin-left: 12px;
+	float: left;
+}
+.hotmapdianpu_listli
+{
+	width: 100%;
+	line-height: 22px;
+	float: left;
+	background-color: rgb(255, 255, 255);
+}
+
+.dlg_close{
+	padding-right: 10px;
+	padding-top: 8px;
+	float: right; 
+	background:url(../images/map/img2.png); 
+	width: 28px; 
+	height: 26px;
+}
+
+*/
+
+
+/*****同一点重叠面板样式**********/
+.menuNav {position:relative; width:201px; z-index:9000; background:#fff; border:1px solid #7d7d7d;}
+.menuNav h2{height:26px; width:100%; background:#eee;}
+.menuNav h2 span{cursor:pointer; display:block; width:28px; height:26px;}
+.menuNav h2 .close{background:url(../images/earth_04.png);}
+.menuNav h2 .close:hover{background:url(../images/earth_05.png);}
+.navlist{width:100%; height:192px; overflow:auto;}
+.navlist dl{font-size:14px; height:28px; line-height:28px;}
+.navlist dl dt a{display:block; padding-left:36px; color:#36c; font-weight:bold; background: url(../images/d0.gif) no-repeat 18px 11px;}
+/*****多点重复**********/
+.work_sz {
+	background: url(../images/i_icon2.png) no-repeat;
+	width: 22px;
+	height: 16px;
+	position: absolute;
+	right: -8px;
+	top: 10px;
+	color: #fff;
+	font-size: 11px;
+	line-height: 1.2;
+	text-align: center;
+}

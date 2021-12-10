@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.jiangyinPlatform.communicationLog.CommunicationLogMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.jiangyinPlatform.communicationLog.CommunicationLog">
+		<id column="LOG_UUID" property="logUuid" jdbcType="VARCHAR" /> <!--通讯记录主键-->
+		<result column="CONTACTED_ACCOUNT" property="contactedAccount" jdbcType="VARCHAR" /> <!--被联系方账号-->
+		<result column="CONTACT_ACCOUNT" property="contactAccount" jdbcType="VARCHAR" /> <!--联系方账号-->
+		<result column="CONTACT_TYPE" property="contactType" jdbcType="VARCHAR" /> <!--通讯类别(1:电话, 2:视频, 3:短信)-->
+		<result column="CONTACT_TIME" property="contactTime" jdbcType="TIMESTAMP" /> <!--联系时间-->
+		<result column="CALL_TYPE" property="callType" jdbcType="VARCHAR" /> <!--呼叫方式（1:呼入, 2:呼出）-->
+		<result column="CONTACT_DURATION" property="contactDuration" jdbcType="VARCHAR" /> <!--联系时长-->
+		<result column="ATT_UUID" property="attUuid" jdbcType="VARCHAR" /> <!--附件外键-->
+		<result column="SMS_CONTENT" property="smsContent" jdbcType="VARCHAR" /> <!--短信内容-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--记录状态-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_JY_COMMUNICATION_LOG T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.LOG_UUID,
+			T.CONTACTED_ACCOUNT,
+			T.CONTACT_ACCOUNT,
+			T.CONTACT_TYPE,
+			T.CONTACT_TIME,
+			T.CALL_TYPE,
+			T.CONTACT_DURATION,
+			T.ATT_UUID,
+			T.SMS_CONTENT,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.REMARK
+		FROM
+			T_JY_COMMUNICATION_LOG T
+		<include refid="find_where" />
+		ORDER BY 
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.IS_VALID = '1' 
+			AND T.CONTACT_TYPE = #{contactType,jdbcType=VARCHAR}
+			AND ((T.CONTACTED_ACCOUNT = #{userTel,jdbcType=VARCHAR} AND T.CONTACT_ACCOUNT = #{contactedTel,jdbcType=VARCHAR} AND T.CALL_TYPE = '1')
+				OR 
+				(T.CONTACTED_ACCOUNT = #{contactedTel,jdbcType=VARCHAR} AND T.CONTACT_ACCOUNT = #{userTel,jdbcType=VARCHAR} AND T.CALL_TYPE = '2'))
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.jiangyinPlatform.communicationLog.CommunicationLog">
+		<selectKey keyProperty="logUuid" resultType="java.lang.String" order="BEFORE"> 
+			SELECT sys_guid() FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_JY_COMMUNICATION_LOG
+		(
+			LOG_UUID,
+			CONTACTED_ACCOUNT,
+			CONTACT_ACCOUNT,
+			CONTACT_TYPE,
+			CONTACT_TIME,
+			CALL_TYPE,
+			CONTACT_DURATION,
+			ATT_UUID,
+			SMS_CONTENT,
+			IS_VALID,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			REMARK
+		) VALUES (
+			#{logUuid,jdbcType=VARCHAR},
+			#{contactedAccount,jdbcType=VARCHAR},
+			#{contactAccount,jdbcType=VARCHAR},
+			#{contactType,jdbcType=VARCHAR},
+			#{contactTime,jdbcType=TIMESTAMP},
+			#{callType,jdbcType=VARCHAR},
+			#{contactDuration,jdbcType=VARCHAR},
+			#{attUuid,jdbcType=VARCHAR},
+			#{smsContent,jdbcType=VARCHAR},
+			'1',
+			#{creator,jdbcType=DECIMAL},
+			sysdate,
+			#{updator,jdbcType=DECIMAL},
+			sysdate,
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+</mapper>

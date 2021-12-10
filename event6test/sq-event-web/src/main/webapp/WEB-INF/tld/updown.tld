@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>2.0</jspversion>
+	<shortname>updown</shortname>
+	<uri>http://www.ffcs.cn/tld/ui</uri>
+	
+	<!-- 列表标签 -->
+	<tag>
+		<name>updown</name>
+		<tagclass>cn.ffcs.updown.web.taglib.UpdownTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<!-- 模块 -->
+		<attribute>
+			<name>module</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<!-- 业务标记 -->
+		<attribute>
+			<name>bizKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<!-- 名称 -->
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<!-- 处理URL -->
+		<attribute>
+			<name>action</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 后置处理js函数 -->
+		<attribute>
+			<name>callback</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 列表高度 -->
+		<attribute>
+			<name>height</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<!-- 列表宽度 -->
+		<attribute>
+			<name>width</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+	</tag>
+</taglib>

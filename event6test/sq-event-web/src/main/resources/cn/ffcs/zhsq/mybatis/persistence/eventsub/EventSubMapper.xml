@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventsub.EventSubMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.eventsub.EventSub">
+		<id column="TYPE_ID" property="typeId" jdbcType="DECIMAL" /> <!--id编号  自增类型-->
+		<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" /> <!--业务id编号 -->
+		<result column="TABLE_NAME" property="tableName" jdbcType="VARCHAR" /> <!--关联主表名-->
+		<result column="TYPE_NAME" property="typeName" jdbcType="VARCHAR" /> <!--关联字段名-->
+		<result column="TYPE_VAL" property="typeVal" jdbcType="VARCHAR" /> <!--类别值-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_EVENT_SUB T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.PID,
+			T.SERIALNUMBER,
+			T.TYPE_,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ZZ_EVENT_SUB T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+				t.deleteFlag = '0'
+				<if test="infoOrgCode != null and infoOrgCode != ''">
+					<![CDATA[ AND t.infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+				</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.eventsub.EventSub">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+			SELECT V6.SEQ_T_ZZ_EVENT_SUB.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_ZZ_EVENT_SUB
+		(
+			ID,
+			PID,
+			SERIALNUMBER,
+			TYPE_,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			REMARK
+		) VALUES (
+			#{id,jdbcType=DECIMAL},
+			#{pid,jdbcType=DECIMAL},
+			#{serialnumber,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{creator,jdbcType=DECIMAL},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updator,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{isValid,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.eventsub.EventSub">
+		UPDATE
+			T_ZZ_EVENT_SUB
+		<set> 
+			<if test="pid != null " >
+				PID=#{pid,jdbcType=DECIMAL},
+			</if>
+			<if test="serialnumber != null " >
+				SERIALNUMBER=#{serialnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null " >
+				TYPE_=#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null " >
+				REMARK=#{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.PID,
+			T.SERIALNUMBER,
+			T.TYPE_,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ZZ_EVENT_SUB T
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</select>
+
+
+	<!-- 删除表信息（按案件ID删除） -->
+	<delete id="delTypeRela" parameterType="java.util.Map">
+		DELETE FROM T_ZZ_EVENT_SUB where
+		<foreach collection="list" item="item" open="(" separator="or" close=")">
+			BIZ_ID in #{item.BIZ_ID}
+		</foreach>
+	</delete>
+
+
+
+	<!-- 新增(批量) 南安七类对接事件-->
+	<insert id="insertList" parameterType="java.util.Map">
+		INSERT INTO
+		T_ZZ_EVENT_SUB T
+		(
+		T.TYPE_ID,
+		T.BIZ_ID,
+        T.TYPE_VAL,
+		T.TABLE_NAME,
+		T.TYPE_NAME
+		)
+		SELECT SEQ_TP_RE_ID.NEXTVAL, A.* FROM
+		(
+		<foreach collection="list" item="item" index="index" separator="union all" >
+			SELECT
+			#{item.BIZ_ID},
+			#{item.TYPE_VAL},
+			#{item.TABLE_NAME},
+			#{item.TYPE_NAME}
+			from dual
+		</foreach>
+		) A
+	</insert>
+
+	<!-- csk	南安纠纷七对接类型数量统计（前五类型排名）-->
+	<select id="findStatusNum" parameterType="java.util.Map" resultType="java.util.Map">
+		with data_ as(
+        select t.id,t.DOCKING_TYPE from T_ZZ_DISPUTE_MEDIATION_NA T
+        JOIN  t_dc_grid g on t.infoorgcode=g.info_org_code and g.status='001'
+        where t.deleteFlag = '0'
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			<![CDATA[ AND t.infoorgcode LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' ]]>
+		</if>
+		<if test="createTimeStart != null and createTimeStart != ''">
+			AND t.create_time <![CDATA[>=]]> TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd != ''">
+			AND t.create_time <![CDATA[<]]> TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		</if>
+        ),
+		name_ AS(
+		select g.dict_name name_,g.DICT_GENERAL_CODE TYPE_VAL from t_bas_datadict g where g.dict_pcode='A001093102'
+		),
+		num_data as (
+		select a.TYPE_VAL , count(1) number_ from T_ZZ_EVENT_SUB a
+		JOIN  data_ g on g.id = a.BIZ_ID
+		group by a.TYPE_VAL
+		)
+		SELECT D.name_ DOCKING_TYPE,NVL (B.number_,0) TOTAL_ FROM name_ D
+		LEFT JOIN num_data B ON B.TYPE_VAL = D.TYPE_VAL
+		ORDER BY TOTAL_ desc
+	</select>
+
+</mapper>

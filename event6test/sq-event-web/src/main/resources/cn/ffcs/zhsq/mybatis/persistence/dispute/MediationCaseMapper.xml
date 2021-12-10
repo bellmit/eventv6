@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.MediationCaseMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.MediationCase">
+		<id column="MEDIATION_CASE_ID" property="mediationCaseId" jdbcType="DECIMAL" /> <!--MEDIATION_CASE_ID-->
+		<result column="MEDIATION_ID" property="mediationId" jdbcType="DECIMAL" /> <!--编号-->
+		<result column="MEDIATION_ORG_NAME" property="mediationOrgName" jdbcType="VARCHAR" /> <!--调解组织-->
+		<result column="MEDIATOR" property="mediator" jdbcType="VARCHAR" /> <!--调解人-->
+		<result column="MEDIATION_POST" property="mediationPost" jdbcType="VARCHAR" /> <!--调解人职务-->
+		<result column="MEDIATOR_TEL" property="mediatorTel" jdbcType="VARCHAR" /> <!--调解人联系方式-->
+		<result column="MEDIATOR_TYPE" property="mediatorType" jdbcType="VARCHAR" /> <!--调解人类型-->
+		<result column="STATUS" property="status" jdbcType="DECIMAL" /> <!--状态-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--录入时间-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_DISPUTE_MEDIATION_CASE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.MEDIATION_CASE_ID,
+			T.MEDIATION_ID,
+			T.MEDIATION_ORG_NAME,
+			T.MEDIATOR,
+			T.MEDIATION_POST,
+			T.MEDIATOR_TEL,
+			T.MEDIATOR_TYPE,
+			T.STATUS,
+			T.UPDATE_TIME
+		FROM
+			T_ZZ_DISPUTE_MEDIATION_CASE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.MEDIATION_CASE_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.STATUS = 1
+			<if test="@Ognl@isNotEmpty(mediationId)">
+				AND T.MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+			</if>
+			<if test="@Ognl@isNotEmpty(mediatorType)">
+				AND T.MEDIATOR_TYPE = #{mediatorType,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationCase">
+		<selectKey keyProperty="mediationCaseId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_ZZ_DISPUTE_MEDIATION_CASE.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_ZZ_DISPUTE_MEDIATION_CASE
+		(
+			MEDIATION_CASE_ID,
+			MEDIATION_ID,
+			MEDIATION_ORG_NAME,
+			MEDIATOR,
+			MEDIATION_POST,
+			MEDIATOR_TEL,
+			MEDIATOR_TYPE,
+			STATUS,
+			UPDATE_TIME
+		) VALUES (
+			#{mediationCaseId,jdbcType=DECIMAL},
+			#{mediationId,jdbcType=DECIMAL},
+			#{mediationOrgName,jdbcType=VARCHAR},
+			#{mediator,jdbcType=VARCHAR},
+			#{mediationPost,jdbcType=VARCHAR},
+			#{mediatorTel,jdbcType=VARCHAR},
+			#{mediatorType,jdbcType=VARCHAR},
+			1,
+			sysdate
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationCase">
+		UPDATE
+			T_ZZ_DISPUTE_MEDIATION_CASE
+		<set> 
+			<if test="mediationId != null " >
+				MEDIATION_ID=#{mediationId,jdbcType=DECIMAL},
+			</if>
+			<if test="mediationOrgName != null " >
+				MEDIATION_ORG_NAME=#{mediationOrgName,jdbcType=VARCHAR},
+			</if>
+			<if test="mediator != null " >
+				MEDIATOR=#{mediator,jdbcType=VARCHAR},
+			</if>
+			<if test="mediationPost != null " >
+				MEDIATION_POST=#{mediationPost,jdbcType=VARCHAR},
+			</if>
+			<if test="mediatorTel != null " >
+				MEDIATOR_TEL=#{mediatorTel,jdbcType=VARCHAR},
+			</if>
+			<if test="mediatorType != null " >
+				MEDIATOR_TYPE=#{mediatorType,jdbcType=VARCHAR},
+			</if>
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			MEDIATION_CASE_ID= #{mediationCaseId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.MEDIATION_CASE_ID,
+			T.MEDIATION_ID,
+			T.MEDIATION_ORG_NAME,
+			T.MEDIATOR,
+			T.MEDIATION_POST,
+			T.MEDIATOR_TEL,
+			T.MEDIATOR_TYPE,
+			T.STATUS,
+			T.UPDATE_TIME
+		FROM
+			T_ZZ_DISPUTE_MEDIATION_CASE T
+		WHERE
+			MEDIATION_CASE_ID= #{mediationCaseId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationCase">
+		UPDATE
+			T_ZZ_DISPUTE_MEDIATION_CASE
+		SET STATUS = '0', UPDATE_TIME = SYSDATE
+		WHERE
+			MEDIATION_CASE_ID= #{mediationCaseId,jdbcType=DECIMAL}
+	</delete>
+
+	<insert id="insertBatch" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.MediationCase">
+		INSERT INTO
+		T_ZZ_DISPUTE_MEDIATION_CASE (
+		MEDIATION_CASE_ID,
+		MEDIATION_ID,
+		MEDIATION_ORG_NAME,
+		MEDIATOR,
+		MEDIATION_POST,
+		MEDIATOR_TEL,
+		MEDIATOR_TYPE,
+		STATUS,
+		UPDATE_TIME
+		)
+		SELECT SEQ_ZZ_DISPUTE_MEDIATION_CASE.NEXTVAL,T.* FROM (
+		<foreach collection="list" item="item" separator="union all">
+			(
+			SELECT
+			#{item.mediationId,jdbcType=DECIMAL},
+			#{item.mediationOrgName,jdbcType=VARCHAR},
+			#{item.mediator,jdbcType=VARCHAR},
+			#{item.mediationPost,jdbcType=VARCHAR},
+			#{item.mediatorTel,jdbcType=VARCHAR},
+			#{item.mediatorType,jdbcType=VARCHAR},
+			1,
+			sysdate
+			FROM DUAL
+			)
+		</foreach>
+		) T
+	</insert>
+
+	<update id="deleteByMediationIdAndType">
+		UPDATE
+			T_ZZ_DISPUTE_MEDIATION_CASE
+		SET STATUS = '0', UPDATE_TIME = SYSDATE
+		WHERE
+			MEDIATION_ID= #{mediationId,jdbcType=DECIMAL}
+		AND MEDIATOR_TYPE= #{mediatorType,jdbcType=VARCHAR}
+	</update>
+</mapper>

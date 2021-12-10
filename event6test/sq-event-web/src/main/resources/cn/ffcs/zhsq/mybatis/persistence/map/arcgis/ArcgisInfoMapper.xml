@@ -1,0 +1,1944 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.ArcgisInfoMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisMapConfigInfo" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    <result column="THEME" jdbcType="VARCHAR" property="theme" />
+    <result column="MAP_START_TPPE" jdbcType="INTEGER" property="mapStartType" />
+    <result column="MAP_FILE" jdbcType="VARCHAR" property="mapFile" />
+    <result column="MAP_FILE_3D" jdbcType="VARCHAR" property="mapFile3D" />
+    <result column="MAP_CENTER_X" jdbcType="DECIMAL" property="mapCenterX" />
+    <result column="MAP_CENTER_Y" jdbcType="DECIMAL" property="mapCenterY" />
+    <result column="MAP_CENTER_LEVEL" jdbcType="INTEGER" property="mapCenterLevel" />
+    <result column="MAP_CENTER_X_3D" jdbcType="DECIMAL" property="mapCenterX3D" />
+    <result column="MAP_CENTER_Y_3D" jdbcType="DECIMAL" property="mapCenterY3D" />
+    <result column="MAP_CENTER_LEVEL_3D" jdbcType="INTEGER" property="mapCenterLevel3D" />
+    <result column="MAP_TYPE" jdbcType="INTEGER" property="mapType" />
+    <result column="MAP_TYPE_3D" jdbcType="INTEGER" property="mapType3D" />
+    <result column="MAP_MINL" jdbcType="INTEGER" property="mapMinl" />
+    <result column="MAP_MAXL" jdbcType="INTEGER" property="mapMaxl" />
+    <result column="MAP_MINL_3D" jdbcType="INTEGER" property="mapMinl3D" />
+    <result column="MAP_MAXL_3D" jdbcType="INTEGER" property="mapMaxl3D" />
+    <result column="POSITION_OFFSET_X" jdbcType="DECIMAL" property="positionOffsetX" />
+    <result column="POSITION_OFFSET_Y" jdbcType="DECIMAL" property="positionOffsetY" />
+    <result column="POSITION_OFFSET_X_3D" jdbcType="DECIMAL" property="positionOffsetX3D" />
+    <result column="POSITION_OFFSET_Y_3D" jdbcType="DECIMAL" property="positionOffsetY3D" />
+    <result column="ENGINE_TYPE" jdbcType="VARCHAR" property="engineType" />
+    <result column="CONTRAST_COLOR" jdbcType="VARCHAR" property="contrastColor" />
+</resultMap>
+
+<resultMap id="ResultMapOfGridArcgis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+	<result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="GRID_CODE" jdbcType="VARCHAR" property="gridCode" />
+    <result column="INFO_ORG_CODE" jdbcType="VARCHAR" property="infoOrgCode" />
+    <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    <result column="GRID_PATH" jdbcType="VARCHAR" property="gridPath" />
+    <result column="MAP_CENTER_LEVEL" jdbcType="INTEGER" property="mapCenterLevel" />
+</resultMap>
+<resultMap id="ResultMapOfHlhxArcgis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfHlhx" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="GRID_CODE" jdbcType="VARCHAR" property="gridCode" />
+    <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    <result column="LOT_NAME" jdbcType="VARCHAR" property="lotName" />
+</resultMap>
+<resultMap id="ResultMapOfBuildArcGis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+	<result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="BUILDING_NAME" jdbcType="VARCHAR" property="buildingName" />
+    <result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+</resultMap>
+
+<resultMap id="ResultMapOfPointArcGis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="CLOB" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+	<result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="POINT_NAME" jdbcType="VARCHAR" property="pointName" />
+    <result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+</resultMap>
+<resultMap id="ResultMapOfSegmentGridArcGis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfSegmentGrid" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="SEGMENTGRID_NAME" jdbcType="VARCHAR" property="segmentGridName" />
+    <result column="SEGMENTGRID_ID" jdbcType="DECIMAL" property="segmentGridId" />
+</resultMap>
+<resultMap id="ResultMapOfPublicArcGis" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="MARKER_TYPE" jdbcType="VARCHAR" property="markerType" />
+</resultMap>
+<resultMap id="ResultMapOfArcgisConfigInfo" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisConfigInfo" >
+	<id column="ARCGIS_CONFIG_INFO_ID" jdbcType="INTEGER" property="arcgisConfigInfoId" />
+    <result column="GRID_CODE" jdbcType="VARCHAR" property="gridCode" />
+    <result column="MAP_TYPE" jdbcType="INTEGER" property="mapType" />
+    <result column="MAP_TYPE_NAME" jdbcType="VARCHAR" property="mapTypeName" />
+    <result column="MAP_ROWS" jdbcType="DECIMAL" property="mapRows" />
+    <result column="MAP_COLS" jdbcType="DECIMAL" property="mapCols" />
+    <result column="MAP_ORGIGIN_X" jdbcType="DECIMAL" property="mapOrgiginX" />
+    <result column="MAP_ORGIGIN_Y" jdbcType="DECIMAL" property="mapOrgiginY" />
+    <result column="WKID" jdbcType="INTEGER" property="wkid" />
+    <result column="MAP_CENTER_X" jdbcType="DECIMAL" property="mapCenterX" />
+    <result column="MAP_CENTER_Y" jdbcType="DECIMAL" property="mapCenterY" />
+    <result column="ZOOM" jdbcType="INTEGER" property="zoom" />
+	<result column="MIN_ZOOM" jdbcType="INTEGER" property="minZoom" />
+    <result column="ORDER_INDEX" jdbcType="INTEGER" property="orderIndex" />
+    <result column="MAP_TYPE_CODE" jdbcType="INTEGER" property="mapTypeCode" />
+    <result column="COORDINATE_SERVICE_NAME" jdbcType="VARCHAR" property="coordinateServiceName" />
+	<result column="MAP_KEY" jdbcType="VARCHAR" property="mapKey" />
+	<result column="ENGINE_NAME" jdbcType="VARCHAR" property="engineName" />
+	<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+</resultMap>
+<resultMap id="ResultMapOfArcgisServiceInfo" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisServiceInfo" >
+	<id column="ARCGIS_SERVICE_INFO_ID" jdbcType="INTEGER" property="arcgisServiceInfoId" />
+    <result column="ARCGIS_CONFIG_INFO_ID" jdbcType="INTEGER" property="arcgisConfigInfoId" />
+    <result column="SERVICE_URL" jdbcType="VARCHAR" property="serviceUrl" />
+    <result column="SERVICE_LOAD_TYPE" jdbcType="VARCHAR" property="serviceLoadType" />
+    <result column="SERVICE_XMIN" jdbcType="DECIMAL" property="serviceXmin" />
+    <result column="SERVICE_YMIN" jdbcType="DECIMAL" property="serviceYmin" />
+    <result column="SERVICE_XMAX" jdbcType="DECIMAL" property="serviceXmax" />
+    <result column="SERVICE_YMAX" jdbcType="DECIMAL" property="serviceYmax" />
+    <result column="SERVICE_IMAGE_FORMAT" jdbcType="VARCHAR" property="serviceImageFormat" />
+    <result column="SERVICE_SERVICE_MODE" jdbcType="VARCHAR" property="serviceServiceMode" />
+    <result column="SERVICE_LAYER_ID" jdbcType="VARCHAR" property="serviceLayerId" />
+    <result column="SERVICE_TILE_MATRIX_SET_ID" jdbcType="VARCHAR" property="serviceTileMartrixSetId" />
+    <result column="SERVICE_TILE_MATRIX" jdbcType="VARCHAR" property="serviceTileMartrix" />
+    <result column="TOKEN_JS" jdbcType="VARCHAR" property="tokenJs" />
+    <result column="AGENT_SERVICE_URL" jdbcType="VARCHAR" property="agentServiceUrl" />
+</resultMap>
+<resultMap id="ResultMapOfArcgisScalenInfo" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisScalenInfo" >
+	<id column="ARCGIS_SCALE_INFO_ID" jdbcType="INTEGER" property="arcgisScaleInfoId" />
+    <result column="ARCGIS_CONFIG_INFO_ID" jdbcType="INTEGER" property="arcgisConfigInfoId" />
+    <result column="SCALE_LEVEL" jdbcType="INTEGER" property="scaleLevel" />
+    <result column="SCALE_RESOLUTION" jdbcType="DECIMAL" property="scaleResolution" />
+    <result column="SCALE_SCALE" jdbcType="DECIMAL" property="scaleScale" />
+</resultMap>
+
+<resultMap id="ResultMapOfTrajectory" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfTrajectory" >
+    <id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="LOCATE_TIME" jdbcType="VARCHAR" property="locateTime" />
+	<result column="IN_GRID" jdbcType="VARCHAR" property="isInGrid" />
+</resultMap>
+
+<resultMap id="ResultMapOfTrajectory1" type="cn.ffcs.zhsq.mybatis.domain.trajectory.LocateInfo" >
+	<id column="LOCATE_ID" jdbcType="DECIMAL" property="locateId" />
+    <result column="LOCATE_TERMINAL" jdbcType="DECIMAL" property="locateTerminal" />
+    <result column="LOCATE_TIME" jdbcType="DATE" property="locateTime" />
+    <result column="LNG" jdbcType="VARCHAR" property="x" />
+    <result column="LAT" jdbcType="VARCHAR" property="y" />
+    <result column="STATUS_" jdbcType="VARCHAR" property="status" />
+</resultMap>
+
+<resultMap id="ResultMapOfHeat" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisHeatMapInfo" >
+	<result column="X" jdbcType="DECIMAL" property="x" />
+	<result column="Y" jdbcType="DECIMAL" property="y" />
+	<result column="CNT" jdbcType="DECIMAL" property="count" />
+</resultMap>
+
+<resultMap id="ResultMapOfDayTraj" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfDayTraj" >
+	<result column="WID" jdbcType="DECIMAL" property="wid" />
+	<result column="STATISTIC_DATE" jdbcType="DATE" property="statisticDate" />
+	<result column="GPS_ARR" jdbcType="VARCHAR" property="gpsArr" />
+	<result column="GPS_TIME_ARR" jdbcType="VARCHAR" property="gpsTimeArr" />
+	<result column="IN_GRID_ARR" jdbcType="VARCHAR" property="inGridArr" />
+	<result column="STATUS_" jdbcType="VARCHAR" property="status" />
+</resultMap>
+
+	<resultMap id="ResultMapOfUser" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfUser" >
+		<id column="USER_ID" jdbcType="DECIMAL" property="userId" />
+		<result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+		<result column="REAL_NAME" jdbcType="VARCHAR" property="realName" />
+		<result column="MOBILE_PHONE" jdbcType="VARCHAR" property="mobilePhone" />
+		<result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+		<result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+		<result column="X" jdbcType="DECIMAL" property="x" />
+		<result column="Y" jdbcType="DECIMAL" property="y" />
+		<result column="LOCATE_TIME" jdbcType="TIMESTAMP" property="locateTime" />
+	</resultMap>
+	<resultMap id="ResultMapOfCommon" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfo" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="CLOB" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+	<result column="COLOR_NUM" jdbcType="DECIMAL" property="colorNum" />
+    <result column="POINT_NAME" jdbcType="VARCHAR" property="pointName" />
+    <result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+</resultMap>
+
+<!-- 2014-05-22 liushi add 根据infoOrgCode获取arcgis类型的地图配置信息 -->
+<select id="findGisMapConfigInfoByOrgCode" resultMap="BaseResultMap">
+	select * from MAP_CONFIG_GIS t where #{infoOrgCode,jdbcType=VARCHAR} like t.org_code||'%' and t.ENGINE_TYPE=#{engineType,jdbcType=VARCHAR} order by org_code desc
+</select>
+
+<!-- 2014-06-05 liushi add 根据wid mapt查询是否存在该条网格轮廓数据 -->
+<select id="getArcgisDataOfGridForIsExist" resultMap="ResultMapOfGridArcgis">
+	select * from map_bus_grid_gis t where t.wid = #{wid, jdbcType=DECIMAL}   and t.mapt = #{mapt, jdbcType=INTEGER} and t.status='001'
+</select>
+<!-- 2014-06-05 liushi add 插入网格轮廓数据 -->
+<insert id="insertArcgisDataOfGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="oracle">
+	<selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select MAP_BUS_GRID_GIS_SEQ.NEXTVAL from DUAL
+	</selectKey>
+	insert into map_bus_grid_gis(id,wid,cen_lon,cen_lat
+		,mapt,hs,map_center_level
+		,line_color,line_width,area_color,name_color,color_num,status,UPDATE_DATE,<![CDATA[SDO]]>)
+	values(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR},#{mapCenterLevel,jdbcType=INTEGER}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},#{colorNum,jdbcType=DECIMAL},'001',SYSDATE,
+		MDSYS.SDO_GEOMETRY(2003,
+			8192,
+			NULL,
+			MDSYS.SDO_ELEM_INFO_ARRAY(1, 2003, 1),
+			MDSYS.SDO_ORDINATE_ARRAY(${hs}))
+	)
+</insert>
+
+	<insert id="insertArcgisDataOfGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="dm">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select MAP_BUS_GRID_GIS_SEQ.NEXTVAL from DUAL
+		</selectKey>
+		insert into map_bus_grid_gis(id,wid,cen_lon,cen_lat
+		,mapt,hs,map_center_level
+		,line_color,line_width,area_color,name_color,color_num,status,<![CDATA[SDO]]>,UPDATE_DATE)
+		values(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR},#{mapCenterLevel,jdbcType=INTEGER}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},#{colorNum,jdbcType=DECIMAL},'001',
+		DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),sysdate
+		)
+	</insert>
+<!-- 2014-06-05 liushi add 修改网格轮廓数据 -->
+	<update id="updateArcgisDataOfGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="oracle">
+		update map_bus_grid_gis t
+		set t.cen_lon = #{x,jdbcType=DECIMAL}
+		,t.cen_lat = #{y,jdbcType=DECIMAL}
+		,t.hs = #{hs,jdbcType=VARCHAR}
+		,t.map_center_level = #{mapCenterLevel,jdbcType=INTEGER}
+		,t.line_color = #{lineColor,jdbcType=VARCHAR}
+		,t.line_width = #{lineWidth,jdbcType=INTEGER}
+		,t.area_color = #{areaColor,jdbcType=VARCHAR}
+		,t.name_color = #{nameColor,jdbcType=VARCHAR}
+		,t.color_num = #{colorNum,jdbcType=DECIMAL}
+		,t.UPDATE_DATE = SYSDATE
+		,t.sdo = MDSYS.SDO_GEOMETRY(2003,
+		8192,
+		NULL,
+		MDSYS.SDO_ELEM_INFO_ARRAY(1, 2003, 1),
+		MDSYS.SDO_ORDINATE_ARRAY(${hs}))
+		where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status='001'
+	</update>
+
+	<update id="updateArcgisDataOfGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="dm">
+		update map_bus_grid_gis t
+		set t.cen_lon = #{x,jdbcType=DECIMAL}
+		,t.cen_lat = #{y,jdbcType=DECIMAL}
+		,t.hs = #{hs,jdbcType=VARCHAR}
+		,t.map_center_level = #{mapCenterLevel,jdbcType=INTEGER}
+		,t.line_color = #{lineColor,jdbcType=VARCHAR}
+		,t.line_width = #{lineWidth,jdbcType=INTEGER}
+		,t.area_color = #{areaColor,jdbcType=VARCHAR}
+		,t.name_color = #{nameColor,jdbcType=VARCHAR}
+		,t.color_num = #{colorNum,jdbcType=DECIMAL}
+		,t.sdo = DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326)
+		,t.UPDATE_DATE = sysdate
+		where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status='001'
+	</update>
+<!-- 2014-06-05 liushi add 修改网格轮廓数据 -->
+<select id="updateArcgisDataOfGridMap" statementType="CALLABLE">
+	<![CDATA[
+	{call PROC_UPDATE_OR_CREATE_GRID_GIS(
+			#{wid,mode=IN,jdbcType=INTEGER},
+			#{x,mode=IN,jdbcType=DECIMAL},
+			#{y,mode=IN,jdbcType=DECIMAL},
+			#{mapCenterLevel,mode=IN,jdbcType=INTEGER},
+			#{lineColor,mode=IN,jdbcType=VARCHAR},
+			#{lineWidth,mode=IN,jdbcType=INTEGER},
+			#{areaColor,mode=IN,jdbcType=VARCHAR},
+			#{nameColor,mode=IN,jdbcType=VARCHAR},
+			#{colorNum,mode=IN,jdbcType=DECIMAL},
+			#{mapt,mode=IN,jdbcType=INTEGER},
+			#{hs,mode=IN,jdbcType=VARCHAR},
+			#{updateUser,mode=IN,jdbcType=DECIMAL},
+			#{pRows,mode=OUT,jdbcType=INTEGER})}
+]]>
+</select>
+
+	<!-- 2017-11-13 liushi add 修改网格轮廓数据 -->
+	<select id="updateArcgisDataOfGridSDO" statementType="CALLABLE">
+		<![CDATA[
+		{call PROC_UPDATE_GRID_SDO(
+				#{wid,mode=IN,jdbcType=INTEGER},
+				#{mapt,mode=IN,jdbcType=INTEGER},
+				#{pRows,mode=OUT,jdbcType=INTEGER})}
+	]]>
+	</select>
+
+	<!-- 2014-06-05 liushi add 修改网格轮廓数据 -->
+	<update id="updateArcgisDataOfGridSDOMap" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="oracle">
+		UPDATE map_bus_grid_gis t
+		set
+		t.UPDATE_DATE=SYSDATE,
+		t.sdo = MDSYS.SDO_GEOMETRY(2003,
+										8192,
+										NULL,
+										MDSYS.SDO_ELEM_INFO_ARRAY(1, 2003, 1),
+										MDSYS.SDO_ORDINATE_ARRAY(${hs}))
+		where t.wid = #{wid,jdbcType=DECIMAL}
+			and t.mapt =  #{mapt,jdbcType=INTEGER}
+			and t.status='001'
+	</update>
+
+	<update id="updateArcgisDataOfGridSDOMap" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid" databaseId="dm">
+		UPDATE map_bus_grid_gis t
+		set t.sdo = DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326)
+		where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status='001'
+	</update>
+<!-- 2014-11-24 liush 轮廓的删除改为逻辑删除delete from map_bus_grid_gis t where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} -->
+<update id="deleteArcgisDataOfGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfGrid">
+	UPDATE MAP_BUS_GRID_GIS T SET T.STATUS='003',T.UPDATE_DATE=SYSDATE WHERE T.WID = #{wid,jdbcType=DECIMAL} AND T.MAPT=#{mapt,jdbcType=INTEGER} AND T.STATUS = '001'
+</update>
+
+<!-- 2014-06-10 zhanh add 根据wid mapt查询是否存在该条楼栋轮廓数据 -->
+<select id="getArcgisDataOfBuildForIsExist" resultMap="ResultMapOfGridArcgis">
+	select * from map_wg_jzw_gis t where t.wid = #{wid, jdbcType=DECIMAL}   and t.mapt = #{mapt, jdbcType=INTEGER} AND T.STATUS = '001' 
+</select>
+
+
+	<insert id="insertArcgisDataOfBuild" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="dm">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select SEQ_MAP_WG_JZW_GIS.NEXTVAL from DUAL
+		</selectKey>
+		insert into map_wg_jzw_gis(id,wid,cen_lon,cen_lat
+		,mapt,hs,line_color,line_width,area_color,name_color,status
+		<if test="foreignAidId != null">
+			,FOREIGN_AID_ID
+		</if>
+		<if test="x != null and y != null">
+			,<![CDATA[SDO]]>
+		</if>
+		)
+		values(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},'001'
+		<if test="foreignAidId != null">
+			,#{foreignAidId,jdbcType=DECIMAL}
+		</if>
+		<if test="x != null and y != null">
+			,DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+		</if>
+		)
+	</insert>
+<!-- 2014-06-10 zhanh add 插入楼栋轮廓数据 -->
+<insert id="insertArcgisDataOfBuild" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="oracle">
+	<selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select SEQ_MAP_WG_JZW_GIS.NEXTVAL from DUAL
+	</selectKey>
+	insert into map_wg_jzw_gis(id,wid,cen_lon,cen_lat
+		,mapt,hs,line_color,line_width,area_color,name_color,status
+		<if test="foreignAidId != null">
+	  	,FOREIGN_AID_ID
+	    </if>
+		<if test="x != null and y != null">
+			,<![CDATA[SDO]]>
+		</if>
+		)
+	values(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},'001'
+		<if test="foreignAidId != null">
+	  	,#{foreignAidId,jdbcType=DECIMAL}
+	    </if>
+		<if test="x != null and y != null">
+		,MDSYS.SDO_GEOMETRY(2001,8192, MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR},NULL), NULL,NULL)
+		</if>
+	)
+</insert>
+
+<!-- 2014-10-09 huangmw add 根据wid mapt查询是否存在该条片区网格轮廓数据 -->
+<select id="getArcgisDataOfSegmentGridForIsExist" resultMap="ResultMapOfGridArcgis">
+	select * from MAP_SEGMENT_GRID_GIS t where t.wid = #{wid, jdbcType=DECIMAL}   and t.mapt = #{mapt, jdbcType=INTEGER} AND T.STATUS = '001'
+</select>
+
+<!-- 2014-10-09 huangmw add 修改网格轮廓数据 -->
+<update id="updateArcgisDataOfSegmentGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfSegmentGrid">
+	update MAP_SEGMENT_GRID_GIS t
+	  set t.cen_lon = #{x,jdbcType=DECIMAL}
+	  ,t.cen_lat = #{y,jdbcType=DECIMAL}
+	  ,t.hs = #{hs,jdbcType=VARCHAR}
+	  where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		AND T.STATUS = '001'
+</update>
+
+<insert id="insertArcgisDataOfSegmentGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfSegmentGrid">
+	<selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select MAP_SEGMENT_GRID_GIS_SEQ.NEXTVAL from DUAL
+	</selectKey>
+	insert into MAP_SEGMENT_GRID_GIS(id,wid,cen_lon,cen_lat
+		,mapt,hs,status)
+	values(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR},'001'
+	)
+</insert>
+<!-- 2014-11-24liush由物理删除变为逻辑删除delete from MAP_SEGMENT_GRID_GIS t where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} -->
+<update id="deleteArcgisDataOfSegmentGrid" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfSegmentGrid">
+	update MAP_SEGMENT_GRID_GIS t set t.status = '003' ,T.UPDATE_DATE=SYSDATE where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} and t.status='001'
+</update>
+
+<!-- 2014-06-10 zhanh add 修改楼栋轮廓数据 -->
+<update id="updateArcgisDataOfBuild" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="oracle">
+	update map_wg_jzw_gis t
+	  set 
+	  t.line_color = #{lineColor,jdbcType=VARCHAR}
+	  ,t.line_width = #{lineWidth,jdbcType=INTEGER}
+	  ,t.area_color = #{areaColor,jdbcType=VARCHAR}
+	  ,t.name_color = #{nameColor,jdbcType=VARCHAR}
+	,t.color_num = #{colorNum,jdbcType=VARCHAR}
+	  <if test="x != null and x != ''">
+	 	 ,t.cen_lon = #{x,jdbcType=DECIMAL}
+	  </if>
+	  <if test="x != null and x != ''">
+	  	,t.cen_lat = #{y,jdbcType=DECIMAL}
+	  </if>
+	  <if test="hs != null and hs != ''">
+	  	,t.hs = #{hs,jdbcType=VARCHAR}
+	  </if>
+	  <if test="x != null and x != '' and y != null and y != '' ">
+	  	,SDO = MDSYS.SDO_GEOMETRY(2001,8192, MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR},NULL), NULL,NULL)
+	  </if>
+	  where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status = '001'
+</update>
+<update id="updateArcgisDataOfBuild" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="dm">
+	update map_wg_jzw_gis t
+	  set
+	  t.line_color = #{lineColor,jdbcType=VARCHAR}
+	  ,t.line_width = #{lineWidth,jdbcType=INTEGER}
+	  ,t.area_color = #{areaColor,jdbcType=VARCHAR}
+	  ,t.name_color = #{nameColor,jdbcType=VARCHAR}
+	,t.color_num = #{colorNum,jdbcType=VARCHAR}
+	  <if test="x != null and x != ''">
+	 	 ,t.cen_lon = #{x,jdbcType=DECIMAL}
+	  </if>
+	  <if test="x != null and x != ''">
+	  	,t.cen_lat = #{y,jdbcType=DECIMAL}
+	  </if>
+	  <if test="hs != null and hs != ''">
+	  	,t.hs = #{hs,jdbcType=VARCHAR}
+	  </if>
+	  <if test="x != null and x != '' and y != null and y != '' ">
+	  	,SDO = DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+	  </if>
+	  where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status = '001'
+</update>
+
+	<update id="updateBuildAddressXY" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="dm">
+		update map_wg_jzw_gis t
+		set t.cen_lon = #{x,jdbcType=DECIMAL}, t.cen_lat = #{y,jdbcType=DECIMAL}
+		<if test="x != null and x != '' and y != null and y != '' ">
+			,SDO = DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+		</if>
+		where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status = '001'
+	</update>
+<update id="updateBuildAddressXY" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild" databaseId="oracle">
+	update map_wg_jzw_gis t
+	  set t.cen_lon = #{x,jdbcType=DECIMAL}, t.cen_lat = #{y,jdbcType=DECIMAL}
+	  <if test="x != null and x != '' and y != null and y != '' ">
+	  	,SDO = MDSYS.SDO_GEOMETRY(2001,8192, MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR},NULL), NULL,NULL)
+	  </if>
+	  where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER}
+		and t.status = '001'
+</update>
+<!-- 2014-11-24liush由物理删除变为逻辑删除delete from map_wg_jzw_gis t where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} -->
+<update id="deleteArcgisDataOfBuild" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfBuild">
+	update map_wg_jzw_gis t set t.status='003' ,T.UPDATE_DATE=SYSDATE where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} and t.status='001'
+	
+</update>
+<select id="getParentGridId" resultType="java.lang.Long">
+	select t.parent_grid_id from t_dc_grid t where t.grid_id = #{gridId, jdbcType=DECIMAL}
+</select>
+
+<!-- 2014-06-09 liushi add 画地图轮廓的时候需要同时显示周边的网格以用作对比,获取其父节点以及父节点下面子节点的数据 -->
+<select id="getArcgisDrawDataOfGrids" resultMap="ResultMapOfGridArcgis">
+	select t.id,
+	   t.wid,
+	   t1.grid_name       name,
+	   t.cen_lon          x,
+	   t.cen_lat          y,
+	   t.mapt,
+	   t.hs,
+	   t.map_center_level,
+	   t.line_color,
+	   t.line_width,
+	   t.area_color,
+	   t.name_color,
+	   t.color_num,
+	   t1.grid_name,
+	   t1.grid_code,
+	   t1.info_org_code
+	from map_bus_grid_gis t
+	join (select t1.*
+	from t_dc_grid t1
+	where t1.grid_id = #{parentGridId,jdbcType=DECIMAL}
+	union all
+	select t1.*
+	from t_dc_grid t1
+	where  t1.parent_grid_id = #{parentGridId,jdbcType=DECIMAL})  t1
+	on t.wid = t1.grid_id
+	and t1.status = '001'
+	where 1 = 1
+	and t.mapt = #{mapt,jdbcType=INTEGER}
+	and t.status = '001'
+	order by t1.grid_code
+</select>
+<!-- 2014-11-04 liushi add 根据gridId和mapt查询本身轮廓数据 -->
+<select id="getArcgisDrawDataOfSelfGrids" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.grid_id = #{gridId,jdbcType=DECIMAL}
+		order by t1.grid_code 
+</select>
+
+<!-- 2014-11-04 liushi add 根据gridId和mapt查询父节点轮廓数据 -->
+<select id="getArcgisDrawDataOfParentGrids" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.grid_id = (select t2.parent_grid_id from t_dc_grid t2 where t2.grid_id = #{gridId,jdbcType=DECIMAL})
+		order by t1.grid_code 
+</select>
+
+<!-- 2014-11-04 liushi add 根据gridId和mapt查询本级（自己除外）轮廓数据 -->
+<select id="getArcgisDrawDataOfSameLevelGrids" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.parent_grid_id = (select t2.parent_grid_id from t_dc_grid t2 where t2.grid_id = #{gridId,jdbcType=DECIMAL})
+		and t1.grid_id not in (#{gridId,jdbcType=DECIMAL})
+		order by t1.grid_code 
+</select>
+<!-- 2014-11-05 liushi add 根据gridId和mapt查询下级轮廓数据 -->
+<select id="getArcgisDrawDataOfLowerGrids" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.parent_grid_id = #{gridId,jdbcType=DECIMAL}
+		order by t1.grid_code 
+</select>
+<!-- 2014-06-10 zhanh add 获取楼栋其父节点以及父节点下面子节点的数据 -->
+<select id="getArcgisDrawDataOfBuilds" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.building_Name name,
+		t1.building_Name buildingName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color
+	from map_wg_jzw_gis t,t_dc_area_building_info t1 
+	where t1.building_id=t.wid
+		and t.status='001'
+		and t1.status = '001' 
+	    and t1.grid_id in (
+	    	select t2.grid_id from t_dc_grid t2 start with t2.grid_id = #{gridId, jdbcType=DECIMAL} connect by prior t2.grid_id = t2.parent_grid_id
+	    )
+	    and t.mapt=#{mapt,jdbcType=INTEGER}
+	    order by t1.grid_code 
+</select>
+<!-- 2014-06-10 zhanh add 获取楼栋其父节点以及父节点下面子节点的数据 -->
+<select id="getArcgisDrawDataIdsOfBuilds" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t1.building_id wid
+	from t_dc_area_building_info t1 
+	where t1.status = '001' 
+	    and t1.grid_id in (
+	    	select t2.grid_id from t_dc_grid t2 start with t2.grid_id = #{gridId, jdbcType=DECIMAL} connect by prior t2.grid_id = t2.parent_grid_id
+	    )
+</select>
+<select id="getArcgisDataOfBuildsPoints" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.building_Name name,
+		t1.building_Name buildingName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt
+	from map_wg_jzw_gis t,t_dc_area_building_info t1 
+	where t1.building_id=t.wid 
+		and t.status='001'
+		and t1.status = '001'
+	    and t1.grid_id in (
+	    	select t2.grid_id from t_dc_grid t2 start with t2.grid_id = #{gridId, jdbcType=DECIMAL} connect by prior t2.grid_id = t2.parent_grid_id
+	    )
+	    and t.mapt=#{mapt,jdbcType=INTEGER}
+	    order by t.cen_lon,t.cen_lat
+</select>
+<select id="getDataOfBuildsByBuildingId" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.building_Name name,
+		t1.building_Name buildingName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t1.grid_id
+	from map_wg_jzw_gis t,t_dc_area_building_info t1 
+	where t1.building_id=t.wid
+	and t.status='001'
+	and t1.status = '001' 
+	and t1.grid_id in (select t2.grid_id from t_dc_area_building_info t2 where t2.building_id=#{buildingId, jdbcType=DECIMAL})
+	and t.mapt=#{mapt,jdbcType=INTEGER}
+	    order by t1.grid_code 
+</select>
+<select id="getArcgisDrawDataOfBuildsByGridId" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.building_Name name,
+		t1.building_Name buildingName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_id
+	from map_wg_jzw_gis t,t_dc_area_building_info t1 
+	where t1.building_id=t.wid
+	and t.status='001'
+	and t1.status = '001' 
+	and t1.grid_id=#{gridId, jdbcType=DECIMAL}
+	and t.mapt=#{mapt,jdbcType=INTEGER}
+	    order by t1.grid_code 
+</select>
+<select id="getArcgisDataOfGrids" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t1.status = '001'
+		and t.status='001'
+		and t1.grid_level=#{gridLevel,jdbcType=DECIMAL}
+		and t1.grid_code LIKE CONCAT(#{gridCode,jdbcType=VARCHAR}, '%')
+		order by t1.info_org_code 
+</select>
+
+<select id="getArcgisDataOfGridsByGridId" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t1.status = '001'
+		and t.status='001'
+		and t1.grid_level=#{gridLevel,jdbcType=DECIMAL}
+		and t1.grid_id in (
+	    	select t2.grid_id from t_dc_grid t2 start with t2.grid_id = #{gridId, jdbcType=DECIMAL} connect by prior t2.grid_id = t2.parent_grid_id
+	    )
+		order by t1.info_org_code 
+</select>
+<select id="getArcgisGridLocateData" resultMap="ResultMapOfGridArcgis">
+  select 
+    t.id,
+    t.wid,
+    t1.grid_name name,
+    t.cen_lon x,
+    t.cen_lat y,
+    t.mapt,
+    t.hs,
+    t.map_center_level,
+    t.line_color,
+    t.line_width,
+    t.area_color,
+    t.name_color,
+	t.color_num,
+    t1.grid_name,
+    t1.grid_code,
+    t1.info_org_code
+  from map_bus_grid_gis t 
+  left join t_dc_grid t1 on t.wid = t1.grid_id
+  where 1=1
+    and t.mapt=#{mapt,jdbcType=INTEGER}
+    and t1.status = '001'
+    and t.status='001'
+    and t1.grid_id = #{gridId, jdbcType=DECIMAL}
+    order by t1.info_org_code 
+</select>
+<select id="getArcgisDataIdsOfGrids" resultMap="ResultMapOfGridArcgis">
+select t2.grid_id wid
+  from t_dc_grid t2
+  where t2.status = '001' and t2.grid_level=#{gridLevel,jdbcType=DECIMAL} 
+ start with t2.grid_id = #{gridId, jdbcType=DECIMAL}
+connect by prior t2.grid_id = t2.parent_grid_id
+</select>
+
+
+<select id="getArcgisDataOfGridsListByIds" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t1.status = '001'
+		and t.status='001'
+		and t1.grid_id in (${ids})
+		order by t1.grid_code 
+</select>
+<!-- 护路护线 -->
+<select id="getArcgisDataOfHlhxListByIds" resultMap="ResultMapOfHlhxArcgis">
+	select T1.WID id,
+       T1.WID wid,
+       T1.CEN_LON x,
+       T1.CEN_LAT y,
+       T1.MAPT mapt,
+       T1.HS hs,
+       T1.LINE_COLOR lineColor,
+       T1.LINE_WIDTH lineWidth,
+       T1.NAME_COLOR nameColor,
+       T2.Lot_Name name
+  from MAP_DATA_RESOURCES T1
+  left join T_ZZ_CARE_ROAD T2 on T1.wid = T2.Lot_Id
+ where T1.Mapt = #{mapt, jdbcType=DECIMAL}
+   and T1.Status = '001'
+   AND T2.LOT_ID in (${ids})
+   AND T2.STATUS = '1'
+</select>
+<select id="getArcgisDataOfGridsByLevels" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t1.status='001'
+		and t.status='001'
+		and t1.grid_level in (${gridLevels})
+		and t1.grid_code LIKE CONCAT(#{gridCode,jdbcType=VARCHAR}, '%')
+		order by t1.grid_code 
+</select>
+<select id="getArcgisDataOfGrid" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t1.status='001'
+		and t.status='001'
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.wid = #{gridId,jdbcType=DECIMAL}
+</select>
+<select id="getArcgisDataOfBuild" resultMap="ResultMapOfBuildArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.building_Name name,
+		t1.building_Name buildingName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.color_num,
+		t.name_color
+	from map_wg_jzw_gis t,t_dc_area_building_info t1 
+	where t1.building_id=t.wid 
+	and t1.status='001'
+	and t.status='001'
+	and t.mapt=#{mapt,jdbcType=INTEGER}
+	and t.wid=#{buildingId, jdbcType=DECIMAL}
+</select>
+<select id="getArcgisDataOfSegmentGrid" resultMap="ResultMapOfSegmentGridArcGis">
+	select 
+		t.id,
+		t.wid,
+		t1.segment_grid_Name name,
+		t1.segment_grid_Name segmentGridName,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs
+	from map_segment_grid_gis t,T_DC_SEGMENT_GRID t1 
+	where t1.segment_grid_id=t.wid
+	and t.status='001'
+	and T1.PARENT_GRID_ID=#{parentGridId,jdbcType=DECIMAL}
+	and t.mapt=#{mapt,jdbcType=INTEGER}
+</select>
+<select id="getArcgisDataOfMarkerType" resultMap="ResultMapOfPublicArcGis">
+	select 
+		t.marker_id id,
+		t.resources_id wid,
+		t.marker_type,
+		t.map_type mapt,
+		t.x,
+		t.y,
+		t.hs
+	from t_zy_res_marker t
+	where 1=1
+		and t.resources_id = #{resourcesId,jdbcType=DECIMAL}
+		and t.marker_type = #{markerType,jdbcType=VARCHAR}
+		and t.map_type = #{mapt,jdbcType=INTEGER}
+		order  by t.x
+</select>
+<select id="getArcgisDataOfGridByResId" resultMap="ResultMapOfPublicArcGis">
+	select 
+	    t1.res_id id,
+	    t1.res_id wid,
+	    t2.type_code marker_type,
+			t.mapt mapt,
+			t.cen_lon x,
+			t.cen_lat y,
+			t.hs
+	from map_bus_grid_gis t
+	left join t_zy_res_info t1 on t.wid = t1.grid_id
+	left join t_zy_res_type t2 on t1.res_type_id = t2.res_type_id
+	where 1=1
+	  and t.mapt = #{mapt,jdbcType=INTEGER}
+	  and t.status='001'
+	  and t1.res_id = #{resourcesId,jdbcType=DECIMAL}
+	  and t2.type_code = #{markerType,jdbcType=VARCHAR}
+</select>
+
+	<insert id="insertArcgisDataOfMarkerType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" databaseId="dm">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select SEQ_RESMARKER_ID.NEXTVAL from DUAL
+		</selectKey>
+		insert into T_ZY_RES_MARKER (MARKER_ID, CATALOG, MARKER_TYPE,
+		RESOURCES_ID, MAP_TYPE, X, Y, HS, <![CDATA[SDO]]> )
+		values (#{id,jdbcType=DECIMAL}, #{catalog,jdbcType=VARCHAR}, #{markerType,jdbcType=VARCHAR},
+		#{wid,jdbcType=DECIMAL}, to_char(#{mapt,jdbcType=INTEGER}), to_char(#{x,jdbcType=VARCHAR}),
+		to_char(#{y,jdbcType=DECIMAL}),#{hs,jdbcType=DECIMAL},
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326))
+	</insert>
+<!-- 2014-06-26 liushi add 插入市政设施定位数据 -->
+<insert id="insertArcgisDataOfMarkerType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic"  databaseId="oracle">
+    <selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select SEQ_RESMARKER_ID.NEXTVAL from DUAL
+	</selectKey>
+    insert into T_ZY_RES_MARKER (MARKER_ID, CATALOG, MARKER_TYPE,
+      RESOURCES_ID, MAP_TYPE, X, Y, HS, <![CDATA[SDO]]> )
+    values (#{id,jdbcType=DECIMAL}, #{catalog,jdbcType=VARCHAR}, #{markerType,jdbcType=VARCHAR}, 
+      #{wid,jdbcType=DECIMAL}, to_char(#{mapt,jdbcType=INTEGER}), to_char(#{x,jdbcType=VARCHAR}), 
+      to_char(#{y,jdbcType=DECIMAL}),#{hs,jdbcType=DECIMAL},
+      MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(to_char(#{x,jdbcType=DECIMAL}),to_char(#{y,jdbcType=DECIMAL}), NULL), NULL, NULL))
+</insert>
+
+	<update id="updateArcgisDataOfMarkerType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" databaseId="dm">
+		update T_ZY_RES_MARKER
+		set X = to_char(#{x,jdbcType=DECIMAL}), Y = to_char(#{y,jdbcType=DECIMAL}),
+		<![CDATA[SDO]]> = DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+		<if test="hs != null and hs != ''">
+			, HS = #{hs,jdbcType=VARCHAR}
+		</if>
+		where RESOURCES_ID = #{wid,jdbcType=DECIMAL}
+		<if test="markerType != null and markerType != ''">
+			and MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="mapt != null">
+			and MAP_TYPE = to_char(#{mapt,jdbcType=INTEGER})
+		</if>
+	</update>
+<!-- 2014-06-26 liushi add 修改市政设施定位 -->
+<update id="updateArcgisDataOfMarkerType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" databaseId="oracle">
+    update T_ZY_RES_MARKER
+    set X = to_char(#{x,jdbcType=DECIMAL}), Y = to_char(#{y,jdbcType=DECIMAL}),
+    	<![CDATA[SDO]]> = MDSYS.SDO_GEOMETRY(2001, 8192, MDSYS.SDO_POINT_TYPE(to_char(#{x,jdbcType=DECIMAL}),to_char(#{y,jdbcType=DECIMAL}), NULL), NULL, NULL)
+    <if test="hs != null and hs != ''">
+		, HS = #{hs,jdbcType=VARCHAR}
+    </if>
+    where RESOURCES_ID = #{wid,jdbcType=DECIMAL}
+    <if test="markerType != null and markerType != ''">
+		and MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+    </if>
+    <if test="mapt != null">
+		and MAP_TYPE = to_char(#{mapt,jdbcType=INTEGER})
+	</if>
+</update>
+
+<!-- 2014-08-06 liushi add 根据网格code获取适配的网格配置信息 -->
+<select id="findArcgisConfigInfoByGridCode" resultMap="ResultMapOfArcgisConfigInfo">
+	select * from ARCGIS_CONFIG_INFO t where #{gridCode,jdbcType=VARCHAR} like t.grid_code||'%' and t.engine_name = #{engineName,jdbcType=VARCHAR} order by t.order_index,t.grid_code desc
+</select>
+<!-- 2014-05-22 liushi add 根据网格地图信息配置id获取配置的地图服务信息 -->
+<select id="findArcgisServiceInfoByConfigId" resultMap="ResultMapOfArcgisServiceInfo">
+	select * from ARCGIS_SERVICE_INFO t where t.ARCGIS_CONFIG_INFO_ID = #{arcgisConfigInfoId,jdbcType=DECIMAL} order by t.ARCGIS_SERVICE_INFO_ID
+</select>
+<!-- 2014-05-22 liushi 根据网格地图信息配置id获取配置的地图标尺信息 -->
+<select id="findArcgisScalenInfoByConfigId" resultMap="ResultMapOfArcgisScalenInfo">
+	select * from ARCGIS_SCALE_INFO t where t.ARCGIS_CONFIG_INFO_ID = #{arcgisConfigInfoId,jdbcType=DECIMAL} order by t.ARCGIS_SCALE_INFO_ID
+</select>
+<!-- 2014-08-11 liushi 查询网格员轨迹AND BL.MAPT =  #{mapt,jdbcType=INTEGER} AND BL.USER_ID = #{userId} -->
+  <select id="getGridAdminTrajectoryList" resultMap="ResultMapOfTrajectory">
+	 SELECT BL.LOCATE_ID ID,
+	 	GA.GRID_ADMIN_ID WID,
+         GA.GRID_ID GRID_ID,
+         BL.LONGITUDE X,
+         BL.DIMENSIONS Y,
+         TO_CHAR(BL.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+	  	 BL.IN_GRID
+    FROM T_DC_GRID_ADMIN GA, bus_locate BL
+    where GA.USER_ID=BL.USER_ID
+    AND GA.STATUS = '001'
+	  <!--AND BL.IMSI=#{imsi}-->
+    <!-- 
+   <if test="mapt != 0 and mapt != null">
+     AND BL.MAPT =  #{mapt,jdbcType=INTEGER}
+   </if> -->
+   <if test="userId != 0 and userId != null">
+     AND BL.USER_ID = #{userId,jdbcType=INTEGER}
+   </if>
+   <if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+     	AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+   <if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+     	AND BL.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+   </if>
+   <if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+   		AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+    	AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+    ORDER BY BL.LOCATE_TIME 
+  </select>
+
+	<!-- 2014-08-11 sulch 查询网格员轨迹AND BL.MAPT =  #{mapt,jdbcType=INTEGER} AND BL.USER_ID = #{userId} -->
+	<select id="getGridAdminTrajectoryListByUserName" resultMap="ResultMapOfTrajectory">
+		SELECT BL.LOCATE_ID ID,
+		GA.GRID_ADMIN_ID WID,
+		GA.GRID_ID GRID_ID,
+		BL.LONGITUDE X,
+		BL.DIMENSIONS Y,
+		TO_CHAR(BL.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+		BL.IN_GRID
+		FROM T_DC_GRID_ADMIN GA, bus_locate BL, t_dc_party_user_certify c
+		where BL.USER_NAME = C.Regis_Value
+		and c.user_id = ga.user_id
+		and GA.STATUS = '001'
+		AND BL.USER_NAME=#{userName}
+		<!--
+       <if test="mapt != 0 and mapt != null">
+         AND BL.MAPT =  #{mapt,jdbcType=INTEGER}
+       </if> -->
+		<if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		<if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+			AND BL.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		ORDER BY BL.LOCATE_TIME
+	</select>
+  
+<!-- 2016-06-13 qiudong 查询渔船设备轨迹 -->
+  <select id="getTrajectoryList" resultMap="ResultMapOfTrajectory1">
+	SELECT TZ.LNG x, TZ.LAT y
+    FROM T_ZZ_DEVICE_LOCATE_INFO TZ
+    WHERE TZ.STATUS_ = '1'
+    AND TZ.LOCATE_TERMINAL=#{appDeviceId}
+   <if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+     	AND TZ.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+   <if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+     	AND TZ.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+   </if>
+   <if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+   		AND TZ.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+    	AND TZ.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+    ORDER BY TZ.LOCATE_TIME
+  </select>
+  
+<!-- 2015-03-06 huangmw 查询护路护线队员轨迹AND BL.MAPT =  #{mapt,jdbcType=INTEGER} AND BL.USER_ID = #{userId} -->
+  <select id="getCareRoadMemberTrajectoryList" resultMap="ResultMapOfTrajectory">
+	 SELECT T4.LOCATE_ID ID,
+	 	T1.MEMBER_ID WID,
+         T4.LONGITUDE X,
+         T4.DIMENSIONS Y,
+         TO_CHAR(T4.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+	  	 T4.IN_GRID
+    FROM T_ZZ_TEAM_MEMBERS T1
+	  LEFT JOIN T_DC_USER_ENTITY T2 ON T1.USER_ID = T2.USER_ID
+	  LEFT JOIN T_DC_PARTY_USER_CERTIFY T3 ON T2.PARTY_ID = T3.PARTY_ID
+	  LEFT JOIN bus_locate T4 ON T3.IMSI = T4.IMSI
+    where T1.STATUS = '001'
+    AND T4.IMSI=#{imsi}   
+   <if test="mapt != 0 and mapt != null">
+     AND T4.MAPT =  #{mapt,jdbcType=INTEGER}
+   </if>
+   <if test="memberId != 0 and memberId != null">
+     AND T1.MEMBER_ID = #{memberId,jdbcType=INTEGER}
+   </if>
+   <if test="userId != 0 and userId != null">
+     AND T4.USER_ID = #{userId,jdbcType=INTEGER}
+   </if>
+   <if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+     	AND T4.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+   <if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+     	AND T4.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+   </if>
+   <if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+   		AND T4.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+    	AND T4.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+   </if>
+   <if test="bizType != null and bizType != '' " >
+   		AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+   </if>
+    ORDER BY T4.LOCATE_TIME 
+  </select>
+  
+<!-- 2015-01-22 liushi add 修改资源轮廓数据 -->
+<update id="updateArcgisDataOfResources" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic">
+	update MAP_DATA_RESOURCES T
+	    set T.CEN_LON = #{x,jdbcType=DECIMAL}
+	    ,T.CEN_LAT= #{y,jdbcType=DECIMAL}
+	    ,T.HS = #{hs,jdbcType=VARCHAR}
+	    ,T.LINE_COLOR = #{lineColor,jdbcType=VARCHAR}
+	    ,T.LINE_WIDTH = #{lineWidth,jdbcType=VARCHAR}
+	    ,T.NAME_COLOR = #{nameColor,jdbcType=VARCHAR}
+	    ,T.UPDATE_DATE  = SYSDATE
+    where 
+	    T.WID = #{wid,jdbcType=DECIMAL}
+	    AND T.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	    AND T.MAPT = #{mapt,jdbcType=DECIMAL}
+	    AND T.STATUS = '001'
+</update>
+<!-- 2015-01-22 liushi add 新增资源轮廓数据 -->
+<insert id="insertArcgisDataOfResources" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic">
+	<selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select MAP_DATA_RESOURCES_SEQ.NEXTVAL from DUAL
+	</selectKey>
+	 insert into MAP_DATA_RESOURCES(ID,WID,MARKER_TYPE,CEN_LON,CEN_LAT,MAPT,HS
+	 	,LINE_COLOR,LINE_WIDTH,NAME_COLOR,STATUS,UPDATE_DATE)
+    VALUES(#{id,jdbcType=DECIMAL},#{wid,jdbcType=DECIMAL},#{markerType,jdbcType=VARCHAR},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL},#{mapt,jdbcType=DECIMAL},#{hs,jdbcType=VARCHAR}
+    	,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},'001',SYSDATE)
+</insert>
+<!-- 2015-01-22 liushi add 逻辑删除资源轮廓数据 -->
+<update id="deleteArcgisDataOfResources" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic">
+	update MAP_DATA_RESOURCES t set t.status = '003' ,T.UPDATE_DATE=SYSDATE where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} and t.status='001' and t.marker_type = #{markerType,jdbcType=VARCHAR}
+</update>
+<!-- 2015-02-10 liushi add 根据gridId 和 mapts获取网格地图数据 -->
+<select id="getArcgisDataOfGridForOuter" resultMap="ResultMapOfGridArcgis">
+	select 
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+	from map_bus_grid_gis t 
+	left join t_dc_grid t1 on t.wid = t1.grid_id
+	where 1=1
+		and t1.status='001'
+		and t.status='001'
+		and t.mapt in (${mapts})
+		and t.wid = #{gridId,jdbcType=DECIMAL}
+</select>
+
+	<!-- 队员轨迹数据查询 -->
+	<select id="getTeamMemberTrajectoryList" resultMap="ResultMapOfTrajectory">
+		SELECT T4.LOCATE_ID ID,
+		T1.MEMBER_ID WID,
+		T4.LONGITUDE X,
+		T4.DIMENSIONS Y,
+		TO_CHAR(T4.LOCATE_TIME, 'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+		T4.IN_GRID
+		FROM T_ZZ_TEAM_MEMBERS T1
+		LEFT JOIN T_DC_USER_ENTITY T2
+		ON T1.USER_ID = T2.USER_ID
+		LEFT JOIN T_DC_PARTY_USER_CERTIFY T3
+		ON T2.PARTY_ID = T3.PARTY_ID
+		INNER JOIN BUS_LOCATE T4
+		ON T3.IMSI = T4.IMSI
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.STATUS = '001'
+		AND T4.IMSI = #{imsi}
+		<if test="memberId != 0 and memberId != null">
+			AND T1.MEMBER_ID = #{memberId,jdbcType=INTEGER}
+		</if>
+		<if test="userId != 0 and userId != null">
+			AND T4.USER_ID = #{userId,jdbcType=INTEGER}
+		</if>
+		<if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+			AND T4.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		<if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+			AND T4.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND T4.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND T4.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		ORDER BY T4.LOCATE_TIME
+	</select>
+
+	<!-- 2017-07-11 sulch add 向上钻取父级网格轮廓数据 -->
+	<select id="getArcgisDataOfParentgrids" resultMap="ResultMapOfGridArcgis">
+		SELECT
+		T1.ID,
+		T1.WID,
+		T2.GRID_NAME NAEM,
+		T1.CEN_LON X,
+		T1.CEN_LAT Y,
+		T1.MAPT,
+		T1.HS,
+		T1.MAP_CENTER_LEVEL,
+		T1.LINE_COLOR,
+		T1.LINE_WIDTH,
+		T1.AREA_COLOR,
+		T1.NAME_COLOR,
+		T1.COLOR_NUM,
+		T2.GRID_NAME,
+		T2.GRID_CODE,
+		T2.INFO_ORG_CODE
+		FROM MAP_BUS_GRID_GIS T1, T_DC_GRID T2
+		WHERE T1.WID = T2.GRID_ID
+		AND T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T1.MAPT = #{mapt,jdbcType=INTEGER}
+		AND (
+		SELECT T3.INFO_ORG_CODE
+		FROM T_DC_GRID T3
+		WHERE T3.GRID_ID = #{gridId,jdbcType=DECIMAL}
+		AND T3.STATUS = '001'
+		) LIKE T2.INFO_ORG_CODE || '%'
+		ORDER BY T2.GRID_LEVEL DESC
+	</select>
+
+	<select id="getTrajectoryListByParams" parameterType="java.util.HashMap" resultMap="ResultMapOfTrajectory">
+		SELECT BL.LOCATE_ID ID,
+		BL.USER_ID WID,
+		BL.LONGITUDE X,
+		BL.DIMENSIONS Y,
+		TO_CHAR(BL.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+		BL.IN_GRID
+		FROM bus_locate BL
+		where 1=1
+		<if test="imsi != null and imsi != ''">
+			BL.IMSI=#{imsi}
+		</if>
+		<if test="userId != 0 and userId != null">
+			AND BL.USER_ID = #{userId,jdbcType=INTEGER}
+		</if>
+		<if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		<if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+			AND BL.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		ORDER BY BL.LOCATE_TIME
+	</select>
+
+
+	<select id="getSpectialPopulationHeatMapStat" parameterType="java.util.HashMap" resultMap="ResultMapOfHeat">
+		SELECT  to_number(substr(R.X, 0, INSTR(R.X, '.') + 20)) X,
+				to_number(substr(R.Y, 0, INSTR(R.Y, '.') + 20)) Y,
+				COUNT(0) CNT
+		FROM T_BAS_POPULATION_HEAT R
+		WHERE 1=1
+		<if test="bizTypes != null">
+			AND R.BIZ_TYPE IN (${bizTypes})
+		</if>
+		<if test="infoOrgCode != '' and infoOrgCode != null">
+			AND R.INFO_ORG_CODE LIKE CONCAT(#{infoOrgCode,jdbcType=VARCHAR}, '%')
+		</if>
+		GROUP BY R.X, R.Y
+	</select>
+
+
+	<select id="getPopulationHeatMapStat" parameterType="java.util.HashMap" resultMap="ResultMapOfHeat">
+		SELECT  to_number(substr(R.X, 0, INSTR(R.X, '.') + 20)) X,
+		to_number(substr(R.Y, 0, INSTR(R.Y, '.') + 20)) Y,
+		COUNT(0) CNT
+		FROM T_BAS_POPULATION_HEAT R
+		WHERE 1=1
+		AND R.BIZ_TYPE = 'population'
+		<if test="infoOrgCode != '' and infoOrgCode != null">
+			AND R.INFO_ORG_CODE LIKE CONCAT(#{infoOrgCode,jdbcType=VARCHAR}, '%')
+		</if>
+		GROUP BY R.X, R.Y
+	</select>
+
+	<!-- 2017-06-26 sulch add 获取父节点下面子节点的数据 -->
+	<select id="getArcgisDataOfChildrenGridsByParentId" resultMap="ResultMapOfGridArcgis">
+		select
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+		from map_bus_grid_gis t
+		left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+		where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.parent_grid_id = #{parentGridId,jdbcType=DECIMAL}
+		order by t1.grid_code
+	</select>
+	
+	<select id="getArcgisDataOfGridsById" resultMap="ResultMapOfGridArcgis">
+		select
+		t.id,
+		t.wid,
+		t1.grid_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+		t.hs,
+		t.map_center_level,
+		t.line_color,
+		t.line_width,
+		t.area_color,
+		t.name_color,
+		t.color_num,
+		t1.grid_name,
+		t1.grid_code,
+		t1.info_org_code
+		from map_bus_grid_gis t
+		inner join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+		where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t.status='001'
+		and t1.grid_id = #{gridId,jdbcType=DECIMAL}
+	</select>
+	
+	<select id="getDayTrajListForOri" parameterType="java.util.HashMap" resultMap="ResultMapOfDayTraj">
+		select a.user_id WID,
+			   a.statistic_date STATISTIC_DATE,
+			   a.GPS_ARR,
+			   a.GPS_TIME_ARR,
+			   a.IN_GRID_ARR
+		    from T_DAY_TRAJ_STAT a
+		where 1=1
+		<if test="userId != 0 and userId != null">
+			AND user_id = #{userId,jdbcType=DECIMAL}
+		</if>
+		<if test="trackDate != null">
+			and statistic_date <![CDATA[=]]>TO_DATE(#{trackDate, jdbcType=VARCHAR},'YYYY-MM-DD')
+		</if>
+	</select>
+	
+	<select id="getDayTrajListByParams" parameterType="java.util.HashMap" resultMap="ResultMapOfDayTraj">
+		select *from (with t as
+		 (select a.user_id,
+                 a.statistic_date,
+		         gps_time_arr || ';' as new_gps_time_arr,
+		         GPS_ARR || ';' as new_GPS_ARR,
+				 IN_GRID_ARR || ';' as NEW_IN_GRID_ARR,
+                 length(a.in_grid_arr) - length(replace(a.in_grid_arr, ';', '')) l_flag
+		    from T_DAY_TRAJ_STAT a
+		where 1=1
+		<if test="userId != 0 and userId != null">
+			AND user_id =  #{userId,jdbcType=DECIMAL}
+		</if>
+		<if test="trackDate != null">
+			and statistic_date <![CDATA[=]]>TO_DATE(#{trackDate, jdbcType=VARCHAR},'YYYY-MM-DD')
+		</if>
+		)
+		select user_id WID,
+		       t.statistic_date STATISTIC_DATE,
+		       TO_CHAR(SUBSTR(t.new_gps_time_arr,
+		                      instr(t.new_gps_time_arr, ';', 1, LEVEL) + 1,
+		                      instr(t.new_gps_time_arr, ';', 1, LEVEL + 1) -
+		                      instr(t.new_gps_time_arr, ';', 1, LEVEL) - 1)) GPS_TIME_ARR,
+		       TO_CHAR(SUBSTR(t.new_GPS_ARR,
+		                      instr(t.new_GPS_ARR, ';', 1, LEVEL) + 1,
+		                      instr(t.new_GPS_ARR, ';', 1, LEVEL + 1) -
+		                      instr(t.new_GPS_ARR, ';', 1, LEVEL) - 1)) GPS_ARR,
+				TO_CHAR(SUBSTR(t.NEW_IN_GRID_ARR,
+								instr(t.NEW_IN_GRID_ARR, ';', 1, LEVEL) + 1,
+								instr(t.NEW_IN_GRID_ARR, ';', 1, LEVEL + 1) -
+								instr(t.NEW_IN_GRID_ARR, ';', 1, LEVEL) - 1)) IN_GRID_ARR
+		  from t
+		connect by level <![CDATA[<=]]> t.l_flag) L 
+		where L.GPS_TIME_ARR <![CDATA[>=]]> #{startDateStr, jdbcType=VARCHAR}
+            AND L.GPS_TIME_ARR <![CDATA[<=]]> #{endDateStr, jdbcType=VARCHAR}
+          order by l.STATISTIC_DATE
+	</select>
+
+	<!--bus_locate 只存当天的数据，查询轨迹不按分来查询，而是按天来查询-->
+	<select id="getTrajectoryListByUserId" parameterType="java.util.HashMap" resultMap="ResultMapOfTrajectory">
+		SELECT BL.LOCATE_ID ID,
+		BL.USER_ID WID,
+		BL.LONGITUDE X,
+		BL.DIMENSIONS Y,
+		TO_CHAR(BL.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+		BL.IN_GRID
+		FROM bus_locate BL
+		where 1=1
+		<if test="userId != 0 and userId != null">
+			AND BL.USER_ID = #{userId,jdbcType=INTEGER}
+		</if>
+		<if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		<if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+			AND BL.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		ORDER BY BL.LOCATE_TIME
+	</select>
+
+	<!--bus_locate 只存当天的数据，查询轨迹不按分来查询，而是按天来查询-->
+	<select id="getTrajectoryListByUserName" parameterType="java.util.HashMap" resultMap="ResultMapOfTrajectory">
+		SELECT BL.LOCATE_ID ID,
+		BL.USER_ID WID,
+		BL.LONGITUDE X,
+		BL.DIMENSIONS Y,
+		TO_CHAR(BL.LOCATE_TIME,'YYYY-MM-DD hh24:mi:ss') LOCATE_TIME,
+		BL.IN_GRID
+		FROM bus_locate BL
+		where 1=1
+		<if test="userName != '' and userName != null">
+			AND BL.USER_NAME = #{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="(locateTimeBegin != null and locateTimeBegin != '') and (locateTimeEnd == null or locateTimeEnd == '') ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		<if test="(locateTimeBegin == null or locateTimeBegin == '') and  (locateTimeEnd == null or locateTimeEnd == '')">
+			AND BL.LOCATE_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+		ORDER BY BL.LOCATE_TIME
+	</select>
+
+
+	<select id="getUserLastLocateByParams" parameterType="java.util.HashMap" resultMap="ResultMapOfUser">
+
+		SELECT DISTINCT U1.USER_ID USER_ID, T1.REGIS_VALUE USER_NAME, T2.PARTY_NAME REAL_NAME,
+			T1.VERIFY_MOBILE MOBILE_PHONE,UT2.LONGITUDE X,UT2.DIMENSIONS Y,UT2.LOCATE_TIME LOCATE_TIME
+		FROM (SELECT DISTINCT U.USER_ID, U.SOCIAL_ORG_ID, O.ORG_NAME,O.ORG_CODE
+				FROM T_DC_PRIVILEGE_EXAMPLE U
+				JOIN T_DC_ORG_SOCIAL_INFO O ON O.ORG_ID = U.SOCIAL_ORG_ID
+				JOIN T_DC_PARTY_USER_CERTIFY T ON  U.USER_ID = T.USER_ID
+				WHERE T.STATUS = '001'
+				AND O.ORG_CODE IN (
+						SELECT  DISTINCT S.ORG_CODE
+						FROM T_DC_ORG_SOCIAL_INFO S
+						WHERE S.STATUS = '001'
+						START WITH S.ORG_ID = ${orgId}
+						CONNECT BY PRIOR S.ORG_ID =  S.PARENT_ORG_ID
+				)
+				ORDER BY U.USER_ID ASC,O.ORG_CODE ASC
+		) U1
+		INNER JOIN T_DC_PARTY_USER_CERTIFY T1 ON U1.USER_ID = T1.USER_ID AND T1.STATUS = '001'
+		INNER JOIN T_DC_USER_ENTITY T2 ON U1.USER_ID = T2.USER_ID AND T2.STATUS = '001'
+		LEFT JOIN (SELECT T3.USER_ID,T3.LONGITUDE,T3.DIMENSIONS,T3.LOCATE_TIME
+			FROM BUS_LAST_LOCATE T3
+			WHERE T3.LOCATE_ID IN(
+				SELECT MAX(T4.LOCATE_ID)
+				FROM BUS_LAST_LOCATE T4
+				WHERE 1=1
+				AND T4.MAPT = ${mapt}
+				GROUP BY T4.USER_ID
+			)
+		) UT2 ON T1.USER_ID = UT2.USER_ID
+		WHERE 1=1
+		<if test="userName != null and userName != ''">
+			AND T1.REGIS_VALUE = #{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="realName != null and realName != ''">
+			AND T2.PARTY_NAME LIKE '%' || #{realName,jdbcType=VARCHAR} || '%'
+		</if>
+
+		ORDER BY UT2.LOCATE_TIME
+	</select>
+
+	<select id="getArcgisDatasOfBuilds" resultMap="ResultMapOfBuildArcGis">
+		select
+			t.id,
+			t.wid,
+			t1.building_Name name,
+			t1.building_Name buildingName,
+			t.cen_lon x,
+			t.cen_lat y,
+			t.mapt,
+			t.hs,
+			t.line_color,
+			t.line_width,
+			t.area_color,
+			t.name_color
+		from map_wg_jzw_gis t,t_dc_area_building_info t1
+		where t1.building_id=t.wid
+		and t.status='001'
+		and t1.status = '001'
+		and t1.building_id IN (${buildingIds})
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		order by t1.grid_code
+	</select>
+	
+	<select id="getArcgisDataOfPoint" resultMap="ResultMapOfPointArcGis">
+		select 
+	    t.id,
+	    t.wid,
+	    t1.point_name name,
+	    t1.point_name pointName,
+	    t.cen_lon x,
+	    t.cen_lat y,
+	    t.mapt,
+	    t.hs,
+	    t.line_color,
+	    t.line_width,
+	    t.area_color,
+	    t.color_num,
+	    t.name_color
+	  from MAP_WG_GIS t,t_zz_point_info t1 
+	  where t1.point_id=t.wid 
+	  and t1.is_valid='1'
+	  and t.status='001'
+	  and t.mapt=#{mapt,jdbcType=INTEGER}
+	  and t.wid=#{wid, jdbcType=DECIMAL}
+	  and t.type=#{type, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getArcgisDrawDataOfPointsByGridId" resultMap="ResultMapOfPointArcGis">
+		select 
+			t.id,
+			t.wid,
+			t1.point_name name,
+	    	t1.point_name pointName,
+			t.cen_lon x,
+			t.cen_lat y,
+			t.mapt,
+			t.hs,
+			t.line_color,
+			t.line_width,
+			t.area_color,
+			t.name_color,
+			t.color_num
+		from MAP_WG_GIS t,t_zz_point_info t1 
+		where t1.point_id=t.wid 
+	  	and t1.is_valid='1'
+		and t.status='001'
+		and t1.info_org_code=#{infoOrgCode, jdbcType=VARCHAR}
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+	</select>
+	
+	<select id="IsExistArcgisData" resultMap="ResultMapOfPointArcGis">
+		select * from MAP_WG_GIS t where t.wid = #{wid, jdbcType=DECIMAL} and t.type=#{type, jdbcType=VARCHAR}   and t.mapt = #{mapt, jdbcType=INTEGER} AND T.STATUS = '001' 
+	</select>
+
+	<update id="updateArcgisDataInType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint" databaseId="dm">
+		update MAP_WG_GIS t
+		set UPDATE_DATE = SYSDATE
+		,t.line_color = #{lineColor,jdbcType=VARCHAR}
+		,t.line_width = #{lineWidth,jdbcType=INTEGER}
+		,t.area_color = #{areaColor,jdbcType=VARCHAR}
+		,t.name_color = #{nameColor,jdbcType=VARCHAR}
+		,t.color_num = #{colorNum,jdbcType=DECIMAL}
+		<if test="name != null and name != ''">
+			,t.name = #{name,jdbcType=VARCHAR}
+		</if>
+		<if test="x != null and x != ''">
+			,t.cen_lon = #{x,jdbcType=DECIMAL}
+		</if>
+		<if test="x != null and x != ''">
+			,t.cen_lat = #{y,jdbcType=DECIMAL}
+		</if>
+		<if test="hs != null and hs != ''">
+			,t.hs = #{hs,jdbcType=VARCHAR}
+		</if>
+		<if test="x != null and x != '' and y != null and y != '' ">
+			,SDO = DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+		</if>
+		where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt = #{mapt,jdbcType=INTEGER}
+		and t.type = #{type, jdbcType=VARCHAR}
+		and t.status = '001'
+	</update>
+	<update id="updateArcgisDataInType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint" databaseId="oracle">
+	update MAP_WG_GIS t
+	  set 
+	  t.line_color = #{lineColor,jdbcType=VARCHAR}
+	  ,t.line_width = #{lineWidth,jdbcType=INTEGER}
+	  ,t.area_color = #{areaColor,jdbcType=VARCHAR}
+	  ,t.name_color = #{nameColor,jdbcType=VARCHAR}
+	  ,t.color_num = #{colorNum,jdbcType=VARCHAR}
+	  <if test="name != null and name != ''">
+		,t.name = #{name,jdbcType=VARCHAR}
+	  </if>
+	  <if test="x != null and x != ''">
+	 	 ,t.cen_lon = #{x,jdbcType=DECIMAL}
+	  </if>
+	  <if test="x != null and x != ''">
+	  	,t.cen_lat = #{y,jdbcType=DECIMAL}
+	  </if>
+	  <if test="hs != null and hs != ''">
+	  	,t.hs = #{hs,jdbcType=VARCHAR}
+	  </if>
+	  <if test="x != null and x != '' and y != null and y != '' ">
+	  	,SDO = MDSYS.SDO_GEOMETRY(2001,8192, MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR},NULL), NULL,NULL)
+	  </if>
+	  where t.wid = #{wid,jdbcType=DECIMAL}
+		and t.mapt =  #{mapt,jdbcType=INTEGER} 
+		and t.type=#{type, jdbcType=VARCHAR} 
+		and t.status = '001' 
+</update>
+
+	<insert id="insertArcgisDataInType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint" databaseId="dm">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select SEQ_MAP_WG_GIS.NEXTVAL from DUAL
+		</selectKey>
+		insert into MAP_WG_GIS(id,type,wid,name,cen_lon,cen_lat,mapt,hs,line_color,line_width,area_color,name_color,status
+		<if test="x != null and y != null">
+			,<![CDATA[SDO]]>
+		</if>
+		)
+		values(#{id,jdbcType=DECIMAL},#{type,jdbcType=VARCHAR},#{wid,jdbcType=DECIMAL},#{name,jdbcType=VARCHAR},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},'001'
+		<if test="x != null and y != null">
+		,DMGEO.ST_POINTFROMTEXT('point('|| #{x,jdbcType=VARCHAR} ||' '|| #{y,jdbcType=VARCHAR} ||')', 4326)
+	</if>
+		)
+	</insert>
+<insert id="insertArcgisDataInType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint"  databaseId="oracle">
+	<selectKey keyProperty="id" resultType="long" order="BEFORE">
+		select SEQ_MAP_WG_GIS.NEXTVAL from DUAL
+	</selectKey>
+	insert into MAP_WG_GIS(id,type,wid,name,cen_lon,cen_lat
+		,mapt,hs,line_color,line_width,area_color,name_color,status
+		<if test="x != null and y != null">
+			,<![CDATA[SDO]]>
+		</if>
+		)
+	values(#{id,jdbcType=DECIMAL},#{type,jdbcType=VARCHAR},#{wid,jdbcType=DECIMAL},#{name,jdbcType=VARCHAR},#{x,jdbcType=DECIMAL},#{y,jdbcType=DECIMAL}
+		,#{mapt,jdbcType=INTEGER},#{hs,jdbcType=VARCHAR}
+		,#{lineColor,jdbcType=VARCHAR},#{lineWidth,jdbcType=INTEGER},#{areaColor,jdbcType=VARCHAR},#{nameColor,jdbcType=VARCHAR},'001'
+		<if test="x != null and y != null">
+		,MDSYS.SDO_GEOMETRY(2001,8192, MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR},NULL), NULL,NULL)
+		</if>
+	)
+</insert>
+
+<update id="deleteArcgisDataInType" parameterType="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPoint">
+	update MAP_WG_GIS t set t.status='003' ,T.UPDATE_DATE=SYSDATE where t.wid = #{wid,jdbcType=DECIMAL} and t.mapt =  #{mapt,jdbcType=INTEGER} and t.status='001' and t.type=#{type,jdbcType=VARCHAR}
+	
+</update>
+
+<select id="getEventChildData" parameterType="java.util.Map" resultType="java.util.Map">
+	WITH GRID_ AS
+	 (select g.info_org_code, g.grid_id, g.grid_name, g.order_id
+	    from t_dc_grid g
+	   where ( g.grid_id =#{gridId,jdbcType=DECIMAL})
+	     and g.status = '001')
+	SELECT g.info_org_code,
+	       g.grid_id,
+	       g.grid_name,
+	       nvl(sum(t.total_), 0) total,
+	       nvl(sum(t.settles_total_), 0) endTotal,
+	       nvl(sum(t.timeout_total_), 0) timeoutTotal,
+	       nvl(sum(t.archive_total_), 0) archiveTotal,
+	       nvl(sum(t.settles_intime_total_), 0) endInTimeTotal
+	  FROM GRID_ g
+	  left join t_bi_event_stat t
+	    on g.info_org_code = t.org_code
+	   and t.type_level = '2' and t.event_date = #{date,jdbcType=VARCHAR}
+	   
+	   group by g.info_org_code, g.grid_id, g.grid_name, g.order_id
+	   order by
+	   g.order_id,g.info_org_code
+</select>
+
+
+<select id="findAreaGridAdminList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+    T.GRID_ADMIN_ID ID,
+    T.GRID_ADMIN_ID WID,
+    T1.LONGITUDE X,
+    T1.DIMENSIONS Y,
+    T.PARTY_NAME2 NAME,
+    G.INFO_ORG_CODE INFOORGCODE,
+    G.GRID_NAME GRIDNAME,
+    T.MOBILE_TELEPHONE TEL,
+    (CASE
+         WHEN UT.LAST_LOGIN_TIME IS NULL OR CEIL(((SYSDATE - UT.LAST_LOGIN_TIME)) * 24 * 60) > 6 THEN
+          0
+         ELSE
+          1
+       END) IS_ONLINE 
+  FROM T_DC_GRID_ADMIN T LEFT JOIN (SELECT T4.*
+                FROM BUS_LAST_LOCATE T4 INNER JOIN (SELECT MAX(LOCATE_ID) AS LOCATE_ID
+                                                           FROM BUS_LAST_LOCATE T2
+                                                          GROUP BY USER_ID) T3
+                  ON T4.LOCATE_ID = T3.LOCATE_ID) T1 ON T.USER_ID=T1.USER_ID 
+  LEFT JOIN T_DC_GRID G ON G.GRID_ID=T.GRID_ID 
+  INNER JOIN (SELECT T6.USER_ID, T6.REGIS_VALUE, T5.PARTY_NAME,T6.LAST_LOGIN_TIME FROM T_DC_PARTY_USER_CERTIFY T6,T_DC_USER_ENTITY T5 WHERE T6.USER_ID=T5.USER_ID AND T6.STATUS = '001') UT ON T1.USER_ID=UT.USER_ID
+  WHERE 
+    1=1
+    AND T1.MAPT = #{mapt,jdbcType=DECIMAL}
+    <if test="duty!=null and duty!=''">
+    	AND T.DUTY=#{duty, jdbcType=VARCHAR}
+	</if>
+    AND G.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%' 
+    AND G.STATUS='001' 
+    AND SDO_RELATE(T1.SDO,
+                  MDSYS.SDO_GEOMETRY(2003,
+                                     8192,
+                                     MDSYS.SDO_POINT_TYPE(T1.LONGITUDE,T1.DIMENSIONS, NULL),
+                                     MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),
+                                     MDSYS.SDO_ORDINATE_ARRAY(${hs})),
+                  'MASK=ANYINTERACT') = 'TRUE'
+    ORDER BY T1.LONGITUDE
+	</select>
+
+<select id="findAreaGridAdminCount" resultType="java.lang.Integer" >
+		SELECT 
+    COUNT(T.GRID_ADMIN_ID)
+  FROM T_DC_GRID_ADMIN T LEFT JOIN (SELECT T4.*
+                FROM BUS_LAST_LOCATE T4 INNER JOIN (SELECT MAX(LOCATE_ID) AS LOCATE_ID
+                                                           FROM BUS_LAST_LOCATE T2
+                                                          GROUP BY USER_ID) T3
+                  ON T4.LOCATE_ID = T3.LOCATE_ID) T1 ON T.USER_ID=T1.USER_ID 
+  LEFT JOIN T_DC_GRID G ON G.GRID_ID=T.GRID_ID 
+  INNER JOIN (SELECT T6.USER_ID, T6.REGIS_VALUE, T5.PARTY_NAME,T6.LAST_LOGIN_TIME FROM T_DC_PARTY_USER_CERTIFY T6,T_DC_USER_ENTITY T5 WHERE T6.USER_ID=T5.USER_ID AND T6.STATUS = '001') UT ON T1.USER_ID=UT.USER_ID
+  WHERE 
+    1=1
+    AND T1.MAPT = #{mapt,jdbcType=DECIMAL}
+    <if test="duty!=null and duty!=''">
+    	AND T.DUTY=#{duty, jdbcType=VARCHAR}
+	</if>
+    AND G.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%' 
+    AND G.STATUS='001' 
+    AND SDO_RELATE(T1.SDO,
+                  MDSYS.SDO_GEOMETRY(2003,
+                                     8192,
+                                     MDSYS.SDO_POINT_TYPE(T1.LONGITUDE,T1.DIMENSIONS, NULL),
+                                     MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),
+                                     MDSYS.SDO_ORDINATE_ARRAY(${hs})),
+                  'MASK=ANYINTERACT') = 'TRUE'
+    ORDER BY T1.LONGITUDE
+	</select>
+	
+	<select id="getArcgisCommonHs" resultMap="ResultMapOfCommon">
+		select 
+			t.id,
+			t.wid,
+			t.cen_lon x,
+			t.cen_lat y,
+			t.mapt,
+			t.hs,
+			t.line_color,
+			t.line_width,
+			t.area_color,
+			t.name_color,
+			t.color_num
+		from MAP_WG_GIS t
+		where t.status='001'
+		and t.wid=#{wid, jdbcType=INTEGER}
+		and t.type=#{type, jdbcType=VARCHAR}
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+	</select>
+
+
+	<select id="checkUsersHasTrajectoryByLocate" resultType="long">
+		select
+		COUNT(1)
+		from bus_locate BL
+		where
+		1=1
+		<if test="id != 0 and id != null">
+			AND BL.USER_ID = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND BL.LOCATE_TIME <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND BL.LOCATE_TIME<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+	</select>
+	<select id="checkUsersHasTrajectoryByStat" resultType="long">
+		select
+		COUNT(1)
+		from T_DAY_TRAJ_STAT a
+		where 1=1
+		<if test="userId != 0 and userId != null">
+			AND user_id = #{userId,jdbcType=DECIMAL}
+		</if>
+		<if test="trackDate != null">
+			and statistic_date <![CDATA[=]]>TO_DATE(#{trackDate, jdbcType=VARCHAR},'YYYY-MM-DD')
+		</if>
+		<if test="locateTimeBegin != null and locateTimeBegin != '' and locateTimeEnd != null and locateTimeEnd != '' ">
+			AND statistic_date <![CDATA[>]]>TO_DATE(#{locateTimeBegin},'YYYY-MM-DD hh24:mi:ss')
+			AND statistic_date<![CDATA[<]]>TO_DATE(#{locateTimeEnd},'YYYY-MM-DD hh24:mi:ss')
+		</if>
+	</select>
+
+</mapper>

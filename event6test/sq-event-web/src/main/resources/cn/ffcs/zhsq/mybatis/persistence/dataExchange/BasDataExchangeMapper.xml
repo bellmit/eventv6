@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dataExchange.BasDataExchangeMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dataExchange.BasDataExchange" >
+    <id column="EXCHANGE_ID" property="exchangeId" jdbcType="DECIMAL" />
+    <result column="EXCHANGE_TYPE" property="exchangeType" jdbcType="VARCHAR" />
+    <result column="OWN_ID" property="ownId" jdbcType="VARCHAR" />
+    <result column="OPPO_ID" property="oppoId" jdbcType="VARCHAR" />
+    <result column="TIME_STAMP" property="timeStamp" jdbcType="TIMESTAMP" />
+    <result column="STATUS_" property="status" jdbcType="CHAR" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EXCHANGE_ID, EXCHANGE_TYPE, TIME_STAMP, STATUS_, CREATE_USER_ID, CREATE_TIME, UPDATE_USER_ID, 
+    UPDATE_TIME
+  </sql>
+  
+  <select id="findBasDataExchange" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from T_BAS_DATA_EXCHANGE t
+    where t.status_ = '1'
+    <if test="exchangeType != null ">
+      and t.EXCHANGE_TYPE = #{exchangeType,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_BAS_DATA_EXCHANGE
+    where EXCHANGE_ID = #{exchangeId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_BAS_DATA_EXCHANGE
+    where EXCHANGE_ID = #{exchangeId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.BasDataExchange" >
+    <selectKey keyProperty="exchangeId" resultType="long" order="BEFORE">
+      SELECT SEQ_DATA_EXCHANGE_ID.NEXTVAL FROM DUAL
+    </selectKey>
+    insert into T_BAS_DATA_EXCHANGE (EXCHANGE_ID, EXCHANGE_TYPE, TIME_STAMP, 
+      STATUS_, CREATE_USER_ID, CREATE_TIME, OWN_ID, OPPO_ID,
+      UPDATE_USER_ID, UPDATE_TIME)
+    values (#{exchangeId,jdbcType=DECIMAL}, #{exchangeType,jdbcType=VARCHAR}, #{timeStamp,jdbcType=DATE}, 
+      #{status,jdbcType=CHAR}, #{createUserId,jdbcType=DECIMAL}, sysdate, #{ownId,jdbcType=VARCHAR}, #{oppoId,jdbcType=VARCHAR},
+    #{updateUserId,jdbcType=DECIMAL}, #{updateTime,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.BasDataExchange" >
+    insert into T_BAS_DATA_EXCHANGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="exchangeId != null" >
+        EXCHANGE_ID,
+      </if>
+      <if test="exchangeType != null" >
+        EXCHANGE_TYPE,
+      </if>
+      <if test="timeStamp != null" >
+        TIME_STAMP,
+      </if>
+      <if test="status != null" >
+        STATUS_,
+      </if>
+      <if test="createUserId != null" >
+        CREATE_USER_ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateUserId != null" >
+        UPDATE_USER_ID,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="exchangeId != null" >
+        #{exchangeId,jdbcType=DECIMAL},
+      </if>
+      <if test="exchangeType != null" >
+        #{exchangeType,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null" >
+        #{timeStamp,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.BasDataExchange" >
+    update T_BAS_DATA_EXCHANGE
+    <set >
+      <if test="exchangeType != null" >
+        EXCHANGE_TYPE = #{exchangeType,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null" >
+        TIME_STAMP = #{timeStamp,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        STATUS_ = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createUserId != null" >
+        CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="updateUserId != null" >
+        UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=DATE},
+      </if>
+    </set>
+    where EXCHANGE_ID = #{exchangeId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.BasDataExchange" >
+    update T_BAS_DATA_EXCHANGE
+    set EXCHANGE_TYPE = #{exchangeType,jdbcType=VARCHAR},
+      TIME_STAMP = #{timeStamp,jdbcType=DATE},
+      STATUS_ = #{status,jdbcType=CHAR},
+      CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=DATE},
+      UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=DATE}
+    where EXCHANGE_ID = #{exchangeId,jdbcType=DECIMAL}
+  </update>
+</mapper>

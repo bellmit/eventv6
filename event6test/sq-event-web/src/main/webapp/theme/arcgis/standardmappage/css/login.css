@@ -1,0 +1,13 @@
+.LoginBack{position:absolute; top:0; left:0; height:100%; width:100%; z-index:-1; background:url(../images/loginback.png) no-repeat center 0; background-size:cover;}
+.LoginWindow{background:url(../images/loginwindow.png); width:841px; height:304px; position:absolute; top:50%; left:50%; margin-top:-150px; margin-left:-420px;}
+.box{padding-top:12px; padding-left:12px;}
+.pic{background:url(../images/login_03.png); width:304px; height:275px;}
+.form{width:470px; height:253px; padding-left:42px; padding-top:22px;}
+.NorBorder{border:1px solid #dddddd; border-radius:3px; width:315px; height:34px;}
+.NorBorder:hover{border:1px solid #4699e5;}
+.NorBorder ul li{float:left;}
+.NorBorder input{width:260px; height:34px; border:none; line-height:34px; font-size:14px; padding-left:5px; font-family:"微软雅黑";}
+.error{line-height:34px; color:#F00; padding-left:10px; font-family:"微软雅黑";}
+.hang{height:36px; margin-bottom:16px;}
+.code{color:#999;}
+.LoginBtn{background:url(../images/login_18.png); width:95px; height:30px; border:none; cursor:pointer;}

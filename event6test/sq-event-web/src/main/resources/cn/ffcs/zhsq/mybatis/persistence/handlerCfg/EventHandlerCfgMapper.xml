@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.handlerCfg.EventHandlerCfgMapper" >
+
+	<resultMap id="eventHandlerWfActorCfgPO" type="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfActorCfgPO" >
+		<result column="RAC_ID" property="racId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_ID" property="transactorId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_ORG_ID" property="transactorOrgId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_TYPE" property="transactorType" jdbcType="VARCHAR" />
+		<result column="WFPC_ID" property="wfpcId" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<!-- 获取人员配置信息 -->
+	<select id="findEeventHandlerWfActorCfgPOs" resultMap="eventHandlerWfActorCfgPO">
+		WITH WF_CFG AS
+		 (SELECT T.WFC_ID
+		    FROM (SELECT A.WFC_ID
+		            FROM T_BIZ_WF_CFG A
+		           WHERE A.STATUS_ = '1'
+		             AND A.WF_CFG_ID = #{wfId,jdbcType=DECIMAL}
+		             AND #{infoOrgCode,jdbcType=VARCHAR} LIKE A.REGION_CODE || '%'
+		           ORDER BY A.REGION_CODE DESC) T
+		   WHERE ROWNUM = 1)
+		SELECT C.*
+		  FROM WF_CFG A
+		  LEFT JOIN T_BIZ_WF_PROC_CFG B
+		    ON A.WFC_ID = B.WFC_ID
+		  LEFT JOIN T_BIZ_REGION_ACTOR_CFG C
+		    ON B.WFPC_ID = C.WFPC_ID
+		 WHERE B.REGION_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+		   AND B.TASK_CODE = #{nodeCode,jdbcType=VARCHAR}
+		   AND INSTR(',' || B.EVENT_CODES || ',', ',' || #{eventType,jdbcType=VARCHAR} || ',') > 0
+		   AND C.RAC_ID IS NOT NULL
+	</select>
+	
+</mapper>

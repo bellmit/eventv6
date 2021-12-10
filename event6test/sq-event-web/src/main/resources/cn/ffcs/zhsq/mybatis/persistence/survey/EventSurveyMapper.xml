@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.survey.EventSurveyMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventSurvey" >
+    <id column="SR_ID" property="srId" jdbcType="DECIMAL" />
+    <result column="CODE_" property="code" jdbcType="VARCHAR" />
+    <result column="PLA_ID" property="plaId" jdbcType="DECIMAL" />
+    <result column="PLA_NAME" property="plaName" jdbcType="VARCHAR" />
+    <result column="CHECK_TYPE" property="checkType" jdbcType="VARCHAR" />
+    <result column="CHECK_CONTENT" property="checkContent" jdbcType="VARCHAR" />
+    <result column="CHECK_TIME" property="checkTime" jdbcType="DATE" />
+    <result column="IS_SURVEY" property="isSurvey" jdbcType="VARCHAR" />
+    <result column="IS_REFIT" property="isRefit" jdbcType="VARCHAR" />
+    <result column="REFIT_SCHEME" property="refitScheme" jdbcType="VARCHAR" />
+    <result column="REFIT_LIMIT" property="refitLimit" jdbcType="VARCHAR" />
+    <result column="REFIT_RESULT" property="refitResult" jdbcType="VARCHAR" />
+    <result column="PONDERANCE" property="ponderance" jdbcType="VARCHAR" />
+    <result column="LEVEL_" property="level" jdbcType="VARCHAR" />
+    <result column="IS_DEL" property="isDel" jdbcType="VARCHAR" />
+    <result column="BUILDING_ID" property="buildingId" jdbcType="DECIMAL" />
+    <result column="BUILDING_NAME" property="buildingName" jdbcType="VARCHAR" />
+    <result column="BUILDING_ADDRE" property="buildingAddre" jdbcType="VARCHAR" />
+    <result column="PLA_ADD" property="plaAdd" jdbcType="VARCHAR" />
+    <result column="PLA_TYPE" property="plaType" jdbcType="VARCHAR" />
+    <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+    <result column="PLA_FACILITIES" property="plaFacilities" jdbcType="VARCHAR" />
+    <result column="IS_ELDERLY_PREGNANCY" property="isElderlyPregnancy" jdbcType="VARCHAR" />
+    <result column="ELDERLY_PREGNANCY_NUM" property="elderlyPregnancyNum" jdbcType="VARCHAR" />
+    <result column="SURVEY_CODE" property="surveyCode" jdbcType="VARCHAR" />
+    <result column="SURVEY_DANGER" property="surveyDanger" jdbcType="VARCHAR" />
+    <result column="VISIT_DETAILS" property="visitDetails" jdbcType="VARCHAR" />
+    <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"/>
+    <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR"/>
+  	<result column="STATUS" property="status" jdbcType="VARCHAR"/> 
+    <result column="CREATE_USER" property="createUser" jdbcType="DECIMAL"/>
+    <result column="CREATE_DATE" property="createDate" jdbcType="DATE"/>
+  	<result column="UPDATE_USER" property="updateUser" jdbcType="DECIMAL"/>
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="DATE"/>
+     <result column="CHECKER" property="checker" jdbcType="DATE"/>
+  	<result column="CHECK_TIME_STR" property="checkTimeStr" jdbcType="VARCHAR"/>
+  </resultMap>  
+ 
+  <sql id="detail_select">
+  	 select 
+	  T.SR_ID,
+	  T.CHECKER,
+	  T.BUILDING_ID,
+	  T.BUILDING_NAME,
+	  T.BUILDING_ADDRE,
+	  T.PLA_ID,
+	  T.PLA_NAME,
+	  T.PLA_ADD,
+	  T.PLA_TYPE,
+	  T.CHECK_TIME,
+	  TO_CHAR(T.CHECK_TIME,'yyyy-MM-dd HH24:mi:ss') CHECK_TIME_STR,
+	  T.IS_REFIT,
+	  T.IS_ELDERLY_PREGNANCY,
+	  T.ELDERLY_PREGNANCY_NUM,
+	  T.SURVEY_DANGER,
+	  T.CHECK_TYPE,
+	  T.CHECK_CONTENT,
+	  T.PLA_FACILITIES,
+	  T.REFIT_SCHEME,
+	  T.REFIT_RESULT
+	  from T_DC_SURVEY_RECORD T
+  </sql>
+
+  <select id="findEventSurveyByEventId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+ 	<include refid="detail_select"/>
+ 	where T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </select>
+  
+  <insert id="insert" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.event.EventSurvey" >
+  	<selectKey keyProperty="srId" resultType="long" order="BEFORE">
+		select SEQ_DC_SURVEY_RECORD_ID.NEXTVAL from DUAL
+	</selectKey>
+  	INSERT INTO T_DC_SURVEY_RECORD (SR_ID, CHECKER,CHECK_TIME,
+		BUILDING_ID, BUILDING_NAME,BUILDING_ADDRE,
+		PLA_ID, PLA_NAME,PLA_ADD, 
+		PLA_TYPE,SURVEY_DANGER,IS_ELDERLY_PREGNANCY,
+  		ELDERLY_PREGNANCY_NUM,IS_REFIT,CHECK_CONTENT,
+  		PLA_FACILITIES,REFIT_SCHEME,REFIT_RESULT,
+  		CREATE_USER,CREATE_DATE,EVENT_ID) 
+  	VALUES (#{srId,jdbcType=DECIMAL},#{checker,jdbcType=VARCHAR},#{checkTime,jdbcType=TIMESTAMP},
+  	#{buildingId,jdbcType=DECIMAL},#{buildingName,jdbcType=VARCHAR},#{buildingAddre,jdbcType=VARCHAR},
+  	#{plaId,jdbcType=DECIMAL},#{plaName,jdbcType=VARCHAR},#{plaAdd,jdbcType=VARCHAR},
+  	#{plaType,jdbcType=VARCHAR},#{surveyDanger,jdbcType=VARCHAR},#{isElderlyPregnancy,jdbcType=VARCHAR},
+  	#{elderlyPregnancyNum,jdbcType=VARCHAR},#{isRefit,jdbcType=VARCHAR},#{checkContent,jdbcType=VARCHAR},
+  	#{plaFacilities,jdbcType=VARCHAR},#{refitScheme,jdbcType=VARCHAR},#{refitResult,jdbcType=VARCHAR},
+  	#{createUser,jdbcType=DECIMAL},#{createDate,jdbcType=TIMESTAMP},#{eventId,jdbcType=DECIMAL})
+   </insert>
+   
+   <update id="update" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.event.EventSurvey">
+   update T_DC_SURVEY_RECORD 
+   <set>
+   <if test="checker !=null">
+   	CHECKER = #{checker,jdbcType=VARCHAR},
+   </if>
+   <if test="checkTime !=null">
+   	CHECK_TIME = #{checkTime,jdbcType=TIMESTAMP},
+   </if>
+   <if test="buildingId !=null">
+   	BUILDING_ID = #{buildingId,jdbcType=DECIMAL},
+   </if>
+   <if test="buildingName !=null">
+    BUILDING_NAME = #{buildingName,jdbcType=VARCHAR},
+   </if>
+   <if test="buildingAddre !=null">
+   	BUILDING_ADDRE = #{buildingAddre,jdbcType=VARCHAR},
+   </if>
+   <if test="plaId !=null">
+   	PLA_ID = #{plaId,jdbcType=DECIMAL},
+   </if>
+   <if test="plaName !=null">
+   	PLA_NAME = #{plaName,jdbcType=VARCHAR},
+   </if>
+   <if test="plaAdd !=null">
+   	PLA_ADD= #{plaAdd,jdbcType=VARCHAR},
+   </if>
+   <if test="plaType !=null">
+   	PLA_TYPE = #{plaType,jdbcType=VARCHAR},
+   </if>
+   <if test="surveyDanger !=null">
+   	SURVEY_DANGER = #{surveyDanger,jdbcType=VARCHAR},
+   </if>
+   <if test="isElderlyPregnancy !=null">
+   	IS_ELDERLY_PREGNANCY = #{isElderlyPregnancy,jdbcType=VARCHAR},
+   </if>
+   <if test="elderlyPregnancyNum !=null">
+   	ELDERLY_PREGNANCY_NUM = #{elderlyPregnancyNum,jdbcType=VARCHAR},
+   </if>
+   <if test="isRefit !=null">
+   	IS_REFIT = #{isRefit,jdbcType=VARCHAR},
+   </if>
+   <if test="checkContent !=null">
+   	CHECK_CONTENT = #{checkContent,jdbcType=VARCHAR},
+   </if>
+   <if test="plaFacilities !=null">
+   	PLA_FACILITIES = #{plaFacilities,jdbcType=VARCHAR},
+   </if>
+   <if test="refitScheme !=null">
+   	REFIT_SCHEME = #{refitScheme,jdbcType=VARCHAR},
+   </if>
+   <if test="refitResult !=null">
+   	REFIT_RESULT = #{refitResult,jdbcType=VARCHAR},
+   </if>
+   UPDATE_USER = #{updateUser,jdbcType=DECIMAL},
+   UPDATE_DATE = SYSDATE
+   </set>
+   where EVENT_ID = #{eventId,jdbcType=DECIMAL}
+   </update>
+</mapper>

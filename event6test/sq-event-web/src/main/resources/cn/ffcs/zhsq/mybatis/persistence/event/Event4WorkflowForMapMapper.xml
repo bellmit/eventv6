@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.Event4WorkflowForMapMapper" >
+	
+	<sql id="eventColumn">
+		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+		<if test="withDetail != null and withDetail > 0 ">
+		T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+		T1.TYPE_ "type", 					
+		T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+		T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+	   	T1.CREATE_TIME "createTime", 		T1.INFLUENCE_DEGREE "influenceDegree", 
+	   	T1.URGENCY_DEGREE "urgencyDegree", 	T1.HANDLE_DATE_FLAG "handleDateFlag",
+	   	T1.CONTENT_ "content",				T1.BIZ_PLATFORM "bizPlatform",
+	   	T1.CONTACT_USER	"contactUser",		T1.TEL	"tel",
+		T1.CODE_ "code",					T1.OCCURRED	"occurred",
+		T1.SOURCE "source", 				T1.INVOLVED_PERSION "involvedPersion",
+		T3.USER_NAME "creatorName",			T1.COLLECT_WAY		"collectWay",
+		T1.FIN_TIME	"finTime",
+	   	T3.INSTANCE_ID "instanceId", 			
+	   	T3.STATUS	"wfStatus",				T3.CUR_ORG			"curOrgName",
+	   	T3.WORKFLOW_ID "workflowId",		T3.CUR_NODE			"curNodeName",
+	   	</if>
+	   	T13.X	"longitude",				T13.Y	"latitude",
+		T13.Z	"z"
+	</sql>
+	
+	<!-- 待办列表统计 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventTodoSql"></include>
+	</select>
+	
+	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn"></include>
+  		<include refid="eventTodoSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 待办查询相关表 -->
+  	<sql id="eventTable4Todo">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+		  ON T3.INSTANCE_ID = T4.PROCINST_
+		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		  ON T4.DBID_ = T5.TASK_
+		LEFT JOIN T_ZY_RES_MARKER T13
+		  ON T1.EVENT_ID = T13.RESOURCES_ID AND T13.MARKER_TYPE = '0301'
+		<choose>
+			<when test="@Ognl@isNotEmpty(mapType)">
+				AND T13.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T13.MAP_TYPE = '5'
+			</otherwise>
+		</choose>
+  	</sql>
+  	
+  	<!-- 待办列表语句 -->
+  	<sql id="eventTodoSql">
+  		<include refid="eventTable4Todo"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_todo"></include>
+  	</sql>
+  	
+  	<!-- 待办查询条件 -->
+  	<sql id="find_where_todo">
+  		AND T3.STATUS = '1' AND T2.STATUS = '001'
+  		AND ((T5.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1') OR (T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.TYPE_ = '3'))
+		<include refid="find_where_event"></include>
+  	</sql>
+  	
+  	
+  	
+  	<!-- 辖区所有列表统计 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="eventJurisdictionSql"></include>
+	</select>
+	
+	<!-- 辖区所有查询列 -->
+	<sql id="eventColumn4Jurisdiction">
+		<include refid="eventColumn"></include>
+	</sql>
+	
+	<!-- 辖区所有列表数据 -->
+  	<select id="findPageList4Jurisdiction" resultType="java.util.Map">
+  		SELECT <include refid="eventColumn4Jurisdiction"></include>
+  		<include refid="eventJurisdictionSql"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区所有查询相关表 -->
+  	<sql id="eventTable4JurisdictionSql">
+  		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+		  ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		  ON T1.EVENT_ID = T3.FORM_ID
+		LEFT JOIN T_ZY_RES_MARKER T13
+		  ON T1.EVENT_ID = T13.RESOURCES_ID AND T13.MARKER_TYPE = '0301'
+		<choose>
+			<when test="@Ognl@isNotEmpty(mapType)">
+				AND T13.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T13.MAP_TYPE = '5'
+			</otherwise>
+		</choose>
+  	</sql>
+  	
+  	<!-- 辖区所有列表语句 -->
+  	<sql id="eventJurisdictionSql">
+  		<include refid="eventTable4JurisdictionSql"></include>
+		WHERE T3.FORM_TYPE_ID = 300 
+		<include refid="find_where_jurisdiction"></include>
+  	</sql>
+  	
+  	<!-- 辖区所有查询条件 -->
+  	<sql id="find_where_jurisdiction">
+  		AND T2.STATUS = '001'
+		<include refid="find_where_event"></include>
+  	</sql>
+  	
+
+  	<!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.EVENT_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+  	
+  	
+  	<sql id="find_where_event">
+  		<if test="@Ognl@isNotEmpty(updateTimeStart)">
+			AND T1.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="@Ognl@isNotEmpty(updateTimeEnd)">
+			AND T1.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+  		<if test="@Ognl@isNotEmpty(code)">
+  			AND T1.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+  		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(eventName)">
+				AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="@Ognl@isNotEmpty(eventNameAccurate)">
+				AND T1.EVENT_NAME = #{eventNameAccurate,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(type)">
+			AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(content)">
+			AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(occurred)">
+			AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="happenTime != null">
+			AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(tel)">
+			AND T1.TEL = #{tel,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(contactUser)">
+			AND T1.CONTACT_USER = #{contactUser,jdbcType=DECIMAL}
+		</if>
+		<if test="creatorId != null">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(collectWayArray)">
+				AND T1.COLLECT_WAY IN
+				<foreach collection="collectWayArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(collectWay)">
+				AND T1.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(influenceDegreeArray)">
+				AND T1.INFLUENCE_DEGREE IN
+				<foreach collection="influenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(influenceDegree)">
+				AND T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+				AND T1.URGENCY_DEGREE IN
+				<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(urgencyDegree)">
+				AND T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(sourceArray)">
+				AND T1.SOURCE IN
+				<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(source)">
+				AND T1.SOURCE = #{source,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(attrFlag)">
+			AND T1.ATTR_FLAG LIKE '%' || #{attrFlag,jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(bizPlatformArray)">
+				AND T1.BIZ_PLATFORM IN
+				<foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(bizPlatform)">
+				AND T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(removeBizPlatform)">
+			AND T1.BIZ_PLATFORM NOT IN (#{removeBizPlatform,jdbcType=VARCHAR})
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(statusList)">
+				AND T1.STATUS IN
+				<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(status)">
+				AND T1.STATUS = #{status,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND 1 = 2
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(removeTypeArray)">
+				AND
+				<foreach collection="removeTypeArray" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(removeTypeList)">
+				AND
+				<foreach collection="removeTypeList" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(eventIdList)">
+			AND T1.EVENT_ID IN
+			<foreach collection="eventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="@Ognl@isNotEmpty(eliminateEventIdList)">
+			AND T1.EVENT_ID NOT IN
+			<foreach collection="eliminateEventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(subStatusArray)">
+				AND T1.SUB_STATUS IN
+				<foreach collection="subStatusArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(subStatus)">
+				AND T1.SUB_STATUS = #{subStatus,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="xmin != null">
+			AND T13.X <![CDATA[>=]]> #{xmin ,jdbcType=DECIMAL}
+		</if>
+		<if test="xmax != null">
+			AND T13.X <![CDATA[<=]]> #{xmax ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymin != null">
+			AND T13.Y <![CDATA[>=]]> #{ymin ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymax != null">
+			AND T13.Y <![CDATA[<=]]> #{ymax ,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="existPosition != null and existPosition == 1 ">
+				AND (T13.X IS NOT NULL AND T13.Y IS NOT NULL)
+			</when>
+			<when test="existPosition != null and existPosition == 0 ">
+				AND (T13.X IS NULL OR T13.Y IS NULL)
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(generalSearch)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.INVOLVED_PERSION LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(warnKeyWordSearch)">
+				AND (
+					REGEXP_LIKE(T1.CONTENT_,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.EVENT_NAME,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.OCCURRED,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyRemarkWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.REMARK LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+		</choose>
+		
+	  <if test="@Ognl@isNotEmpty(happenTimeStart)">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="@Ognl@isNotEmpty(happenTimeEnd)">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(createTimeStart)">
+	   		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+	   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateDayStart)">
+	   		AND T1.HANDLE_DATE <![CDATA[>=]]>TO_DATE(#{handleDateDayStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateDayEnd)">
+	   		AND T1.HANDLE_DATE <![CDATA[<]]>TO_DATE(#{handleDateDayEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd') + 1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateFlag)">
+	   		AND T1.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+	   </if>
+	   <if test="@Ognl@isNotEmpty(creatorOrgCode)">
+	   		AND EXISTS (
+			      SELECT 1
+			      FROM T_DC_PRIVILEGE_EXAMPLE EXAMPLE, T_DC_ORG_SOCIAL_INFO ORG
+			      WHERE EXAMPLE.SOCIAL_ORG_ID = ORG.ORG_ID AND ORG.STATUS = '001'
+			      AND ORG.ORG_CODE LIKE #{creatorOrgCode ,jdbcType=VARCHAR}||'%'
+			      AND EXAMPLE.USER_ID = T1.CREATOR_ID
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeStart)">
+	   		AND T1.FIN_TIME <![CDATA[>=]]>TO_DATE(#{finTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeEnd)">
+	   		AND T1.FIN_TIME <![CDATA[<]]>TO_DATE(#{finTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(gridAdminDuty)">
+	   		AND EXISTS (
+			  SELECT 1 
+			  FROM T_DC_GRID_ADMIN GRIDADMIN, T_DC_GRID GRID
+			  WHERE GRIDADMIN.GRID_ID = GRID.GRID_ID 
+			  AND GRID.STATUS = '001' AND GRIDADMIN.STATUS = '001' 
+			  AND GRIDADMIN.DUTY = #{gridAdminDuty ,jdbcType=VARCHAR}
+			  AND GRIDADMIN.USER_ID = T1.CREATOR_ID 
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(dynamicSql4Event)">
+	   		${dynamicSql4Event}
+	   </if>
+		<if test="@Ognl@isNotEmpty(socialOrgCode)">	<!-- 查部门 -->
+			<!-- isdone 0 未处理，1 已处理  -->
+			and t3.instance_id in (select p.instance_id from  ${dbuser.workflow}.wf_task_participation p join t_dc_org_social_info s
+    			on s.org_id =p.org_id where  p.isdone='0' and s.org_code like #{socialOrgCode} || '%' )
+		</if>
+  	</sql>
+  	
+  	
+  	<!-- 辖区所有列表统计（精简） -->
+  	<select id="getEventCountSimple" resultType="java.lang.Long" >
+		SELECT COUNT(1)
+		  FROM T_EVENT T1
+		 INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		   AND T3.FORM_TYPE_ID = 300
+		 WHERE 1=1
+		 <include refid="find_where_event"></include>
+		 <include refid="order_by"></include>
+	</select>
+	
+	<!-- 辖区所有列表数据(精简) -->
+  	<select id="getEventListSimple" resultType="java.util.Map">
+  		SELECT 
+	  		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+			T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+			T1.TYPE_ "type", 					
+			T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+			T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+		   	T1.CREATE_TIME "createTime", 		T3.INSTANCE_ID "instanceId"
+		  FROM T_EVENT T1
+		 INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		   AND T3.FORM_TYPE_ID = 300
+		 WHERE 1=1
+		 <include refid="find_where_event"></include>
+		 <include refid="order_by"></include>
+  	</select>
+  	
+  	
+  	
+  	<!-- 获取事件详情（精简） -->
+  	<select id="getEventDetail" resultType="java.util.Map">
+  		SELECT 
+	  		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+			T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+			T1.TYPE_ "type", 					
+			T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+			T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+		   	T1.CREATE_TIME "createTime", 		T1.INFLUENCE_DEGREE "influenceDegree", 
+		   	T1.URGENCY_DEGREE "urgencyDegree", 	T1.HANDLE_DATE_FLAG "handleDateFlag",
+		   	T1.CONTENT_ "content",				T1.BIZ_PLATFORM "bizPlatform",
+		   	T1.CONTACT_USER	"contactUser",		T1.TEL	"tel",
+			T1.CODE_ "code",					T1.OCCURRED	"occurred",
+			T1.SOURCE "source", 				T1.INVOLVED_PERSION "involvedPersion",
+			T3.USER_NAME "creatorName",			T1.COLLECT_WAY		"collectWay",
+			T1.FIN_TIME	"finTime",
+		   	T3.INSTANCE_ID "instanceId", 		T3.CUR_ORG			"curOrgName",
+		   	T3.WORKFLOW_ID "workflowId",		T3.CUR_NODE			"curNodeName"
+		  FROM T_EVENT T1
+		  INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		  INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		   AND T3.FORM_TYPE_ID = 300
+		 WHERE T1.EVENT_ID=#{eventId ,jdbcType=DECIMAL}
+  	</select>
+  	
+  	
+  	
+  	
+  	<!-- 辖区所有相似事件（总数） -->
+  	<select id="getSimilarEventCount" resultType="java.lang.Long" >
+		SELECT COUNT(1)
+		  FROM T_EVENT T1
+		 INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		   AND T3.FORM_TYPE_ID = 300
+		 WHERE 1=1
+		 <include refid="find_where_similar_event"></include>
+	</select>
+	
+	<!-- 辖区所有相似事件（列表） -->
+  	<select id="getSimilarEventList" resultType="java.util.Map">
+  		SELECT 
+	  		T1.EVENT_ID "eventId", 				T1.EVENT_NAME "eventName", 
+			T1.HAPPEN_TIME "happenTime", 		T1.HANDLE_DATE "handleDate", 
+			T1.TYPE_ "type", 					
+			T2.GRID_ID	"gridId",				T2.GRID_PATH "gridPath", 
+			T1.STATUS "status", 				T1.SUB_STATUS "subStatus", 
+		   	T1.CREATE_TIME "createTime", 		T3.INSTANCE_ID "instanceId"
+		  FROM T_EVENT T1
+		 INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		   AND T3.FORM_TYPE_ID = 300
+		 WHERE 1=1
+		 <include refid="find_where_similar_event"></include>
+		 <include refid="order_by"></include>
+  	</select>
+  	
+  	<sql id="find_where_similar_event">
+  		<if test="@Ognl@isNotEmpty(updateTimeStart)">
+			AND T1.UPDATE_TIME <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="@Ognl@isNotEmpty(updateTimeEnd)">
+			AND T1.UPDATE_TIME <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+  		<if test="@Ognl@isNotEmpty(code)">
+  			AND T1.CODE_ LIKE '%' || #{code,jdbcType=VARCHAR} || '%'
+  		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(eventName)">
+				AND T1.EVENT_NAME LIKE '%'||#{eventName,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="@Ognl@isNotEmpty(eventNameAccurate)">
+				AND T1.EVENT_NAME = #{eventNameAccurate,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(type)">
+			AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(content)">
+			AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(occurred)">
+			AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="happenTime != null">
+			AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(infoOrgCodeAccurate)">
+				AND T2.INFO_ORG_CODE = #{infoOrgCodeAccurate,jdbcType=VARCHAR}
+			</when>
+			<when test="@Ognl@isNotEmpty(infoOrgCode)">
+				AND T2.INFO_ORG_CODE LIKE '%'||#{infoOrgCode,jdbcType=VARCHAR}||'%'
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(tel)">
+			AND T1.TEL = #{tel,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(contactUser)">
+			AND T1.CONTACT_USER = #{contactUser,jdbcType=DECIMAL}
+		</if>
+		<if test="creatorId != null">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(collectWayArray)">
+				AND T1.COLLECT_WAY IN
+				<foreach collection="collectWayArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(collectWay)">
+				AND T1.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(influenceDegreeArray)">
+				AND T1.INFLUENCE_DEGREE IN
+				<foreach collection="influenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(influenceDegree)">
+				AND T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+				AND T1.URGENCY_DEGREE IN
+				<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(urgencyDegree)">
+				AND T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(sourceArray)">
+				AND T1.SOURCE IN
+				<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(source)">
+				AND T1.SOURCE = #{source,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(attrFlag)">
+			AND T1.ATTR_FLAG LIKE '%' || #{attrFlag,jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(bizPlatformArray)">
+				AND T1.BIZ_PLATFORM IN
+				<foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(bizPlatform)">
+				AND T1.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(removeBizPlatform)">
+			AND T1.BIZ_PLATFORM NOT IN (#{removeBizPlatform,jdbcType=VARCHAR})
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(statusList)">
+				AND T1.STATUS IN
+				<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(status)">
+				AND T1.STATUS = #{status,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND 1 = 2
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(removeTypeArray)">
+				AND
+				<foreach collection="removeTypeArray" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(removeTypeList)">
+				AND
+				<foreach collection="removeTypeList" index="index" item="item" open="(" separator="AND" close=")">
+			     T1.TYPE_ NOT LIKE #{item}||'%'
+			    </foreach>
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(eventIdList)">
+			AND T1.EVENT_ID IN
+			<foreach collection="eventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="@Ognl@isNotEmpty(eliminateEventIdList)">
+			AND T1.EVENT_ID NOT IN
+			<foreach collection="eliminateEventIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(subStatusArray)">
+				AND T1.SUB_STATUS IN
+				<foreach collection="subStatusArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(subStatus)">
+				AND T1.SUB_STATUS = #{subStatus,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="xmin != null">
+			AND T13.X <![CDATA[>=]]> #{xmin ,jdbcType=DECIMAL}
+		</if>
+		<if test="xmax != null">
+			AND T13.X <![CDATA[<=]]> #{xmax ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymin != null">
+			AND T13.Y <![CDATA[>=]]> #{ymin ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymax != null">
+			AND T13.Y <![CDATA[<=]]> #{ymax ,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="existPosition != null and existPosition == 1 ">
+				AND (T13.X IS NOT NULL AND T13.Y IS NOT NULL)
+			</when>
+			<when test="existPosition != null and existPosition == 0 ">
+				AND (T13.X IS NULL OR T13.Y IS NULL)
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(generalSearch)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.INVOLVED_PERSION LIKE '%'||#{generalSearch ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(warnKeyWordSearch)">
+				AND (
+					REGEXP_LIKE(T1.CONTENT_,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.EVENT_NAME,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+					OR
+					REGEXP_LIKE(T1.OCCURRED,#{warnKeyWordSearch ,jdbcType=VARCHAR})
+				)
+			</when>
+			<when test="@Ognl@isNotEmpty(keyRemarkWord)">
+				AND (
+					T1.CONTENT_ LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.EVENT_NAME LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.OCCURRED LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+					OR
+					T1.REMARK LIKE '%'||#{keyRemarkWord ,jdbcType=VARCHAR}||'%'
+				)
+			</when>
+		</choose>
+		
+	  <if test="@Ognl@isNotEmpty(happenTimeStart)">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="@Ognl@isNotEmpty(happenTimeEnd)">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(createTimeStart)">
+	   		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+	   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateDayStart)">
+	   		AND T1.HANDLE_DATE <![CDATA[>=]]>TO_DATE(#{handleDateDayStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateDayEnd)">
+	   		AND T1.HANDLE_DATE <![CDATA[<]]>TO_DATE(#{handleDateDayEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd') + 1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(handleDateFlag)">
+	   		AND T1.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+	   </if>
+	   <if test="@Ognl@isNotEmpty(creatorOrgCode)">
+	   		AND EXISTS (
+			      SELECT 1
+			      FROM T_DC_PRIVILEGE_EXAMPLE EXAMPLE, T_DC_ORG_SOCIAL_INFO ORG
+			      WHERE EXAMPLE.SOCIAL_ORG_ID = ORG.ORG_ID AND ORG.STATUS = '001'
+			      AND ORG.ORG_CODE LIKE #{creatorOrgCode ,jdbcType=VARCHAR}||'%'
+			      AND EXAMPLE.USER_ID = T1.CREATOR_ID
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeStart)">
+	   		AND T1.FIN_TIME <![CDATA[>=]]>TO_DATE(#{finTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   </if>
+	   <if test="@Ognl@isNotEmpty(finTimeEnd)">
+	   		AND T1.FIN_TIME <![CDATA[<]]>TO_DATE(#{finTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	   <if test="@Ognl@isNotEmpty(gridAdminDuty)">
+	   		AND EXISTS (
+			  SELECT 1 
+			  FROM T_DC_GRID_ADMIN GRIDADMIN, T_DC_GRID GRID
+			  WHERE GRIDADMIN.GRID_ID = GRID.GRID_ID 
+			  AND GRID.STATUS = '001' AND GRIDADMIN.STATUS = '001' 
+			  AND GRIDADMIN.DUTY = #{gridAdminDuty ,jdbcType=VARCHAR}
+			  AND GRIDADMIN.USER_ID = T1.CREATOR_ID 
+			)
+	   </if>
+	   <if test="@Ognl@isNotEmpty(dynamicSql4Event)">
+	   		${dynamicSql4Event}
+	   </if>
+	
+  	</sql>
+  	
+</mapper>

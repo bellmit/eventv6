@@ -1,0 +1,191 @@
+<!--
+      1.应用级配置
+      appCode：应用编码
+      appName：应用中文名称
+      defaultInfoOrgCodeClass: 获取当前登陆用户的infoOrgCode, 不同项目获取的方法不同。这边需要根据不同项目自行获取infoOrgCode,只需实现IDefaultInfoOrgCode接口
+                                返回当前登陆用户的默认infoOrgCode即可
+      permissionClass: 用户权限过滤, 不同项目获取的方法不同。这边需要根据不同项目 自行判断是否需要过滤,只需实现IPermissionsFilter接口
+                        （接口会传一个当前请求的session,通过session自行获取用户信息）判断该用户是否需要过滤。需要返回true,不需要返回false
+
+      2.模块级配置
+      controllerClassName： 拦截的控制器名
+      controllerAlias：拦截的控制器中文名
+
+      3.方法级配置
+      methodName：拦截的方法名
+      methodAlias：拦截的方法中文名
+      dataPosition 拦截数据的位置 （0： 拦截方法返回值的数据， 1：拦截方法参数的数据）
+      dataType 拦截的数据类型 (已有的 : cn.ffcs.components.dataMasking.security.data.EUDGPaginationData
+                                       cn.ffcs.components.dataMasking.security.data.HashMapData
+                                       cn.ffcs.components.dataMasking.security.data.ListData
+                                       cn.ffcs.components.dataMasking.security.data.ModelMapData
+                                     cn.ffcs.components.dataMasking.security.data.HttpServletRequestData
+                                如果以上类型还不能符合可以扩展自定义拦截数据类型：需要实现     cn.ffcs.components.dataMasking.security.data.InterceptingData接口或cn.ffcs.components.dataMasking.security.data.InterceptingKeyValueData
+                                如果拦截的Map类型的就实现cn.ffcs.components.dataMasking.security.data.InterceptingKeyValueData 因为值取出来修改后需要覆盖回去）
+      customCompletion 是否在自定义拦截类型里已经处理完毕过滤数据（true|false），
+                       如果 是：就不需要填写 mapKey 和 field 字段配置内容。（也就是以下字段都无需配置）
+      mapKey 如果是map类型，需填写数据所存放的Key名称
+
+      4.字段级配置
+      fieldName：字段名称
+      fieldAlias：字段中文名称
+      dateFormat 如果是日期类型的话 需要写时间格式 如yyyy-mm-dd
+      fieldNameOriginal 赋值给另一个字段， 比如 fieldNameOriginal=birthStr 那么新建一个字段名字叫birthStr 然后处理前的数据（没有隐匿的原数据）赋值给这个字段
+      ruleClassSpaceDefault 过滤规则所在类名。该类需要实现 IRuleStrategy 接口，若需要自定义脱敏规则的，该值不填或填空，填写这两个regex：要将此字符串与之匹配的正则表达式   replacement：每个匹配项要替换的字符串
+    (已有的 :
+        cn.ffcs.components.dataMasking.security.rules.UserNameRule   姓名
+        cn.ffcs.components.dataMasking.security.rules.AddressRule   地址
+        cn.ffcs.components.dataMasking.security.rules.BirthDateRule   日期
+        cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule   电话号码
+        cn.ffcs.components.dataMasking.security.rules.IdentityCardRule   身份证  $1**$3****
+        cn.ffcs.components.dataMasking.security.rules.IdentityCardRule2   身份证2  $1********$3
+        cn.ffcs.components.dataMasking.security.rules.IdentityCardRule3   身份证3  $1******
+    )
+      **********************************************************************
+
+      例子：
+      1.假如需要过滤 吸毒人员列表的数据，对姓名，身份证，现居地址等字段过滤。。
+      配置如下：
+      <controllerInfo controllerClassName="cn.ffcs.shequ.zzgl.crowd.controller.DrugRecordController" controllerAlias="吸毒人员">
+            <methodInfo methodName="listData" methodAlias="列表" dataPosition="0"  dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData">
+                <fieldInfo fieldName="name" fieldAlias="姓名" fieldNameOriginal="nameStr" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.UserNameRule"/>
+                <fieldInfo fieldName="identityCard" fieldAlias="身份证" regex="[a-zA-Z0-9]{6}$" replacement="******"/>
+                <fieldInfo fieldName="birthday" fieldAlias="生日" dateFormat="yyyy-MM-dd" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.NullRule"/>
+            </methodInfo>
+        </controllerInfo>
+      2.矫正人员详情页面字段隐匿  拦截参数 通过 modelMap的“record” 字段获取 吸毒人员信息， 然后替换需要隐匿的字段
+       <controllerInfo controllerClassName="cn.ffcs.shequ.zzgl.crowd.controller.CorrectionalRecordController" controllerAlias="矫正人员">
+            <methodInfo methodName="detail" methodAlias="详情" dataPosition="1"  dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" mapKey="record">
+                <fieldInfo fieldName="name" fieldAlias="姓名" fieldNameOriginal="nameStr" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.UserNameRule"/>
+                <fieldInfo fieldName="identityCard" fieldAlias="身份证" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.IdentityCardRule"/>
+                <fieldInfo fieldName="residenceAddr" fieldAlias="现居住地" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.AddressRule"/>
+            </methodInfo>
+        </controllerInfo>
+      3.这个数据是存放在HttpServletRequestData 而不是ModelMap里。 mapKey就是该数据的key名称，那么下面字段I_NAME就是对应Map里面的KEY。然后通过I_NAME获取值，然后替换回去
+        <controllerInfo controllerClassName="cn.ffcs.shequ.zzgl.crowd.controller.DrugLeaveController" controllerAlias="吸毒离开人员">
+            <methodInfo methodName="index" methodAlias="列表" dataPosition="1"  dataType="cn.ffcs.components.dataMasking.security.data.HttpServletRequestData" mapKey="cirs">
+                <fieldInfo fieldName="I_NAME" fieldAlias="姓名" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.UserNameRule" />
+                <fieldInfo fieldName="I_IDENTITY_CARD" fieldAlias="身份证" ruleClassSpaceDefault="cn.ffcs.shequ.security.rules.IdentityCardRule" />
+            </methodInfo>
+        </controllerInfo>
+    -->
+
+<appMeta appCode="zhsq_eventV6" appName="事件工程V6" permissionClass="cn.ffcs.components.dataMasking.security.zzgridPermissionsFilter" defaultInfoOrgCodeClass="cn.ffcs.components.dataMasking.security.zzgridInfoOrgCode">
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.map.arcgis.controller.ArcgisDataOfPopLocalController" controllerAlias="人定位数据">
+        <methodInfo methodName="getArcgisDataListOfPeople" methodAlias="人口列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="name" fieldAlias="姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="identityCard" fieldAlias="身份证" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.IdentityCardRule"/>
+            <fieldInfo fieldName="birthday" fieldAlias="出生年月" dateFormat="yyyy-MM-dd" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.BirthDateRule"/>
+            <fieldInfo fieldName="familyAddress" fieldAlias="家庭地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+            <fieldInfo fieldName="residenceAddr" fieldAlias="现居地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+        </methodInfo>
+        <methodInfo methodName="getBuildInfoDetailOnMap" methodAlias="人口详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="residentDetail">
+            <fieldInfo fieldName="name" fieldAlias="姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="identityCard" fieldAlias="身份证" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.IdentityCardRule"/>
+            <fieldInfo fieldName="birthday" fieldAlias="出生年月" dateFormat="yyyy-MM-dd" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.BirthDateRule" fieldNameOriginal="birthday"/>
+            <fieldInfo fieldName="familyAddress" fieldAlias="家庭地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+            <fieldInfo fieldName="residenceAddr" fieldAlias="现居地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+            <fieldInfo fieldName="residentMobile" fieldAlias="家庭固定电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+        <methodInfo methodName="getArcgisDataListOfPeopleYouth" methodAlias="重点青少年列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="identityCard" fieldAlias="身份证" ruleClassSpaceDefault="cn.ffcs.shequ.utils.rules.IdentityCardRule2"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.map.arcgis.controller.ArcgisDataOfRegionController" controllerAlias="地定位数据">
+        <methodInfo methodName="rentRoomListData" methodAlias="出租屋列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="ownerName" fieldAlias="房东" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+        <methodInfo methodName="rentRoomDetail" methodAlias="出租屋详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="areaRoomRent">
+            <fieldInfo fieldName="ownerName" fieldAlias="房东" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="name" fieldAlias="现住人员" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+        <methodInfo methodName="getCorInfoDetailOnMap" methodAlias="企业详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="record">
+            <fieldInfo fieldName="representativeName" fieldAlias="法人代表" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.map.arcgis.controller.ArcgisDataOfThingLocalController" controllerAlias="事定位数据">
+        <methodInfo methodName="listPartyMemberIndexData" methodAlias="党员列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="name" fieldAlias="名称" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="identityCard" fieldAlias="公民身份号码" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.IdentityCardRule"/>
+            <fieldInfo fieldName="birthday" fieldAlias="出生日期" dateFormat="yyyy-MM-dd" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.BirthDateRule" fieldNameOriginal="birthday"/>
+        </methodInfo>
+        <methodInfo methodName="partyOrgInfoListData" methodAlias="组织机构信息列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.securityEx.PaginationData" customCompletion="0">
+            <fieldInfo fieldName="secretaryName" fieldAlias="书记姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+        <methodInfo methodName="getPartyOrgSummaryInfoOnMap" methodAlias="党组织概要信息" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="ciPartyGroup">
+            <fieldInfo fieldName="secretaryName" fieldAlias="书记姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+        <methodInfo methodName="getPartyOrgInfoDetailOnMap" methodAlias="党组织详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="ciPartyGroup">
+            <fieldInfo fieldName="secretaryName" fieldAlias="支部书记" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.map.arcgis.controller.ArcgisDataOfGoodsController" controllerAlias="物定位数据">
+        <methodInfo methodName="controlsafetyRanksListData" methodAlias="安监队伍、群防群治队伍、机构队伍列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="manager" fieldAlias="负责人" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+        <methodInfo methodName="centerDetail" methodAlias="综治中心详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="prvetionTeam">
+            <fieldInfo fieldName="manager" fieldAlias="负责人" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.event.controller.EventDisposalController" controllerAlias="事件">
+        <methodInfo methodName="detailEvent" methodAlias="详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="event">
+            <fieldInfo fieldName="informant" fieldAlias="举报人员" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="informantTel" fieldAlias="举报电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+        <methodInfo methodName="detailEventType" methodAlias="详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="event">
+            <fieldInfo fieldName="informant" fieldAlias="举报人员" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="informantTel" fieldAlias="举报电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+        <methodInfo methodName="print" methodAlias="详情打印" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="event">
+            <fieldInfo fieldName="informant" fieldAlias="举报人员" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            <fieldInfo fieldName="informantTel" fieldAlias="举报电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.relatedEvents.controller.RelatedEventsController" controllerAlias="路案事件">
+        <methodInfo methodName="detailRelatedEvents" methodAlias="详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="relatedEvents">
+            <fieldInfo fieldName="prisonersDocNo" fieldAlias="主犯(嫌疑犯)证件号码" ruleClassSpaceDefault="cn.ffcs.shequ.utils.rules.IdentityCardRule3"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.event.controller.DoubleRandomTaskController" controllerAlias="双随机任务">
+        <methodInfo methodName="toGenerateEvent" methodAlias="双随机抽查页面" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="eventDataList">
+            <fieldInfo fieldName="tel" fieldAlias="联系电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+            <fieldInfo fieldName="mobileTelephone" fieldAlias="督查员手机" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+            <fieldInfo fieldName="fixedTelephone" fieldAlias="督查员固定电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+        <methodInfo methodName="listData" methodAlias="列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+            <fieldInfo fieldName="tel" fieldAlias="联系电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+        <methodInfo methodName="generateEventData" methodAlias="抽取随机数据" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.HashMapData" customCompletion="0" mapKey="event">
+            <fieldInfo fieldName="tel" fieldAlias="联系电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+        </methodInfo>
+    </controllerInfo>
+    <controllerInfo controllerClassName="cn.ffcs.zhsq.relatedEvents.controller.RelatedEventsController" controllerAlias="涉及线路案件">
+    <methodInfo methodName="detailRelatedEvents" methodAlias="详情" dataPosition="1" dataType="cn.ffcs.components.dataMasking.security.data.ModelMapData" customCompletion="0" mapKey="relatedEvents">
+      <fieldInfo fieldName="prisonersDocNo" fieldAlias="身份证号" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.IdentityCardRule3"/>
+      <fieldInfo fieldName="prisonersName" fieldAlias="姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+    </methodInfo>
+  	</controllerInfo>
+    <!-- 两违入格隐匿配置开始 -->
+        <!--<controllerInfo controllerClassName="cn.ffcs.zhsq.reportFocus.controller.ReportFocusController" controllerAlias="重点关注上报">
+            <methodInfo methodName="listIntegrationMsgReadingData" methodAlias="我的阅办" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+                <fieldInfo fieldName="msgSenderName" fieldAlias="报告人姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+            </methodInfo>
+        </controllerInfo>
+        <controllerInfo controllerClassName="cn.ffcs.zhsq.reportFocus.ruralHousing.controller.ReportRuralHousingController" controllerAlias="农村建房">
+            <methodInfo methodName="listReportFocusData" methodAlias="农村建房列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+                <fieldInfo fieldName="householder" fieldAlias="建房户姓名" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+                <fieldInfo fieldName="occurred" fieldAlias="发生地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+            </methodInfo>
+        </controllerInfo>-->
+    <!-- 两违入格隐匿配置结束 -->
+
+    <!-- 微信事件审核隐匿配置开始 -->
+        <controllerInfo controllerClassName="cn.ffcs.zhsq.intermediateData.eventWechat.controller.EventWechatController" controllerAlias="微信事件审核">
+            <methodInfo methodName="listData" methodAlias="微信事件审核列表" dataPosition="0" dataType="cn.ffcs.components.dataMasking.security.data.EUDGPaginationData" customCompletion="0">
+                <fieldInfo fieldName="occurred" fieldAlias="事发地址" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.AddressRule"/>
+                <fieldInfo fieldName="contactUser" fieldAlias="上报人员" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.UserNameRule"/>
+                <fieldInfo fieldName="tel" fieldAlias="联系电话" ruleClassSpaceDefault="cn.ffcs.components.dataMasking.security.rules.MobilePhoneRule"/>
+            </methodInfo>
+        </controllerInfo>
+    <!-- 微信事件审核隐匿配置结束 -->
+</appMeta>

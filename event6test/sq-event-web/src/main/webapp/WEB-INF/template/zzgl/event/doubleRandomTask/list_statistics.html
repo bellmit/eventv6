@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<#include "/component/commonFiles-1.1.ftl" />
+	<#include "/component/ComboBox.ftl" />
+	<#include "/component/maxJqueryEasyUIWin.ftl" />
+	<#include "/component/listSet.ftl" />
+	<#include "/component/AnoleDate.ftl">
+	<style type="text/css">
+		.inp1 {width:100px;}
+		.dis-none{display: none;}
+	</style>
+</head>
+<body class="easyui-layout">
+	<div id="_DivCenter" region="center" >
+	   <table id="list"></table>
+	</div>
+	<div id="jqueryToolbar">
+		<div class="ConSearch">
+			<form id="searchForm">
+			<div class="fl">
+				<ul>
+					<li>统计月份：</li>
+					<li>
+						<input class="inp1" type="text" id="date1"  style="width:200px;" value="${curMonth}"/>
+						<input class="inp1 dis-none" type="text" id="startTime" name="startTime" />
+						<input class="inp1 dis-none" type="text" id="endTime" name="endTime" />
+					</li>
+				</ul>
+			</div>
+	        <div class="btns">
+				<ul>
+					<li><a href="javascript:;" class="chaxun" title="查询数据" onclick="searchData()">查询</a></li>
+		            <li><a href="javascript:;" class="chongzhi" title="重置查询条件" onclick="resetCondition()">重置</a></li>
+				</ul>
+	        </div>
+			</form>
+		</div>
+		<div class="h_10" id="TenLineHeight1"></div>
+		<!-- <div class="ToolBar">
+			<div class="tool fr">
+				<a href="javascript:void(0)" class="NorToolBtn DelBtn" onclick="del();">删除</a>
+				<a href="javascript:void(0)" class="NorToolBtn EditBtn" onclick="edit();">编辑</a>
+				<a href="javascript:void(0)" class="NorToolBtn AddBtn" onclick="add();">新增</a>
+			</div>
+		</div> -->
+	</div>
+</body>
+<script type="text/javascript">
+	$(function() {
+		loadList(); //加载列表
+		var dateApi = $("#date1").anoleDateRender({
+			BackfillType : "1",
+			ShowOptions : {
+				TabItems : ["月"]// [ "常用", "月", "季", "年" ]
+			},
+			BackEvents : {
+				OnSelected : function(api, type) {
+					$("#startTime").val(api.getStartDate());
+					$("#endTime").val(api.getEndDate());
+					if (type == "自定义") {
+						PageApi.DoSearch();
+					}
+				}
+			}
+		}).anoleDateApi();
+	});
+	
+	//加载列表
+	function loadList() {
+		$('#list').datagrid({
+			rownumbers: true, //行号
+			fitColumns: true, //自适应宽度
+			nowrap: true,
+			striped: true,
+			singleSelect: true,
+			fit: true,
+			url: '${rc.getContextPath()}/zhsq/event/doubleRandomTask/getStatisticsData.jhtml',
+			queryParams: $('#searchForm').serializeJson(),
+			columns: [[
+				{field:'regionCode', title:'区域编码', align:'center', width:100,hidden:true},
+				{field:'regionName', title:'地区', align:'center', width:100},
+				{field:'hgl', title:'双随机抽查合格率', align:'center', width:100},
+				{field:'jsl', title:'督查及时率', align:'center', width:100}
+			]],
+			pagination: false,
+			pageSize: 20,
+			toolbar: '#jqueryToolbar',
+			onLoadSuccess: function(data) {
+				listSuccess(data); //暂无数据提示
+			},
+			onLoadError: function() {
+				listError();
+			}
+		});
+	}
+	
+	//查询
+	function searchData() {
+		$('#list').datagrid('reload', $('#searchForm').serializeJson());
+	}
+	
+	//重置
+	function resetCondition() {
+		$('#searchForm').form('clear');
+		$("#date1").val("${curMonth}");
+		searchData();
+	}
+</script>
+</html>

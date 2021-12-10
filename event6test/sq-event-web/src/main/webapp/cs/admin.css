@@ -1,0 +1,151 @@
+@charset "utf-8";
+
+.top{ text-align:right; height:40px; clear:both; line-height:40px; color:#b6b1b1; font-size:12px; padding-right:20px;}
+.top a.a1{ background:url(img/ico02.png) left no-repeat; padding-left:19px; color:#eee;}
+.top a.a1:hover{ color:#fff;}
+.top a.tit{ color:#FF0; font-weight:600; padding-right:4px; font-size:14px;}
+.top a.tit:hover{ text-decoration:underline;}
+.top font{ font-size:10px; color:#413939; padding:0 19px;}
+
+.adm_lef{ width:245px; margin-top:-40px; float:left; z-index:20;}
+.adm_lef h2{ height:199px;  background:url(img/logo.jpg) top center no-repeat;}
+.adm_lef dl{ overflow-y:auto; padding-left:30px;}
+.adm_lef dl dd{ padding-top:5px;}
+.adm_lef dl a{ display:block; line-height:46px; background:url(img/lef_bg.gif) 0 7px no-repeat; color:#fff; text-align:left; font-size:16px;transition:padding 0.2s;}
+.adm_lef dl a em{ background:url(img/lef_ico01.png) no-repeat;}
+.adm_lef dl a em{ float:left; width:45px; height:37px; margin-top:5px; background-position:0 3px;}
+.adm_lef dl a:hover{ font-weight:bold; padding-left:2px;}
+.adm_lef dl a.hover,
+.adm_lef dl a.hover:hover{ background:url(img/lef_bg.gif) 0 -43px no-repeat; color:#265285;}
+.adm_lef dl a.hover em{ margin-left:5px; background-position-y:-50px;}
+
+#adm_rig{ margin:15px 20px 0 245px; background:#eef1f6; zoom:1;}
+.adm_rig{ background:#e4e7ee; border-bottom:1px solid #ccced4; border-top:1px solid #fafbfc;}
+.adm_rig dl{ height:95px; position:relative;}
+.adm_rig dd{ float:left; line-height:32px; height:32px; border-bottom:1px solid #ccced4; border-right:1px solid #ccced4; position:relative;}
+.adm_rig dd a{ display:block; padding:0 15px; color:#8e94a2;}
+.adm_rig dd a:hover{ color:#333;}
+.adm_rig dd b{ float:right; z-index:20; width:13px; height:13px; background:url(img/ico03.png) top left no-repeat; cursor:pointer; overflow:hidden;}
+.adm_rig dd b:hover{ background:url(img/ico03.png) bottom left no-repeat;}
+.adm_rig dd.hover{ position:absolute; bottom:10px; left:2px; border:0; line-height:37px;}
+.adm_rig dd.hover b{ display:none;}
+.adm_rig dd.hover em{ background:url(img/lef_ico01.png) left -50px no-repeat; float:left; width:37px; height:37px;}
+.adm_rig dd.hover a{ color:#265285; font-size:20px; font-weight:bold;}
+
+
+
+
+.adm_sou{ background:#eaedf3; border-bottom:1px solid #e0e3e8; height:46px;}
+.adm_sou dl{ padding-top:8px; color:#666; text-align:left; padding-left:25px;}
+.adm_sou input,
+.adm_sou select{ padding:4px 2px; border:1px solid #90abc9; width:110px; background:url(img/inp_bg.gif) top repeat-x #fff; vertical-align:middle; color:#aaa; margin:0 10px 0 4px; _height:28px;}
+.adm_sou input.bt{background:url(img/ico04.gif) bottom repeat-x #fff; width:80px; cursor:pointer; color:#265285;}
+.adm_sou input.bt:hover{ color:#ac1e18;}
+.adm_sou input:focus,
+.adm_sou select:focus{ color:#333; border:1px solid #2e7ad2;}
+input.w_5{ width:50px}
+
+
+.list_tab{ margin:0 25px;}
+.list_tab h4{text-align:left; height:55px; clear:both; border-bottom:1px solid #cdd9e7;}
+.list_tab h4 b{ line-height:30px; margin-right:2px; font-size:14px;  float:left; padding-top:20px; padding-right:22px;}
+.list_tab h4 b em{ float:left; height:3px; width:8px; background:#333; overflow:hidden; margin:14px 3px 0 0; transition:height 0.2s,magin 0.2s;}
+.list_tab h4 b.hover{ color:#3b8f22;}
+.list_tab h4 b.hover em{ background:#3b8f22; height:8px; margin-top:12px;}
+.list_tab h4 img{ float:right;}
+
+
+.list_tab h5{background:url(img/h6_bg.gif) top repeat-x #bbd0e6; padding:7px 12px 7px 12px; text-align:left; border-top:1px solid #a8c4e1; border-bottom:1px solid #7aa6d0; line-height:22px; overflow:hidden;}
+.list_tab h5 b{padding:0 12px; font-size:14px; color:#1261b3; float:left;}
+.list_tab h5 span{ float:right; text-align:right;}
+.list_tab h5 span input{cursor:pointer; background:url(img/ico01.gif) top repeat-x; color:#fff; width:60px; font-size:12px; padding:4px 4px 5px 4px; border:0; margin-right:3px; _height:22px;}
+.list_tab h5 span input.a1{background:url(img/ico01.gif) 0 -30px repeat-x;}
+.list_tab h5 span input.a3{background:url(img/ico01.gif) 0 -90px repeat-x;}
+.list_tab h5 span input:hover,.list_tab h5 b input.a1:hover,.list_tab h5 b input.a3:hover{ background:url(img/ico01.gif) 0 -60px repeat-x;}
+
+
+
+
+h6.tab_sou{background:url(img/h6_bg.gif) top repeat-x #bbd0e6; padding:10px 12px 8px 12px; text-align:left; border-top:1px solid #a8c4e1; border-bottom:1px solid #7aa6d0; line-height:22px; font-size:12px;}
+h6.tab_sou span{ float:right; text-align:right; font-weight:normal;}
+h6.tab_sou span input,h6.tab_sou span select{ padding:2px 2px; border:1px solid #8396a9; width:110px; background:url(img/inp_bg.gif) top repeat-x #fff; vertical-align:middle; color:#666; margin:0 0 0 4px; _height:22px;}
+h6.tab_sou span input.bt{cursor:pointer; background:url(img/ico04.gif) bottom repeat-x #fff; width:60px; color:#176cd2; border:1px solid #85a5c6; margin-left:0px; margin-right:3px;}
+h6.tab_sou span input.bt:hover{ text-decoration:underline;}
+h6.tab_sou b input{cursor:pointer; background:url(img/ico01.gif) top repeat-x; color:#fff; width:60px; font-size:12px; padding:4px 4px 5px 4px; border:0; margin-right:3px; _height:22px;}
+h6.tab_sou b input.a1{background:url(img/ico01.gif) 0 -30px repeat-x;}
+h6.tab_sou b input.a3{background:url(img/ico01.gif) 0 -30px repeat-x;}
+h6.tab_sou b input:hover,h6.tab_sou span input.a1:hover,h6.tab_sou span input.a3:hover{ background:url(img/ico01.gif) 0 -60px repeat-x;}
+
+
+.tab table{}
+.tab tr.bg2{ background:#f8f9fb;}
+.tab tr.th_yel th{ background:#ebede4;}
+.tab td{ border-bottom:1px solid #d5e1ed; border-left:1px solid #d5e1ed; padding:10px 5px; text-align:left; font-size:14px; line-height:20px;}
+.tab td.td_lef{ text-align:right; background:#e5ebf3; color:#111;}
+.tab td.td_lef font{ padding-right:4px; color:#d72727; font-weight:600;}
+.tab td.td_tab{ border-left:0; padding:0;}
+.tab td.td_cen{ text-align:center;}
+.tab td.td_bor{ border:0; padding-bottom:20px;} 
+.tab th.td_red{ color:#b32a26; font-weight:600;}
+.tab td.td_red{ color:#b32a26; background:#e5ebf3;}
+.tab tr.bg2 td.td_red{ background:#f3f5f9; }
+.tab th.td_lef_bor,.tab td.td_lef_bor{ border-left:0;}
+
+
+.tab_txt td{ line-height:30px; padding:5px 6px;}
+.tab td input,.tab td textarea,.tab td select{ padding:4px 0 4px 2px; border:1px solid #9eb6cf; width:90%; background:url(img/inp_bg.gif) top repeat-x #fff; vertical-align:middle; color:#666; _height:30px; margin-right:4px;}
+.tab th input,.tab td textarea,.tab th select{ padding:1px 0 1px 2px; border:1px solid #9eb6cf; width:90%; background:url(img/inp_bg.gif) top repeat-x #fff; vertical-align:middle; _height:30px; margin:0 4px;}
+.tab td textarea{ height:auto;}
+.tab td select{ padding-right:4px;}
+.tab td input:focus,.tab td textarea:focus,.tab td select:focus{ border:1px solid #1b70ba; padding-left:4px; transition:padding 0.2s, border 0.2s;box-shadow: inset 0px 1px 1px rgba(0,0,0,0.075), 0px 0px 5px rgba(102,175,233,0.6);}
+.tab td input.radio{ width:auto; padding:0; margin-left:7px; line-height:auto; border:0; background:none;}
+.tab td input.sel{background:url(img/ico03.gif) right top repeat-x #fff;}
+.tab td input.Date{background:url(img/ico03.gif) right -60px repeat-x #fff;}
+.tab td input.xz{background:url(img/ico03.gif) right -120px repeat-x #fff;}
+.tab td .bt_j{ float:left; width:30px; text-align:center; line-height:30px; border:1px solid #90abc9; background-image:none; background:#f5f7fa; cursor:pointer; white-space:nowrap; font-size:24px; padding:0; margin-right:2px;}
+.tab td .bt_j:hover{ background:#fff;}
+
+.tab td input.w_12,.tab th input.w_12,.tab td select.w_12{ width:120px;}
+.tab td input.w_6,.tab th input.w_6,.tab td select.w_6{ width:60px;}
+
+.tab td input.bt{ cursor:pointer; background:url(img/ico16.gif); width:60px; color:#fff; padding:0; height:30px; border:0; margin-left:5px;}
+.tab td input.bt:hover{background:url(img/ico16.gif) 0 -40px repeat-x; _text-decoration:underline;}
+.tab th{ background:url(img/ico07.gif) top repeat-x #d4e2f1; border-bottom:1px solid #cdd9e7; border-left:1px solid #cdd9e7; padding:8px 5px; text-align:left; color:#265285; font-weight:normal; font-size:14px; line-height:20px;}
+.tab th input.radio{ width:auto; padding:0; margin-left:7px; line-height:auto; border:0;}
+.tab th strong{ float:left;}
+.tab_bt{ padding:6px 0 20px 25px; text-align:left;}
+.tab_bt input.bt1,.tab_bt input.bt2{ background:url(img/ico16.gif) top repeat-x; color:#fff; height:33px; padding:0 25px; min-width:50px; border:0; margin-right:5px; cursor:pointer;}
+.tab_bt input.bt2{ background:url(img/ico16.gif) 0 -80px repeat-x;}
+.tab_bt input.bt1:hover,.tab_bt input.bt2:hover{ background:url(img/ico16.gif) 0 -40px repeat-x; _text-decoration:underline;}
+
+.tab .up_dow{ padding:5px 0 20px 0; text-align:center;}
+
+
+
+/*小弹窗*/
+.g_serch{ position:absolute; overflow:hidden; top:50%; margin-bottom:-200px; margin-top:-200px; left:50%; margin-right:-300px; margin-left:-300px; width:600px; height:400px; background:#eef1f6; border:2px solid #265285;
+-webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.4);
+-moz-box-shadow: 1px 2px 3px rgba(0,0,0,.4);
+box-shadow: 1px 2px 3px rgba(0,0,0,.4);}
+.g_serch .tab{ position:relative; overflow-x:hidden; overflow-y:auto; height:357px;}
+.g_serch .tab em{ display:block; height:40px;}
+.g_serch .tab_cen td{ text-align:center;}
+.g_serch .tab_cen th{ text-align:right; padding:6px 13px;}
+.g_serch .sou_d{ position:absolute; z-index:20; bottom:0; left:0; height:40px; width:100%; border:0; padding:0; background:none;}
+.g_serch .sou_d span{position:absolute; z-index:50; width:100%; right:12px; bottom:8px; text-align:right;}
+.g_serch .sou_d b{position:absolute; z-index:30; width:100%; left:0; bottom:0; height:40px; background:#cbdcee; filter:alpha(opacity:70); opacity:0.7; border-top:1px solid #265285;}
+.g_serch h3{ background:url(img/ico07.gif) repeat-x #eaf1f7; text-align:left; border-bottom:1px solid #cbdcee;line-height:42px; padding:0 12px; overflow:hidden;}
+.g_serch h3 b{ font-size:16px; color:#1261b3;}
+.g_serch h3 a{ float:right; text-align:right; width:20px; height:20px; background:url(img/ser_bt.gif) top no-repeat; margin-top:11px;transition:background 0.2s; overflow:hidden;}
+.g_serch h3 a:hover{background:url(img/ser_bt.gif) bottom no-repeat;}
+.g_serch td.td_lef{ white-space:nowrap; background:none; border:0;}
+.g_serch td{ background:none; padding:3px;}
+.g_serch td input,.g_serch td select{ width:100%;}
+
+
+
+
+
+
+
+

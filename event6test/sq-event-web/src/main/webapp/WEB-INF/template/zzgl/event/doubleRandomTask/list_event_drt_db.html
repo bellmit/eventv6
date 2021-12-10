@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>事件列表</title>
+<#include "/component/commonFiles-1.1.ftl" />
+<#include "/map/arcgis/arcgis_base/arcgis_cross_domain/map_labeling.ftl" />
+
+<link href="${rc.getContextPath()}/css/zhsq_event.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+.datagrid-body{position:relative;}/*解决兼容性视图下列表无法跟随滚动*/
+</style>
+<script type="text/javascript" src="${rc.getContextPath()}/js/event/event_4_parent.js"></script>
+
+</head>
+<body class="easyui-layout">
+<#include "/component/customEasyWin.ftl" />
+<div class="MainContent">
+	<#include "/zzgl/event/doubleRandomTask/list_event_drt_db_toolbar.html" />
+</div>
+	<div id="eventRecordContentDiv" region="center" border="false" style="width:100%; overflow:hidden; position:relative;">
+		<table style="width:100%" id="list"></table>
+	</div>
+
+<script type="text/javascript">
+$(function(){
+     eventInit("${rc.getContextPath()}", "", "${eventType}", "${model}");
+});	
+</script>
+<script type="text/javascript">
+	var idStr = "";
+	var dId = "";//双随机事件id
+	var dJudgeResult = "";//双随机事件评价结果
+    var orgCode = '${orgCode}';
+    var infoOrgCode = '${infoOrgCode}';
+    var startGridId = "${startGridId?c}";
+    var eventType = '${eventType}';
+    var outLinkId = "";//外部链接事件
+    var gridFlag="0";
+    var typeVal = "";
+    var _instanceId = "";
+    var _bizPlatform = "";
+    var t = "<#if t??>${t}</#if>";
+    var winType = "";//用于判断是否关闭详细窗口
+    var type = "";
+    var happenTimeStart = "";
+    var happenTimeEnd = "";
+    var urgencyDegrees = new Array();
+    
+    $(function(){
+    	loadDataList();
+    	$('#bigType').change(function(){
+    		var newValue = $(this).children('option:selected').val();
+    		var bigType = newValue;
+    		getSmallType(bigType,"");
+    	});
+    });
+    
+    function singleMixedGridSelectCallback(gridId,gridName,orgId,orgCode,gridPhoto){
+            gridFlag="1";
+			$('#gridId').attr('value',gridId);
+			$("#gridName").attr("value",gridName);
+	}
+	
+    function loadDataList(){
+		var queryParams = queryData();
+		
+	    <#if extraParams??>
+	    	<#if extraParams!="">
+		        var extraParams = ${extraParams!''};
+		    	type = extraParams.type;
+		    	if(extraParams.urgencyDegrees != null && extraParams.urgencyDegrees != ""){
+		    		urgencyDegrees = extraParams.urgencyDegrees.split(",");
+		    		$('#urgencyDegree').combobox('setValues',urgencyDegrees);
+		    	}
+		    	happenTimeStart = extraParams.happenTimeStart;
+		    	happenTimeEnd = extraParams.happenTimeEnd;
+		    	
+		    	if(type) {
+		    		queryParams.type = type;
+		    		queryParams.urgencyDegrees = urgencyDegrees;
+		    		queryParams.happenTimeStart = happenTimeStart;
+		    		queryParams.happenTimeEnd = happenTimeEnd;
+		    	}
+		    </#if>
+		</#if>  
+		
+    	$('#list').datagrid({
+			width:600,
+			height:300,
+			nowrap: true,
+			rownumbers:true,
+			remoteSort:false,
+			striped: true,
+			fit: true,
+			fitColumns: true,
+			singleSelect: true,
+			idField:'hashId',
+			url:'${rc.getContextPath()}/zhsq/event/doubleRandomTask/listData.json',
+			columns:[[
+				{field:'dId',title:'dId', align:'center',hidden:true},
+				{field:'hashId',title:'ID', align:'center',hidden:true},
+				{field:'type',title:'type', align:'center',hidden:true},
+				{field:'eventName',title:'事件标题', align:'left',width:fixWidth(0.2),sortable:true,
+                	formatter:function(value,rec,rowIndex){
+                		var f = '<a class="eName" href="javascript:" title="'+ rec.eventName +'" onclick=showDetailRow('+rec.dId+','+ rec.hashId+ ','+rec.instanceId+','+rec.workFlowId+')>'+value+'</a>';
+						return f;
+					},
+					
+					styler: function(value,rec,index){
+						return "text-align:left";
+                    }
+					
+				},
+				{field:'dBeginTime',title:'任务下发时间', align:'center',width:fixWidth(0.1),sortable:true,
+                	formatter:function(value,rowData,rowIndex){
+						if(value!=null && value.length>=10){
+							value = value.substring(0,10);
+						}
+						return value;
+				}},
+				{field:'dEndTime',title:'办理期限', align:'center',width:fixWidth(0.1),sortable:true,
+                	formatter:function(value,rowData,rowIndex){
+						if(value!=null && value.length>=10){
+							value = value.substring(0,10);
+						}
+						return value;
+				}},
+				{field:'dTaskType',title:'任务类型', align:'center',width:fixWidth(0.1),sortable:true,
+                	formatter:function(value,rowData,rowIndex){
+						if(value==null || value=='' || value=='1'){
+							value='市级';	
+						}else if(value=='2'){
+							value='镇(街)级';
+						}
+						return value;
+						
+					}},
+                {field:'eventClass',title:'事件分类', align:'center',width:fixWidth(0.1),sortable:true},
+				{field:'gridPath',title:'所属网格', align:'center',width:fixWidth(0.3),sortable:true,
+                    formatter:function(value, rec, index){
+                        if(value == null)return "";
+                        return '<div title="'+rec.gridPath+'" >'+value+'</div>'
+                    }
+                },
+                {field:'dJudgeResult',title:'复核结果', align:'center',width:fixWidth(0.1),sortable:true,
+                	formatter:function(value, rec, index){
+                    	return (value==null||value=='')?'-':value=='1'?'合格':value=='2'?'不合格':value;
+                }}
+			]],
+			toolbar:'#jqueryToolbar',
+			pagination:true,
+			pageSize: 20,
+			queryParams:queryParams,
+			onSelect:function(index,rec){
+				dId=rec.dId;
+				dJudgeResult=rec.dJudgeResult;
+				idStr=rec.hashId;
+				typeVal=rec.type;
+				_instanceId=rec.instanceId;
+				_bizPlatform = rec.bizPlatform;
+			},
+			onDblClickRow:function(index,rec){
+				showDetailRow(rec.dId,rec.hashId, rec.instanceId, rec.workFlowId);
+			},
+			onLoadError: function () {//数据加载异常
+        		$('.datagrid-body').eq(1).append('<div class="ErrorImg FontRed"><b>数据读取错误！！！</b></div>');
+    		},
+			onLoadSuccess: function(data){//事件标题内容左对齐
+				if(data.total == 0) {
+					$('.datagrid-body').eq(1).append('<div class="nodata"></div>');
+				} else {
+	            	addIcons();
+					var panel = $(this).datagrid('getPanel');   
+		            var tr = panel.find('.datagrid-view2 tr.datagrid-row');//获取展示的列表行
+		            var trLen = 0; 
+		            var trHeight = 0;
+		            if(tr) {
+		            	trLen = tr.length;
+		            	trHeight = tr.eq(0).height();
+		            } 
+		            var index = data.total;
+		            var pageSize = $('#list').datagrid('getPager').data("pagination").options.pageSize;//获取当前页面大小
+		            if(pageSize && pageSize!="" && data.total > pageSize){
+		            	index = pageSize;
+		            }
+	             	var dataViewHeight = $('.datagrid-view').height();//获取列表的高度(包括列表标题)
+	             	var trIndexMax = parseInt(dataViewHeight / trHeight, 10) - 1 - 1;//扣除一行标题行，表行索引从0开始
+	             	
+		            tr.each(function(i){
+		            	var td = $(this).children('td[field="eventName"]');
+		                td.children("div").css({//左对齐
+		                	"text-align": "left"  
+		                });  
+		                
+		                $(this).mouseover(function(){  
+		                	var trOffset = $(this).offset();
+		                	var scrollTop = $(".datagrid-body").scrollTop();
+		                	
+		                	if(i==(trLen - 1) && i != 0 && (scrollTop > 0 || trIndexMax == i)){//有滚动条或者无滚动条时能展示的最大行数的最后一行
+			                	$(this).find('.OperateNotice').css("top",trOffset.top - 158 + scrollTop+ "px");
+		                		$(this).find('.OperateNotice').css("left",trOffset.left + "px");
+			                	$(this).find('.arrow').css("top","28px");
+			                	$(this).find('.arrow').css('background','url('+rootPath+'/images/arrow2.png)');
+			                	$(this).find('.OperateNotice').show();
+		                	} else {
+		                		$(this).find('.OperateNotice').css("left",trOffset.left + "px");
+			                	$(this).find('.OperateNotice').css("top",trOffset.top - 87 + scrollTop+ "px");
+			                	$(this).find('.OperateNotice').show();
+		                	}
+		                }); 
+		                $(this).mouseout(function(){  
+		                	$(this).find('.OperateNotice').hide();
+		                }); 
+		            });  
+					columnListSet($('#list').datagrid("getRows")); 
+				}
+	        }   
+		});
+		
+		//设置分页控件
+	    var p = $('#list').datagrid('getPager');
+		$(p).pagination({
+			pageSize: 20,//每页显示的记录条数，默认为
+			pageList: [20,30,40,50],//可以设置每页记录条数的列表
+			beforePageText: '第',//页数文本框前显示的汉字
+			afterPageText: '页    共 {pages} 页',
+			displayMsg: '当前显示第 {from} 到 {to} 条记录   共 {total} 条记录'/*,
+			onBeforeRefresh:function(){
+				$(this).pagination('loading');
+				alert('before refresh');
+				$(this).pagination('loaded');
+			}*/
+		});
+    }
+    
+	function searchData(b, searchArray) {
+		var a = queryData(searchArray);
+		a["typesForList"] = "${typesForList!}";
+		a["eventAttrTrigger"] = "${eventAttrTrigger!}";
+		a["isRemoveTypes"] = "<#if isRemoveTypes??>${isRemoveTypes?c}</#if>";
+		
+		doSearch(a);
+	}
+    
+	function checkOutLink() {
+		var rows = $('#list').datagrid('getSelections');
+		if(rows[0].outLinkId > 0) {
+			$.messager.alert('提示','该条事件来自通用办公，请到通用办公功能中进行操作！','info');
+			return true;
+		}
+	}
+	
+	function doSearch(queryParams){
+		$('#list').datagrid('clearSelections');
+		$("#list").datagrid('options').queryParams=queryParams;
+		flashData();
+	}
+	
+	function reloadDataForDistribute(result,type){
+		if(typeof(type)!='undefined' && type == 'closed'){
+			closeMaxJqueryWindow();
+			$.messager.alert('提示', result, 'info');
+		}else if(typeof(type)!='undefined' && type == 'close'){
+			closeMaxJqueryWindow();
+		}
+		else{
+			closeCustomEasyWin();
+		}
+		
+		idStr = "";//清除已操作的数据
+		$("#list").datagrid('load');
+	}
+	
+	function reloadDataForCancleWin() {
+		closeMaxJqueryWindow();
+		idStr = "";//清除已操作的数据
+		$("#list").datagrid('load');
+	}
+	
+	function msgPage(result){
+		closeMaxJqueryWindow();
+		$.messager.alert('提示', result, 'info');
+	}
+	function imageViewTool(imageSrc){
+	    showImageViewer(imageSrc);
+	}
+	
+	function showOutLinkInfo(outLinkId,type) {
+		if(type == '0203' || type == '0213') {
+			type = '41';
+		}else if(type == '0211') {
+			type = '42'
+		}else if(type == '0212') {
+			type = '43'
+		}else if(type == '0210') {
+			type = '50'
+		}else {
+			$.messager.alert('错误','外部事件引用出错！','error');
+			return false;
+		}
+		var url = '${rc.getContextPath()}/admin/workflow/show/'+outLinkId+'.jhtml?hashId='+type+'&type=3' ;
+		showMaxJqueryWindow("通用办公事件详情", url);
+	}
+	
+	function flashData(){
+		if(winType!="" && winType=='0'){
+			closeMaxJqueryWindow();
+			winType = "";
+		}
+		idStr = "";								//清除已操作的数据
+		$('#list').datagrid('clearSelections');	//清除选择的行
+		$("#list").datagrid('load');			//重新加载事件列表
+	}
+	
+	var wingrid="";
+	function callSpeech(phoneNum, reporterName, pictureUrl){
+			//var url = "${rc.getContextPath()}/zzgl/event/requiredEvent/emp.jhtml?bCall=" + phoneNum + "&userName="
+			var url = "${rc.getContextPath()}/voiceInterface/emp/go.jhtml?bCall=" + phoneNum + "&userName="
+					+ encodeURIComponent(encodeURIComponent(reporterName)) + "&userImg=" + encodeURI(pictureUrl);
+			wingrid = $.ligerDialog.open({ 
+				title:"语音盒呼叫",
+				url:url,
+				height:250,
+				width:800,
+				showMax:false,
+				showToggle:false,
+				showMin:false,
+				isResize:false,
+				slide:false,
+				isDrag:true,
+				isunmask:true,
+				isMax:false,
+				isClosed:false,
+				buttons:null
+			});
+			return wingrid;
+	}
+	
+	function showDetailRow(dId,eventId,instanceId,workFlowId){
+		if(!eventId){
+		    $.messager.alert('提示','请选择一条记录！','info');
+		}else{
+			var url = "${rc.getContextPath()}/zhsq/event/doubleRandomTask/detailEvent.jhtml?instanceId="+instanceId+"&workFlowId="+workFlowId+"&hashId="+eventId+"&dId="+dId
+	    	showMaxJqueryWindow("查看事件信息", url, fetchWinWidth(), fetchWinHeight(), true);
+	    	//var url = "${rc.getContextPath()}/zhsq/event/doubleRandomTask/judgeEvent.jhtml?instanceId="+instanceId+"&workFlowId="+workFlowId+"&eventId="+eventId+"&dId="+dId
+	    	//showMaxJqueryWindow("事件复核", url, fetchWinWidth(), fetchWinHeight(), true);
+		}
+	}
+	function showJudgeRow(dId,eventId,instanceId,workFlowId){
+		if(!eventId){
+		    $.messager.alert('提示','请选择一条记录！','info');
+		}else{
+	    	var url = "${rc.getContextPath()}/zhsq/event/doubleRandomTask/judgeEvent.jhtml?instanceId="+instanceId+"&workFlowId="+workFlowId+"&hashId="+eventId+"&dId="+dId
+	    	showMaxJqueryWindow("事件复核", url, fetchWinWidth(), fetchWinHeight(), true);
+		}
+	}
+	
+	function workflowTask(eventId){
+		var taskName = "测试环节";
+		var taskAdvice = "测试环节，测试任务测试环节";
+		var urlT = '${rc.getContextPath()}/zhsq/event/eventDisposalController/workflowTask.jhtml?hashId='+eventId+'&taskAdvice='+encodeURIComponent(taskAdvice)+'&taskName='+encodeURIComponent(taskName);
+		
+		$.ajax({
+			type: "POST",
+    		url : urlT,
+			data: '',
+			dataType:"json",
+			success: function(data){
+				if(data.result){
+		   			$.messager.alert('提示','事件任务新增成功！','info');
+		   		}else{
+		   			$.messager.alert('提示','事件任务新增失败！','info');
+		   		}
+			},
+			error:function(data){
+				$.messager.alert('错误','连接错误！','error');
+			}
+    	});
+	}
+	
+	function showVal(obj){
+		$(obj).text('取消关注');
+	}
+	
+	function hideVal(obj){
+		$(obj).text('已关注');
+	}
+	
+	function attentionEvent(obj,isAttention,eventId){
+		var attention = $(obj).html();
+		var postData = 'hashId='+eventId;
+		if(attention=='添加关注'){
+			$.ajax({
+				type: "POST",
+				url:'${rc.getContextPath()}/zhsq/event/eventDisposalController/addAttention.json?t='+Math.random(),
+				data: postData,
+				dataType:"json",
+				success: function(data){
+					//alert(data);
+					if(data==true){
+						$(obj).html('已关注');
+						$(obj).addClass('canleAtt');
+						$(obj).bind('mouseover', function () {  
+							$(this).text('取消关注');
+			            }); 
+						$(obj).bind('mouseout', function () {  
+							$(this).text('已关注');
+			            }); 
+			            //$.messager.alert('提示','关注成功，已添加到关注列表！','info');
+			            DivShow('关注成功，已添加到关注列表！');
+					}
+				},
+				error:function(data){
+					$.messager.alert('错误','添加关注失败！','error');
+				}
+			});
+		}else if(attention=='取消关注'){
+			$.ajax({
+				type: "POST",
+				url:'${rc.getContextPath()}/zhsq/event/eventDisposalController/canclAttention.json?t='+Math.random(),
+				data: postData,
+				dataType:"json",
+				success: function(data){
+					//alert(data);
+					if(data==true){
+						$(obj).unbind('mouseover');
+						$(obj).unbind('mouseout');
+						//修复督办操作后，取消关注成功后，仍显示“已关注”的问题
+						$(obj).removeAttr("onmouseover");
+						$(obj).removeAttr("onmouseout");
+						
+						$(obj).text('添加关注');
+						DivShow('取消关注成功！');
+					}
+				},
+				error:function(data){
+					$.messager.alert('错误','取消关注失败！','error');
+				}
+			});
+		}
+	}
+	
+	function remindEvent1(obj,eventId,instanceId){
+		var url = "${rc.getContextPath()}/zhsq/event/eventDisposalController/toAddRemind.jhtml?hashId=" + eventId + "&instanceId=" +instanceId;
+		showMaxJqueryWindow("督办信息", url, 480, 280);
+	}
+	
+	function urgeEvent(obj,eventId,instanceId){
+		var url = "${rc.getContextPath()}/zhsq/event/eventDisposalController/toAddUrge.jhtml?hashId=" + eventId + "&instanceId=" +instanceId;
+		showMaxJqueryWindow("催办信息", url, 480, 280);
+	}
+	
+	function remindEvent(obj,instanceId,taskId,eventId,userIds,userNames){
+		//alert("eventId="+eventId + "-" + userIds + "-" + userNames);
+		return;
+		var url = "${rc.getContextPath()}/zhsq/event/eventDisposalController/toRemind.jhtml?eventType=${eventType}&instanceId="+instanceId+"&workFlowId="+workFlowId+"&hashId="+eventId+"&taskId="+taskId+"&model=${model}&cachenum=" + Math.random();
+		showCustomEasyWindow("查看事件信息", url, 1024);
+		var postData = 'instanceId='+instanceId+'&taskId='+taskId+'&remarks=123';
+		$.ajax({
+				type: "POST",
+				url:'${rc.getContextPath()}/zhsq/event/eventDisposalController/addRemind.json?t='+Math.random(),
+				data: postData,
+				dataType:"json",
+				success: function(data){
+					alert("success:" + data);
+				},
+				error:function(data){
+					alert("error:"+data);
+				}
+			});
+	}
+	
+	function gridTreeClickCallback(gridId,gridName,orgId,orgCodeIn,gridInitPhoto) {
+		$('#eventRecordContentDiv').panel('setTitle', ('<span class="easui-layout-title">'+gridName+" 事件列表</span>"));
+		resetCondition();
+		startGridId = gridId;
+		orgCode = orgCodeIn;
+		gridFlag="1";
+		searchData();
+	}
+</script>
+
+<#include "/component/maxJqueryEasyUIWin.ftl" />
+
+</body>
+</html>

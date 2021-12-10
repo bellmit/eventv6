@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.handlerCfg.EventHandlerWfProcCfgMapper" >
+
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfProcCfgPO" >
+		<result column="WFPC_ID" 	property="wfpcId" 		jdbcType="DECIMAL" />
+		<result column="REGION_CODE" property="regionCode" 	jdbcType="VARCHAR" />
+		<result column="TASK_CODE" 	property="taskCode" 	jdbcType="VARCHAR" />
+		<result column="WFC_ID" 	property="wfcId" 		jdbcType="DECIMAL" />
+		<result column="EVENT_CODES" property="eventCodes" 	jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 查询列 -->
+	<sql id="viewCol">
+		T.WFPC_ID,
+       	T.REGION_CODE,
+       	T.TASK_CODE,
+       	T.WFC_ID,
+       	T.EVENT_CODES
+	</sql>
+	
+	<!-- 新增流程环节配置 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfProcCfgPO">
+	  	<selectKey keyProperty="wfpcId" resultType="long" order="BEFORE">
+			SELECT SEQ_WFPC_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BIZ_WF_PROC_CFG (
+			WFPC_ID, REGION_CODE, TASK_CODE, 
+			WFC_ID, EVENT_CODES
+		)
+		VALUES (
+		  	#{wfpcId,jdbcType=DECIMAL},#{regionCode,jdbcType=VARCHAR},#{taskCode,jdbcType=VARCHAR},
+		  	#{wfcId,jdbcType=DECIMAL},#{eventCodes,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 依据主键更新流程环节配置 -->
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfProcCfgPO">
+		UPDATE T_BIZ_WF_PROC_CFG T
+		<set>
+			<if test="regionCode != null and regionCode != '' ">
+				T.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="taskCode != null and taskCode != '' ">
+				T.TASK_CODE = #{taskCode,jdbcType=VARCHAR},
+			</if>
+			<if test="eventCodes != null and eventCodes != '' ">
+				T.EVENT_CODES = #{eventCodes,jdbcType=VARCHAR},
+			</if>
+			
+			T.WFPC_ID = #{wfpcId,jdbcType=DECIMAL}
+		</set>
+		WHERE T.WFPC_ID = #{wfpcId,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 依据主键删除流程环节配置 -->
+	<delete id="delete">
+		DELETE FROM T_BIZ_WF_PROC_CFG T 
+		WHERE T.WFPC_ID = #{id, jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 依据业务配置主键删除流程环节配置 -->
+	<delete id="deleteByWfcId">
+		DELETE FROM T_BIZ_WF_PROC_CFG T 
+		WHERE T.WFC_ID = #{wfcId, jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 依据主键查找流程环节配置 -->
+	<select id="findById" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="viewCol"/> 
+		FROM T_BIZ_WF_PROC_CFG T 
+		WHERE T.WFPC_ID = #{wfpcId, jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 判重验证统计 -->
+	<select id="findCount4Duplicate" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_WF_PROC_CFG T
+		WHERE 1 = 1 
+		<include refid="find_where"/>
+		<if test="wfpcId != null ">
+			AND T.WFPC_ID != #{wfpcId, jdbcType=DECIMAL}
+		</if>
+	</select>
+	
+	<!-- 获取流程环节配置记录数量 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_WF_PROC_CFG T
+		LEFT JOIN T_DC_GRID G
+			ON T.REGION_CODE = G.INFO_ORG_CODE
+		WHERE G.STATUS = '001'
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 获取流程环节配置记录 -->
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="viewCol"/> 
+		FROM T_BIZ_WF_PROC_CFG T 
+		LEFT JOIN T_DC_GRID G 
+			ON T.REGION_CODE = G.INFO_ORG_CODE
+		WHERE G.STATUS = '001'
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="regionCode != null and regionCode != ''">
+			<choose>
+				<when test="searchType == 'eq' ">
+					AND T.REGION_CODE = #{regionCode,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="taskCode != null and taskCode !='' ">
+			AND T.TASK_CODE = #{taskCode,jdbcType=VARCHAR}
+		</if>
+		<if test="wfcId != null ">
+			AND T.WFC_ID = #{wfcId,jdbcType=DECIMAL}
+		</if>
+		<if test="eventCode != null and eventCode != '' ">
+			AND INSTR(',' || T.EVENT_CODES || ',', ',' || #{eventCode,jdbcType=VARCHAR} || ',') > 0
+		</if>
+		<if test="eventCodes != null and eventCodes != '' ">
+			AND ',' || T.EVENT_CODES || ',' LIKE '%' || #{eventCodes,jdbcType=VARCHAR} || '%'
+		</if>
+	</sql>
+	
+</mapper>

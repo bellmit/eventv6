@@ -1,0 +1,110 @@
+@charset "utf-8";
+@import url(cs.css);
+
+body{ background:url(img/bg.jpg) center top no-repeat #142258;}
+
+.in_top{ position:absolute; top:0; width:100%; height:70px; padding-top:10px; left:0; text-align:right; z-index:100; font-size:14px;}
+.in_top em{ display:block; height:80px; position:absolute; top:0; left:0; z-index:-1; width:100%; background:#28447c; filter:alpha(opacity:90); opacity:0.9;}
+.BackHomeBtn{width:43px; height:43px; margin:5px 0 0 15px; float:left;}
+.in_top .fl{margin-left:15px;}
+.in_top .fl img{float:left; margin-right:10px;}
+.in_top .fl span{font-size:28px; font-family:"微软雅黑"; color:#fff; float:left; margin-top:20px;}
+.in_top .fr{color:#fff; font-size:14px; margin-top:20px; margin-right:20px;}
+.in_top .fr a{color:#fff;}
+.in_top font{background:url(img/ico02.png) no-repeat; padding-left:20px;}
+.top_r{background:url(img/ico04.png) no-repeat top right; padding-right:20px; margin-left:30px;}
+
+
+/* tmall focus */
+#focus {width:100%; height:100%; overflow:hidden; position:relative;}
+#focus ul {height:100%; position:absolute; z-index:20;}
+#focus ul li {float:left; overflow:hidden; position:relative;}
+#focus ul li div.tab {position:absolute; overflow:hidden; left:0; top:0; width:100%; height:100%;}
+#focus .preNext { width:51px; height:100%; position: absolute; top: 0px; cursor: pointer; z-index:30;}
+#focus .pre { left: 0; background: url(img/in_lef.png) no-repeat left center; }
+#focus .next { right: 0; background: url(img/in_rig.png) no-repeat right center; }
+#focus .btn {position:absolute; z-index:40; width:180px; height:5px; left:50%; margin-left:-85px; bottom:14px; text-align:center;}
+#focus .btn span {display:inline-block; _display:inline; _zoom:1; width:50px; overflow:hidden; height:5px; line-height:5px; text-align:center; font-size:5px; font-family:'宋体'; margin-right:10px; cursor:pointer; color:#000; background:#000; filter:alpha(opacity:40); opacity:0.40;}
+#focus .btn span.on {background:#1d8bca; color:#1d8bca;filter:alpha(opacity:100); opacity:1;}
+
+.tab1 .lef{ float:none;}
+.tab1 .lef h2{ margin-left:55px; margin-right:55px; padding-top:90px; overflow:hidden; clear:both; text-align:left; line-height:70px;}
+.tab1 .lef h2 a{ float:right; background:url(img/ico07.png) left no-repeat; padding-left:25px; margin-right:30px; font-size:20px; font-weight:normal;}
+.tab1 .lef h2 b{ color:#adb3c7; padding-right:70px; cursor:pointer;}
+.tab1 .lef h2 b.hover{ color:#fff;}
+.tab1 .lef dl{ margin-left:45px; clear:both; margin-right:30px;}
+.tab1 .lef dl dd{ float:right; margin-right:-7px; width:0px; z-index:2; position:relative;}
+.tab1 .lef dl dd b{ position:absolute; top:210px; background:url(img/ico06.png) right top; width:22px; height:31px; filter:alpha(opacity:40); opacity:0.40; cursor:pointer;}
+.tab1 .lef dl dd b.a_hide{ display:none;background:url(img/ico06.png) left top;}
+.tab1 .lef dl dd b:hover,.tab1 .lef dl dd b.a_hide:hover{filter:alpha(opacity:90); opacity:0.90;}
+.tab1 .lef dl dt{ position:relative; float:left;height:84px; line-height:82px; margin-bottom:8px; margin-left:10px; width:300px;}
+.tab1 .lef dl dt img{position:absolute; top:0; left:0; width:93px; height:86px; z-index:3;}
+.tab1 .lef dl dt a{ height:84px; display:block; padding-left:96px; font-size:32px; color:#fff; position:relative; text-align:left;}
+.tab1 .lef dl dt span{ display:block; width:34px; height:34px; position:absolute; top:2px; right:2px; z-index:50; line-height:34px; text-align:center; color:#fff; font-size:16px; font-weight:normal; background:url(img/ico05.png) no-repeat;}
+.tab1 .lef dl dt em{position:absolute; z-index:50; background:url(img/close_01.png); width:27px; height:26px; top:0; right:0; cursor:pointer;}
+.tab1 .lef dl dt em:hover{background:url(img/close_02.png);}
+
+.tab1 .lef dl dt a.a1{ background:#70be2a;}
+.tab1 .lef dl dt a.a2{ background:#1dca1d;}
+.tab1 .lef dl dt a.a3{ background:#fbb033;}
+.tab1 .lef dl dt a.a4{ background:#1dcac0;}
+.tab1 .lef dl dt a.a5{ background:#de64b9;}
+.tab1 .lef dl dt a.a6{ background:#1d8bca;}
+.tab1 .lef dl dt a.a7{ background:#871dca;}
+.tab1 .lef dl dt a.a8{ background:#de64b9;}
+.tab1 .lef dl dt a.a9{ background:#bf3630;}
+.tab1 .lef dl dt a.a_m{ background:url(img/in_ico10.png) center center no-repeat #172d53;}
+
+.tab1 .rig{ width:300px; display:none; position:absolute; background:#1d8bca; top:145px; right:50px; z-index:90; overflow:auto;}
+.tab1 .rig dl{ clear:both; padding:3px 17px; text-align:left;}
+.tab1 .rig dl a{ display:block; font-size:16px; line-height:20px; padding-top:22px;}
+.tab1 .rig dl a span{ display:block; font-size:14px;}
+
+
+
+
+.tab2 h2{ margin-left:60px; padding-top:90px; overflow:hidden; clear:both; text-align:left; line-height:70px;}
+.tab2 h2 b{ color:#adb3c7; padding-right:70px; cursor:pointer;}
+.tab2 h2 b.hover{ color:#fff;}
+.tab2 .cen{ margin:0 60px; clear:both; position:relative;}
+.tab2 .cen #apDiv1{ position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:30;}
+.tab2 .cen #apDiv2{ position:relative;}
+.tab2 .cen dl{ width:195px; margin-left:13px; float:left;}
+.tab2 .cen dl dt{ line-height:40px; background:#fe6a19; font-size:24px; color:#fff; text-align:center;}
+.tab2 .cen dl dd{ background:#1d2f59; overflow-y:auto;}
+.tab2 .cen dl dd a{ display:block; font-size:16px; line-height:40px; padding-top:10px; text-align:left; position:relative; padding-left:10px;}
+.tab2 .cen dl dd a span{ display:none;  font-weight:12px; line-height:18px; position:absolute; top:2px; right:2px; z-index:20; padding:2px;}
+.tab2 .cen dl dd a span img{ width:16px; height:16px;}
+.tab2 .cen dl dd a:hover span{ display:block;}
+.tab2 .cen dl dd a em{ float:left; width:40px; height:40px; margin-right:10px;}
+.tab2 .cen dl dd a em img{ width:40px; margin-top:2px;}
+
+.tab2 .cen dl.a1{ margin-left:0;}
+.tab2 .cen dl.a1 dd a em,.tab2 .cen dl.a1 dd a span{ background:#fbb033;}
+.tab2 .cen dl.a2 dd a em,.tab2 .cen dl.a2 dd a span{ background:#70be2a;}
+.tab2 .cen dl.a3 dd a em,.tab2 .cen dl.a3 dd a span{ background:#1dcac0;}
+.tab2 .cen dl.a4 dd a em,.tab2 .cen dl.a4 dd a span{ background:#de64b9;}
+.tab2 .cen dl.a5 dd a em,.tab2 .cen dl.a5 dd a span{ background:#1d8bca;}
+.tab2 .cen dl.a6 dd a em,.tab2 .cen dl.a6 dd a span{ background:#1dca1d;}
+.tab2 .cen dl.a7 dd a em,.tab2 .cen dl.a7 dd a span{ background:#1dcac0;}
+.tab2 .cen dl.a8 dd a em,.tab2 .cen dl.a8 dd a span{ background:#871dca;}
+.tab2 .cen dl.a9 dd a em,.tab2 .cen dl.a9 dd a span{ background:#de64b9;}
+
+
+.MainBox{position:absolute; top:80px; left:0; z-index:1;}
+.LeftContent{width:197px; position:relative;}
+.MenuTopBtn{background:url(img/btn_03.png) top center; width:185px; height:10px; position:absolute; top:0; right:0; cursor:pointer; z-index:3;}
+.MenuBottomBtn{background:url(img/btn_06.png) top center; width:185px; height:10px; position:absolute; bottom:0; right:0; cursor:pointer; z-index:3;}
+.menu{width:197px; position:absolute; top:0; left:0; z-index:2;}
+.menu ul{width:185px; float:right;}
+.menu ul li{background:url(img/nav_02.png); width:185px; height:47px; color:#fff; font-size:16px; font-family:"微软雅黑"; text-align:left; margin-top:15px; line-height:47px; overflow:hidden; cursor:pointer;}
+.menu ul li img{float:left; margin:12px 15px 0 15px;}
+.menu ul li.current{background:url(img/nav_01.png); color:#283e7c;}
+.RightContent{background:#fff;}
+
+
+
+
+
+
+

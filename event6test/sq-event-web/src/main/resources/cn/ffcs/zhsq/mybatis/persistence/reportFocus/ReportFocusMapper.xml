@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.ReportFocusMapper" >
+  	<!-- 查询列 -->
+  	<sql id="sameCol">
+       	T1.REPORT_ID			"reportId",
+       	T1.REPORT_UUID			"reportUUID",
+       	T1.REPORT_CODE			"reportCode",
+       	T1.REPORT_TYPE			"reportType",
+       	T1.REPORT_WAY			"reportWay",
+       	T1.REPORTER_NAME		"reporterName",
+       	T1.OCCURRED				"occurred",
+       	T1.REGION_CODE			"regionCode",
+       	T1.REPORT_TIME			"reportTime",
+       	T1.REPORT_STATUS		"reportStatus",
+       	T1.REPORT_SUB_STATUS	"reportSubStatus",
+       	T1.CREATOR				"creator",
+       	T1.REPORTER_ORG_ID		"reporterOrgId",
+       	T1.CLOSE_USER_ID		"closeUserId",
+       	T1.CLOSE_ORG_ID			"closeOrgId"
+  	</sql>
+  	
+  	<!-- 新增重点关注上报信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="reportId,reportUUID" resultType="java.util.Map" order="BEFORE">
+			SELECT SEQ_REPORT_FOCUS_ID.NEXTVAL "reportId", SYS_GUID() "reportUUID" FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_REPORT_FOCUS (
+			REPORT_ID, REPORT_UUID, REPORT_CODE,
+			<if test="@Ognl@isNotEmpty(reportType)">
+			REPORT_TYPE, 
+			</if>
+			<if test="@Ognl@isNotEmpty(reportWay)">
+			REPORT_WAY, 
+			</if>
+			<if test="@Ognl@isNotEmpty(reportStatus)">
+			REPORT_STATUS, 
+			</if>
+			<if test="@Ognl@isNotEmpty(reportValid)">
+			IS_VALID, 
+			</if>
+			<if test="@Ognl@isNotEmpty(orderBy)">
+			ORDER_BY,
+			</if>
+			TIPOFF_CONTENT,
+			REPORTER_NAME,REPORTER_TEL, OCCURRED, REGION_CODE, REPORT_TIME,
+			CREATOR, REPORTER_ORG_ID, CREATE_TIME, 
+			UPDATOR, UPDATE_TIME
+        )
+        VALUES(
+        	#{reportId,jdbcType=DECIMAL}, #{reportUUID,jdbcType=VARCHAR}, #{reportCode,jdbcType=VARCHAR}, 
+        	<if test="@Ognl@isNotEmpty(reportType)">
+        	#{reportType,jdbcType=VARCHAR}, 
+        	</if>
+        	<if test="@Ognl@isNotEmpty(reportWay)">
+        	#{reportWay,jdbcType=VARCHAR}, 
+        	</if>
+        	<if test="@Ognl@isNotEmpty(reportStatus)">
+        	#{reportStatus,jdbcType=VARCHAR}, 
+        	</if>
+        	<if test="@Ognl@isNotEmpty(reportValid)">
+        	#{reportValid,jdbcType=VARCHAR}, 
+        	</if>
+        	<if test="@Ognl@isNotEmpty(orderBy)">
+        	#{orderBy,jdbcType=DECIMAL}
+        	</if>
+		NULLIF(#{tipoffContent,jdbcType=VARCHAR},''),
+        	NULLIF(#{reporterName,jdbcType=VARCHAR}, ''),NULLIF(#{reporterTel,jdbcType=VARCHAR}, ''), NULLIF(#{occurred,jdbcType=VARCHAR}, ''), NULLIF(#{regionCode,jdbcType=VARCHAR}, ''), #{reportTime,jdbcType=TIMESTAMP},
+        	#{creator,jdbcType=DECIMAL}, #{reporterOrgId,jdbcType=DECIMAL}, SYSDATE, 
+        	#{updator,jdbcType=DECIMAL}, SYSDATE
+        )
+  	</insert>
+  	
+  	<!-- 依据id更新重点关注上报信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_REPORT_FOCUS T1 
+		<set>
+			<if test="occurred != null ">
+				T1.OCCURRED = NULLIF(#{occurred,jdbcType=VARCHAR}, ''),
+			</if>
+			<if test="@Ognl@isNotEmpty(regionCode)">
+				T1.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="reportTime != null ">
+				T1.REPORT_TIME = #{reportTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="@Ognl@isNotEmpty(reportStatus)">
+				T1.REPORT_STATUS = #{reportStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="reportSubStatus != null ">
+				T1.REPORT_SUB_STATUS = #{reportSubStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(reportValid)">
+				T1.IS_VALID = #{reportValid,jdbcType=VARCHAR},
+			</if>
+			<if test="tipoffContent != null ">
+				T1.TIPOFF_CONTENT = NULLIF(#{tipoffContent,jdbcType=VARCHAR},''),
+			</if>
+			<if test="@Ognl@isNotEmpty(orderBy)">
+				T1.ORDER_BY = #{orderBy,jdbcType=DECIMAL},
+			</if>
+			<choose>
+				<when test="closeTime != null ">
+					T1.CLOSE_TIME = #{closeTime,jdbcType=TIMESTAMP},
+				</when>
+				<when test="(closeTimeStr == null or closeTimeStr == '') and closeTime == null ">
+					T1.CLOSE_TIME = NULL,
+				</when>
+			</choose>
+			<if test="closeUserId != null ">
+				T1.CLOSE_USER_ID = NULLIF(#{closeUserId,jdbcType=VARCHAR},''),
+			</if>
+			<if test="closeOrgId != null ">
+				T1.CLOSE_ORG_ID = NULLIF(#{closeOrgId,jdbcType=VARCHAR},''),
+			</if>
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+		  	
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		
+		<where>
+			<choose>
+				<when test="reportId != null ">
+					T1.REPORT_ID = #{reportId,jdbcType=DECIMAL}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T1.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+		</where>
+  	</update>
+  	
+  	<!-- 依据id删除重点关注上报信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_REPORT_FOCUS T1
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T1.UPDATOR = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T1.IS_VALID = '0', 
+	  		T1.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	<where>
+			<choose>
+				<when test="reportId != null ">
+					T1.REPORT_ID = #{reportId,jdbcType=DECIMAL}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T1.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+		</where>
+  	</delete>
+  	
+  	<!-- 依据id获取重点关注上报信息 -->
+  	<select id="findById" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_REPORT_FOCUS T1
+	  	<where>
+			<choose>
+				<when test="reportId != null ">
+					T1.REPORT_ID = #{reportId,jdbcType=DECIMAL}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T1.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+			AND T1.IS_VALID IN ('1', '2')
+		</where>
+  	</select>
+  	
+  	<!-- 统计重点关注上报信息 -->
+  	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		FROM T_EVENT_REPORT_FOCUS T1
+  		WHERE 1 = 1
+  		<include refid="find_where"></include>
+  	</select>
+  	 
+  	<!-- 分页获取重点关注上报信息 -->
+  	<select id="findPageListByCriteria" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_REPORT_FOCUS T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"></include>
+	  	ORDER BY T1.REPORT_ID DESC
+  	</select>
+  	
+  	
+  	<!-- 重点关注上报查询条件 -->
+  	<sql id="find_where">
+  		AND T1.IS_VALID IN ('1', '2')
+  		<if test="@Ognl@isNotEmpty(regionCode)">
+  			AND T1.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+  		</if>
+  	</sql>
+		
+</mapper>

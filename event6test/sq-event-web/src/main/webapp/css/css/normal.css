@@ -1,0 +1,66 @@
+body{font-size: 12px;color: #5e5e5e; font-family:"微软雅黑","Arial Narrow";}
+a{text-decoration: none;color: #5e5e5e;}
+a:hover {text-decoration:underline;color: #5e5e5e;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom; font-family:"微软雅黑","Arial Narrow";}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.fl{float:left;}
+.fr{float:left;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.h_20{height:20px; font-size:0; line-height:0; overflow:hidden;}
+.MainContent{padding-left:20px; /*padding-top:10px;*/}
+.TreeHide{position:absolute; left:0; top:50%; z-index:1; width:16px; height:68px; cursor:pointer; background:url(../images/sys_22.png);}
+.TreeShow{background:#f9f9f9; width:250px; height:100%; z-index:2; position:absolute; left:0; top:0; display:none;}
+.TreeClose{position:absolute; left:250px; top:50%; z-index:1; width:16px; height:68px; cursor:pointer; background:url(../images/sys_23.png);}
+.TreeShow .nav ul li{float:left; background:url(../images/sys_34.png) repeat-x bottom; cursor:pointer; width:125px; height:34px; line-height:34px; text-align:center; font-size:14px;}
+.TreeShow .nav ul li.current{background:url(../images/sys_33.png) repeat-x bottom;font-weight: bold;}
+.ConSearch{height:40px; padding: 0 10px 0 10px;}
+.ConSearch .fl ul li{float:left; height:32px; margin-right:5px; line-height:32px; font-size:14px;}
+.inp1{width:120px; border:1px solid #c7c7c7; height:30px; line-height:30px; font-size:16px;}
+.sel1{width:80px; border:1px solid #c7c7c7; height:30px; line-height:30px; font-size:16px;}
+.ConSearch .fr ul li{float:left; padding:5px 7px 5px 35px; height:24px; margin-left:20px; font-size:14px;}
+.ConSearch .fr ul li:hover a{color:#fff;}
+.chaxun{background:url(../images/sys_12.png) no-repeat 5px 5px;}
+.ConSearch .fr ul li.chaxun:hover{background:url(../images/sys_13.png) no-repeat 5px 5px #5ea2e1;}
+.zhongzhi{background:url(../images/sys_14.png) no-repeat 5px 5px;}
+.ConSearch .fr ul li.zhongzhi:hover{background:url(../images/sys_15.png) no-repeat 5px 5px #5ea2e1;}
+.gengduo{background:url(../images/sys_16.png) no-repeat 5px 5px;}
+.ConSearch .fr ul li.gengduo:hover{background:url(../images/sys_20.png) no-repeat 5px 5px #5ea2e1;}
+.xinzeng{background:url(../images/sys_17.png) no-repeat 0 5px;}
+.ConSearch .fr ul li.xinzeng:hover{background:url(../images/sys_13.png) no-repeat 5px 5px #5ea2e1;}
+.shanchu{background:url(../images/sys_18.png) no-repeat 0 5px;}
+.ConSearch .fr ul li.shanchu:hover{background:url(../images/sys_13.png) no-repeat 5px 5px #5ea2e1;}
+.chongqi{background:url(../images/sys_19.png) no-repeat 0 5px;}
+.ConSearch .fr ul li.chongqi:hover{background:url(../images/sys_13.png) no-repeat 5px 5px #5ea2e1;}
+.ConList .nav{height:36px; background:url(../images/sys_05.png) repeat-x bottom;}
+.ConList .nav ul li{font-size:14px; text-align:center; line-height:34px; height:34px; background:#e6e6e6; padding:0 10px; float:left; margin-right:10px; cursor:pointer;}
+.ConList .nav ul li.current{border-top:2px solid #ececec; border-left:2px solid #ececec; border-right:2px solid #ececec; background:#fff;}
+.greyback{background:#eee;}
+.ListShow table{line-height:40px;}
+.hide{display:none;}
+.page{background:#565861; height:24px; padding:8px 10px;}
+.sel2{height:24px; width:50px;}
+.page ul li{float:left; color:#fff; line-height:24px; margin-right:10px;}
+.page ul li.line{background:#cacaca; width:1px; height:24px;}
+.inp2{height:24px; width:50px; text-align:center;}
+.more{width:100px; background:#fff; border:1px solid #d3d3d3; height:130px; position:absolute; z-index:2; top:47px; right:10px;}
+.more ul li{margin-top:10px;}
+.tool{height:28px; padding-top:8px;border-top:1px solid #ccc; right:15px;}
+.tool a{float:right; }
+.more2{width:80px; display:none; background:#fff; border:1px solid #d3d3d3; padding:5px 10px; line-height:28px; color:#000; position:absolute; z-index:2; top: 75px; right: 10px;}
+.more2 a{color:#000;}
+.more2 span{display:block; width:74px; height:22px; padding:3px; line-height:22px;}
+.more2 span:hover{background:#448aca; color:#fff;}
+.NorToolBtn{padding:4px 7px; color:#fff; margin-right:10px; display:block; float:left;}
+.NorToolBtn img{vertical-align:middle; margin-top:-4px; *margin-top:0px; margin-right:7px;}
+.NorToolBtn:hover{color:#fff; text-decoration:none;}
+.BlueBtn{background:#448aca;}
+.BlueBtn:hover{background:#5ea2e1;}
+.GreenBtn{background:#8fc31f;}
+.GreenBtn:hover{background:#acdf3e;}
+.title{line-height: 50px;font-size: 14px;margin-left: 5px;font-weight: bold;}
+.popup{background-color: #E8E9EC;color: #000;border: 1px solid #A09090;}

@@ -1,0 +1,45 @@
+.AddressControl{border:1px solid #c5d0dc; background:#fff; width:245px; position:absolute; z-index:10; top:100px; left:100px;}
+.AddressControl .nav{background:#39A791; color:#fff; height:30px; border-bottom:1px solid #c5d0dc; width:245px; position:relative; z-index:1; top:-1px;}
+.AddressControl .nav ul{width:287px;}
+.AddressControl .nav ul li{float:left; width:40px; border-right:1px solid #c5d0dc; border-top:1px solid #c5d0dc; height:30px; line-height:30px; text-align:center; cursor:pointer;}
+.AddressControl .nav ul li.current{background:#fff; border-top:1px solid #448aca; color:#175fa1;}
+.AddressControl .con{padding:10px; width:226px; overflow:hidden;}
+.AddressList{width:256px;}
+.AddressList ul li{width:auto; height:26px;padding-left:4px;padding-right:4px; background:#fff; border:1px solid #c5d0dc; text-align:center; line-height:26px; color:#76ab05; transition:all 0.3s; cursor:pointer; float:left; margin:0 10px 10px 0;}
+.AddressList ul li:hover{background:#8fc31f; border:1px solid #8fc31f; color:#fff;}
+.AddressSearch, .AddressList2{border-top:1px dotted #c5d0dc; padding-top:10px;}
+.AddressSearch ul li{float:left;}
+.FromTo{line-height:28px; width:24px; text-align:center;}
+.AddressSearchBtn{height: 30px; color:#fff; font-size: 15px; font-family:Microsoft YaHei; text-align:center; line-height: 30px; background-color:#448aca; transition:all 0.5s; border-radius:3px; width:266px; display:block;}
+.AddressSearchBtn:hover{color:#fff; text-decoration:none; background-color:#ff9f00; box-shadow:none; border-top:1px solid #c87d00; height:27px;}
+.ProvinceSelect ul li{background:#fff; border:1px solid #c5d0dc; text-align:center; line-height:26px; color:#76ab05; cursor:pointer; margin-top:10px; transition:all 0.3s; font-size:16px; font-family:Microsoft YaHei;}
+.ProvinceSelect ul:first-child li{margin-top:0;}
+.ProvinceSelect ul li:hover{background:#8fc31f; border:1px solid #8fc31f; color:#fff;}
+h2{font-family:Microsoft YaHei; font-weight:normal; font-size:16px; margin-bottom:5px;}
+.YearNav{height:32px;}
+.YearNav ul li{float:left; height:32px; cursor:pointer;}
+.LeftArrow{background:url(../img/LeftArrow_1.png) no-repeat left 5px; width:103px;}
+.LeftArrow:hover{background:url(../img/LeftArrow_2.png) no-repeat left 5px;}
+.RightArrow{background:url(../img/RightArrow_1.png) no-repeat right 5px; width:103px;}
+.RightArrow:hover{background:url(../img/RightArrow_2.png) no-repeat right 5px;}
+.AddressList2 ul li{color:#175fa1;}
+.AddressList2 ul li:hover{background:#448aca; border:1px solid #448aca;}
+.AddressList ul li.AddressSelected, .YearSelect ul li.AddressSelected{background:url(../img/AddressSelected.png) no-repeat right bottom #8fc31f; color:#fff; border:1px solid #8fc31f;}
+.AddressClear{background:#1ABC9C; color:#fff;}
+.AddressClear:hover{background:#16A085;}
+
+
+
+.Address{border:1px solid #c5d0dc; background:#fff; width:354px; position:absolute; z-index:10; top:100px; left:100px;}
+.Address .nav{background:#f9f9f9; height:30px; border-bottom:1px solid #c5d0dc; width:355px; position:relative; z-index:1; top:-1px;}
+.Address .nav ul li{float:left; width:70px; border-right:1px solid #c5d0dc; border-top:1px solid #c5d0dc; height:30px; line-height:30px; text-align:center; cursor:pointer;}
+.Address .nav ul li.current{background:#fff; border-top:1px solid #448aca; color:#175fa1;}
+.Address .con{padding:10px; width:337px; overflow:hidden;}
+
+.CityList{width:337px; line-height:32px;}
+.CityList dt{display:inline-block;width:35px;float:left;padding-right:10px;font-weight:700;text-align:right; font-family:Arial, Helvetica, sans-serif;}
+.CityList dd{width:290px;display:inline;float:left;margin-left:0;}
+.CityList a{display:inline-block;color:#4D4D4D;padding:0 14px;outline:0;text-decoration:none;white-space:nowrap;cursor:pointer; }
+.CityList a:hover, .city-select a:focus {background-color: #2ECC71;	border-radius: 2px;	color: #fff;}
+.CityList a.current {background-color: #2ECC71;color: #fff;border-radius: 2px;}
+.OtherList dd{width:337px;}

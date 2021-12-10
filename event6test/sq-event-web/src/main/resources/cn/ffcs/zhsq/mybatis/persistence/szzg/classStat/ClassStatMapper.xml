@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.classStat.ClassStatMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.classstat.ClassStat">
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="TYPE_" property="type" jdbcType="VARCHAR" /> 
+		<result column="TOTAL_" property="total" jdbcType="DECIMAL" />
+		<result column="MALE_TOTAL_" property="maleTotal" jdbcType="DECIMAL" />
+		<result column="FEMALE_TOTAL_" property="femaleTotal" jdbcType="DECIMAL" />
+		<result column="AGE_M_10" property="ageM10" jdbcType="DECIMAL" />
+		<result column="AGE_M_20" property="ageM20" jdbcType="DECIMAL" />
+		<result column="AGE_M_30" property="ageM30" jdbcType="DECIMAL" />
+		<result column="AGE_M_40" property="ageM40" jdbcType="DECIMAL" />
+		<result column="AGE_M_50" property="ageM50" jdbcType="DECIMAL" />
+		<result column="AGE_M_60" property="ageM60" jdbcType="DECIMAL" />
+		<result column="AGE_M_70" property="ageM70" jdbcType="DECIMAL" />
+		<result column="AGE_M_80" property="ageM80" jdbcType="DECIMAL" />
+		<result column="AGE_M_90" property="ageM90" jdbcType="DECIMAL" />
+		<result column="AGE_M_100" property="ageM100" jdbcType="DECIMAL" />
+		<result column="ORG_PCODE" property="orgPcode" jdbcType="VARCHAR" />
+		<result column="AGE_F_10" property="ageF10" jdbcType="DECIMAL" />
+		<result column="AGE_F_20" property="ageF20" jdbcType="DECIMAL" />
+		<result column="AGE_F_30" property="ageF30" jdbcType="DECIMAL" />
+		<result column="AGE_F_40" property="ageF40" jdbcType="DECIMAL" />
+		<result column="AGE_F_50" property="ageF50" jdbcType="DECIMAL" />
+		<result column="AGE_F_60" property="ageF60" jdbcType="DECIMAL" />
+		<result column="AGE_F_70" property="ageF70" jdbcType="DECIMAL" />
+		<result column="AGE_F_80" property="ageF80" jdbcType="DECIMAL" />
+		<result column="AGE_F_90" property="ageF90" jdbcType="DECIMAL" />
+		<result column="AGE_F_100" property="ageF100" jdbcType="DECIMAL" />
+	</resultMap>
+		
+	<sql id="common_columns">
+			T.ORG_CODE,
+			T.ORG_NAME,
+			SUM(T.TOTAL_) TOTAL_,
+			SUM(T.MALE_TOTAL_) MALE_TOTAL_,
+			SUM(T.FEMALE_TOTAL_) FEMALE_TOTAL_,
+			SUM(T.AGE_M_10) AGE_M_10,
+			SUM(T.AGE_M_20) AGE_M_20,
+			SUM(T.AGE_M_30) AGE_M_30,
+			SUM(T.AGE_M_40) AGE_M_40,
+			SUM(T.AGE_M_50) AGE_M_50,
+			SUM(T.AGE_M_60) AGE_M_60,
+			SUM(T.AGE_M_70) AGE_M_70,
+			SUM(T.AGE_M_80) AGE_M_80,
+			SUM(T.AGE_M_90) AGE_M_90,
+			SUM(T.AGE_M_100) AGE_M_100,
+			SUM(T.AGE_F_10) AGE_F_10,
+			SUM(T.AGE_F_20) AGE_F_20,
+			SUM(T.AGE_F_30) AGE_F_30,
+			SUM(T.AGE_F_40) AGE_F_40,
+			SUM(T.AGE_F_50) AGE_F_50,
+			SUM(T.AGE_F_60) AGE_F_60,
+			SUM(T.AGE_F_70) AGE_F_70,
+			SUM(T.AGE_F_80) AGE_F_80,
+			SUM(T.AGE_F_90) AGE_F_90,
+			SUM(T.AGE_F_100) AGE_F_100
+	</sql>
+	
+	<select id="findhjrkRegionListByOrgCode"  resultMap="BaseResultMap">
+		SELECT 
+		T.ORG_CODE,
+			T.ORG_NAME,
+			SUM(T.TOTAL_) TOTAL_ 
+		FROM
+		    T_DC_GRID G
+		    LEFT JOIN
+			T_BI_RS_CLASS_STAT T
+			ON T.ORG_CODE=G.INFO_ORG_CODE AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%' 
+	      	AND LENGTH(G.INFO_ORG_CODE) = (CASE
+	         WHEN LENGTH(#{orgCode,jdbcType=VARCHAR}) &lt;= 4 THEN
+	          LENGTH(#{orgCode,jdbcType=VARCHAR}) + 2
+	         ELSE
+	          LENGTH(#{orgCode,jdbcType=VARCHAR}) + 3
+	       END)
+			AND G.STATUS='001'
+			WHERE T.TYPE_ IN ('HJ', 'R', 'S', 'T')
+			GROUP BY T.ORG_NAME,T.ORG_CODE 
+			ORDER BY TOTAL_ ASC
+	</select>
+	
+	<select id="findhjrkSexAgeListByOrgCode"  resultMap="BaseResultMap">
+		SELECT
+			t.org_name,
+       t.org_code,SUM(T.MALE_TOTAL_) MALE_TOTAL_,
+			SUM(T.FEMALE_TOTAL_) FEMALE_TOTAL_,
+       
+       sum(t.age_m_seg1+t.age_m_seg2+t.age_m_seg3 )  AGE_M_10,
+       sum(t.age_f_seg1+t.age_f_seg2+t.age_f_seg3)  AGE_F_10,
+       
+       sum(t.age_m_seg4+t.age_m_seg5)  AGE_M_20,
+       sum(t.age_f_seg4+t.age_f_seg5)  AGE_F_20,
+      sum( t.age_m_seg6)  AGE_M_30,
+       sum(t.age_f_seg6)  AGE_F_30,
+       sum(t.age_m_seg7)  AGE_M_40,
+      sum( t.age_f_seg7)  AGE_F_40,
+       
+       sum( t.age_m_seg8) AGE_M_50,
+       sum(t.age_f_seg8 ) AGE_F_50,
+      sum( t.age_m_seg9)  AGE_M_60,
+      sum( t.age_f_seg9)  AGE_F_60,
+      sum( t.age_m_seg10) AGE_M_70,
+      sum( t.age_f_seg10) AGE_F_70 ,
+      sum(t.age_m_seg11) AGE_M_80,
+      sum( t.age_f_seg11) AGE_F_80 
+		FROM
+			T_BI_RS_CLASS_STAT T
+			WHERE T.TYPE_ IN ('HJ', 'R', 'S', 'T') AND T.ORG_CODE= #{orgCode,jdbcType=VARCHAR}
+			group by t.org_name, t.org_code
+	</select>
+
+	
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="  
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd  
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<bean id="dataSourceOracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${url.oracle}" />
+		<property name="username" value="${user.oracle}" />
+		<property name="password" value="${pwd.oracle}" />
+		
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="${druid.initialSize:10}" />
+		<property name="minIdle" value="${druid.minIdle:20}" />
+		<property name="maxActive" value="${druid.maxActive:300}" />
+		
+		<!-- 配置获取连接等待超时的时间，单位是毫秒 -->
+		<property name="maxWait" value="${druid.maxWait:600000}" />
+		
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${druid.timeBetweenEvictionRunsMillis:3000}" />
+		
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${druid.minEvictableIdleTimeMillis:600000}" />
+		
+		<property name="testWhileIdle" value="${druid.testWhileIdle:true}" />
+		<property name="testOnBorrow" value="${druid.testOnBorrow:false}" />
+		<property name="testOnReturn" value="${druid.testOnReturn:false}" />
+		<property name="poolPreparedStatements" value="${druid.poolPreparedStatements:true}" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${druid.maxPoolPreparedStatementPerConnectionSize:20}" />
+		<!-- 超过时间限制是否回收 -->
+		<property name="removeAbandoned" value="${druid.removeAbandoned:true}" />
+		<!-- 超时时间；单位为秒。180秒=3分钟 -->
+		<property name="removeAbandonedTimeout" value="${druid.removeAbandonedTimeout:180}" />
+		<!-- 关闭abanded连接时输出错误日志 -->
+		<property name="logAbandoned" value="${druid.logAbandoned:true}" />
+		
+		<property name="filters" value="config" />
+		<property name="connectionProperties" value="config.decrypt=true" />
+	</bean>
+	
+	<bean id="xingYunDB" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@172.26.181.142:1521:orcl" />
+		<property name="username" value="synthesize" />
+		<property name="password" value="123456" />
+		<property name="filters" value="stat,mergeStat,log4j2" />
+		<property name="maxActive" value="20" />
+		<property name="initialSize" value="1" />
+		<property name="maxWait" value="60000" />
+		<property name="minIdle" value="1" />
+		<property name="timeBetweenEvictionRunsMillis" value="3000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+	</bean>
+	
+	<bean id="jdbcTemplateOracle" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSourceOracle"></property>
+	</bean>
+	
+</beans>  

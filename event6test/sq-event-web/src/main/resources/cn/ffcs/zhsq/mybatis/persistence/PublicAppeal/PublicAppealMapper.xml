@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.PublicAppeal.PublicAppealMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.publicAppeal.PublicAppeal">
+		<id column="APPEAL_ID" property="appealId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="OUT_ID" property="outId" jdbcType="DECIMAL" /> <!--网站群主键-->
+		<result column="APPEAL_NO" property="appealNo" jdbcType="VARCHAR" /> <!--诉求编号-->
+		<result column="APPEAL_TITLE" property="appealTitle" jdbcType="VARCHAR" /> <!--诉求标题-->
+		<result column="APPEAL_CATALOG" property="appealCatalog" jdbcType="VARCHAR" /> <!--诉求类别-->
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" /> <!--诉求内容-->
+		<result column="SOURCE" property="source" jdbcType="VARCHAR" /> <!--来源-->
+		<result column="APPEAL_TIME" property="appealTime" jdbcType="TIMESTAMP" /> <!--诉求时间-->
+		<result column="APPEAL_TIME_STR" property="appealTimeStr" jdbcType="VARCHAR" /> <!--诉求时间-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--所属区域-->
+		<result column="APPEAL_STATUS" property="appealStatus" jdbcType="VARCHAR" /> <!--诉求状态-->
+		<result column="HANDLE_SIT" property="handleSit" jdbcType="VARCHAR" /> <!--处理情况-->
+		<result column="HANDLE_RS" property="handleRs" jdbcType="VARCHAR" /> <!--处理结果-->
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" /> <!--姓名-->
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" /> <!--手机号-->
+		<result column="IS_PUB" property="isPub" jdbcType="VARCHAR" /> <!--是否公开-->
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" /> <!--最后一次更新人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--最后一次更新时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+		<result column="ORG_ENTITY_PATH" property="orgEntityPath" jdbcType="VARCHAR" /> <!--所属区域-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_PUBLIC_APPEAL T
+		where 1=1
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.APPEAL_ID,
+			T.OUT_ID,
+			T.APPEAL_NO,
+			T.APPEAL_TITLE,
+			T.APPEAL_CATALOG,
+			T.CONTENT,
+			T.SOURCE,
+			T.APPEAL_TIME,
+			T.APPEAL_STATUS,
+			T.APPEAL_TIME_STR,
+			T.ORG_CODE,
+			T.HANDLE_SIT,
+			T.HANDLE_RS,
+			T.USER_NAME,
+			T.PHONE,
+			T.IS_PUB,
+			T.CREATE_USER_ID,
+			T.CREATE_TIME,
+			T.UPDATE_USER_ID,
+			T.UPDATE_TIME,
+			T.STATUS,
+			E.ORG_ENTITY_PATH
+		FROM
+			T_ZZ_PUBLIC_APPEAL T
+		LEFT JOIN T_DC_ORG_ENTITY_INFO E ON E.ORG_CODE = T.ORG_CODE
+		where 1=1
+		AND E.STATUS = '001'
+		<include refid="find_where" />
+		ORDER BY T.HANDLE_SIT,T.APPEAL_TIME_STR DESC
+	</select>
+	
+
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.publicAppeal.PublicAppeal">
+		<selectKey keyProperty="appealId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_ZZ_PUBLIC_APPEAL.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_ZZ_PUBLIC_APPEAL
+		(
+			APPEAL_ID,
+			OUT_ID,
+			APPEAL_NO,
+			APPEAL_TITLE,
+			APPEAL_CATALOG,
+			CONTENT,
+			SOURCE,
+			APPEAL_TIME,
+		APPEAL_TIME_STR,
+		ORG_CODE,
+			APPEAL_STATUS,
+			HANDLE_SIT,
+			HANDLE_RS,
+			USER_NAME,
+			PHONE,
+			IS_PUB,
+			CREATE_USER_ID,
+			CREATE_TIME,
+			UPDATE_USER_ID,
+			UPDATE_TIME,
+			STATUS
+		) VALUES (
+			#{appealId,jdbcType=DECIMAL},
+			#{outId,jdbcType=DECIMAL},
+			#{appealNo,jdbcType=VARCHAR},
+			#{appealTitle,jdbcType=VARCHAR},
+			#{appealCatalog,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			#{source,jdbcType=VARCHAR},
+			#{appealTime,jdbcType=TIMESTAMP},
+			#{appealTimeStr,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{appealStatus,jdbcType=VARCHAR},
+			#{handleSit,jdbcType=VARCHAR},
+			#{handleRs,jdbcType=VARCHAR},
+			#{userName,jdbcType=VARCHAR},
+			#{phone,jdbcType=VARCHAR},
+			#{isPub,jdbcType=VARCHAR},
+			#{createUserId,jdbcType=DECIMAL},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{updateUserId,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.publicAppeal.PublicAppeal">
+		UPDATE
+			T_ZZ_PUBLIC_APPEAL
+		<set> 
+			<if test="outId != null " >
+				OUT_ID=#{outId,jdbcType=DECIMAL},
+			</if>
+			<if test="eventId != null " >
+				EVENT_ID=#{eventId,jdbcType=DECIMAL},
+			</if>
+			<if test="appealNo != null " >
+				APPEAL_NO=#{appealNo,jdbcType=VARCHAR},
+			</if>
+			<if test="appealTitle != null " >
+				APPEAL_TITLE=#{appealTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="appealCatalog != null " >
+				APPEAL_CATALOG=#{appealCatalog,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null " >
+				CONTENT=#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="source != null " >
+				SOURCE=#{source,jdbcType=VARCHAR},
+			</if>
+			<if test="appealTime != null " >
+				APPEAL_TIME=#{appealTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="appealStatus != null " >
+				APPEAL_STATUS=#{appealStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="handleSit != null " >
+				HANDLE_SIT=#{handleSit,jdbcType=VARCHAR},
+			</if>
+			<if test="handleRs != null " >
+				HANDLE_RS=#{handleRs,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null " >
+				USER_NAME=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null " >
+				PHONE=#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="isPub != null " >
+				IS_PUB=#{isPub,jdbcType=VARCHAR},
+			</if>
+			<if test="createUserId != null " >
+				CREATE_USER_ID=#{createUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUserId != null " >
+				UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			APPEAL_ID= #{appealId,jdbcType=DECIMAL} 
+	</update>
+
+
+	<select id="searchByEventId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+		T.APPEAL_ID,
+		T.OUT_ID,
+		T.APPEAL_NO,
+		T.APPEAL_TITLE,
+		T.APPEAL_CATALOG,
+		T.CONTENT,
+		T.SOURCE,
+		T.APPEAL_TIME,
+		T.APPEAL_TIME_STR,
+		T.ORG_CODE,
+		T.APPEAL_STATUS,
+		T.HANDLE_SIT,
+		T.HANDLE_RS,
+		T.USER_NAME,
+		T.PHONE,
+		T.IS_PUB,
+		T.CREATE_USER_ID,
+		T.CREATE_TIME,
+		T.UPDATE_USER_ID,
+		T.UPDATE_TIME,
+		T.STATUS,
+		T.EVENT_ID
+		FROM
+		T_ZZ_PUBLIC_APPEAL T
+		WHERE
+		EVENT_ID= #{eventId,jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.APPEAL_ID,
+			T.OUT_ID,
+			T.APPEAL_NO,
+			T.APPEAL_TITLE,
+			T.APPEAL_CATALOG,
+			T.CONTENT,
+			T.SOURCE,
+			T.APPEAL_TIME,
+			T.APPEAL_TIME_STR,
+			T.ORG_CODE,
+			T.APPEAL_STATUS,
+			T.HANDLE_SIT,
+			T.HANDLE_RS,
+			T.USER_NAME,
+			T.PHONE,
+			T.IS_PUB,
+			T.CREATE_USER_ID,
+			T.CREATE_TIME,
+			T.UPDATE_USER_ID,
+			T.UPDATE_TIME,
+			T.STATUS,
+			E.ORG_ENTITY_PATH
+		FROM
+			T_ZZ_PUBLIC_APPEAL T
+			LEFT JOIN T_DC_ORG_ENTITY_INFO E ON E.ORG_CODE = T.ORG_CODE AND E.STATUS = '001'
+		WHERE
+			APPEAL_ID= #{appealId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.publicAppeal.PublicAppeal">
+		UPDATE
+			T_ZZ_PUBLIC_APPEAL
+		SET
+			STATUS='0'
+		WHERE
+			APPEAL_ID= #{appealId,jdbcType=DECIMAL} 
+	</delete>
+
+
+
+
+	<!-- 获取待办记录数量 -->
+	<select id="findTodoCountByCriteria" resultType="java.lang.Long">
+		SELECT
+		COUNT(1)
+		FROM T_ZZ_PUBLIC_APPEAL T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1,
+		${dbuser.workflow}.WF_WORKFLOW T2, ${dbuser.workflow}.JBPM4_TASK T3,
+		${dbuser.workflow}.JBPM4_PARTICIPATION T4
+		WHERE T.APPEAL_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID
+		AND T1.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+		AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR}
+		AND T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3'
+		<include refid="find_where"></include>
+	</select>
+
+	<!-- 获取待办列表 -->
+	<select id="findTodoListByCriteria" resultMap="BaseResultMap">
+		SELECT
+		T.APPEAL_ID,
+		T.OUT_ID,
+		T.APPEAL_NO,
+		T.APPEAL_TITLE,
+		T.APPEAL_CATALOG,
+		T.CONTENT,
+		T.SOURCE,
+		T.APPEAL_TIME,
+		T.APPEAL_TIME_STR,
+		T.APPEAL_STATUS,
+		T.HANDLE_SIT,
+		T.HANDLE_RS,
+		T.USER_NAME,
+		T.PHONE,
+		T.IS_PUB,
+		T.CREATE_USER_ID,
+		T.CREATE_TIME,
+		T.UPDATE_USER_ID,
+		T.UPDATE_TIME,
+		T.STATUS,
+		E.ORG_ENTITY_PATH
+		FROM T_ZZ_PUBLIC_APPEAL T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1,
+		${dbuser.workflow}.WF_WORKFLOW T2, ${dbuser.workflow}.JBPM4_TASK T3,
+		${dbuser.workflow}.JBPM4_PARTICIPATION T4,T_DC_ORG_ENTITY_INFO E
+		WHERE T.APPEAL_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID
+		AND T1.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+		AND E.ORG_CODE = T.ORG_CODE
+		AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR}
+		AND T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3'
+		<include refid="find_where"></include>
+		ORDER BY T.APPEAL_TIME DESC
+	</select>
+
+
+	<!-- 获取经办记录数量 -->
+	<select id="findDoneCountByCriteria" resultType="java.lang.Long">
+		SELECT 	COUNT(1)
+		FROM T_ZZ_PUBLIC_APPEAL       T,
+		${dbuser.workflow}.WF_PROCESS_INSTANCE   B,
+		${dbuser.workflow}.WF_TASK               C,
+		${dbuser.workflow}.WF_TASK_PARTICIPATION D
+		WHERE T.APPEAL_ID = B.FORM_ID
+		AND B.PROC_NAME =#{workflowName,jdbcType=VARCHAR}
+		AND B.INSTANCE_ID = C.INSTANCE_ID
+		AND C.TASK_ID = D.TASK_ID
+		AND D.USER_ID =#{curUserId,jdbcType=VARCHAR}
+		AND D.ORG_ID =#{curOrgId,jdbcType=VARCHAR}
+		AND D.USER_TYPE = '3'
+
+
+		<include refid="find_where"></include>
+	</select>
+
+	<!-- 获取经办列表 -->
+	<select id="findDoneListByCriteria" resultMap="BaseResultMap">
+		SELECT distinct
+		T.APPEAL_ID,
+		T.OUT_ID,
+		T.APPEAL_NO,
+		T.APPEAL_TITLE,
+		T.APPEAL_CATALOG,
+		T.CONTENT,
+		T.SOURCE,
+		T.APPEAL_TIME,
+		T.APPEAL_TIME_STR,
+		T.APPEAL_STATUS,
+		T.HANDLE_SIT,
+		T.HANDLE_RS,
+		T.USER_NAME,
+		T.PHONE,
+		T.IS_PUB,
+		T.CREATE_USER_ID,
+		T.CREATE_TIME,
+		T.UPDATE_USER_ID,
+		T.UPDATE_TIME,
+		T.STATUS,
+		E.ORG_ENTITY_PATH
+		FROM T_ZZ_PUBLIC_APPEAL       T,
+		${dbuser.workflow}.WF_PROCESS_INSTANCE   B,
+		${dbuser.workflow}.WF_TASK               C,
+		${dbuser.workflow}.WF_TASK_PARTICIPATION D,
+		T_DC_ORG_ENTITY_INFO E
+		WHERE T.APPEAL_ID = B.FORM_ID
+		AND B.PROC_NAME =#{workflowName,jdbcType=VARCHAR}
+		AND B.INSTANCE_ID = C.INSTANCE_ID
+		AND E.ORG_CODE = T.ORG_CODE
+		AND C.TASK_ID = D.TASK_ID
+		AND D.USER_ID =#{curUserId,jdbcType=VARCHAR}
+		AND D.ORG_ID =#{curOrgId,jdbcType=VARCHAR}
+		AND D.USER_TYPE = '3'
+		<include refid="find_where"></include>
+		ORDER BY T.APPEAL_TIME DESC
+	</select>
+
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<choose>
+			<when test="statusArray != null and statusArray.length > 0 ">
+				AND T.STATUS IN
+				<foreach collection="statusArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<otherwise>
+				AND T.STATUS = '1'
+			</otherwise>
+		</choose>
+		<if test="createUserId != null ">
+			AND T.CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL}
+		</if>
+		<if test="appealTime != null and appealTime != '' ">
+			AND T.APPEAL_TIME =TO_DATE(#{appealTime,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="appealNo != null and appealNo != '' ">
+			AND T.APPEAL_NO LIKE '%'||#{appealNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="handleSit != null and handleSit != '' ">
+			AND T.HANDLE_SIT = #{handleSit,jdbcType=VARCHAR}
+		</if>
+		<if test="appealTitle != null and appealTitle != '' ">
+			AND T.APPEAL_TITLE LIKE '%'|| #{appealTitle,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="source != null and source != '' ">
+			AND T.SOURCE = #{source,jdbcType=VARCHAR}
+		</if>
+		<if test="appealCatalog != null and appealCatalog != '' ">
+			AND T.APPEAL_CATALOG = #{appealCatalog,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode != null and orgCode != '' ">
+			AND T.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+		</if>
+
+	</sql>
+
+
+	<!-- 获取我发起记录数量 -->
+	<select id="findMyCountByCriteria" resultType="java.lang.Long">
+		SELECT 	COUNT(1)
+		FROM T_ZZ_PUBLIC_APPEAL T, ${dbuser.workflow}.WF_PROCESS_INSTANCE B
+		WHERE T.APPEAL_ID = B.FORM_ID
+		AND B.PROC_NAME = #{workflowName,jdbcType=VARCHAR}
+		AND B.USER_ID =#{curUserId,jdbcType=VARCHAR}
+		AND B.ORG_ID =#{curOrgId,jdbcType=VARCHAR}
+
+		<include refid="find_where"></include>
+	</select>
+
+	<!-- 获取经办列表 -->
+	<select id="findMyListByCriteria" resultMap="BaseResultMap">
+		SELECT
+		T.APPEAL_ID,
+		T.OUT_ID,
+		T.APPEAL_NO,
+		T.APPEAL_TITLE,
+		T.APPEAL_CATALOG,
+		T.CONTENT,
+		T.SOURCE,
+		T.APPEAL_TIME,
+		T.APPEAL_STATUS,
+		T.APPEAL_TIME_STR,
+		T.HANDLE_SIT,
+		T.HANDLE_RS,
+		T.USER_NAME,
+		T.PHONE,
+		T.IS_PUB,
+		T.CREATE_USER_ID,
+		T.CREATE_TIME,
+		T.UPDATE_USER_ID,
+		T.UPDATE_TIME,
+		T.STATUS,
+		E.ORG_ENTITY_PATH
+		FROM T_ZZ_PUBLIC_APPEAL T, ${dbuser.workflow}.WF_PROCESS_INSTANCE B, T_DC_ORG_ENTITY_INFO E
+		WHERE T.APPEAL_ID = B.FORM_ID
+		AND E.ORG_CODE = T.ORG_CODE
+		AND B.PROC_NAME = #{workflowName,jdbcType=VARCHAR}
+		AND B.USER_ID =#{curUserId,jdbcType=VARCHAR}
+		AND B.ORG_ID =#{curOrgId,jdbcType=VARCHAR}
+
+		<include refid="find_where"></include>
+		ORDER BY T.APPEAL_TIME DESC
+	</select>
+</mapper>
