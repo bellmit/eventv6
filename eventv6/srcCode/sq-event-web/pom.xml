@@ -1,0 +1,580 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent> 
+		<artifactId>sq-event-parent</artifactId>
+		<groupId>cn.ffcs.event</groupId>
+		<version>3.0.3</version>
+	</parent>
+	<groupId>cn.ffcs.event</groupId>
+	<artifactId>sq-event-web</artifactId>
+	<version>3.0.3</version>
+	<packaging>war</packaging>
+	<name>sq-event-web</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+	
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sms-in-api</artifactId>
+		  <version>3.0.005.006</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo</artifactId>
+ 		</dependency>
+
+		<dependency>
+		  <groupId>cn.ffcs.bi</groupId>
+		  <artifactId>sq_bi_api</artifactId>
+		</dependency>
+		<!-- <dependency>
+			<groupId>cn.ffcs.gmis</groupId>
+			<artifactId>sq-gmis-api</artifactId>
+			<version>4.0.062.003</version>
+		</dependency> -->
+		
+		<!-- redis_begin -->
+		<dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.data</groupId>
+          <artifactId>spring-data-redis</artifactId>
+          <version>2.3.9.RELEASE</version>
+        </dependency> 
+		<!-- redis_end -->
+		
+		<dependency>
+			<groupId>com.dm</groupId>
+			<artifactId>dmjdbc8</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+		</dependency>
+
+		
+	<!-- 	<dependency>
+			<groupId>cn.ffcs.dispute</groupId>
+			<artifactId>sq-dispute-api</artifactId>
+			<version>3.0.001.002</version>
+		</dependency> -->
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>sq-zzgrid-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.3.29.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>junit-4.10</artifactId>
+			<version>4.10</version>
+		</dependency>
+
+	<!-- 工具类包  -->			
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-web</artifactId>
+            <version>3.0.041.temp</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-core</artifactId>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-crypto</artifactId>
+		  <version>3.0.033</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-ext</artifactId>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-lang</artifactId>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-mybatis</artifactId>
+		</dependency>
+		
+		<dependency>
+		  <groupId>cn.ffcs.sqopen</groupId>
+		  <artifactId>sq-common-shequ</artifactId>
+		</dependency>
+		<!-- 添加如下页面 -->
+		<dependency>
+			<groupId>cn.ffcs.sqopen</groupId>
+			<artifactId>sq-log-utils</artifactId>
+		</dependency>
+		
+	<!--end 工具类包  -->		
+
+
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>1.4.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+		</dependency>
+		<dependency>
+	    	<groupId>com.fasterxml.jackson.core</groupId>
+	    	<artifactId>jackson-databind</artifactId>
+	    </dependency>
+		<dependency>
+			<groupId>cn.ffcs.workflow</groupId>
+			<artifactId>workflow-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>3.6</version>
+		</dependency>
+		<!-- dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>resident-api</artifactId>
+		</dependency 
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>sq_eyes_serv</artifactId>
+		</dependency>-->
+		<dependency>
+			<groupId>cn.ffcs.icgrid</groupId>
+			<artifactId>sq-icgrid-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.lzly</groupId>
+			<artifactId>sq-lzly-api</artifactId>
+			<version>3.0.005.001</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.18</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>4.10.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.ehcache-spring-annotations</groupId>
+			<artifactId>ehcache-spring-annotations</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.oauth</groupId>
+			<artifactId>oauth-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>hessian-sq</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>sq-cm-tools-4log-1.1.0</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis.caches</groupId>
+			<artifactId>mybatis-ehcache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.proxool</groupId>
+			<artifactId>proxool</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>proxool-cglib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>oracle</groupId>
+			<artifactId>ojdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sq-event-api</artifactId>
+			<version>3.0.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>tomcat</groupId>
+					<artifactId>jsp-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>sq-resident-api</artifactId>
+					<groupId>cn.ffcs.resident</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-httpclient</artifactId>
+					<groupId>commons-httpclient</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.resident</groupId>
+			<artifactId>sq-resident-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>tomcat</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>5.5.23</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>sq-system-cookie-api</artifactId>
+			<version>3.0.101.002</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>sq-system-server-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>sq-system-util</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>cn.ffcs</groupId>
+		  <artifactId>sq-water</artifactId>
+		  <version>1.0.001</version>
+		</dependency>
+		<dependency>
+		  <groupId>cn.ffcs</groupId>
+		  <artifactId>sq_lyjj</artifactId>
+		  <version>3.0.12</version>
+		</dependency>
+		<dependency>
+		  <groupId>cn.ffcs</groupId>
+		  <artifactId>bireport</artifactId>
+		  <version>3.0.2</version>
+		</dependency>
+		<dependency>
+		  <groupId>cn.ffcs.geo</groupId>
+		  <artifactId>geo-api</artifactId>
+		  <version>1.0.066.004</version>
+		</dependency>
+		<dependency> 
+			<groupId>cn.ffcs.doorsys</groupId> 
+			<artifactId>sq-doorsys-api</artifactId> 
+		</dependency>
+		
+		<dependency>
+		  <groupId>org.apache.directory.studio</groupId>
+		  <artifactId>org.dom4j.dom4j</artifactId>
+		  <version>1.6.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>cn.ffcs.oa</groupId>
+			<artifactId>sq-oa-web-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+   			<groupId>cn.ffcs.oa</groupId>
+	  		<artifactId>sq-oa-common</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hibernate-core</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hibernate-entitymanager</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hibernate-ehcache</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>antlr</artifactId>
+					<groupId>antlr</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- 表达式解析器 -->
+		<dependency>
+		  <groupId>org.wltea.expression</groupId>
+		  <artifactId>IKExpression</artifactId>
+		  <version>2.1.2</version>
+		</dependency>
+		
+		<!-- 手机消息推送 -->
+		<dependency>
+			<groupId>cn.ffcs.mobile</groupId>
+			<artifactId>sq-mobile-api</artifactId>
+			<version>3.0.001.004</version>
+		</dependency>
+		
+		<!-- amr转换mp3 -->
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>jave</artifactId>
+			<version>1.0.2.2</version>
+		</dependency>
+		
+		<!-- mq中间件 -->
+		<dependency>
+			<groupId>cn.ffcs.sqopen</groupId>
+			<artifactId>rmq-service-helper</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		</dependency>
+		<!-- 微信平台接口 -->
+		<dependency>
+			<groupId>cn.ffcs</groupId>
+			<artifactId>sq_weixin_api</artifactId>
+			<version>3.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- xlsx excel处理 -->
+		<dependency>
+		  <groupId>org.apache.poi</groupId>
+		  <artifactId>poi-ooxml</artifactId>
+		  <version>3.16</version>
+		</dependency>
+		<!-- 隐匿处理 -->
+		<dependency>
+			<groupId>cn.ffcs.zzgrid</groupId>
+			<artifactId>security</artifactId>
+			<version>1.0.16</version>
+		</dependency>
+		<!--引入commons-lang3，水印过滤器有用到-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		
+		<!-- ftl实现继承、覆盖，需要groupId为commons-lang的配合-->
+		<dependency>
+			<groupId>com.googlecode.rapid-framework</groupId>
+			<artifactId>rapid-core</artifactId>
+			<version>4.0.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.ws.xmlschema</groupId>
+					<artifactId>xmlschema-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- gmisV6 -->
+		<dependency>
+			<groupId>cn.ffcs.gmis</groupId>
+			<artifactId>sq-gmis-api</artifactId>
+			<version>6.0.066.005</version>
+		</dependency>
+		
+		<!-- gis工程 -->
+		<dependency>
+		    <groupId>cn.ffcs.gis</groupId>
+		    <artifactId>sq-gis-api</artifactId>
+		</dependency>
+		
+		<!-- 附件上传（改为组件工程的服务） -->
+		<dependency>
+		    <groupId>cn.ffcs</groupId>
+		    <artifactId>common-components-api</artifactId>
+		    <version>1.0.026</version>
+		</dependency>
+		
+		<dependency>
+               <groupId>org.elasticsearch</groupId>
+               <artifactId>elasticsearch</artifactId>
+               <version>6.3.1</version>
+           </dependency>
+           <dependency>
+			  <groupId>cn.ffcs.elastic</groupId>
+			  <artifactId>sq-elastic-util</artifactId>
+			  <version>6.0.026.001</version>
+			</dependency>
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>jxl</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>ffcs-json-utils</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>1.1.7</version>
+		</dependency>	
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.12</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.codehaus</groupId>
+			<artifactId>jackson-all</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-jaxws</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.ffcs.event</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<!-- 缓存接口 -->
+		<dependency>
+			<artifactId>sq-cache-api</artifactId>
+			<groupId>cn.ffcs.cache</groupId>
+			<version>1.0.001</version>
+		</dependency> 
+		<!-- gbp 入格事件扶贫走访贫困户 -->
+		<dependency>
+			<groupId>cn.ffcs.gbp</groupId>
+			<artifactId>gbp-api</artifactId>
+			<version>1.0.042</version>
+		</dependency>
+		<!-- 海康openAPI -->
+		<dependency>
+			<groupId>com.hikvision.ga</groupId>
+			<artifactId>artemis-http-client</artifactId>
+			<version>1.1.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				 <configuration>
+				 	<warName>zhsq_event</warName>
+				 </configuration>
+				<executions>
+					<execution>
+						<id>default-war</id>
+						<phase>package</phase>
+						<goals>
+							<goal>war</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

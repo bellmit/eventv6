@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.drugEnforcementEvent.DrugEnforcementEventMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.drugEnforcementEvent.DrugEnforcementEvent">
+		<id 	column="DRUG_ENFORCEMENT_ID" 			property="drugEnforcementId" 	jdbcType="DECIMAL" /> <!--主键，序列：SEQ_DRUG_ENFORCEMENT_ID-->
+		<result column="CI_RS_ID" 						property="ciRsId" 				jdbcType="DECIMAL" /> <!--人口主键 对应表T_DC_CI_RS_TOP-->
+		<result column="DRUG_ID" 						property="drugId" 				jdbcType="DECIMAL" /> <!--吸毒人员主键 对应表T_ZZ_DRUG_RECORD-->
+		<result column="ADDICT_NAME" 					property="addictName" 			jdbcType="DECIMAL" /> <!--吸毒人员姓名 对应表T_DC_CI_RS_TOP-->
+		<result column="ADDICT_ID_CARD" 				property="addictIdCard" 		jdbcType="DECIMAL" /> <!--吸毒人员身份证 对应表T_DC_CI_RS_TOP-->
+		<result column="ADDICT_GRID_PATH" 				property="addictGridPath" 		jdbcType="DECIMAL" /> <!--吸毒人员场所 对应表T_DC_GRID-->
+		<result column="ADDICT_GRID_PATH" 				property="addictGridPath" 		jdbcType="DECIMAL" /> <!--吸毒人员场所 对应表T_DC_GRID-->
+		<result column="ADDICT_DRUG_VAR" 				property="addictDrugVar" 		jdbcType="VARCHAR" /> <!--毒品种类 T_ZZ_DRUG_RECORD-->
+		<result column="CONTENT_" 						property="content" 				jdbcType="VARCHAR" /> <!--禁毒事件内容，字典编码B164-->
+		<result column="DRUG_SOCIAL_SITUATION" 			property="drugSocialSituation" 	jdbcType="VARCHAR" /> <!--社会毒情，字典编码B178-->
+		<result column="REPORT_DATE" 					property="reportDate" 			jdbcType="TIMESTAMP" /> <!--上报时间-->
+		<result column="CONTACT_USER" 					property="contactUser" 			jdbcType="VARCHAR" /> <!--联系人员-->
+		<result column="CONTACT_TEL" 					property="contactTel" 			jdbcType="VARCHAR" /> <!--联系电话-->
+		<result column="HANDLE_DATE" 					property="handleDate" 			jdbcType="TIMESTAMP" /> <!--处理时限-->
+		<result column="FIN_DATE" 						property="finDate" 				jdbcType="TIMESTAMP" /> <!--办结时间-->
+		<result column="STATUS_" 						property="status" 				jdbcType="VARCHAR" /> <!--状态，001草稿；002 处理中；004 已处理；006无效-->
+		<result column="CREATE_DATE" 					property="createDate" 			jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_USER" 					property="createUser" 			jdbcType="DECIMAL" /> <!--创建人员-->
+		<result column="UPDATE_DATE" 					property="updateDate" 			jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATE_USER" 					property="updateUser" 			jdbcType="DECIMAL" /> <!--更新人员-->
+	</resultMap>
+	
+	<!-- 列表查询列 -->
+	<sql id="list_column">
+		T.DRUG_ENFORCEMENT_ID,
+		T.CI_RS_ID,
+		T.DRUG_ID,
+		T7.I_NAME ADDICT_NAME, 
+		T7.I_IDENTITY_CARD ADDICT_ID_CARD,
+		T6.GRID_PATH ADDICT_GRID_PATH,
+		T.CONTENT_,
+		T.DRUG_SOCIAL_SITUATION,
+		T.REPORT_DATE,
+		T.CONTACT_USER,
+		T.STATUS_
+	</sql>
+	<!-- 详情查询列 -->
+	<sql id="detail_column">
+		<include refid="list_column"></include>,
+		T5.DRUG_VAR ADDICT_DRUG_VAR,
+		T.CONTACT_TEL,
+		T.HANDLE_DATE,
+		T.FIN_DATE,
+		T.CREATE_DATE,
+		T.CREATE_USER,
+		T.UPDATE_DATE,
+		T.UPDATE_USER
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.drugEnforcementEvent.DrugEnforcementEvent">
+		<selectKey keyProperty="drugEnforcementId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_DRUG_ENFORCEMENT_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_EVENT_DRUG_ENFORCEMENT
+		(
+			DRUG_ENFORCEMENT_ID,
+			CI_RS_ID,
+			DRUG_ID,
+			CONTENT_,
+			DRUG_SOCIAL_SITUATION,
+			REPORT_DATE,
+			CONTACT_USER,
+			CONTACT_TEL,
+			STATUS_,
+			CREATE_DATE,
+			CREATE_USER
+		) VALUES (
+			#{drugEnforcementId,jdbcType=DECIMAL},
+			#{ciRsId,jdbcType=DECIMAL},
+			#{drugId,jdbcType=DECIMAL},
+			#{content,jdbcType=VARCHAR},
+			#{drugSocialSituation,jdbcType=VARCHAR},
+			#{reportDate,jdbcType=TIMESTAMP},
+			#{contactUser,jdbcType=VARCHAR},
+			#{contactTel,jdbcType=VARCHAR},
+			'001',
+			SYSDATE,
+			#{createUser,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.drugEnforcementEvent.DrugEnforcementEvent">
+		UPDATE
+			T_EVENT_DRUG_ENFORCEMENT
+		SET
+			<if test="ciRsId != null ">
+				CI_RS_ID = #{ciRsId,jdbcType=DECIMAL},
+			</if>
+			<if test="drugId != null ">
+				<choose>
+					<when test="drugId > 0">
+						DRUG_ID = #{drugId,jdbcType=DECIMAL},
+					</when>
+					<otherwise>
+						DRUG_ID = NULL,
+					</otherwise>
+				</choose>
+			</if>
+			<if test="content != null ">
+				CONTENT_ = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="drugSocialSituation != null and drugSocialSituation != '' ">
+				DRUG_SOCIAL_SITUATION = #{drugSocialSituation,jdbcType=VARCHAR},
+			</if>
+			<if test="contactUser != null ">
+				CONTACT_USER = #{contactUser,jdbcType=VARCHAR},
+			</if>
+			<if test="contactTel != null ">
+				CONTACT_TEL = #{contactTel,jdbcType=VARCHAR},
+			</if>
+			<if test="handleDate != null ">
+				HANDLE_DATE = #{handleDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finDate != null ">
+				FIN_DATE = #{finDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null and status != '' ">
+				STATUS_ = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null ">
+				UPDATE_USER = #{updateUser,jdbcType=DECIMAL},
+			</if>
+			UPDATE_DATE = SYSDATE
+		WHERE
+			DRUG_ENFORCEMENT_ID = #{drugEnforcementId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 上报禁毒事件 -->
+	<update id="reportDrugEnforcementEvent" parameterType="cn.ffcs.zhsq.mybatis.domain.drugEnforcementEvent.DrugEnforcementEvent">
+		UPDATE
+			T_EVENT_DRUG_ENFORCEMENT T
+		SET
+			<if test="updateUser != null ">
+				T.UPDATE_USER = #{updateUser,jdbcType=DECIMAL},
+			</if>
+			<if test="handleDate != null ">
+				HANDLE_DATE = #{handleDate,jdbcType=TIMESTAMP},
+			</if>
+			T.STATUS_ = '002',
+			T.REPORT_DATE = SYSDATE,
+			T.UPDATE_DATE = SYSDATE
+		WHERE
+			T.DRUG_ENFORCEMENT_ID = #{drugEnforcementId,jdbcType=DECIMAL} AND T.REPORT_DATE IS NULL AND T.STATUS_ = '001'
+	</update>
+	
+	<!-- 删除 -->	
+	<delete id="delete">
+		UPDATE
+			T_EVENT_DRUG_ENFORCEMENT T
+		SET
+			T.STATUS_ = '006',
+			T.UPDATE_USER = #{delUserId}
+		WHERE
+			T.DRUG_ENFORCEMENT_ID = #{id} 
+	</delete>
+	
+	<!-- 详情 -->	
+	<select id="findById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+			<include refid="detail_column"></include>
+		FROM
+			T_EVENT_DRUG_ENFORCEMENT T, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6, 
+			T_DC_CI_RS_TOP T7
+		WHERE
+			T.DRUG_ENFORCEMENT_ID = #{drugEnforcementId,jdbcType=DECIMAL} 
+			<include refid="find_where"></include>
+	</select>
+	
+	<!-- 获取记录数 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1)
+		FROM 
+			T_EVENT_DRUG_ENFORCEMENT T, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6, 
+			T_DC_CI_RS_TOP T7
+		WHERE 1 = 1
+			<include refid="find_where"></include>
+	</select>
+	
+	<!-- 获取记录列表 -->
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="list_column"></include>
+		FROM
+			T_EVENT_DRUG_ENFORCEMENT T, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6,
+			T_DC_CI_RS_TOP T7
+		WHERE 1 = 1
+			<include refid="find_where"></include>
+			ORDER BY T.DRUG_ENFORCEMENT_ID DESC
+	</select>
+	
+	<!-- 获取待办记录数量 -->
+	<select id="findTodoCountByCriteria" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1)
+		FROM T_EVENT_DRUG_ENFORCEMENT T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1, 
+			 ${dbuser.workflow}.WF_WORKFLOW T2, ${dbuser.workflow}.JBPM4_TASK T3, 
+			 ${dbuser.workflow}.JBPM4_PARTICIPATION T4, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6,
+			 T_DC_CI_RS_TOP T7
+		WHERE T.DRUG_ENFORCEMENT_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID 
+			AND T1.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+			AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR} AND T2.STATUS = '1'
+			AND T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3' 
+			<include refid="find_where"></include>
+	</select>
+	
+	<!-- 获取待办列表 -->
+	<select id="findTodoListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="list_column"></include>
+		FROM T_EVENT_DRUG_ENFORCEMENT T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1, 
+			 ${dbuser.workflow}.WF_WORKFLOW T2, ${dbuser.workflow}.JBPM4_TASK T3, 
+			 ${dbuser.workflow}.JBPM4_PARTICIPATION T4, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6,
+			 T_DC_CI_RS_TOP T7
+		WHERE T.DRUG_ENFORCEMENT_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID 
+			AND T1.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+			AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR} AND T2.STATUS = '1'
+			AND T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3'  
+			<include refid="find_where"></include>
+			ORDER BY T.REPORT_DATE DESC
+	</select>
+	
+	<!-- 获取经办列表记录数量 -->
+	<select id="findHandledCountByCriteria" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1)
+		FROM T_EVENT_DRUG_ENFORCEMENT T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1, 
+			 ${dbuser.workflow}.WF_WORKFLOW T2, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6,
+			 T_DC_CI_RS_TOP T7
+		WHERE T.DRUG_ENFORCEMENT_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR} AND T2.STATUS = '1'
+		AND EXISTS(
+		    SELECT 1
+		    FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		    WHERE T8.INSTANCE_ID = T1.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID AND T9.USER_ID = #{handledUserId,jdbcType=DECIMAL} AND T9.ORG_ID = #{handledOrgId,jdbcType=DECIMAL} AND T9.USER_TYPE = '3'
+		)
+		<include refid="find_where"></include>
+	</select>
+	
+	<!-- 获取经办列表 -->
+	<select id="findHandledListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="list_column"></include>
+		FROM T_EVENT_DRUG_ENFORCEMENT T, ${dbuser.workflow}.WF_PROCESS_INSTANCE T1, 
+			 ${dbuser.workflow}.WF_WORKFLOW T2, T_ZZ_DRUG_RECORD T5, T_DC_GRID T6,
+			 T_DC_CI_RS_TOP T7
+		WHERE T.DRUG_ENFORCEMENT_ID = T1.FORM_ID AND T1.WORKFLOW_ID = T2.WORKFLOW_ID AND T2.FLOW_NAME = #{workflowName,jdbcType=VARCHAR} AND T2.WFTYPEID = #{wfTypeId,jdbcType=VARCHAR} AND T2.STATUS = '1'
+		AND EXISTS(
+		    SELECT 1
+		    FROM ${dbuser.workflow}.WF_TASK T8, ${dbuser.workflow}.WF_TASK_PARTICIPATION T9
+		    WHERE T8.INSTANCE_ID = T1.INSTANCE_ID AND T8.TASK_ID = T9.TASK_ID AND T9.USER_ID = #{handledUserId,jdbcType=DECIMAL} AND T9.ORG_ID = #{handledOrgId,jdbcType=DECIMAL} AND T9.USER_TYPE = '3'
+		)
+		<include refid="find_where"></include>
+		ORDER BY T.REPORT_DATE DESC
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		AND T.DRUG_ID = T5.DR_ID AND T5.GRID_ID = T6.GRID_ID AND T5.CI_RS_ID = T7.CI_RS_ID
+		AND T5.STATUS = '001' AND T6.STATUS = '001' AND T7.STATUS = '1'
+		
+		<choose>
+			<when test="statusArray != null and statusArray.length > 0 ">
+				AND T.STATUS_ IN
+				<foreach collection="statusArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="status != null and status != '' ">
+				AND T.STATUS_ = #{status,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T.STATUS_ = '001'
+			</otherwise>
+		</choose>
+		<if test="createUser != null ">
+			AND T.CREATE_USER = #{createUser,jdbcType=DECIMAL}
+		</if>
+		<if test="createDateStart != null and createDateStart != '' ">
+			AND T.CREATE_DATE <![CDATA[>=]]>TO_DATE(#{createDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="createDateEnd != null and createDateEnd != '' ">
+			AND T.CREATE_DATE <![CDATA[<]]>TO_DATE(#{createDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+		<if test="reportDateStart != null and reportDateStart != '' ">
+			AND T.REPORT_DATE <![CDATA[>=]]>TO_DATE(#{reportDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="reportDateEnd != null and reportDateEnd != '' ">
+			AND T.REPORT_DATE <![CDATA[<]]>TO_DATE(#{reportDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+		<if test="contactUser != null and contactUser != '' ">
+			AND T.CONTACT_USER LIKE '%'||#{contactUser,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="handleStatus != null and handleStatus != '' ">
+			<choose>
+				<!-- 正常 -->
+				<when test="handleStatus == '01' ">
+					<![CDATA[
+					AND (
+						(T.FIN_DATE IS NOT NULL AND T.FIN_DATE <= T.HANDLE_DATE)
+						OR
+						(T.FIN_DATE IS NULL AND T.HANDLE_DATE >= SYSDATE)
+					)
+					]]>
+				</when>
+				<!-- 超时 -->
+				<when test="handleStatus == '02' ">
+					<![CDATA[
+					AND (
+						(T.FIN_DATE IS NOT NULL AND T.FIN_DATE > T.HANDLE_DATE)
+						OR
+						(T.FIN_DATE IS NULL AND T.HANDLE_DATE < SYSDATE)
+					)
+					]]>
+				</when>
+			</choose>
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND T6.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="addictName != null and addictName != '' ">
+			AND T7.I_NAME LIKE '%'||#{addictName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="addictIdCard != null and addictIdCard != '' ">
+			AND T7.I_IDENTITY_CARD LIKE '%'||#{addictIdCard,jdbcType=VARCHAR}||'%'
+		</if>
+	</sql>
+</mapper>

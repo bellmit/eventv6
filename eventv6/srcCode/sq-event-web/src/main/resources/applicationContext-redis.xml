@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<!-- Jedis 连接池配置-->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal">
+			<value>${redis.pool.maxActive:-1}</value>
+		</property>
+		<property name="maxIdle">
+			<value>${redis.pool.maxIdle:30}</value>
+		</property>
+		<property name="maxWaitMillis">
+			<value>${redis.pool.maxWait:-1}</value>
+		</property>
+		<property name="testOnBorrow">
+			<value>${redis.pool.testOnBorrow:true}</value>
+		</property>
+		<property name="testOnReturn">
+			<value>${redis.pool.testOnReturn:false}</value>
+		</property>
+		<property name="testWhileIdle">
+			<value>${redis.pool.testWhileIdle:true}</value>
+		</property>
+		<property name="numTestsPerEvictionRun">
+			<value>${redis.pool.numTestsPerEvictionRun:-1}</value>
+		</property>
+		<property name="minEvictableIdleTimeMillis">
+			<value>${redis.pool.minEvictableIdleTimeMillis:60000}</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>${redis.pool.timeBetweenEvictionRunsMillis:30000}</value>
+		</property>
+	</bean>
+	
+	<!-- Jedis ConnectionFactory 数据库连接配置-->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="hostName">
+			<value>${redis.hostname}</value>
+		</property><!-- 
+		<property name="port">
+			<value>${redis.port}</value>
+		</property> -->
+		<property name="password">
+			<value>${redis.password}</value>
+		</property>
+		<property name="poolConfig" ref="jedisPoolConfig" />
+	</bean>
+	
+</beans>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.CoordinateInverseQuery.CoordinateInverseQueryMapper" >
+    <resultMap id="ResultMapOfGrid" type="cn.ffcs.zhsq.mybatis.domain.CoordinateInverseQuery.CoordinateInverseQueryGridInfo" >
+        <id column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+        <result column="INFO_ORG_CODE" jdbcType="VARCHAR" property="infoOrgCode" />
+        <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    </resultMap>
+
+   <select id="findGridInfo" resultMap="ResultMapOfGrid" databaseId="oracle">
+        <!--SELECT * FROM (-->
+        SELECT t2.GRID_ID, t2.INFO_ORG_CODE, t2.GRID_NAME
+          FROM map_bus_grid_gis gis
+          LEFT JOIN T_DC_GRID T2 ON T2.GRID_ID = GIS.WID
+            and t2.status = '001'
+         WHERE SDO_RELATE(
+                           gis.SDO,
+                           MDSYS.SDO_GEOMETRY(2001,
+                           8192,
+                           MDSYS.SDO_POINT_TYPE(${x}, ${y},
+                                                NULL),
+                           NULL,
+                           NULL),
+                          'MASK=Contains'
+                          ) = 'TRUE'
+           AND GIS.STATUS = '001'
+        <if test="mapt != null and mapt != ''">
+            AND gis.MAPT = #{mapt,jdbcType=DECIMAL}
+        </if>
+        <if test="gridLevel != null and gridLevel != ''">
+            AND t2.grid_level = #{gridLevel,jdbcType=VARCHAR}
+        </if>
+          AND T2.GRID_ID IS NOT NULL
+           order by t2.grid_level desc
+        <!--)
+        WHERE rownum=1-->
+  </select>
+  
+  <select id="findGridInfo" resultMap="ResultMapOfGrid" databaseId="dm">
+        SELECT t2.GRID_ID, t2.INFO_ORG_CODE, t2.GRID_NAME
+          FROM map_bus_grid_gis gis
+          LEFT JOIN T_DC_GRID T2 ON T2.GRID_ID = GIS.WID
+            and t2.status = '001'
+         WHERE DMGEO.ST_CONTAINS(
+                    gis.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| ${x} ||' '|| ${y} ||')', 4326)
+				) = 1
+           AND GIS.STATUS = '001'
+        <if test="mapt != null and mapt != ''">
+            AND gis.MAPT = #{mapt,jdbcType=DECIMAL}
+        </if>
+        <if test="gridLevel != null and gridLevel != ''">
+            AND t2.grid_level = #{gridLevel,jdbcType=VARCHAR}
+        </if>
+          AND T2.GRID_ID IS NOT NULL
+           order by t2.grid_level desc
+  </select>
+</mapper>

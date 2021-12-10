@@ -1,0 +1,20 @@
+@charset "utf-8";
+/*右边*/
+body{ padding:0; margin:0; font-size:14px;}
+img{ border:none; vertical-align:middle;}
+input{ vertical-align:middle;}
+.XMright{z-index:10;float:right; width:229px; position:relative;}
+.XMright_top{ background:url(../../images/zhihuijiandu/xm_r_topbg.png) repeat-y;}
+.XMright_btm{height:32px;}
+.XMright h3{ background:url(../../images/zhihuijiandu/xm_r_h3bg.png) repeat-x; height:34px; line-height:34px; padding:0 0 0 5px; margin:0 8px;color:#ef1010; font-size:14px;}
+.mapinfo_but_con{ background:url(images/xm_r_mapinfo.png) no-repeat; width:30px; height:31px; position:absolute; left:1px; top:1px;}
+.lybox h4{  height:32px; line-height:32px; padding-left:10px;margin:0 0 0 1px;}
+.lybox a{ text-decoration:none;display:inline-block;color:#000; margin-top:3px; vertical-align:bottom}
+.lybox a:visited{color:#000;}
+.lybox ul{ list-style:none; padding-left:15px; padding:0 10px 0 22px; margin:0;}
+.lybox ul li{ padding:1px 0 2px 18px; background:url(../../images/zhihuijiandu/xm_r_icon1.png) 0% 60% no-repeat; font-size:13px; border-left:1px solid #666; vertical-align:bottom;}
+.lybox .linestyle{ background:url(../../images/zhihuijiandu/xm_r_icon2.png) 0% 0% no-repeat; border:none;}
+.lybox ul li a{ text-decoration:none;display:inline-block;color:#000; margin-top:3px; vertical-align:bottom}
+.lybox ul li a:hover{ text-decoration:underline;}
+h4{cursor: pointer;}
+.zttc_jcsj{height: 220px;overflow: auto;width: 216px}

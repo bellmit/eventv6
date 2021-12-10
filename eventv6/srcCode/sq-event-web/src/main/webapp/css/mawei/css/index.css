@@ -1,0 +1,148 @@
+/**/
+.main-mw{
+    width: 574px;
+    min-height: 260px;
+    background: #fff;
+    border: 1px solid ghostwhite;
+    padding: 20px;
+}
+.topmain{
+    width: 400px;
+    height: 142px;
+    border-bottom: 1px dashed #e6e6e6;
+}
+.topmain .title img{
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: -6px;
+    margin-right: 10px;
+}
+.topmain .title h3{
+    font-size: 16px;
+    color: #0a99ed;
+    display: inline-block;
+}
+/*标题前的图标*/
+.ico-sb{
+    background: url("../img/ico-sb-b.png") no-repeat center;
+    background-size: 24px;
+}/*大表*/
+
+.mss{
+    margin: 16px 0px;
+}
+.mss li{
+    margin-bottom: 14px;
+    font-size: 14px;
+}
+.mss li span{
+    margin-right: 30px;
+    color: #999;
+}
+.mss li p{
+    display: inline-block;
+    width: 60%;
+    color: #666;
+}
+.conmain .mss li{
+    margin-bottom: 10px;
+    height: 30px;
+    line-height: 30px;
+}
+.conmain .mss span{
+    width: 120px;
+}
+.conmain .mss .st-class{
+    width: 178px;
+}
+.conmain .mss .st-class2{
+    width: 120px !important;
+}
+.conmain .mss p{
+    width: 200px;
+    font-size: 12px;
+}
+.pic-sb{
+    width: 156px;
+    height: 142px;
+}
+.pic-sb img{
+    width: 100%;
+    height: 100%;
+}
+.st-class{
+    float: left;
+    display: -webkit-flex;
+            display: flex;
+    -webkit-align-items: flex-end;
+            align-items: flex-end;
+}
+.st-class li{
+    float: left;
+    color: #ccc;
+    font-size: 12px;
+    margin-right: 20px;
+}
+.img-css{
+    width: 26px;
+    height: 26px;
+    vertical-align: -10px;
+    margin-right: 10px;
+    line-height: 30px;
+}
+
+.fc-red{
+    color: #ff7f7f !important;
+    font-size: 14px !important;
+}
+.fc-blue{
+    color: #7fc3ff !important;
+    font-size: 14px !important;
+}
+/*表格*/
+.tb-cjs-title li{
+    float: left;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    background: #7fc3ff;
+    height: 32px;
+    line-height: 32px;
+}
+.tb-cjs-box{
+    height: 200px;
+    overflow-y: auto;
+}
+.tb-cjs tr{
+    height: 32px;
+}
+.tb-cjs tr td{
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    border-bottom: 1px dotted #e6e6e6;
+}
+.tb-cjs tr td:first-child{
+    width: 30%;
+}
+.tb-cjs tr td:nth-child(2){
+    width: 20%;
+}
+/*路灯*/
+.lud-kg a{
+    display: inline-block;
+    color: #fff;
+    font-size: 12px;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+         -o-border-radius: 4px;
+            border-radius: 4px;
+    line-height: 28px;
+    padding: 0 10px;
+    background: #ccc;
+    margin-right: 10px;
+    box-shadow: 0px 3px 4px 0px rgba(204, 204, 204, 0.4);
+}
+.lud-open{ background: #8ed640 !important; box-shadow: 0px 3px 4px 0px rgba(142, 214, 64, 0.4) !important;}

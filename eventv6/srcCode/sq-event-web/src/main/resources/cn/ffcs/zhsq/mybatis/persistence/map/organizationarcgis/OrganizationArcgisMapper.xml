@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.organizationarcgis.OrganizationArcgisMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.shequ.base.domain.db.OrgExtraInfo" >
+	<id column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="ORG_CONTENT" jdbcType="VARCHAR" property="orgContent" />
+    <result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+</resultMap>
+<resultMap id="LocationResultMap" type="cn.ffcs.shequ.base.domain.db.OrgLocationInfo" >
+	<id column="ORG_LOCATION_ID" jdbcType="DECIMAL" property="orgLocationId" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="MAP_ORDER" jdbcType="DECIMAL" property="mapOrder" />
+</resultMap>
+
+
+<!-- 2014-09-02 liushi add 获取组织信息 -->
+<select id="getOrgExtraInfo"  resultMap="BaseResultMap">
+	SELECT 
+		T.ORG_ID,
+		T.ORG_CONTENT,
+		T.ORG_NAME,
+		T.LONGITUDE,
+		T.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL} 
+	AND T.STATUS = '001'
+</select>
+<select id="getOrgEntityInfo"  resultMap="BaseResultMap">
+	SELECT 
+		T.ORG_ID,
+		T.ORG_NAME
+	FROM T_DC_ORG_ENTITY_INFO T 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL} 
+	AND T.STATUS = '001'
+</select>
+<!-- 2014-09-02 liushi add 获取子组织信息 -->
+<select id="getSubOrgExtraInfoList"  resultMap="BaseResultMap">
+	SELECT 
+		T.ORG_ID,
+		T.ORG_CONTENT,
+		T.ORG_NAME,
+		T.LONGITUDE,
+		T.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	WHERE EXISTS (
+	      SELECT * FROM T_DC_ORG_ENTITY_INFO T1 WHERE T1.PARENT_ORG_ID = #{orgId, jdbcType=DECIMAL} AND T1.ORG_ID = T.ORG_ID
+	      AND T.STATUS = '001'
+	)
+</select>
+<!-- 2014-09-02 liushi add 获取组织定为信息 -->
+<select id="getOrglocationinfoList"  resultMap="LocationResultMap">
+	SELECT 
+		T.ORG_LOCATION_ID,
+		T.ORG_ID,
+		T.LONGITUDE,
+		T.LATITUDE,
+		T.MAP_ORDER
+	FROM T_DC_ORG_LOCATION_INFO T 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+	AND T.MAP_SHAPE='contour'
+	ORDER BY MAP_ORDER
+</select>
+<!-- 2014-09-12 liushi add 删除组织定位信息 -->
+<delete id="deleteOrgLocationInfo" >
+	DELETE  FROM T_DC_ORG_LOCATION_INFO T WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL} AND T.MAP_ID = #{mapt, jdbcType=DECIMAL} AND T.MAP_SHAPE='contour'
+</delete>
+<!-- 2014-09-12 liushi add 插入组织定位信息 -->
+<insert id="insertOrgLocationInfo">
+	<selectKey keyProperty="orgLocationId" resultType="long" order="BEFORE">
+		select SEQ_ORG_LOCATION_INFO_ID.NEXTVAL from DUAL
+	</selectKey>
+	INSERT INTO T_DC_ORG_LOCATION_INFO
+	(ORG_LOCATION_ID, ORG_ID, MAP_ORDER, MAP_ID,MAP_SHAPE, LONGITUDE, LATITUDE, CREATE_TIME, STATUS)
+	VALUES(#{orgLocationId, jdbcType=DECIMAL},#{orgId, jdbcType=DECIMAL},#{mapOrder, jdbcType=DECIMAL},#{mapt, jdbcType=DECIMAL},'contour',#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},sysdate,'1')
+</insert>
+<!-- 2014-09-17 liushi add 获取同级组织信息 -->
+<select id="getArcgisDrawDataOfOrgs"  resultMap="BaseResultMap">
+	SELECT 
+	    T.ORG_ID,
+	    T.ORG_CONTENT,
+	    T.ORG_NAME,
+	    T1.LONGITUDE,
+	    T1.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	LEFT JOIN T_DC_ORG_LOCATION_INFO T1 ON T.ORG_ID = T1.ORG_ID AND T1.MAP_SHAPE = 'center' AND T1.MAP_ID = #{mapt, jdbcType=DECIMAL}
+	WHERE 1=1
+	AND EXISTS (
+      SELECT * FROM T_DC_ORG_ENTITY_INFO T2 
+      WHERE (T2.PARENT_ORG_ID = (SELECT PARENT_ORG_ID FROM T_DC_ORG_ENTITY_INFO T3 WHERE T3.ORG_ID = #{orgId, jdbcType=DECIMAL}) 
+      	or T2.ORG_ID = (SELECT PARENT_ORG_ID FROM T_DC_ORG_ENTITY_INFO T3 WHERE T3.ORG_ID = #{orgId, jdbcType=DECIMAL}))
+      	AND T2.ORG_ID = T.ORG_ID
+	)
+</select>
+<!-- 2014-09-19 liushi add 获取同级组织信息(包括定位中心点) -->
+<select id="getArcgisDataOfOrg"  resultMap="BaseResultMap">
+	SELECT 
+	    T.ORG_ID,
+	    T.ORG_CONTENT,
+	    T.ORG_NAME,
+	    T1.LONGITUDE,
+	    T1.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	LEFT JOIN T_DC_ORG_LOCATION_INFO T1 ON T.ORG_ID = T1.ORG_ID AND T1.MAP_SHAPE = 'center' AND T1.MAP_ID = #{mapt, jdbcType=DECIMAL}
+	WHERE 1=1
+	AND T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+</select>
+<!-- 2014-09-17 liushi add 获取同级组织信息（包括定位中心点） -->
+<select id="getArcgisDataOfSubOrgs"  resultMap="BaseResultMap">
+	SELECT 
+	    T.ORG_ID,
+	    T.ORG_CONTENT,
+	    T.ORG_NAME,
+	    T1.LONGITUDE,
+	    T1.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	LEFT JOIN T_DC_ORG_LOCATION_INFO T1 ON T.ORG_ID = T1.ORG_ID AND T1.MAP_SHAPE = 'center' AND T1.MAP_ID = #{mapt, jdbcType=DECIMAL}
+	WHERE 1=1
+	AND EXISTS (
+      SELECT * FROM T_DC_ORG_ENTITY_INFO T2 
+      WHERE T2.PARENT_ORG_ID = #{orgId, jdbcType=DECIMAL}
+      	AND T2.ORG_ID = T.ORG_ID
+	)
+</select>
+<!-- 2014-09-17 liushi add 获取组织轮廓信息含有mapt -->
+<select id="getOrglocationinfoListByMapt"  resultMap="LocationResultMap">
+	SELECT 
+		T.ORG_LOCATION_ID,
+		T.ORG_ID,
+		T.LONGITUDE,
+		T.LATITUDE,
+		T.MAP_ORDER
+	FROM T_DC_ORG_LOCATION_INFO T 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+		AND T.MAP_ID = #{mapt, jdbcType=DECIMAL}
+		AND T.MAP_SHAPE = 'contour'
+	ORDER BY MAP_ORDER
+</select>
+
+<select id="getArcgisDataCenterAndLevel"  resultMap="BaseResultMap">
+	SELECT 
+		T.ORG_ID,
+		T.ORG_CONTENT,
+		T.ORG_NAME,
+		T1.LONGITUDE,
+		T1.LATITUDE
+	FROM T_DC_ORG_INFO T 
+	LEFT JOIN T_DC_ORG_LOCATION_INFO T1 ON T.ORG_ID = T1.ORG_ID 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+		AND T1.MAP_SHAPE = 'center'
+		AND T1.MAP_ID = #{mapt, jdbcType=DECIMAL}
+</select>
+<!-- 2014-09-17 liushi add 插入组织中心点信息 -->
+<insert id="insertArcgisDataOfOrgCenter"  >
+	<selectKey keyProperty="orgLocationId" resultType="long" order="BEFORE">
+		select SEQ_ORG_LOCATION_INFO_ID.NEXTVAL from DUAL
+	</selectKey>
+	INSERT INTO T_DC_ORG_LOCATION_INFO
+	(ORG_LOCATION_ID, ORG_ID, MAP_ID,MAP_SHAPE, LONGITUDE, LATITUDE, CREATE_TIME, STATUS)
+	VALUES(#{orgLocationId, jdbcType=DECIMAL},#{orgId, jdbcType=DECIMAL},#{mapt, jdbcType=DECIMAL},'center',#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},sysdate,'1')
+</insert>
+
+<update id="updateArcgisDataOfOrgCenter">
+	UPDATE T_DC_ORG_LOCATION_INFO T 
+	SET T.LONGITUDE = #{x, jdbcType=DECIMAL}
+		,T.LATITUDE=#{y, jdbcType=DECIMAL}
+		,T.CREATE_TIME=sysdate 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+		AND T.MAP_ID = #{mapt, jdbcType=DECIMAL}
+		AND T.MAP_SHAPE='center'
+</update>
+<!--  -->
+<insert id="insertOrgExtraInfo"  >
+	INSERT INTO T_DC_ORG_INFO
+	(ORG_ID, ORG_NAME,ORG_CONTENT,LONGITUDE, LATITUDE, CREATE_TIME, STATUS)
+	VALUES(#{orgId, jdbcType=DECIMAL},#{orgName, jdbcType=VARCHAR},#{orgName, jdbcType=VARCHAR},
+	#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},sysdate,'001')
+</insert>
+<update id="updateOrgExtraInfo">
+	UPDATE T_DC_ORG_INFO T 
+	SET T.LONGITUDE = #{x, jdbcType=DECIMAL}
+		,T.LATITUDE=#{y, jdbcType=DECIMAL}
+		,T.CREATE_TIME=sysdate 
+	WHERE T.ORG_ID = #{orgId, jdbcType=DECIMAL}
+</update>
+</mapper>

@@ -1,0 +1,10 @@
+
+/*****同一点重叠面板样式**********/
+.menuNav {position:relative;float:left;width:201px;z-index:9999;  margin-left:0px; margin-top:0px }
+.menuNav h2{ height:36px; width:100%; position:absolute; left:0; top:0;line-height:36px; text-align:left; color:#FFF; font-size:14px; text-indent:18px; background:url(../images/blue-tit.gif) no-repeat 0 0}
+.navlist{position:absolute; padding-top:3px;left:0;top:36px;width:197px; border:2px solid #3B569B;height:80%;border-top:0;background:#FFF}
+.navlist dl{position:relative;width:197px;height:38px;line-height:38px}
+.navlist dl dt{position:absolute;font-size:14px;z-index:9998;left:0; padding-left:2px; text-align:left; font-weight:bold; background:url(left-li-bg.gif) repeat-x 0 0}
+.navlist dl dt a{display:block;width:159px; padding-left:36px; padding-top:2px; font-size:14px; height:36px; background: url(../images/d0.gif) no-repeat 18px 15px; line-height:36px;color:#2F2F2F}
+.navlist dl dt a.on{color:#F00; height:34px; padding-top:0; line-height:34px;background:#FFF url(d1.gif) no-repeat 18px 15px}
+.navlist dl dt.icon03 a.on,.navlist dl dt.icon04 a.on{ display:inline-block; border-top:2px solid #3B569B;background:#FFF url(../images/d0.gif) no-repeat 18px 15px;border-left:2px solid #3B569B;border-bottom:2px solid #3B569B}

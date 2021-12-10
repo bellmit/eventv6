@@ -1,0 +1,1 @@
+<@extends name="/zzgl/event/detail_event_draft.ftl" />

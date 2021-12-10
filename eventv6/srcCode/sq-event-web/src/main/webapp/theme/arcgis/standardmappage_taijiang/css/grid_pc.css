@@ -1,0 +1,124 @@
+@CHARSET "UTF-8";
+
+ul,li { list-style:none}
+/**.box {width:330px; height:320px; border:1px solid #a0b3d1; margin:00px; font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif}**/
+.tagMenu {height:35px;overflow:hidden;font-size:12px;text-align:left;background:url(/images/scim/navigator/daoh2_bg.png) repeat-x;width:100%}
+.tagMenu1 {height:54px;overflow:hidden;font-size:12px;text-align:left;background:#c4d2e1;width:100%}
+.tagMenu h2 {font-size:12px; padding-left:0px;}
+.tagMenu ul {font-size:9pt;margin:0;padding:0; float:left;}
+.tagMenu1 h2 {font-size:12px; padding-left:0px;}
+.tagMenu1 ul {font-size:9pt;margin:0;padding:0; float:left;}
+ul.menu li {background: url(/images/scim/navigator/qieh_a.png) repeat-x;border:1px solid #b9d4e9;width:90px;height:28px;line-height:28px;margin:7px 0 0 10px;float:left;display:inline;overflow:hidden;text-align:center;cursor:pointer;color:#145192}
+ul.menu li.current {background: url(/images/scim/navigator/qieh_h.png) repeat-x;border:1px solid #b9d4e9;background-position:0px 0px;font-weight:bold;height:29px;}
+
+ul.menu1 li {background: url(/jsp/scim/gis/query/css/tab_bg.jpg) no-repeat -90px 0;width:90px;height:27px;line-height:27px;float:left;display:inline;overflow:hidden;text-align:center;cursor:pointer;}
+ul.menu1 li.current {background: url(/images/scim/navigator/qieh_h.png) repeat-x;border:1px solid #b9d4e9;color:red;background-position:0px 0px;}
+.cla_next{ height:26px;width:25px;float:right; line-height:27px; border-bottom:1px solid #a3b4ce;}
+.cla_next img{ float:right; border:none; margin:5px 3px 0px 0px}
+.cla_pre{ height:26px;width:25px;float:left; line-height:27px; border-bottom:1px solid #a3b4ce;}
+.cla_pre img{ float:left; border:none; margin:5px 3px 0px 0px}
+.cla_close{ height:26px;width:25px;float:right; line-height:27px; border-bottom:1px solid #a3b4ce;}
+.cla_close img{ float:right; border:none; margin:5px 3px 0px 0px}
+
+.layermap{ min-height:272px; background:url(images/jtuo.png) no-repeat bottom;}
+.latitle{ width:35px; height:35px; float:right;position:absolute; left:320px;margin-top: 1px;}
+.latitle img{ border:none;}
+.contlayer{  float:left; min-height:245px; border-top:1px solid #beced1; border-left:1px solid #beced1; border-right:1px solid #beced1;}
+.tablelayer{ font-size:12px; color:#878787; line-height:16px; }
+.tablelayer tr td{ text-align: center;}
+.contlayer h1{ margin:0 auto; padding:0; color:#0c4387; line-height:30px; font-size:12px; padding-left:20px;}
+.jtuo{width:33px;height:36px;background:url(images/jtuo.png) no-repeat;position:absolute;float:left;top:259px;left: 156px;}
+.cls_submit{background:url(/jsp/scim/gis/gisdt/toolbar/enlarge.png) no-repeat; width:28px; height:19px; border:none;}
+.cls_submit1{background:url(/jsp/scim/gis/gisdt/toolbar/btn_1.gif) no-repeat; width:75px; height:25px; border:none;}
+th{font-weight:normal;}
+.datalist{
+	
+	border:1px solid #b9d4e9; 
+	font-family:Arial;
+	border-collapse:collapse;	/* 边框重叠 */
+	background-color:#fff;	/* 表格背景色 */
+	font-size:12px;
+	margin:0 0;
+	
+}
+
+.datalist td{
+	border:1px solid #b9d4e9;	/* 单元格边框 */
+	text-align:left;
+	padding-top:8px; padding-bottom:8px;
+	padding-left:10px; padding-right:10px;
+}
+.datalist th{
+	border:1px solid #b9d4e9;	/* 单元格边框 */
+	text-align:right;
+	padding-top:8px; padding-bottom:8px;background-color:#fafbfd;
+	padding-left:10px; padding-right:10px;
+}
+
+.tab_contoner {
+	width:300px;
+	height:300px;
+	text-align:left;
+	border:1px solid #a0b3d1;
+	display:none;
+	z-index:10000000000000;
+	position: absolute;
+}
+.contleft {
+	float:left;
+	overflow:hidden;
+	height:23px;
+	width:100%;
+	background:#95cdfe;
+	border-bottom:1px solid #a0b3d1;
+}
+.contspan{ font-size:12px; margin-left:5px; font-weight:bold; color:#FFF; line-height:23px; float:left;}
+.cla_close1 {
+	height:23px;
+	border-bottom:1px solid #a0b3d1;
+	background:#95cdfe;
+	float:right;
+}
+.cla_close1 img {
+	margin:6px 3px 0px 0px;
+	border:none;
+}
+
+#contentArea{
+	border-top:none;
+	min-height:422px; 
+	background:#FFF;
+	position:absolute;
+	top:0px;
+	z-index:3;
+    width: 240px;
+    height:100%; 
+    background:#fff;
+    left:0px;
+    border-right:0px; 
+    float:left;
+    overflow:none;
+   /* filter:alpha(opacity=90);  IE 透明度20% */ 
+}
+
+.urgency{
+	width:12px;height:19px; vertical-align:middle; margin-top: 2px;
+}
+
+.rentitle{ background:url(../images/ren_bg_let.png) left top no-repeat; height:46px; width:284px; }
+.rentitle .active {}
+.rentitle ul{ list-style:none; margin:0; padding:0; background:url(../images/ren_bg_rig.png) right top no-repeat; float:left; height:46px; width:274px; margin-left:10px;}
+.rentitle ul li{ float:left; padding:5px 8px; background:url(../images/ren_line.png) 100% 50% no-repeat;}
+.rentitle .noline{ background:none}
+.rencont{width:284px; margin-top:5px; margin-bottom:5px;}
+.rentop{ background:url(../images/ren_top_bg.png) left top no-repeat; width:284px; height:46px;position:relative;}
+.close{ position:absolute; right:5px; top:5px;}
+.renbtm{ background:url(../images/ren_btm_bg.png) left bottom no-repeat; height:100%; padding-bottom:6px; }
+.rentop form{ margin:0; padding:15px 0px 0 6px;}
+.rentop .search_box{ background:#fff; border:1px solid #e4c7aa; display:inline-block; width:190px; height:23px; line-height:23px; color:#666; margin-left:5px;}
+.rentop .search_btn{ background:url(../images/ren_btn1.png) no-repeat; width:54px; height:24px; display:inline-block; border:none;}
+.renbtm ul{ list-style:none; padding:0; margin:0;}
+.renbtm ul li{  border-bottom:1px solid #f6e4cb;height:32px; line-height:32px; padding-left:0px; margin:0 15px;}
+.renbtm ul li a{ font-size:12px; color:#000; text-decoration:none; display:inline-block; width:120px;margin-top:3px;}
+.renbtm ul li a:hover{color:#071277;}
+.rencont .noline{ background:none; border:none;}

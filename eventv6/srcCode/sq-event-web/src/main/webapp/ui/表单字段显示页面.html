@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="css/normal.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="css/jquery.mCustomScrollbar.css">
+</head>
+
+<body>
+    <div id="content-d" class="MC_con content light" style="height:440px;">
+                <div class="NorForm">
+                	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td class="LeftTd"><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                      </tr>
+                      <tr>
+                        <td class="LeftTd"><label class="LabName"><span>涉事人员：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                      </tr>
+                      <tr>
+                        <td class="LeftTd"><label class="LabName"><span>字段名称：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                      </tr>
+                      <tr>
+                        <td class="LeftTd"><label class="LabName"><span>涉事人员：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                        <td><label class="LabName"><span>事件标题：</span></label><div class="Check_Radio FontDarkBlue">字段值</div></td>
+                      </tr>
+                    </table>
+                </div>
+	</div>
+	<div class="BigTool">
+    	<div class="BtnList">
+            <a href="#" class="BigNorToolBtn SaveBtn">保存</a>
+            <a href="#" class="BigNorToolBtn SubmitBtn">提交</a>
+            <a href="#" class="BigNorToolBtn CancelBtn">取消</a>
+        </div>
+    </div>
+	<script>window.jQuery || document.write('<script src="js/minified/jquery-1.11.0.min.js"><\/script>')</script>
+	
+	<!-- custom scrollbar plugin -->
+	<script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+	
+	<script>
+		(function($){
+			$(window).load(function(){
+				
+				$.mCustomScrollbar.defaults.scrollButtons.enable=true; //enable scrolling buttons by default
+				$.mCustomScrollbar.defaults.axis="yx"; //enable 2 axis scrollbars by default
+				
+				
+				$("#content-d").mCustomScrollbar({theme:"dark"});
+				
+				$("#content-md").mCustomScrollbar({theme:"minimal-dark"});
+			});
+		})(jQuery);
+	</script>
+<script type="text/javascript" src="js/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="js/function.js"></script>
+</body>
+</html>

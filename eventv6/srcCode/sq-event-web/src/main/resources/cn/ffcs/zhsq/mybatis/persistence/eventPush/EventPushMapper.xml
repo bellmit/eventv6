@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventPush.EventPushMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.eventPush.EventPush">
+		<id column="ID" property="id" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" /> <!--事件ID-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_NAME" property="createName" jdbcType="VARCHAR" /> <!--创建人姓名-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--更新人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--是否有效-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+	
+		<result column="HAPPEN_TIME" property="happenTime" jdbcType="TIMESTAMP" /> <!--事发时间-->
+		<result column="HANDLE_DATE" property="handleTime" jdbcType="TIMESTAMP" /> <!--办结期限-->
+		<result column="CONTENT_" property="content" jdbcType="VARCHAR" /> <!--事件内容-->
+		<result column="SUPERVISE_MARK" property="superViseMark" jdbcType="VARCHAR" /> <!--事件督办标记-->
+		<result column="HANDLE_DATE_FLAG" property="handleDateFlag" jdbcType="VARCHAR" />
+		<result column="EVENT_NAME" property="eventName" jdbcType="VARCHAR" /> <!--事件标题-->
+		<result column="TYPE_" property="type" jdbcType="VARCHAR" /> <!--事件分类-->
+		<result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR" /> <!--所属网格-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--当前状态-->
+		<result column="CREATETIME" property="createTime" jdbcType="VARCHAR" /> <!--采集时间-->
+		<result column="BIZ_PLATFORM" property="bizPlatform" jdbcType="VARCHAR" /> 
+		<result column="INSTANCE_ID" property="instanceId" jdbcType="VARCHAR" /> 
+		<result column="WORKFLOW_ID" property="workflowId" jdbcType="VARCHAR" /> 
+	
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM T_EVENT_PUSH T 
+		LEFT JOIN T_EVENT E ON T.EVENT_ID = E.EVENT_ID 
+		INNER JOIN T_DC_GRID G ON E.GRID_ID = G.GRID_ID 
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3 ON E.EVENT_ID = T3.FORM_ID
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT 
+			T.ID,
+			T.EVENT_ID,
+			E.HAPPEN_TIME,
+			E.HANDLE_DATE,
+			E.EVENT_NAME,
+			E.TYPE_,
+			E.CONTENT_,
+			G.GRID_PATH,
+			E.STATUS,
+			E.CREATE_TIME,
+			E.BIZ_PLATFORM,
+       		T3.INSTANCE_ID,
+       		T3.WORKFLOW_ID,
+       		T.CREATE_NAME, 
+       		T6.SUPERVISE_MARK,
+       		E.HANDLE_DATE_FLAG
+		FROM T_EVENT_PUSH T 
+		LEFT JOIN T_EVENT E ON T.EVENT_ID = E.EVENT_ID 
+		INNER JOIN T_DC_GRID G ON E.GRID_ID = G.GRID_ID 
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3 ON E.EVENT_ID = T3.FORM_ID
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T6 ON T3.INSTANCE_ID = T6.INSTANCE_ID
+  		LEFT JOIN ${dbuser.workflow}.WF_ATTENTION T10 ON T10.FOREIGN_ID = T.EVENT_ID
+  		AND T10.ORG_ID = 0 AND T10.STATUS = '1' AND T10.ATTENTION_TYPE = '2'
+   		AND T10.FORM_TYPE = '300'  AND T10.USER_TYPE = '3'
+        AND T10.USER_ID = #{userId}
+        AND EXISTS (
+  				SELECT 1
+  				FROM ${dbuser.workflow}.WF_REMIND T15
+  				WHERE T15.INSTANCE_ID = T3.INSTANCE_ID
+  				AND T15.STATUS = '2' AND T15.REMIND_USER_ID = #{userId}
+  			)
+		<include refid="find_where" />
+		ORDER BY T.ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			 T.IS_VALID = '1' 
+			 AND G.STATUS = '001' 
+			 AND E.STATUS IN ('00', '01', '02', '03', '04') 
+			 AND T3.FORM_TYPE_ID = 300
+			 AND E.GRID_CODE LIKE #{infoOrgCode} ||'%'
+			 <if test="eventName != null and  eventName != ''">
+			 	AND E.EVENT_NAME LIKE '%'|| #{eventName} ||'%'
+			 </if>
+			 <if test="code != null and code != '' ">
+			 	AND E.CODE_ =  #{code}
+			 </if>
+			 <if test="pushName != null and pushName != ''">
+			 	AND T.CREATE_NAME LIKE '%'|| #{pushName} ||'%'
+			 </if>
+			 <if test="createTimeStart != null and createTimeStart != ''">
+			 	AND E.CREATE_TIME &gt;=  TO_DATE(#{createTimeStart},'YYYY-MM-DD')
+			 </if>
+			 <if test="createTimeEnd != null and createTimeEnd != ''">
+			 	AND E.CREATE_TIME &lt;   TO_DATE(#{createTimeEnd},'YYYY-MM-DD') + 1
+			 </if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="java.util.Map">
+		INSERT INTO
+			T_EVENT_PUSH
+		(
+			ID,
+			EVENT_ID,
+			CREATOR,
+			CREATE_NAME,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			REMARK
+		)
+		SELECT SEQ_T_EVENT_PUSH.NEXTVAL,A.* FROM 
+	    (
+	    	<foreach collection="ids" item="item" index="index" separator="union all" >
+				SELECT
+					#{item,jdbcType=DECIMAL} as eventId,
+					#{creator,jdbcType=VARCHAR} as creator,
+					#{createName,jdbcType=VARCHAR} as createName,
+					sysdate as createTime,
+					#{creator,jdbcType=VARCHAR} as updetor,
+					sysdate as updateTime,
+					'1' as isVaild,
+					#{remark,jdbcType=VARCHAR} as remark
+				FROM DUAL
+			</foreach>
+		)A
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.eventPush.EventPush">
+		UPDATE
+			T_EVENT_PUSH
+		<set> 
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="isVaild != null " >
+				IS_VAILD=#{isVaild,jdbcType=VARCHAR},
+			</if>
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			ID= #{id,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 判断事件是否存在 -->	
+	<select id="searchByEventIds" resultMap="BaseResultMap" >
+		SELECT E.EVENT_NAME FROM T_EVENT_PUSH T 
+		INNER JOIN T_EVENT E ON T.EVENT_ID = E.EVENT_ID 
+		WHERE T.IS_VALID = '1' AND E.STATUS IN ('00','01','02','03','04') 
+		AND T.EVENT_ID IN 
+		  <foreach collection="eventIds" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+          </foreach>
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.eventPush.EventPush">
+		UPDATE
+			T_EVENT_PUSH
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator}
+		WHERE ID = #{id}
+	</delete>
+</mapper>

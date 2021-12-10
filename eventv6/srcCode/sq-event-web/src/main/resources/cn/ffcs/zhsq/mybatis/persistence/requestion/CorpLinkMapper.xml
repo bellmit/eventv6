@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.requestion.CorpLinkMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.requestion.CorpLink">
+		<id column="CLU_ID" property="cluId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="LINKAGE_UNIT_ID" property="linkageUnitId" jdbcType="DECIMAL" /> <!--联动单位ID-->
+		<result column="LINK_MAN" property="linkMan" jdbcType="VARCHAR" /> <!--联络员-->
+		<result column="LINK_MAN_TEL" property="linkManTel" jdbcType="VARCHAR" /> <!--联络员联系方式-->
+		<result column="LEADER_NAME" property="leaderName" jdbcType="VARCHAR" /> <!--分管领导-->
+		<result column="LEADER_TEL" property="leaderTel" jdbcType="VARCHAR" /> <!--分管领导联系方式-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_CORP_LINKAGE_UNIT2 T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.CLU_ID,
+			T.LINKAGE_UNIT_ID,
+			T.LINK_MAN,
+			T.LINK_MAN_TEL,
+			T.LEADER_NAME,
+			T.LEADER_TEL
+		FROM
+			T_CORP_LINKAGE_UNIT2 T
+		<include refid="find_where" />
+		ORDER BY 
+			T.CLU_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.CorpLink">
+		<selectKey keyProperty="cluId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_CORP_LINKAGE_UNIT2.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_CORP_LINKAGE_UNIT2
+		(
+			CLU_ID,
+			LINKAGE_UNIT_ID,
+			LINK_MAN,
+			LINK_MAN_TEL,
+			LEADER_NAME,
+			LEADER_TEL
+		) VALUES (
+			#{cluId,jdbcType=DECIMAL},
+			#{linkageUnitId,jdbcType=DECIMAL},
+			#{linkMan,jdbcType=VARCHAR},
+			#{linkManTel,jdbcType=VARCHAR},
+			#{leaderName,jdbcType=VARCHAR},
+			#{leaderTel,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.CorpLink">
+		UPDATE
+			T_CORP_LINKAGE_UNIT2
+		<set> 
+			<if test="linkageUnitId != null " >
+				LINKAGE_UNIT_ID=#{linkageUnitId,jdbcType=DECIMAL},
+			</if>
+			<if test="linkMan != null " >
+				LINK_MAN=#{linkMan,jdbcType=VARCHAR},
+			</if>
+			<if test="linkManTel != null " >
+				LINK_MAN_TEL=#{linkManTel,jdbcType=VARCHAR},
+			</if>
+			<if test="leaderName != null " >
+				LEADER_NAME=#{leaderName,jdbcType=VARCHAR},
+			</if>
+			<if test="leaderTel != null " >
+				LEADER_TEL=#{leaderTel,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			CLU_ID= #{cluId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.CLU_ID,
+			T.LINKAGE_UNIT_ID,
+			T.LINK_MAN,
+			T.LINK_MAN_TEL,
+			T.LEADER_NAME,
+			T.LEADER_TEL
+		FROM
+			T_CORP_LINKAGE_UNIT2 T
+		WHERE
+			CLU_ID= #{cluId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 详情 -->	
+	<select id="searchByGridId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.CLU_ID,
+			T.LINKAGE_UNIT_ID,
+			T.LINK_MAN,
+			T.LINK_MAN_TEL,
+			T.LEADER_NAME,
+			T.LEADER_TEL
+		FROM
+			T_CORP_LINKAGE_UNIT2 T
+		WHERE
+			LINKAGE_UNIT_ID= #{linkageUnitId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.CorpLink">
+		DELETE FROM T_CORP_LINKAGE_UNIT2 WHERE CLU_ID= #{cluId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

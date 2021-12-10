@@ -1,0 +1,1481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eliminatelettertho.EliminateLetterThoMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+        <id column="THO_ID" property="thoId" jdbcType="DECIMAL"/> <!--主键-->
+        <result column="THO_UUID" property="thoUuid" jdbcType="VARCHAR"/> <!--逻辑主键-->
+        <result column="BIZ_STATUS" property="bizStatus" jdbcType="VARCHAR"/> <!--业务状态-->
+        <result column="THT_NO" property="thtNo" jdbcType="VARCHAR"/> <!--三书一函编码-->
+        <result column="LETTER_TYPE" property="letterType" jdbcType="VARCHAR"/> <!--文书类型-->
+        <result column="FB_DEPART_CODE" property="fbDepartCode" jdbcType="VARCHAR"/> <!--发布单位编码-->
+        <result column="FB_DEPART_NAME_DET" property="fbDepartNameDet" jdbcType="VARCHAR"/> <!--具体发布单位名称-->
+        <result column="FB_DATE" property="fbDate" jdbcType="VARCHAR"/> <!--发布时间-->
+        <result column="LETTER_NO" property="letterNo" jdbcType="VARCHAR"/> <!--文号-->
+        <result column="CASE_NAME" property="caseName" jdbcType="VARCHAR"/> <!--案件名称-->
+        <result column="CASE_NO" property="caseNo" jdbcType="VARCHAR"/> <!--案件编码-->
+        <result column="INDUSTRIAL_COMMENT" property="industrialComment" jdbcType="VARCHAR"/> <!--行业领域补充说明-->
+        <result column="FLOW_STEP" property="flowStep" jdbcType="VARCHAR"/> <!--流程节点名称-->
+        <result column="INSTANCE_ID" property="instanceId" jdbcType="DECIMAL"/> <!--流程实例ID-->
+        <result column="LETTER_CONTENT_CLOB" property="letterContentClob" jdbcType="VARCHAR"/> <!--文书内容-->
+        <result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR"/> <!--地域编码-->
+        <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR"/> <!--组织编码-->
+        <result column="CREATOR" property="creator" jdbcType="DECIMAL"/> <!--创建人-->
+        <result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR"/> <!--创建时间-->
+        <result column="UPDATOR" property="updator" jdbcType="DECIMAL"/> <!--修改人-->
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR"/> <!--修改时间-->
+        <result column="IS_VALID" property="isValid" jdbcType="VARCHAR"/> <!--有效状态-->
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/> <!--备注-->
+        <result column="RE_DEPART_NAME_DET" property="reChgs.reDepartNameDet" jdbcType="VARCHAR"/> <!--具体接收单位名称-->
+    </resultMap>
+
+    <!-- 列表（总数） -->
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        <include refid="find_where"/>
+    </select>
+
+    <!-- 列表（分页） -->
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT
+            T.THO_ID,
+            T.THO_UUID,
+            T.BIZ_STATUS,
+            T.THT_NO,
+            T.LETTER_TYPE,
+            T.FB_DEPART_CODE,
+            T.FB_DEPART_NAME_DET,
+            T.FB_DATE,
+            T.LETTER_NO,
+            T.CASE_NAME,
+            T.CASE_NO,
+            T.INDUSTRIAL_COMMENT,
+            T.FLOW_STEP,
+            T.INSTANCE_ID,
+            T.LETTER_CONTENT_CLOB,
+            T.REGION_CODE,
+            T.ORG_CODE,
+            T.CREATOR,
+            T.CREATE_TIME,
+            CHG.RE_DEPART_CODE,
+            CHG.RE_DEPART_NAME_DET
+        FROM
+            T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        <include refid="find_where"/>
+        ORDER BY
+        T.THO_ID DESC
+    </select>
+
+    <!-- 列表（条件） -->
+    <sql id="find_where">
+        <where>
+            AND T.IS_VALID = '1'
+            <if test="@Ognl@isNotEmpty(letterType)" >
+                <![CDATA[ AND T.LETTER_TYPE = #{letterType,jdbcType=VARCHAR} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(regionCode)" >
+                <![CDATA[ AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%' ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(fbDepartNameDet)" >
+                <![CDATA[ AND T.FB_DEPART_NAME_DET LIKE '%'||#{fbDepartNameDet,jdbcType=VARCHAR}||'%' ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(fbDateStart)" >
+                <![CDATA[ AND T.FB_DATE >= #{fbDateStart,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(fbDateEnd)" >
+                <![CDATA[ AND T.FB_DATE <= #{fbDateEnd,jdbcType=TIMESTAMP} +1 ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(bizStatusArr)" >
+                AND T.BIZ_STATUS IN
+                <foreach collection="bizStatusArr" index="index" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="@Ognl@isNotEmpty(flowStepArr)" >
+                AND T.FLOW_STEP IN
+                <foreach collection="flowStepArr" index="index" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="@Ognl@isNotEmpty(creator)" >
+                <![CDATA[ AND T.CREATOR = #{creator,jdbcType=DECIMAL} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(selectedThoUuidArr)" >
+                AND T.THO_UUID IN
+                <foreach collection="selectedThoUuidArr" index="index" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+            <if test="@Ognl@isNotEmpty(selectedThoIdArr)" >
+                AND T.THO_ID IN
+                <foreach collection="selectedThoIdArr" index="index" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+        <selectKey keyProperty="thoId" resultType="long" order="BEFORE">
+            SELECT SEQ_ELIMINATE_LETTER_THO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        T_ELIMINATE_LETTER_THO
+        (
+        THO_ID,
+        THO_UUID,
+        BIZ_STATUS,
+        THT_NO,
+        LETTER_TYPE,
+        FB_DEPART_CODE,
+        FB_DEPART_NAME_DET,
+        FB_DATE,
+        LETTER_NO,
+        CASE_NAME,
+        CASE_NO,
+        INDUSTRIAL_COMMENT,
+        FLOW_STEP,
+        INSTANCE_ID,
+        LETTER_CONTENT_CLOB,
+        REGION_CODE,
+        ORG_CODE,
+        CREATOR,
+        CREATE_TIME,
+        UPDATOR,
+        UPDATE_TIME,
+        IS_VALID,
+        REMARK
+        ) VALUES (
+        #{thoId,jdbcType=DECIMAL},
+        #{thoUuid,jdbcType=VARCHAR},
+        #{bizStatus,jdbcType=VARCHAR},
+        #{thtNo,jdbcType=VARCHAR},
+        #{letterType,jdbcType=VARCHAR},
+        #{fbDepartCode,jdbcType=VARCHAR},
+        #{fbDepartNameDet,jdbcType=VARCHAR},
+        #{fbDate,jdbcType=VARCHAR},
+        #{letterNo,jdbcType=VARCHAR},
+        #{caseName,jdbcType=VARCHAR},
+        #{caseNo,jdbcType=VARCHAR},
+        #{industrialComment,jdbcType=VARCHAR},
+        #{flowStep,jdbcType=VARCHAR},
+        #{instanceId,jdbcType=DECIMAL},
+        #{letterContentClob,jdbcType=VARCHAR},
+        #{regionCode,jdbcType=VARCHAR},
+        #{orgCode,jdbcType=VARCHAR},
+        #{creator,jdbcType=DECIMAL},
+        sysdate,
+        #{updator,jdbcType=DECIMAL},
+        sysdate,
+        '1',
+        #{remark,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+        UPDATE
+        T_ELIMINATE_LETTER_THO
+        <set>
+            <if test="bizStatus != null ">
+                BIZ_STATUS=#{bizStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="thtNo != null ">
+                THT_NO=#{thtNo,jdbcType=VARCHAR},
+            </if>
+            <if test="letterType != null ">
+                LETTER_TYPE=#{letterType,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDepartCode != null ">
+                FB_DEPART_CODE=#{fbDepartCode,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDepartNameDet != null ">
+                FB_DEPART_NAME_DET=#{fbDepartNameDet,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDate != null ">
+                FB_DATE=#{fbDate,jdbcType=VARCHAR},
+            </if>
+            <if test="letterNo != null ">
+                LETTER_NO=#{letterNo,jdbcType=VARCHAR},
+            </if>
+            <if test="caseName != null ">
+                CASE_NAME=#{caseName,jdbcType=VARCHAR},
+            </if>
+            <if test="caseNo != null ">
+                CASE_NO=#{caseNo,jdbcType=VARCHAR},
+            </if>
+            <if test="industrialComment != null ">
+                INDUSTRIAL_COMMENT=#{industrialComment,jdbcType=VARCHAR},
+            </if>
+            <if test="flowStep != null ">
+                FLOW_STEP=#{flowStep,jdbcType=VARCHAR},
+            </if>
+            <if test="instanceId != null ">
+                INSTANCE_ID=#{instanceId,jdbcType=DECIMAL},
+            </if>
+            <if test="letterContentClob != null ">
+                LETTER_CONTENT_CLOB=#{letterContentClob,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null ">
+                UPDATOR=#{updator,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null ">
+                REMARK=#{remark,jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateBlankByThoUuid" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+        UPDATE
+        T_ELIMINATE_LETTER_THO
+        SET
+            BIZ_STATUS=#{bizStatus,jdbcType=VARCHAR},
+            THT_NO=#{thtNo,jdbcType=VARCHAR},
+            LETTER_TYPE=#{letterType,jdbcType=VARCHAR},
+            FB_DEPART_CODE=#{fbDepartCode,jdbcType=VARCHAR},
+            FB_DEPART_NAME_DET=#{fbDepartNameDet,jdbcType=VARCHAR},
+            FB_DATE=#{fbDate,jdbcType=VARCHAR},
+            LETTER_NO=#{letterNo,jdbcType=VARCHAR},
+            CASE_NAME=#{caseName,jdbcType=VARCHAR},
+            CASE_NO=#{caseNo,jdbcType=VARCHAR},
+            INDUSTRIAL_COMMENT=#{industrialComment,jdbcType=VARCHAR},
+            FLOW_STEP=#{flowStep,jdbcType=VARCHAR},
+            INSTANCE_ID=#{instanceId,jdbcType=DECIMAL},
+            LETTER_CONTENT_CLOB=#{letterContentClob,jdbcType=VARCHAR},
+            UPDATOR=#{updator,jdbcType=DECIMAL},
+            REMARK=#{remark,jdbcType=VARCHAR},
+            UPDATE_TIME = sysdate
+        WHERE
+        THO_UUID= #{thoUuid,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateByThoUuid" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+        UPDATE
+        T_ELIMINATE_LETTER_THO
+        <set>
+            <if test="bizStatus != null ">
+                BIZ_STATUS=#{bizStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="letterType != null ">
+                LETTER_TYPE=#{letterType,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDepartCode != null ">
+                FB_DEPART_CODE=#{fbDepartCode,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDepartNameDet != null ">
+                FB_DEPART_NAME_DET=#{fbDepartNameDet,jdbcType=VARCHAR},
+            </if>
+            <if test="fbDate != null ">
+                FB_DATE=#{fbDate,jdbcType=VARCHAR},
+            </if>
+            <if test="letterNo != null ">
+                LETTER_NO=#{letterNo,jdbcType=VARCHAR},
+            </if>
+            <if test="caseName != null ">
+                CASE_NAME=#{caseName,jdbcType=VARCHAR},
+            </if>
+            <if test="caseNo != null ">
+                CASE_NO=#{caseNo,jdbcType=VARCHAR},
+            </if>
+            <if test="industrialComment != null ">
+                INDUSTRIAL_COMMENT=#{industrialComment,jdbcType=VARCHAR},
+            </if>
+            <if test="flowStep != null ">
+                FLOW_STEP=#{flowStep,jdbcType=VARCHAR},
+            </if>
+            <if test="instanceId != null ">
+                INSTANCE_ID=#{instanceId,jdbcType=DECIMAL},
+            </if>
+            <if test="letterContentClob != null ">
+                LETTER_CONTENT_CLOB=#{letterContentClob,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null ">
+                UPDATOR=#{updator,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null ">
+                REMARK=#{remark,jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE
+        THO_UUID= #{thoUuid,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 详情 -->
+    <select id="searchById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+			T.THO_ID,
+			T.THO_UUID,
+			T.BIZ_STATUS,
+			T.THT_NO,
+			T.LETTER_TYPE,
+			T.FB_DEPART_CODE,
+			T.FB_DEPART_NAME_DET,
+			T.FB_DATE,
+			T.LETTER_NO,
+			T.CASE_NAME,
+			T.CASE_NO,
+			T.INDUSTRIAL_COMMENT,
+			T.FLOW_STEP,
+			T.INSTANCE_ID,
+			T.LETTER_CONTENT_CLOB,
+			T.REGION_CODE,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ELIMINATE_LETTER_THO T
+		WHERE
+			THO_ID= #{thoId,jdbcType=DECIMAL}
+	</select>
+
+    <!-- 详情 -->
+    <select id="searchByThoUuid" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+			T.THO_ID,
+			T.THO_UUID,
+			T.BIZ_STATUS,
+			T.THT_NO,
+			T.LETTER_TYPE,
+			T.FB_DEPART_CODE,
+			T.FB_DEPART_NAME_DET,
+			T.FB_DATE,
+			T.LETTER_NO,
+			T.CASE_NAME,
+			T.CASE_NO,
+			T.INDUSTRIAL_COMMENT,
+			T.FLOW_STEP,
+			T.INSTANCE_ID,
+			T.LETTER_CONTENT_CLOB,
+			T.REGION_CODE,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ELIMINATE_LETTER_THO T
+		WHERE
+			T.THO_UUID= #{thoUuid,jdbcType=VARCHAR}
+			AND T.IS_VALID = '1'
+	</select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterTho">
+		UPDATE
+			T_ELIMINATE_LETTER_THO
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+        <choose>
+            <when test="@Ognl@isNotEmpty(thoId)">
+                THO_ID= #{thoId,jdbcType=DECIMAL}
+            </when>
+            <otherwise>
+                THO_UUID= #{thoUuid,jdbcType=VARCHAR}
+            </otherwise>
+        </choose>
+	</delete>
+
+
+
+    <sql id="all_column">
+        T.THO_ID,
+        T.THO_UUID,
+        T.BIZ_STATUS,
+        T.THT_NO,
+        T.LETTER_TYPE,
+        T.FB_DEPART_CODE,
+        T.FB_DEPART_NAME_DET,
+        T.FB_DATE,
+        T.LETTER_NO,
+        T.CASE_NAME,
+        T.CASE_NO,
+        T.INDUSTRIAL_COMMENT,
+        T.FLOW_STEP,
+        T.INSTANCE_ID,
+        T.LETTER_CONTENT_CLOB,
+        T.REGION_CODE,
+        T.ORG_CODE,
+        T.CREATOR,
+        T.CREATE_TIME,
+        T.UPDATOR,
+        T.UPDATE_TIME,
+        T.IS_VALID,
+        T.REMARK
+    </sql>
+
+    <sql id="workflowColumns">
+        NVL(T1.INSTANCE_ID,0) "instanceId",<!--流程实例id-->
+        T1.STATUS "status"<!--流程状态-->
+    </sql>
+
+    <sql id="find_where_workflow">
+        <!--待办-->
+        <if test="curUserId !=null and curUserId !=''">
+            AND T3.USERID_ = #{curUserId}
+        </if>
+        <if test="curOrgId !=null and curOrgId !=''">
+            AND T3.GROUPID_ = #{curOrgId}
+        </if>
+        <if test="curOrgIds !=null and curOrgIds.length>0">
+            AND T3.GROUPID_ in
+            <foreach item="item" index="index" collection="curOrgIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--经办-->
+<!--        <if test="dealWithUserId !=null and dealWithUserId!='' ">
+            AND T3.USER_ID = #{dealWithUserId}
+        </if>
+        <if test="dealWithOrgId !=null and dealWithOrgId!='' ">
+            AND T3.ORG_ID = #{dealWithOrgId}
+        </if>
+        <if test="dealWithOrgIds !=null and dealWithOrgIds.length>0">
+            AND T3.ORG_ID in
+            <foreach item="item" index="index" collection="dealWithOrgIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>-->
+
+    </sql>
+
+    <!-- 待办文书列表（分页） -->
+    <select id="countWaitList"  resultType="java.lang.Long">
+        SELECT COUNT(1) FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T1 ON T.THO_ID = T1.FORM_ID
+        INNER JOIN ${dbuser.workflow}.JBPM4_TASK T2 ON T2.PROCINST_ = T1.INSTANCE_ID
+        INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T3 ON T3.TASK_ = T2.DBID_
+        <include refid="find_where" />
+        <include refid="find_where_workflow"/>
+        AND T1.STATUS ='1'
+        AND T1.FORM_TYPE_ID = 765
+    </select>
+
+    <!-- 待办文书列表（分页） -->
+    <select id="searchWaitList"  resultMap="BaseResultMap">
+        SELECT
+        <include refid="all_column"></include>,
+        CHG.RE_DEPART_CODE,
+        CHG.RE_DEPART_NAME_DET,
+        <include refid="workflowColumns"></include>
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T1 ON T.THO_ID = T1.FORM_ID
+        INNER JOIN ${dbuser.workflow}.JBPM4_TASK T2 ON T2.PROCINST_ = T1.INSTANCE_ID
+        INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T3 ON T3.TASK_ = T2.DBID_
+        <include refid="find_where" />
+        <include refid="find_where_workflow"/>
+        AND T1.STATUS ='1'
+        AND T1.FORM_TYPE_ID = 765
+        ORDER BY
+        T.THO_ID DESC
+    </select>
+
+    <!-- 辖区文书列表（分页） -->
+    <select id="countJurisdictionList"  resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T1 ON T.THO_ID = T1.FORM_ID
+        <include refid="find_where" />
+        AND T1.STATUS IN ('1','2')
+        AND T1.FORM_TYPE_ID = 765
+    </select>
+
+    <!-- 辖区文书列表（分页） -->
+    <select id="searchJurisdictionList"  resultMap="BaseResultMap">
+        SELECT
+        <include refid="all_column"></include>,
+        CHG.RE_DEPART_CODE,
+        CHG.RE_DEPART_NAME_DET,
+        <include refid="workflowColumns"></include>
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T1
+        ON T.THO_ID = T1.FORM_ID
+        <include refid="find_where" />
+        AND T1.STATUS IN ('1','2')
+        AND T1.FORM_TYPE_ID = 765
+        ORDER BY
+        T.THO_ID DESC
+    </select>
+
+    <!-- 归档文书列表（分页） -->
+    <select id="countArchiveList"  resultType="java.lang.Long">
+        SELECT COUNT(1) FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+
+
+        <include refid="find_where" />
+
+    </select>
+
+    <!-- 归档文书列表（分页） -->
+    <select id="searchArchiveList"  resultMap="BaseResultMap">
+        SELECT
+        <include refid="all_column"></include>,
+        CHG.RE_DEPART_CODE,
+        CHG.RE_DEPART_NAME_DET
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+
+        <include refid="find_where" />
+
+        ORDER BY
+        T.THO_ID DESC
+    </select>
+
+    <!-- 统计大屏各种类型的主表总数 -->
+    <select id="statisticsMainCount"  resultType="java.lang.Long">
+        SELECT COUNT(*) FROM T_ELIMINATE_LETTER_THO T
+        <if test="statisticsType == 'rectify' || statisticsType == 'indusChg' || statisticsType == 'longAction'" >
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1'
+        </if>
+        <include refid="statistics_find_where" />
+    </select>
+
+    <!-- 列表（条件） -->
+    <sql id="statistics_find_where">
+        <where>
+            AND T.IS_VALID = '1'
+            <if test="@Ognl@isNotEmpty(createTimeStart)" >
+                <![CDATA[ AND T.CREATE_TIME >= #{createTimeStart,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+                <![CDATA[ AND T.CREATE_TIME < #{createTimeEnd,jdbcType=TIMESTAMP}+1 ]]>
+            </if>
+            <!-- 文书总数 -->
+            <if test="statisticsType == 'total'" >
+                AND T.BIZ_STATUS !='99' AND T.FLOW_STEP != '99'
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+            </if>
+            <!-- 文书反馈回复数 -->
+            <if test="statisticsType == 'feedback'" >
+
+                AND T.FLOW_STEP NOT IN ('99','task2')
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+
+            </if>
+            <!-- 落实整改数 -->
+            <if test="statisticsType == 'rectify'" >
+
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+             AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+             AND CHG_TYPE = #{chgType,jdbcType=VARCHAR}
+
+            </if>
+            <!-- 行业治理数 -->
+            <if test="statisticsType == 'indusChg'" >
+
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+                 AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+                 AND CHG.INDUS_CHG_AGREE=#{indusChgAgree,jdbcType=VARCHAR}
+
+            </if>
+            <!-- 长效机制数 -->
+            <if test="statisticsType == 'longAction'" >
+
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+             AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+             AND CHG.LONG_ACTION_AGREE=#{longActionAgree,jdbcType=VARCHAR}
+
+            </if>
+            <!-- 不通过数量 -->
+            <if test="statisticsType == 'failEnd'" >
+
+                <if test="@Ognl@isNotEmpty(letterType)">
+                    AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+                </if>
+             AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+             AND T.BIZ_STATUS IN ('07','08','09')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 行业领域文书分布情况 -->
+    <select id="getIndusDistribution"  resultType="java.util.Map">
+        SELECT
+               COUNT(INDUS.INDUSTRIAL_CODE) "total",
+               INDUS.INDUSTRIAL_CODE "industrialCode",
+               B.DICT_NAME "dictName"
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_INDUS INDUS ON T.THO_ID = INDUS.THO_ID AND INDUS.IS_VALID ='1'
+        INNER JOIN T_BAS_DATADICT B ON B.DICT_CODE LIKE 'B301002%' and  B.DICT_GENERAL_CODE = INDUS.INDUSTRIAL_CODE AND B.STATUS = '001'
+        WHERE T.IS_VALID ='1' AND T.BIZ_STATUS!= '99'
+          AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        <if test="@Ognl@isNotEmpty(letterType)">
+            AND T.LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeStart)" >
+            <![CDATA[ AND T.CREATE_TIME >= #{createTimeStart,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+            <![CDATA[ AND T.CREATE_TIME < #{createTimeEnd,jdbcType=TIMESTAMP}+1 ]]>
+        </if>
+        GROUP BY INDUS.INDUSTRIAL_CODE,B.DICT_NAME
+        ORDER BY "total" DESC
+    </select>
+
+    <!-- 文书类型分布情况 -->
+    <select id="getLetterTypeDistribution"  resultType="java.util.Map">
+        SELECT COUNT(T.LETTER_TYPE) "total",
+               T.LETTER_TYPE "letterType",
+               B.DICT_NAME "letterName"
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_BAS_DATADICT B ON B.DICT_CODE LIKE 'B301001%' and  B.DICT_GENERAL_CODE = T.LETTER_TYPE AND B.STATUS = '001'
+        WHERE T.IS_VALID ='1' AND T.BIZ_STATUS!= '99'
+        AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        <if test="@Ognl@isNotEmpty(letterType)">
+            AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeStart)" >
+            <![CDATA[ AND T.CREATE_TIME >= #{createTimeStart,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+            <![CDATA[ AND T.CREATE_TIME < #{createTimeEnd,jdbcType=TIMESTAMP}+1 ]]>
+        </if>
+        <if test="bizStatusArr != null ">
+            AND T.BIZ_STATUS IN
+            <foreach collection="bizStatusArr" index="index" item="item" open="(" separator="," close=")">
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+        GROUP BY T.LETTER_TYPE,B.DICT_NAME
+    </select>
+
+    <!-- 部门排行情况 -->
+    <select id="getDeptRankList"  resultType="java.util.Map">
+        <!-- 所有的部门 -->
+        WITH OE AS(
+            SELECT S1.ORG_ID,S1.ORG_CODE,S1.ORG_NAME,E1.ORG_CODE REGION_CODE,E1.ORG_NAME REGION_NAME,E1.ORG_ID REGION_ID
+            FROM ZHSQ.T_DC_ORG_SOCIAL_INFO S1,T_DC_ORG_ENTITY_INFO E1
+            WHERE S1.LOCATION_ORG_ID = E1.ORG_ID
+            AND S1.STATUS = '001' AND E1.STATUS = '001'
+            AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+        ),S AS(
+            SELECT R.PROFESSION_CODE,OE.REGION_CODE,OE.ORG_ID,OE.ORG_CODE
+            FROM OE,T_DC_ORG_PRO_RELATION R
+            WHERE OE.ORG_ID = R.ORG_ID
+            AND R.PROFESSION_CODE IN
+            <foreach collection="professionCodeArr" item="item" open="(" close=")" separator="," >
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+            AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        ),
+        <!-- 接收数  -->
+        B AS (
+            SELECT S.PROFESSION_CODE, OE.REGION_CODE,T.THO_ID,OE.ORG_ID
+            FROM T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1' AND T.IS_VALID = '1'  AND T.FLOW_STEP NOT IN ( '99')
+                <include refid="bigScreenWhere"/>
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            RIGHT JOIN S ON S.ORG_ID = OE.ORG_ID
+        ),B2 AS (
+            SELECT B.PROFESSION_CODE,COUNT(B.THO_ID) RECEIVE_COUNT FROM B GROUP BY B.PROFESSION_CODE
+        ),
+        <!-- 反馈数 -->
+        C AS (
+            SELECT S.PROFESSION_CODE, OE.REGION_CODE,T.THO_ID,OE.ORG_ID
+            FROM T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1' AND T.IS_VALID = '1' AND T.FLOW_STEP NOT IN ('99','task2')
+                <include refid="bigScreenWhere"/>
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            RIGHT JOIN S ON S.ORG_ID = OE.ORG_ID
+        ),C2 AS (
+            SELECT C.PROFESSION_CODE,COUNT(C.THO_ID) FEEDBACK_COUNT FROM C GROUP BY C.PROFESSION_CODE
+        ),
+        <!-- 整改数 -->
+        D AS (
+            SELECT S.PROFESSION_CODE, OE.REGION_CODE,T.THO_ID,OE.ORG_ID
+            FROM T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1' AND CHG.CHG_TYPE = '1' AND T.IS_VALID = '1' AND T.FLOW_STEP NOT IN ( '99')
+                <include refid="bigScreenWhere"/>
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            RIGHT JOIN S ON S.ORG_ID = OE.ORG_ID
+        ),D2 AS (
+        SELECT D.PROFESSION_CODE,COUNT(D.THO_ID) RECTIFY_COUNT FROM D GROUP BY D.PROFESSION_CODE
+        )
+        SELECT
+                B2.PROFESSION_CODE,
+                B2.RECEIVE_COUNT,
+                C2.FEEDBACK_COUNT ,
+                D2.RECTIFY_COUNT
+        FROM B2,C2,D2
+        WHERE B2.PROFESSION_CODE = C2.PROFESSION_CODE
+        AND B2.PROFESSION_CODE = D2.PROFESSION_CODE
+        <choose>
+            <when test="rankType == '0'.toString()">
+                ORDER BY RECEIVE_COUNT DESC
+            </when>
+            <when test="rankType == '1'.toString()">
+                ORDER BY FEEDBACK_COUNT DESC
+            </when>
+            <when test="rankType == '2'.toString()">
+                ORDER BY RECTIFY_COUNT DESC
+            </when>
+            <otherwise>
+                ORDER BY PROFESSION_CODE
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <!-- 文书类型分布情况 -->
+    <select id="getLetterTypeDistributionByDeptCode"  resultType="java.util.Map">
+        WITH OE AS(
+            SELECT S1.ORG_ID,S1.ORG_CODE,S1.ORG_NAME,E1.ORG_CODE REGION_CODE,E1.ORG_NAME REGION_NAME,E1.ORG_ID REGION_ID
+            FROM ZHSQ.T_DC_ORG_SOCIAL_INFO S1,T_DC_ORG_ENTITY_INFO E1
+            WHERE S1.LOCATION_ORG_ID = E1.ORG_ID
+            AND S1.STATUS = '001' AND E1.STATUS = '001'
+            AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+        ),S AS(
+            SELECT R.PROFESSION_CODE,OE.REGION_CODE,OE.ORG_ID,OE.ORG_CODE
+            FROM OE,T_DC_ORG_PRO_RELATION R
+            WHERE OE.ORG_ID = R.ORG_ID
+            AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+            AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        ),
+        B AS (
+        SELECT
+        S.PROFESSION_CODE,
+        OE.REGION_CODE,
+        T.THO_ID,
+        T.LETTER_TYPE,
+        OE.ORG_ID
+        FROM T_ELIMINATE_LETTER_THO T
+        INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+        ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1' AND T.IS_VALID = '1'
+        <choose>
+            <!-- 接收数  -->
+            <when test="searchType == '0'.toString()">
+                AND T.FLOW_STEP NOT IN ('99')
+            </when>
+            <!-- 反馈数  -->
+            <when test="searchType == '1'.toString()">
+                AND T.FLOW_STEP NOT IN ('99','task2')
+            </when>
+            <!-- 整改数  -->
+            <when test="searchType == '2'.toString()">
+                AND T.FLOW_STEP NOT IN ( '99') AND CHG.CHG_TYPE = '1'
+            </when>
+        </choose>
+        <include refid="bigScreenWhere"/>
+        INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+        INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+        )
+        SELECT
+               B.LETTER_TYPE "letterType",
+               COUNT(DISTINCT B.THO_ID) "total"
+        FROM B
+        GROUP BY B.LETTER_TYPE
+    </select>
+
+    <!-- 根据专业编码获取文书的地域分布 -->
+    <select id="getAreaDistributionByProfessionCode"  resultType="java.util.Map">
+        <!-- 行业部门排行 -->
+        WITH OE AS(
+            SELECT
+                   S1.ORG_ID,S1.ORG_CODE,S1.ORG_NAME,
+                   E1.ORG_CODE REGION_CODE,E1.ORG_NAME REGION_NAME,E1.ORG_ID REGION_ID,
+                   E1.CHIEF_LEVEL REGION_CHIEF_LEVEL,E1.PARENT_ORG_ID PARENT_REGION_ID
+            FROM ZHSQ.T_DC_ORG_SOCIAL_INFO S1,T_DC_ORG_ENTITY_INFO E1
+            WHERE S1.LOCATION_ORG_ID = E1.ORG_ID
+            AND S1.STATUS = '001' AND E1.STATUS = '001'
+            AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+        ),S AS(
+            SELECT R.PROFESSION_CODE,OE.REGION_CODE,OE.ORG_ID,OE.ORG_CODE
+            FROM OE,T_DC_ORG_PRO_RELATION R
+            WHERE OE.ORG_ID = R.ORG_ID
+            AND R.PROFESSION_CODE IN
+              <foreach collection="professionCodeArr" item="item" open="(" close=")" separator="," >
+                  #{item,jdbcType=VARCHAR}
+              </foreach>
+            AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+        ),
+        B AS (
+            SELECT OE.REGION_CODE,OE.REGION_CHIEF_LEVEL,T.THO_ID
+            FROM T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                ON T.THO_ID = CHG.THO_ID AND CHG.IS_VALID = '1' AND T.IS_VALID = '1' AND T.FLOW_STEP NOT IN ( '99')
+                <include refid="bigScreenWhere"/>
+            RIGHT JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+            AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+            <![CDATA[ AND OE.REGION_CODE <> #{regionCode,jdbcType=VARCHAR} ]]>
+        ), B1 AS (
+            SELECT REGION_CODE,REGION_CHIEF_LEVEL,COUNT(THO_ID) RECEIVE_COUNT FROM B
+            GROUP BY REGION_CODE,REGION_CHIEF_LEVEL
+        ),
+        B2 AS (
+            SELECT SUBSTR(B1.REGION_CODE,0,LENGTH(#{regionCode,jdbcType=VARCHAR})+DECODE(LENGTH(#{regionCode,jdbcType=VARCHAR}),2,2,4,2,3)) NEXT_REGION_CODE,RECEIVE_COUNT FROM B1
+        ),
+        B3 AS (
+            SELECT NEXT_REGION_CODE, SUM(RECEIVE_COUNT) RECEIVE_COUNT FROM B2 GROUP BY NEXT_REGION_CODE
+        )
+        SELECT
+            OE1.ORG_NAME REGION_NAME,
+            OE1.ORG_CODE REGION_CODE,
+            NVL(RECEIVE_COUNT,0) RECEIVE_COUNT
+        FROM B3,ZHSQ.T_DC_ORG_ENTITY_INFO OE1
+        WHERE OE1.ORG_CODE = B3.NEXT_REGION_CODE(+)
+        AND OE1.STATUS(+) = '001'
+        AND OE1.CHIEF_LEVEL(+) = #{chiefLevel,jdbcType=VARCHAR}
+        AND OE1.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        GROUP BY OE1.ORG_CODE,OE1.ORG_NAME,RECEIVE_COUNT
+        ORDER BY OE1.ORG_CODE
+    </select>
+
+    <!-- 根据地域获取获取总数分布情况 searchType :0 表示查总数，6表示查不通过数-->
+    <select id="getTotalDistributionByRegionCode"  resultType="java.util.Map">
+        WITH S AS(
+            SELECT E.ORG_CODE,E.ORG_NAME,E.CHIEF_LEVEL FROM ZHSQ.T_DC_ORG_ENTITY_INFO E
+            WHERE E.STATUS = '001' AND E.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+        ),
+             B1 AS (
+                 SELECT s.ORG_CODE REGION_CODE,S.ORG_NAME FROM T_ELIMINATE_LETTER_THO T
+        <!-- INNER JOIN S ON T.REGION_CODE LIKE S.ORG_CODE||'%' -->
+                 INNER JOIN S ON SUBSTR(T.REGION_CODE,1,#{codeLength,jdbcType=VARCHAR}) = S.ORG_CODE
+                 WHERE T.IS_VALID = '1'
+            <if test="@Ognl@isNotEmpty(letterType)">
+                AND LETTER_TYPE=#{letterType,jdbcType=VARCHAR}
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeStart)" >
+                <![CDATA[ AND T.CREATE_TIME >= #{createTimeStart,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+                <![CDATA[ AND T.CREATE_TIME < #{createTimeEnd,jdbcType=TIMESTAMP}+1 ]]>
+            </if>
+        <choose>
+            <when test="searchType == '6'.toString()">
+                AND T.BIZ_STATUS IN ('07','08','09')
+            </when>
+            <otherwise>
+                AND T.FLOW_STEP != '99'
+            </otherwise>
+        </choose>
+            ),B2 AS (
+                SELECT B1.REGION_CODE,COUNT(B1.REGION_CODE) TOTAL_COUNT FROM B1 GROUP BY B1.REGION_CODE
+            )
+        SELECT
+            S.ORG_CODE,
+            S.ORG_NAME,
+            NVL(B2.TOTAL_COUNT,0) TOTAL_COUNT
+        FROM S,B2
+        WHERE
+            B2.REGION_CODE(+)=S.ORG_CODE
+          and s.CHIEF_LEVEL = #{chiefLevel,jdbcType=VARCHAR}
+    </select>
+
+    <sql id="bigScreenWhere">
+        <if test="@Ognl@isNotEmpty(createTimeStart)" >
+            <![CDATA[ AND T.CREATE_TIME >= #{createTimeStart,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(createTimeEnd)" >
+            <![CDATA[ AND T.CREATE_TIME < #{createTimeEnd,jdbcType=TIMESTAMP}+1 ]]>
+        </if>
+        <if test="@Ognl@isNotEmpty(letterType)">
+            AND T.LETTER_TYPE = #{letterType,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <!-- 统计大屏文书列表总数 -->
+    <select id="searchPageCount" resultType="long">
+
+        <!-- 总数 -->
+        <if test="queryType == 0">
+            SELECT COUNT(1) FROM
+            T_ELIMINATE_LETTER_THO T
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} ||'%'
+                AND T.BIZ_STATUS != '99' AND T.FLOW_STEP != '99'
+                AND T.IS_VALID = '1'
+            </where>
+        </if>
+
+        <!-- 不通过 -->
+        <if test="queryType == 1">
+            SELECT COUNT(1) FROM
+            T_ELIMINATE_LETTER_THO T
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.BIZ_STATUS IN
+                    <foreach collection="bizStatusArr" index="index" item="item" open="(" separator="," close=")">
+                        #{item,jdbcType=VARCHAR}
+                    </foreach>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+                AND T.BIZ_STATUS != '99'
+                AND T.IS_VALID ='1'
+            </where>
+        </if>
+
+        <!-- 所有的部门 接收数 -->
+        <if test="queryType == 2">
+            WITH
+            OE AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    E1.ORG_CODE REGION_CODE
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_ENTITY_INFO E1
+                WHERE
+                    S1.LOCATION_ORG_ID = E1.ORG_ID
+                    AND S1.STATUS = '001' AND E1.STATUS = '001'
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR} || '%'
+            ),
+            S AS (
+                SELECT
+                    OE.ORG_ID
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+            )
+
+            SELECT COUNT(1) FROM
+            T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+            </where>
+            ORDER BY T.THO_ID
+        </if>
+
+        <!-- 所有的部门 反馈数 -->
+        <if test="queryType == 3">
+            WITH
+            OE AS (
+            SELECT
+                S1.ORG_ID,
+                S1.ORG_CODE,
+                E1.ORG_CODE REGION_CODE
+            FROM
+                ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                T_DC_ORG_ENTITY_INFO E1
+            WHERE
+                S1.LOCATION_ORG_ID = E1.ORG_ID
+                AND S1.STATUS = '001' AND E1.STATUS = '001'
+                AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR} || '%'
+            ),
+            S AS (
+                SELECT
+                    OE.ORG_ID
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+            )
+
+            SELECT COUNT(1) FROM
+            T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND CHG.IS_VALID = '1'
+                AND T.IS_VALID = '1'
+                AND T.FLOW_STEP NOT IN ('99', 'task2')
+            </where>
+            ORDER BY T.THO_ID
+
+        </if>
+
+        <!-- 所有的部门 整改数 -->
+        <if test="queryType == 4">
+            WITH
+            OE AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    E1.ORG_CODE REGION_CODE
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_ENTITY_INFO E1
+                WHERE
+                    S1.LOCATION_ORG_ID = E1.ORG_ID
+                    AND S1.STATUS = '001' AND E1.STATUS = '001'
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR} || '%'
+            ),
+            S AS (
+                SELECT
+                    OE.ORG_ID
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+            )
+
+            SELECT COUNT(1) FROM
+            T_ELIMINATE_LETTER_THO T
+            INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+            INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+            INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND CHG.IS_VALID = '1'
+                AND CHG.CHG_TYPE = '1'
+                AND T.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+            </where>
+            ORDER BY T.THO_ID
+
+        </if>
+
+        <!-- 部门 区域分布 全部 -->
+        <if test="queryType == 5">
+            WITH
+            A AS (
+                SELECT
+                S1.ORG_ID,
+                S1.ORG_CODE,
+                S1.ORG_NAME,
+                S1.LOCATION_ORG_ID,
+                R.PROFESSION_CODE
+            FROM
+                ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                T_DC_ORG_PRO_RELATION R
+            WHERE
+                S1.ORG_ID = R.ORG_ID
+                AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR} ||'%'
+                AND S1.STATUS = '001'
+            ),
+            B AS (
+                SELECT
+                    A.ORG_ID,
+                    A.ORG_CODE,
+                    A.ORG_NAME,
+                    A.LOCATION_ORG_ID,
+                    A.PROFESSION_CODE,
+                    E1.ORG_CODE REGION_CODE,
+                    E1.ORG_NAME REGION_NAME,
+                    E1.ORG_ID REGION_ID,
+                    E1.CHIEF_LEVEL REGION_CHIEF_LEVEL,
+                    E1.PARENT_ORG_ID PARENT_REGION_ID
+                FROM
+                    T_DC_ORG_ENTITY_INFO E1,
+                    A
+                WHERE
+                    E1.ORG_ID = A.LOCATION_ORG_ID
+                    AND E1.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+                    AND E1.STATUS = '001'
+            )
+
+            SELECT
+                COUNT(1)
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+                INNER JOIN B ON CHG.RE_DEPART_CODE = B.ORG_CODE
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+            </where>
+        </if>
+
+
+        <!-- 部门 区域分布 不通过数 -->
+        <if test="queryType == 6">
+            WITH
+            S AS (
+                SELECT
+                E.ORG_CODE,
+                E.ORG_NAME,
+                E.CHIEF_LEVEL
+            FROM
+                ZHSQ.T_DC_ORG_ENTITY_INFO E
+            WHERE
+                E.STATUS = '001'
+                AND E.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+            )
+
+            SELECT
+                COUNT(1)
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+                INNER JOIN S ON T.REGION_CODE = S.ORG_CODE
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+                AND T.BIZ_STATUS IN ('07','08','09')
+            </where>
+        </if>
+
+    </select>
+
+    <!-- 统计大屏文书列表分页 -->
+    <select id="searchPage" resultMap="BaseResultMap">
+
+        <!-- 总数 -->
+        <if test="queryType == 0">
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+                AND T.BIZ_STATUS != '99' AND T.FLOW_STEP != '99'
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+            </where>
+            ORDER BY T.CREATE_TIME DESC
+        </if>
+
+        <!-- 不通过 -->
+        <if test="queryType == 1">
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+            <where>
+                <include refid="bigScreenWhere"/>
+                <if test="bizStatusArr != null ">
+                    AND T.BIZ_STATUS IN
+                    <foreach collection="bizStatusArr" index="index" item="item" open="(" separator="," close=")">
+                        #{item,jdbcType=VARCHAR}
+                    </foreach>
+                </if>
+                AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+                AND T.BIZ_STATUS != '99'
+                AND T.IS_VALID ='1'
+                AND CHG.IS_VALID = '1'
+            </where>
+            ORDER BY T.CREATE_TIME DESC
+        </if>
+
+        <!-- 所有的部门 接收数 -->
+        <if test="queryType == 2">
+            WITH
+            OE AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    S1.ORG_NAME,
+                    E1.ORG_CODE REGION_CODE,
+                    E1.ORG_NAME REGION_NAME,
+                    E1.ORG_ID REGION_ID
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_ENTITY_INFO E1
+                WHERE
+                    S1.LOCATION_ORG_ID = E1.ORG_ID
+                    AND S1.STATUS = '001' AND E1.STATUS = '001'
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+            ),
+            S AS (
+                SELECT
+                    R.PROFESSION_CODE,
+                    OE.REGION_CODE,
+                    OE.ORG_ID,
+                    OE.ORG_CODE
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+            )
+
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                    ON (
+                        T.THO_ID = CHG.THO_ID
+                        <include refid="bigScreenWhere"/>
+                        AND CHG.IS_VALID = '1' AND T.IS_VALID = '1'  AND T.FLOW_STEP NOT IN ('99')
+                    )
+                INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+                INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+                ORDER BY T.CREATE_TIME DESC
+
+        </if>
+
+        <!-- 所有的部门 反馈数 -->
+        <if test="queryType == 3">
+            WITH
+            OE AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    S1.ORG_NAME,
+                    E1.ORG_CODE REGION_CODE,
+                    E1.ORG_NAME REGION_NAME,
+                    E1.ORG_ID REGION_ID
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_ENTITY_INFO E1
+                WHERE
+                    S1.LOCATION_ORG_ID = E1.ORG_ID
+                    AND S1.STATUS = '001' AND E1.STATUS = '001'
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+            ),
+            S AS (
+                SELECT
+                    R.PROFESSION_CODE,
+                    OE.REGION_CODE,
+                    OE.ORG_ID,
+                    OE.ORG_CODE
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+            )
+
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                    ON (
+                        T.THO_ID = CHG.THO_ID
+                        <include refid="bigScreenWhere"/>
+                        AND CHG.IS_VALID = '1' AND T.IS_VALID = '1' AND T.FLOW_STEP NOT IN ('99', 'task2')
+                    )
+                INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+                INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+                ORDER BY T.CREATE_TIME DESC
+
+        </if>
+
+        <!-- 所有的部门 整改数 -->
+        <if test="queryType == 4">
+            WITH
+            OE AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    S1.ORG_NAME,
+                    E1.ORG_CODE REGION_CODE,
+                    E1.ORG_NAME REGION_NAME,
+                    E1.ORG_ID REGION_ID
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_ENTITY_INFO E1
+                WHERE
+                    S1.LOCATION_ORG_ID = E1.ORG_ID
+                    AND S1.STATUS = '001' AND E1.STATUS = '001'
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR}||'%'
+            ),
+            S AS (
+                SELECT
+                    R.PROFESSION_CODE,
+                    OE.REGION_CODE,
+                    OE.ORG_ID,
+                    OE.ORG_CODE
+                FROM
+                    OE,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    OE.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND OE.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+            )
+
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG
+                    ON (
+                        T.THO_ID = CHG.THO_ID
+                        <include refid="bigScreenWhere"/>
+                        AND CHG.IS_VALID = '1' AND CHG.CHG_TYPE = '1' AND T.IS_VALID = '1' AND T.FLOW_STEP NOT IN ( '99')
+                    )
+                INNER JOIN OE ON CHG.RE_DEPART_CODE = OE.ORG_CODE
+                INNER JOIN S ON S.ORG_ID = OE.ORG_ID
+                ORDER BY T.CREATE_TIME DESC
+
+        </if>
+
+        <!-- 部门 区域分布 -->
+        <if test="queryType == 5">
+            WITH
+            A AS (
+                SELECT
+                    S1.ORG_ID,
+                    S1.ORG_CODE,
+                    S1.ORG_NAME,
+                    S1.LOCATION_ORG_ID,
+                    R.PROFESSION_CODE
+                FROM
+                    ZHSQ.T_DC_ORG_SOCIAL_INFO S1,
+                    T_DC_ORG_PRO_RELATION R
+                WHERE
+                    S1.ORG_ID = R.ORG_ID
+                    AND R.PROFESSION_CODE = #{professionCode,jdbcType=VARCHAR}
+                    AND S1.ORG_CODE LIKE #{provinceOrgCode,jdbcType=VARCHAR} ||'%'
+                    AND S1.STATUS = '001'
+            ),
+            B AS (
+                SELECT
+                    A.ORG_ID,
+                    A.ORG_CODE,
+                    A.ORG_NAME,
+                    A.LOCATION_ORG_ID,
+                    A.PROFESSION_CODE,
+                    E1.ORG_CODE REGION_CODE,
+                    E1.ORG_NAME REGION_NAME,
+                    E1.ORG_ID REGION_ID,
+                    E1.CHIEF_LEVEL REGION_CHIEF_LEVEL,
+                    E1.PARENT_ORG_ID PARENT_REGION_ID
+                FROM
+                    T_DC_ORG_ENTITY_INFO E1,
+                    A
+                WHERE
+                    E1.ORG_ID = A.LOCATION_ORG_ID
+                    AND E1.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+                    AND E1.STATUS = '001'
+            )
+
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+                INNER JOIN B ON CHG.RE_DEPART_CODE = B.ORG_CODE
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+            </where>
+            ORDER BY T.CREATE_TIME DESC
+        </if>
+
+        <!-- 区域分布 不通过数 -->
+        <if test="queryType == 6">
+            WITH
+            S AS (
+                SELECT
+                    E.ORG_CODE,
+                    E.ORG_NAME,
+                    E.CHIEF_LEVEL
+                FROM
+                    ZHSQ.T_DC_ORG_ENTITY_INFO E
+                WHERE
+                    E.STATUS = '001'
+                    AND E.ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+            )
+
+            SELECT
+                T.THO_ID,
+                T.THO_UUID,
+                T.LETTER_TYPE,
+                T.CASE_NAME,
+                T.FB_DATE,
+                T.INSTANCE_ID,
+                CHG.RE_DEPART_NAME_DET
+            FROM
+                T_ELIMINATE_LETTER_THO T
+                INNER JOIN T_ELIMINATE_LETTER_THO_RE_CHG CHG ON T.THO_ID = CHG.THO_ID
+                INNER JOIN S ON T.REGION_CODE = S.ORG_CODE
+            <where>
+                <include refid="bigScreenWhere"/>
+                AND T.IS_VALID = '1'
+                AND CHG.IS_VALID = '1'
+                AND T.FLOW_STEP != '99'
+                AND T.BIZ_STATUS IN ('07','08','09')
+            </where>
+            ORDER BY T.CREATE_TIME DESC
+
+        </if>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>南昌市经开区群防群治管控平台</title>
+    <!-- layui样式 -->
+    <#include "/component/szcommonFiles-1.1.ftl" />
+    <#include "/component/szcomponentsFiles-1.1.ftl" />
+    <style>
+    </style>
+</head>
+
+<body class="bg-cor4">
+    <div class="layui-row">
+        <!-- 内容区 -->
+        <div class="layui-col-sm12 layui-form face-lib4">
+            <!-- 返回 -->
+            <div class="card-sch">
+                <button type="button" id="closeBtn" class="layui-btn layui-btn-warm btn-back" style="margin: 2px 0 0 1185px;">返回</button>
+            </div>
+            <div class="layui-row layui-col-space10 mt10 ml15 mr15">
+                <div class="layui-col-sm6 layui-col-md6 layui-col-lg5">
+                    <div style="margin-left: 345px;background-color: #9e9e9e36;width: 805px;height: 55px;line-height: 24px;">
+                        <span style="padding: 5px">抓拍设备:  ${bo.deviceName}</span>
+                        <span style="padding: 5px">抓拍时间:  <i id="captureTime"></i></span>
+                        <p style="padding: 5px">抓拍地址:  ${bo.address}</p>
+                    </div>
+                    <div class="cont-box jk-hei3 mt15" style="height: 500px;width: 800px;margin-left: 350px;margin-top: 20px">
+                        <div class="pic-cau fl">
+                            <img src="${bo.sceneUrl}" style="width: 770px; height: 470px">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="${uiDomain}/web-assets/common/js/jqry-9-1-12-4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="${uiDomain}/web-assets/plugins/jquery-nicescroll/jquery.nicescroll-1.js"></script>
+    <script src="${uiDomain}/web-assets/plugins/layui-v2.5.5/layui/layui.js"></script>
+    <script>
+
+        layui.use(['form','table'], function () {
+            var form = layui.form,
+                table = layui.table;
+
+            $("#closeBtn").on('click',function () {
+                parent.layer.closeAll();
+            });
+        });
+
+        $(function () {
+            $.fn.extend({
+                // 选择组件
+                select: function () {
+                    var _this = this;
+                    $(_this).children('a').click(function () {
+                        $(this).toggleClass('active');
+                        $(this).siblings('ul').slideToggle(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                        return false;
+                    });
+                    $(document).click(function () {
+                        $('.com-select>a').removeClass('active');
+                        $('.com-select>ul').slideUp(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                    });
+                    $('.com-select>ul').on('click', 'li', function () {
+                        var pText = $(this).text();
+                        $('.com-select>a').find('p').text(pText);
+                        $('.section-tt-year').text(pText);
+                    });
+                    $('.com-select-list').getNiceScroll().resize();
+                },
+                ranking: function (options) {
+                    var _this = this;
+                    $(_this).find('tbody tr').each(function (index, el) {
+                        $(this).find('.ranking-per>p').css({ 'width': options[index] + '%' });
+                    });
+                }
+            });
+
+            // 计算页面高度
+            $('.h-x').niceScroll({
+                cursorcolor: "#ccc",
+                cursoropacitymax: 0.8,
+                cursorwidth: "4px",
+                cursorborderradius: "2px",
+                cursorborder: 'none',
+                autohidemode: true
+            });
+
+            function resetTabs() {
+                $("#content > div").hide(); //Hide all content
+                $("#tabs a").attr("id", ""); //Reset id's      
+            }
+
+            $("#content > div").hide(); // Initially hide all content
+            $("#tabs li:first a").attr("id", "current"); // Activate first tab
+            $("#content > div:first").fadeIn(); // Show first tab content
+            $("#tabs a").on("click", function (e) {
+                e.preventDefault();
+                if ($(this).attr("id") == "current") { //detection for current tab
+                    return
+                }
+                else {
+                    resetTabs();
+                    $(this).attr("id", "current"); // Activate this
+                    $($(this).attr('name')).fadeIn(); // Show content for current tab
+                }
+            });
+            $("#captureTime").text(formateTimeStamp("${bo.captureTime}"))
+        });
+
+        function formateTimeStamp(time){
+            var date = new Date();
+            date.setTime(time);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours()< 10 ? "0" + date.getHours() : date.getHours();
+            var minute = date.getMinutes()< 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var second = date.getSeconds()< 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return year + "-" + month + "-" + day+" "+hour+":"+minute+":"+second;
+        }
+    </script>
+</body>
+
+</html>

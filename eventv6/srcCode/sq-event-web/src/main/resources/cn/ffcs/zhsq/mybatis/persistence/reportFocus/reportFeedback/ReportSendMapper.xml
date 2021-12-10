@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.reportFeedback.ReportSendMapper" >
+	<!-- 新增下达信息 -->
+	<insert id="insert">
+		<selectKey keyProperty="seUUId" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_REPORT_SEND(
+			SE_UUID, REGION_CODE, 
+			BIZ_TYPE, BIZ_SIGN,BIZ_CODE,
+			DATA_SOURCE, DATA_SIGN,
+			REMARK, 
+			IS_VALID,
+			CREATOR, CREATE_TIME, UPDATOR, UPDATE_TIME
+		) VALUES (
+			#{seUUId,jdbcType=VARCHAR}, NULLIF(#{regionCode,jdbcType=VARCHAR}, ''),
+			NULLIF(#{bizType,jdbcType=VARCHAR}, ''), NULLIF(#{bizSign,jdbcType=VARCHAR}, ''), NULLIF(#{bizCode,jdbcType=VARCHAR}, ''),
+		NULLIF(#{dataSource,jdbcType=VARCHAR}, ''), NULLIF(#{dataSign,jdbcType=VARCHAR}, ''),
+			NULLIF(#{remark,jdbcType=VARCHAR}, ''),
+			'1',
+			#{creator,jdbcType=DECIMAL}, SYSDATE, #{updator,jdbcType=DECIMAL}, SYSDATE
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE T_EVENT_REPORT_SEND T
+		<set>
+			<if test="@Ognl@isNotEmpty(regionCode)">
+				T.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(bizType)">
+				T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(bizSign)">
+				T.BIZ_SIGN = #{bizSign,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(bizCode)">
+				T.BIZ_CODE = #{bizCode,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(dataSource)">
+				T.DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(dataSign)">
+				T.DATA_SIGN = #{dataSign,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(remark)">
+				T.REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updator != null ">
+				T.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			T.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T.SE_UUID = #{seUUId,jdbcType=VARCHAR}
+		<if test="@Ognl@isNotEmpty(noUpdate)">
+			AND 1 = 2
+		</if>
+	</update>
+	
+	<!-- 依据UUID删除记录 -->
+	<delete id="delete">
+		UPDATE T_EVENT_REPORT_SEND T1
+		<set>
+			T1.IS_VALID = '0',
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.SE_UUID = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 依据seuuid获取下达信息 -->
+	<select id="findByUUId" resultType="java.util.Map">
+		SELECT
+		<include refid="sameCol"/>,
+		T2.GRID_PATH "gridPathName"
+		FROM T_EVENT_REPORT_SEND T1,
+		     T_DC_GRID T2
+		WHERE T1.REGION_CODE = T2.INFO_ORG_CODE
+			  AND T1.IS_VALID = '1'
+			  AND T2.STATUS = '001'
+		      AND T1.SE_UUID = #{seUUId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findSeUUIdByParam" resultType="java.lang.String">
+		SELECT T1.SE_UUID FROM T_EVENT_REPORT_SEND T1
+		WHERE T1.IS_VALID = '1'
+		<if test="@Ognl@isNotEmpty(bizType)">
+			AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(bizSign)">
+			AND T1.BIZ_SIGN = #{bizSign,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(bizCode)">
+			AND T1.BIZ_CODE = #{bizCode,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(dataSource)">
+			AND T1.DATA_SOURCE = #{dataSource,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(dataSign)">
+			AND T1.DATA_SIGN = #{dataSign,jdbcType=VARCHAR}
+		</if>
+		AND ROWNUM = 1
+	</select>
+
+	<sql id="sameCol">
+		T1.SE_UUID "seUUId",
+		T1.REGION_CODE "regionCode",
+		T1.BIZ_TYPE "bizType",
+		T1.BIZ_SIGN "bizSign",
+		T1.BIZ_CODE "bizCode",
+		T1.DATA_SOURCE "dataSource",
+		T1.DATA_SIGN "dataSign"
+	</sql>
+
+	<!-- 列表（分页） -->
+	<select id="searchReportSendDataList" resultType="java.util.Map">
+		SELECT
+		<include refid="sameCol"/>
+		FROM
+		T_EVENT_REPORT_SEND T1
+		<include refid="find_where_reportSend" />
+	</select>
+
+	<!-- 列表（总数） -->
+	<select id="countReportSendDataList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_EVENT_REPORT_SEND T1
+		<include refid="find_where_reportSend" />
+	</select>
+	<!-- 列表（条件） -->
+	<sql id="find_where_reportSend">
+		<where>
+			AND T1.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(regionCode)">
+				AND T1.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="@Ognl@isNotEmpty(bizType)">
+				AND T1.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(bizSign)">
+				AND T1.BIZ_SIGN = #{bizSign,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(bizCode)">
+				AND T1.BIZ_CODE = #{bizCode,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(dataSource)">
+				AND T1.DATA_SOURCE = #{dataSource,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(dataSign)">
+				AND T1.DATA_SIGN = #{dataSign,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 新增补充信息/催单信息 -->
+	<insert id="insertReportSendExt">
+		<selectKey keyProperty="extUUId" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_REPORT_SEND_EXT(
+		EXT_UUID,
+		SE_UUID,
+		EXT_TYPE,
+		DO_PERSON,
+		DO_DATE,
+		DO_CONTENT,
+		IS_VALID,
+		REMARK,
+		CREATOR, CREATE_TIME, UPDATOR, UPDATE_TIME
+		) VALUES (
+		#{extUUId,jdbcType=VARCHAR}, #{seUUId,jdbcType=VARCHAR},
+		NULLIF(#{extType,jdbcType=VARCHAR}, ''), NULLIF(#{doPerson,jdbcType=VARCHAR}, ''),
+		#{doDate,jdbcType=TIMESTAMP}, NULLIF(#{doContent,jdbcType=VARCHAR}, ''),
+		'1',
+		NULLIF(#{remark,jdbcType=VARCHAR}, ''),
+		#{creator,jdbcType=DECIMAL}, SYSDATE, #{updator,jdbcType=DECIMAL}, SYSDATE
+		)
+	</insert>
+
+	<!-- 补充信息/催单信息列表（分页） -->
+	<select id="searchReportSendExtDataList" resultType="java.util.Map">
+		SELECT
+		<include refid="extCol"/>
+		<include refid="sql4FromExtTable" />
+		<include refid="find_where_reportSendExt" />
+		<include refid="order_by" />
+	</select>
+
+	<!-- 补充信息/催单信息列表（总数） -->
+	<select id="countReportSendExtDataList"  resultType="java.lang.Long">
+		SELECT COUNT(1)
+		<include refid="sql4FromExtTable" />
+		<include refid="find_where_reportSendExt" />
+	</select>
+
+	<sql id="sql4FromExtTable">
+		FROM T_EVENT_REPORT_SEND_EXT T1
+		WHERE T1.IS_VALID = '1'
+	</sql>
+
+	<sql id="extCol">
+		T1.EXT_UUID "extUUId",
+		T1.SE_UUID "seUUId",
+		T1.EXT_TYPE "extType",
+		T1.DO_PERSON "doPerson",
+		T1.DO_DATE "doDate",
+		T1.DO_CONTENT "doContent"
+	</sql>
+	<!-- 补充信息/催单信息列表（条件） -->
+	<sql id="find_where_reportSendExt">
+		<if test="@Ognl@isNotEmpty(seUUId)">
+			AND T1.SE_UUID = #{seUUId,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(extType)">
+			AND T1.EXT_TYPE = #{extType,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	<sql id="order_by">
+		<choose>
+			<when test="@Ognl@isNotEmpty(orderByField)">
+				ORDER BY ${orderByField}
+			</when>
+			<otherwise>
+				ORDER BY T1.CREATE_TIME DESC
+			</otherwise>
+		</choose>
+	</sql>
+</mapper>

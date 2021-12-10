@@ -1,0 +1,191 @@
+@CHARSET "UTF-8";
+.pop-tip{position:absolute;overflow:hidden;}
+ 
+.pop-tip .pt-container{font-size:12px;background:#fff;}
+ 
+.pt-top,.pt-bottom,.pt-middle{position:relative;padding:0 8px;height:20px;overflow:hidden;}
+ 
+.pt-middle{height:auto;zoom:1;}
+ 
+.pt-top div,.pt-bottom div,.pt-left,.pt-right{overflow:hidden;}
+ 
+.pt-arrow{position:absolute;display:none;height:20px;width:30px;overflow:hidden;}
+ 
+.pop-tip .sprite{position:absolute;top:0;left:0;width:800px;height:600px;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip.png) no-repeat left top;_background:none;_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src="toolbar/sprite-poptip.png", sizingMethod="crop");}
+ 
+.pt-t-l,.pt-b-l,.pt-t-r,.pt-b-r{position:absolute;left:0;top:0;width:8px;height:20px;}
+ 
+.pt-t-r,.pt-b-r{left:auto;right:0px;}
+ 
+.pt-t-r .sprite{left:-792px;}
+ 
+.pt-t{position:relative;height:20px;}
+ 
+.pt-t .sprite{left:-70px;}
+ 
+.pt-b-l .sprite{top:-580px;}
+ 
+.pt-b-r .sprite{top:-580px;left:-792px;}
+ 
+.pt-b{position:relative;height:20px;}
+ 
+.pt-b .sprite{top:-580px;left:-20px;}
+ 
+.pt-l,.pt-r{position:absolute;left:0;top:0;width:8px;height:560px;overflow:hidden;}
+ 
+.pt-r{left:auto;right:0px;}
+ 
+.pt-l .sprite{top:-20px;}
+ 
+.pt-r .sprite{left:-792px;top:-20px;}
+ 
+/* add arrow */
+ 
+.a-t-l .pt-top,.a-b-l .pt-bottom{padding-left:38px;}
+ 
+.pt-arrow{display:block;}
+ 
+.a-t-l .pt-arrow{left:8px;top:0;}
+ 
+.a-b-l .pt-arrow{left:8px;bottom:0;}
+ 
+.a-t-r .pt-top,.a-b-r .pt-bottom{padding-right:38px;}
+ 
+.a-t-r .pt-arrow{right:8px;top:0;}
+ 
+.a-b-r .pt-arrow{right:8px;bottom:0;}
+ 
+.pt-arrow-t-l .sprite{left:-10px;top:0;}
+ 
+.pt-arrow-t-r .sprite{left:-730px;top:0;}
+ 
+.pt-arrow-b-l .sprite{left:-38px;top:-580px;}
+.pt-arrow-b-r .sprite{left:-730px;top:-580px;}
+/* bar and content */
+ 
+.pt-bar{position:relative;height:28px;padding:0 10px;line-height:28px;font-size:12px;font-weight:bold;color:#5b94e6;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip.png) repeat-x left -600px;}
+ 
+.pt-bar .pt-close{position:absolute;top:6px;left:auto;right:7px;width:13px;height:0;padding-top:3px;overflow:hidden;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip.png) no-repeat left -630px;cursor:pointer;}
+ 
+.pt-content{padding:10px;}
+
+
+.pop-tip1{position:absolute;overflow:hidden;}
+
+.pop-tip1 .pt-container1{font-size:12px;background:#fff;}
+
+.pt-top1,.pt-bottom1{position:relative;padding:0 8px 0 26px;height:20px;overflow:hidden;}
+.pt-middle1{position:relative;padding:0 8px 0 28px;height:20px;overflow:hidden;}
+.pt-middle1{height:auto;zoom:1;}
+
+.pt-top1 div,.pt-bottom1 div,.pt-left1,.pt-right1{overflow:hidden;}
+
+.pt-arrow1{position:absolute;display:none;height:20px;width:30px;overflow:hidden;}
+
+.pop-tip1 .sprite1{position:absolute;top:0;left:0;width:800px;height:450px;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip1.png) no-repeat left top;_background:none;_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/jsp/scim/gis/gisdt/toolbar/sprite-poptip1.png", sizingMethod="crop");}
+
+.pt-t-l1,.pt-t-r1,.pt-b-r1{position:absolute;left:0;top:0;width:8px;height:20px;}
+.pt-b-l1{position:absolute;left:-2px;top:0;width:28px;height:20px;}
+.pt-t-r1,.pt-b-r1{left:auto;right:0px;}
+
+.pt-t-r1 .sprite1{left:-772px;}
+
+.pt-t1{position:relative;height:20px;}
+
+.pt-t1 .sprite1{left:-70px;}
+
+.pt-b-l1 .sprite1{top:-580px;}
+
+.pt-b-r1 .sprite1{top:-580px;left:-772px;}
+
+.pt-b1{position:relative;height:20px;}
+
+.pt-b1 .sprite1{top:-580px;left:-130px;}
+
+.pt-l1{position:absolute;left:0;top:0;width:28px;height:560px;overflow:hidden;}
+.pt-r1{position:absolute;left:0;top:0;width:8px;height:560px;overflow:hidden;}
+.pt-r1{left:auto;right:0px;}
+
+.pt-l1 .sprite1{top:-20px; left:-2px;}
+
+.pt-r1 .sprite1{left:-772px;top:-20px;}
+
+/* add arrow */
+
+.a-t-l1 .pt-top1,.a-b-l1 .pt-bottom1{padding-left:38px;}
+
+.pt-arrow1{display:block;}
+
+.a-t-l1 .pt-arrow1{left:8px;top:0;}
+
+.a-b-l1 .pt-arrow1{left:8px;bottom:0;}
+
+.a-t-r1 .pt-top1,.a-b-r1 .pt-bottom1{padding-right:38px;}
+
+.a-t-r1 .pt-arrow1{right:8px;top:0;}
+
+.a-b-r1 .pt-arrow1{right:8px;bottom:0;}
+
+.pt-arrow-t-l1 .sprite1{left:-10px;top:0;}
+
+.pt-arrow-t-r1 .sprite1{left:-730px;top:0;}
+
+.pt-arrow-b-l1 .sprite1{left:-38px;top:-580px;}
+.pt-arrow-b-r1 .sprite1{left:-730px;top:-580px;}
+/* bar and content */
+
+.pt-bar1{position:relative;height:28px;padding:0 10px;line-height:28px;font-size:12px;font-weight:bold;color:#5b94e6;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip1.png) repeat-x left -600px;}
+
+.pt-bar1 .pt-close1{position:absolute;top:6px;left:auto;right:7px;width:13px;height:0;padding-top:3px;overflow:hidden;background:url(/jsp/scim/gis/gisdt/toolbar/sprite-poptip1.png) no-repeat left -630px;cursor:pointer;}
+
+.pt-content1{padding:10px;}
+
+
+/* add by wangjinlan 2012/07/19 地图弹出框样式 */
+img,input,p{ vertical-align:middle; border:none; margin:0; padding:0}
+.sjbase{ width:666px; font-size:12px; font-family:Arial, Helvetica, "宋体";height:100%;}
+.sj_top{ background:url(../images/bg_sj_top.png) repeat-x; height:44px;  width:671px; position:relative;}
+.sj_wz{ position:absolute; left:11px; top:16px;}
+.sj_wz ul{ padding:0; margin:0; list-style:none;}
+.sj_wz ul li{ float:left;background:url(../images/sj_top_a.png) no-repeat; width:95px; height:28px; line-height:28px; cursor:pointer; display:block; text-align:center; margin-right:3px;}
+.sj_wz ul li:hover{ background:url(../images/sj_top_hover.png) no-repeat;}
+.sj_wz .sj_dq{ background:url(../images/sj_top_hover.png) no-repeat; font-weight:bold;}
+.sj_wz ul li a{ line-height:28px; color:#000; text-decoration:none;}
+.sj_wz ul li a:visited{ color:#000;}
+.sj_mid{background:url(../images/bg_sj_mid.png) repeat-y; }
+.tb_cont{ border:1px solid;width:650px; background:#cdcdcd;}
+.sj_btm{ background:url(../images/bg_sj_btm.png) no-repeat; height:15px;}
+.sj_title_sty{ height:24px; width:87px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:center;}
+.sj_cot_sty{ width:170px;background:#fff; padding:5px 0 5px 4px;}
+.sj_cot1_sty{ width:170px; background:#fff; padding-left:4px;}
+.sj_img_sty{ width:139px; background:#FFF;}
+.sj_img_sty p{ padding:5px 0;}
+.sj_title2_sty{ height:30px; width:70px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:right; padding-right: 5px;}
+.sj_cot2_sty{ background:#fff; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.sj_title3_sty{ height:38px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:right; padding-right: 5px;}
+.sj_cot3_sty{ width:130px;background:#fff; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.sj_title4_sty{ height:35px; width:100px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:right; padding-right: 5px;}
+.sj_cot4_sty{ background:#fff; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.sj_title5_sty{ height:35px; width:90px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:right; padding-right: 5px;}
+.sj_cot5_sty{ width:130px; background:#fff; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.sj_title6_sty{ height:35px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:left; padding-left: 5px;font-weight:bold;}
+.sj_cot6_sty{ width:130px; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.sj_title7_sty{ height:39px; width:100px; padding:5px 0; vertical-align:middle; background:#fbfbfb; text-align:right; padding-right: 5px;}
+.sj_cot7_sty{ background:#fff; padding:5px 0 5px 4px;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;white-space:nowrap;}
+.btn_xq a{ float:right; color:#FFF; font-weight:bold; text-decoration:none; padding: 16px 60px 0 0;}
+.btn_xq a:hover{ text-decoration:none;border:none;}
+.btn_xq a:visited{ color:#FFF;}
+.sj_close a{ text-indent:-99999px; background:url(../images/sj_close_a.png) no-repeat; height:23px; width:23px; display:block; float:right; position:absolute; top:10px; right:10px;}
+/*.sj_close a:hover{ background:url(/jsp/scim/gis/img/sj_close_hover.png) no-repeat;}*/
+
+.sj_restore a{ text-indent:-99999px; background:url(../images/sj_close_a1.png) no-repeat; height:23px; width:23px; display:block; float:right; position:absolute; top:10px; right:32px;}
+.sj_restore a:hover{ background:url(../images/sj_close_hover1.png) no-repeat;}
+
+.sj_red{ color:#ff0000; font-weight:bold; font-size:14px;}
+.sj_blue{ color:#1264b5;}
+.btn_handle{ background:url(/jsp/scim/gis/img/btn_handle.png) no-repeat; width:56px; height:48px; display:block; text-indent:-99999px;}
+.sj_box1{ border:1px solid #ddd;width:165px; height:21px; display:block; padding:0 10px 0 10px; line-height:21px;text-align:center;}
+.tb_cont1{ width:100%; _width:560px;}
+.t_header{ top:5px; margin-left:5px; height:25px; line-height:25px;font-size:14px;}
+.close{position:absolute; top:5px; right:3px; background:url(/jsp/scim/gis/img/lclose_a.gif) no-repeat; width:20px; height:25px; display:block;}
+/* 地图弹出框样式 end */

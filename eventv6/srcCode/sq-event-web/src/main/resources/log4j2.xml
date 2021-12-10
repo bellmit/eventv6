@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--每60秒自动检查和配置文件的更新-->
+<configuration status="ERROR" monitorInterval="60">
+	<appenders>
+		<console name="consoleAppender" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss:SSS z}] [%level][%thread] [%class{6}:%line] - %message%n"/>
+		</console>
+	</appenders>
+	
+	<loggers>
+		<root level="ERROR" includeLocation="true">
+			<appender-ref ref="consoleAppender"/>
+		</root>
+		<logger name="cn.ffcs.zhsq.mybatis.persistence" level="ERROR" />
+		<logger name="org.apache.zookeeper.ZooKeeper" level="ERROR"/>
+		<logger name="org.apache.zookeeper.ClientCnxn" level="ERROR"/>
+		<logger name="org.apache.dubbo.config.AbstractConfig" level="ERROR"/>
+		<logger name="org.apache.dubbo.registry.zookeeper.ZookeeperRegistry" level="ERROR"/>
+		<logger name="org.springframework.core.io.support.PathMatchingResourcePatternResolver" level="ERROR"/>
+	</loggers>
+</configuration>

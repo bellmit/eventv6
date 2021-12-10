@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- External CSS -->
+<title>双随机抽查系统</title>
+<link rel="stylesheet" href="${rc.getContextPath()}/js/event/doubleRandomTask/css/reset.css"> <!--reset-->
+<link rel="stylesheet" href="${rc.getContextPath()}/js/event/doubleRandomTask/css/index.css"> <!--style css-->
+
+<!-- JavaScript -->
+<#include "/component/commonFiles-1.1.ftl" />
+<#include "/component/maxJqueryEasyUIWin.ftl" />
+<script src="${rc.getContextPath()}/js/jquery.blockUI.js" type="text/javascript"></script>
+<script src="${rc.getContextPath()}/js/layer/layer.js" type="text/javascript"></script>
+<style>
+a:hover{
+	text-decoration: none;
+	color:inherit;
+}
+a#event-title-a:hover{
+	text-decoration: none;
+	color:#80c1ff;
+}
+a.btn-cs:hover{color:#fff;}
+.sj-duanxin{top:5px;left:10px;position:absolute;}
+.sj-dx{right:5px;}
+.sj-duanxin input{
+    vertical-align: -2px;
+    background: none;
+}
+.sj-duanxin label{
+    font-size: 12px;
+    color: #fff;
+    padding-left: 2px;
+}
+.z-addr{
+	display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    height: 15px;
+    line-height: 15px;
+    vertical-align: bottom;
+}
+</style>
+</head>
+
+<body class="bg-img">
+    <div class="extract-box">
+        <h3 class="ex-title">双随机抽查系统</h3>
+        <div class="ext-main">
+            <ul class="qy-choose clearfix">
+            	<#if taskType==1>
+                <li>
+                    <span class="pull-left">
+                        <input class="magic-checkbox" type="radio" name="layoutType" id="quns" checked value="OUT">
+                        <label for="quns">全市随机</label>
+                    </span>
+                </li>
+                <li>
+                    <span class="pull-left">
+                        <input class="magic-checkbox" type="radio" name="layoutType" id="jz" value="IN">
+                        <label for="jz">镇（街）随机</label>
+                    </span>
+                </li>
+                <#else>
+                <!-- 镇(街)随机 -->
+                <input style="display:none;" class="magic-checkbox" type="radio" name="layoutType" checked id="jz" value="IN">
+                </#if>
+            </ul>
+            <div class="top-ccq">
+
+            </div>
+            <div class="center-draw clearfix">
+                <div class="draw-left fl_l">
+                    <h4 class="draw-title">巡查事件</h4>
+                    <div class="sj-dx">
+                        <input class="magic-checkbox" type="checkbox" name="layout" id="dx">
+                        <label for="dx">自选事件</label>
+                    </div>
+                    <div class="sj-duanxin">
+                        <input class="magic-checkbox" type="checkbox" name="duanxin" id="duanxin">
+                        <label for="duanxin">发送短信</label>
+                    </div>
+                    <div class="draw-sj-cont">
+                    		<#if taskType=='2'>
+            	  			<img class="cont_bg" src="${rc.getContextPath()}/js/event/doubleRandomTask/img/show_zj.gif" />
+            	  			<#else>
+            	  			<img class="cont_bg" src="${rc.getContextPath()}/js/event/doubleRandomTask/img/show.gif" />
+            	  			</#if>
+            	  			<div class="mask_box"></div>
+                    	<div class="draw-sj-con">
+                    		<ul id="rsj"></ul>
+                    		<ul class="clone-b">
+                    		<#if eventDataList??>
+                    		<#list eventDataList as eventData>
+                    			<li class="draw-sj-li">
+		                            <!--事件-->
+		                            <div class="event-con">
+		                                <!-- <h5 class="event-title">【${eventData.eventClass}】<span>${eventData.eventName!}</span></h5> -->
+		                               	<div class="event-cont">
+	                            			<h5 class="event-title">【${eventData.eventClass}】</h5><span>${eventData.eventName!}</span>
+	                            		</div>
+		                                <p class="event-text">于
+		                                    <span class="e-sy">${eventData.happenTimeStr!}</span>
+		                                </p>
+		                                <p class="event-text">在
+		                                    <span class="e-sy z-addr">${eventData.occurred!}</span>
+		                                    <i class="eve-pon"></i>发生
+		                                    <span class="cc-red ml10">${eventData.content}</span>
+		                                </p>
+		                                <div class="eve-man">
+		                                    <p>所属网格：<span>${eventData.gridPath}</span></p>
+		                                    <p>联系人员：<span>${eventData.contactUser}（${eventData.tel}）</span></p>
+		                                </div>
+		                            </div>
+		                        </li>
+                    		</#list>
+                    		</#if>
+	                    	</ul>
+                    	</div>
+                    </div>
+                </div>
+                <div class="draw-right fl_r">
+                    <h4 class="draw-title">督查人员</h4>
+                    <div class="draw-man-cont">
+            	  			<img class="cont_bg" src="${rc.getContextPath()}/js/event/doubleRandomTask/img/mask_bg.png" />
+            	  			<div class="mask_box"></div>
+                    	<div class="draw-man-con">
+                    	 <ul id="rry0"></ul>
+                    	 <ul class="draw-man clone-b">
+                    	 	<#if personList??>
+                    	 	<#list personList as person>
+	                    	 	<li class="draw-man-li">
+		                            <div class="man-pep">
+		                                <img class="man-img" <#if person.photo??>src="${imgDownPath}${person.photo}"</#if> >
+		                                <div class="man-txt">
+		                                    <p>姓名：<span><#if person.partyName2??>${person.partyName2}<#else>${person.partyName}</#if></span></p>
+		                                    <p>职位：<span>督查员</span></p>
+		                                    <p>电话：<span><#if person.mobileTelephone??>${person.mobileTelephone}<#else>${person.fixedTelephone}</#if></span></p>
+		                                </div>
+		                            </div>
+		                        </li>
+                    	 	</#list>
+                    	 	</#if>
+	                    </ul>
+                	  </div>
+                  </div>
+                  
+                  <div class="draw-man-cont">
+            	  			<img class="cont_bg" src="${rc.getContextPath()}/js/event/doubleRandomTask/img/mask_bg.png" />
+            	  			<div class="mask_box"></div>
+                    	<div class="draw-man-con">
+                    	 <ul id="rry1"></ul>
+                    	 <ul class="draw-man clone-b">
+	                        <#if personList??>
+                    	 	<#list personList as person>
+	                    	 	<li class="draw-man-li">
+	                    	 		<input type="hidden" name="userId" value="${person.userId}"/>
+		                            <div class="man-pep">
+		                                <img class="man-img" <#if person.photo??>src="${imgDownPath}${person.photo}"</#if>>
+		                                <div class="man-txt">
+		                                    <p>姓名：<span><#if person.partyName2??>${person.partyName2}<#else>${person.partyName}</#if></span></p>
+		                                    <p>职位：<span>督查员</span></p>
+		                                    <p>电话：<span><#if person.mobileTelephone??>${person.mobileTelephone}<#else>${person.fixedTelephone}</#if></span></p>
+		                                	<p>地址：<span title="${person.gridName!''}">${person.gridName!''}</span></p>
+		                                </div>
+		                            </div>
+		                        </li>
+                    	 	</#list>
+                    	 	</#if>
+	                    </ul>
+                	  </div>
+                  </div>
+                </div>
+            </div>
+            <div class="foot-result">
+                <p class="text-sm"><i class="icon-sm"></i>选择复选框指定事件进行督查</p>
+                <div class="btn-box clearfix">
+                    <a class="btn-cs btn-open">开始抽取</a>
+                    <!--<a class="btn-cs btn-sed">停止</a>-->
+                    <a class="btn-cs btn-green">提交结果</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var $taskType = '${taskType}';
+    var base = '${rc.getContextPath()}';
+    <#if eventDataList??>
+    	<#if personList??>
+    	<#else>
+    		//$.messager.alert('提示','无可用的督查人员,请先配置督查人员','info');
+    		layer.msg('无可用的督查人员,请先配置督查人员');
+    	</#if>
+    <#else>
+    	//$.messager.alert('提示','暂无需要抽查的事件','info');
+    	layer.msg('暂无需要抽查的事件');
+    </#if>
+    var imgDownPath = '${imgDownPath}';
+    var wh = $(window).height();
+    if(wh<500){
+	    $(".ex-title").css("visibility","hidden");
+    }
+    </script>
+    <script src="${rc.getContextPath()}/js/event/doubleRandomTask/js/main.js?v=20180112093436_02" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

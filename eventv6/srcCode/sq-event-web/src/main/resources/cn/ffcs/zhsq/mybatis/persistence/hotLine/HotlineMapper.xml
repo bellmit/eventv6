@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.hotLine.HotlineMapper">
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM T_HOTLINE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList" resultType="java.util.Map">
+		SELECT
+			T.CASE_ID "caseId",
+			T.CASE_NO "caseNo",
+			T.SOURCES "sources",
+			T.APPEAL_TYPE "appealType",
+			T.CALL_TIME "callTime",
+			T.OCCURRED "occurred",
+			T.URGENCY "urgency",
+			T.EVENT_STATUS "eventStatus"
+		FROM
+			T_HOTLINE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.IS_VALID = '1'
+			
+		
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="java.util.Map">
+	    <selectKey keyProperty="caseId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_HOTLINE.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_HOTLINE
+		(
+			CASE_ID,
+			CASE_NO,
+			CONTACT_USER,
+			CONTACT_TEL,
+			TEL,
+			SEX,
+			AGE,
+			SOURCES,
+			APPEAL_TYPE,
+			CALL_TIME,
+			TITLE_,
+			CONTENT_,
+			EMAIL,
+			IS_WEB,
+			OCCURRED,
+			ADDRESS,
+			UNDER_TYPE,
+			URGENCY,
+			APPEAL_PUBLIC,
+			RETURN_TYPE,
+			IS_VALID,
+			CREATE_TIME,
+			CREATOR_ID,
+			UPDATE_TIME,
+			UPDATEOR_ID,
+			EVENT_STATUS,
+			EVENT_ID
+		) VALUES (
+			#{caseId,jdbcType=DECIMAL},
+			#{caseNo,jdbcType=VARCHAR},
+			#{contactUser,jdbcType=VARCHAR},
+			#{contactTel,jdbcType=VARCHAR},
+			#{tel,jdbcType=VARCHAR},
+			#{sex,jdbcType=VARCHAR},
+			#{age,jdbcType=VARCHAR},
+			#{sources,jdbcType=VARCHAR},
+			#{appealType,jdbcType=VARCHAR},
+			#{callTime,jdbcType=TIMESTAMP},
+			#{title,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			#{email,jdbcType=VARCHAR},
+			#{isWeb,jdbcType=VARCHAR},
+			#{occurred,jdbcType=VARCHAR},
+			#{address,jdbcType=VARCHAR},
+			#{underType,jdbcType=VARCHAR},
+			#{urgency,jdbcType=VARCHAR},
+			#{appealPublic,jdbcType=VARCHAR},
+			#{returnType,jdbcType=VARCHAR},
+			'1',
+			SYSDATE,
+			#{creatorId,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updateorId,jdbcType=DECIMAL},
+			'01',
+			#{eventId,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<insert id="insertAll" parameterType="java.util.List">
+	
+	     <foreach collection="dataList" item="item" open="BEGIN" separator=";" close=";END;"  >  
+           INSERT INTO
+			T_HOTLINE
+		 (
+			CASE_ID,
+			CASE_NO,
+			CONTACT_USER,
+			CONTACT_TEL,
+			TEL,
+			SEX,
+			AGE,
+			SOURCES,
+			APPEAL_TYPE,
+			CALL_TIME,
+			TITLE_,
+			CONTENT_,
+			EMAIL,
+			IS_WEB,
+			OCCURRED,
+			ADDRESS,
+			UNDER_TYPE,
+			URGENCY,
+			APPEAL_PUBLIC,
+			RETURN_TYPE,
+			IS_VALID,
+			CREATE_TIME,
+			CREATOR_ID,
+			UPDATE_TIME,
+			UPDATEOR_ID,
+			EVENT_STATUS,
+			EVENT_ID
+		) VALUES 
+		
+		(
+			SEQ_T_HOTLINE.NEXTVAL,
+			#{item.caseNo,jdbcType=VARCHAR},
+			#{item.contactUser,jdbcType=VARCHAR},
+			#{item.contactTel,jdbcType=VARCHAR},
+			#{item.tel,jdbcType=VARCHAR},
+			#{item.sex,jdbcType=VARCHAR},
+			#{item.age,jdbcType=VARCHAR},
+			#{item.sources,jdbcType=VARCHAR},
+			#{item.appealType,jdbcType=VARCHAR},
+		    to_date(#{item.callTime,jdbcType=VARCHAR},'yyyy-MM-dd hh24:mi:ss'),
+			#{item.title,jdbcType=VARCHAR},
+			#{item.content,jdbcType=VARCHAR},
+			#{item.email,jdbcType=VARCHAR},
+			#{item.isWeb,jdbcType=VARCHAR},
+			#{item.occurred,jdbcType=VARCHAR},
+			#{item.address,jdbcType=VARCHAR},
+			#{item.underType,jdbcType=VARCHAR},
+			#{item.urgency,jdbcType=VARCHAR},
+			#{item.appealPublic,jdbcType=VARCHAR},
+			#{item.returnType,jdbcType=VARCHAR},
+			'1',
+			SYSDATE,
+			#{item.creatorId,jdbcType=DECIMAL},
+			SYSDATE,
+			#{item.updateorId,jdbcType=DECIMAL},
+			'01',
+			#{item.eventId,jdbcType=DECIMAL}
+		) 
+         </foreach> 
+	
+	</insert>
+	
+	
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="java.util.Map">
+		UPDATE
+			T_HOTLINE
+		<set> 
+			<if test="contactUser != null " >
+				CONTACT_USER=#{contactUser,jdbcType=VARCHAR},
+			</if>
+			<if test="contactTel != null " >
+				CONTACT_TEL=#{contactTel,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null " >
+				TEL=#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null " >
+				SEX=#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="age != null " >
+				AGE=#{age,jdbcType=VARCHAR},
+			</if>
+			<if test="sources != null " >
+				SOURCES=#{sources,jdbcType=VARCHAR},
+			</if>
+			<if test="appealType != null " >
+				APPEAL_TYPE=#{appealType,jdbcType=VARCHAR},
+			</if>
+			<if test="callTime != null " >
+				CALL_TIME=#{callTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="title != null " >
+				TITLE_=#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null " >
+				CONTENT_=#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null " >
+				EMAIL=#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="isWeb != null " >
+				IS_WEB=#{isWeb,jdbcType=VARCHAR},
+			</if>
+			<if test="occurred != null " >
+				OCCURRED=#{occurred,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null " >
+				ADDRESS=#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="underType != null " >
+				UNDER_TYPE=#{underType,jdbcType=VARCHAR},
+			</if>
+			<if test="urgency != null " >
+				URGENCY=#{urgency,jdbcType=VARCHAR},
+			</if>
+			<if test="appealPublic != null " >
+				APPEAL_PUBLIC=#{appealPublic,jdbcType=VARCHAR},
+			</if>
+			<if test="returnType != null " >
+				RETURN_TYPE=#{returnType,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="creatorId != null " >
+				CREATOR_ID=#{creatorId,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateorId != null " >
+				UPDATEOR_ID=#{updateorId,jdbcType=DECIMAL},
+			</if>
+			<if test="eventStatus != null " >
+				EVENT_STATUS=#{eventStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="eventId != null " >
+				EVENT_ID=#{eventId,jdbcType=DECIMAL},
+			</if>
+		</set>
+		WHERE
+			CASE_NO= #{caseNo,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchByCaseNo" parameterType="String" resultType="java.util.Map">
+		SELECT
+		 	T.CASE_ID "caseId",
+			T.CASE_NO "caseNo",
+			T.CONTACT_USER "contactUser",
+			T.CONTACT_TEL "contactTel",
+			T.TEL "tel",
+			T.SEX "sex",
+			T.AGE "age",
+			T.SOURCES "sources",
+			T.APPEAL_TYPE "appealType",
+			T.CALL_TIME callTime,
+			T.TITLE_ "title",
+			T.CONTENT_ "content",
+			T.EMAIL "email",
+			T.IS_WEB "isWeb",
+			T.OCCURRED "occurred",
+			T.ADDRESS "address",
+			T.UNDER_TYPE "underType",
+			T.URGENCY "urgency",
+			T.APPEAL_PUBLIC "appealPublic",
+			T.RETURN_TYPE "returnType",
+			T.IS_VALID "isValid",
+			T.CREATE_TIME "createTime",
+			T.CREATOR_ID "creatorId",
+			T.UPDATE_TIME "updateTime",
+			T.UPDATEOR_ID "updateorId",
+			T.EVENT_STATUS "eventStatus",
+			T.EVENT_ID "eventId"
+		FROM
+			T_HOTLINE T
+		WHERE
+			CASE_NO= #{caseNo,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete">
+		UPDATE T_HOTLINE T1
+      <set>
+        <if test="delUserId != null ">
+          T1.UPDATEOR_ID = #{delUserId,jdbcType=DECIMAL},
+        </if>
+        T1.IS_VALID = '0', 
+        T1.UPDATE_TIME = SYSDATE
+      </set>
+      WHERE T1.CASE_NO = #{caseNo,jdbcType=DECIMAL}
+	</delete>
+</mapper>

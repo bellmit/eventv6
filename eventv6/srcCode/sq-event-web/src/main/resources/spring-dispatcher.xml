@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:global.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<context:component-scan base-package="cn.ffcs.zhsq,cn.ffcs.zzgl.controller,cn.ffcs.shequ.log.utils" />
+    <mvc:interceptors>
+        <bean class="cn.ffcs.zhsq.filter.SystemInterceptor" />
+		<bean class="cn.ffcs.shequ.security.WaterMarkFilter" />
+    </mvc:interceptors>
+    
+    <!-- 权限控制代理 -->
+	<bean id="rightInterceptorAOP" class="cn.ffcs.zhsq.security.RightInterceptorAOP"/>
+	<aop:config proxy-target-class="true">
+		<!-- 切面 -->
+		<aop:aspect id="rightAspect" ref="rightInterceptorAOP">
+			<!-- 切点  拦截规则 -->
+            <aop:pointcut id="rightPointcut" expression="execution(* cn.ffcs.zhsq.event.controller.*.*(..))"  />            
+            <!-- 点面结合 -->
+            <aop:before pointcut-ref="rightPointcut" method="doInterceptor"/>
+        </aop:aspect> 
+	</aop:config>
+    
+	<!-- annotation方法修饰器 -->
+	<bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="byteArray_hmc" />
+				<ref bean="string_hmc" />
+				<ref bean="resource_hmc" />
+				<ref bean="source_hmc" />
+				<!-- <ref bean="xmlAwareForm_hmc" /> -->
+				<ref bean="jaxb2RootElement_hmc" />
+				<ref bean="jackson_hmc" />
+			</list>
+		</property>
+		<property name="webBindingInitializer">
+			<!-- <bean class="cn.ffcs.zhsq.utils.CustomWebBinding" /> -->
+			<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService">  
+                    <bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+	                    <property name="converters">  
+						    <list>
+						    	<!-- 适配一般格式的日期格式,自动转换为Date类型,不用添加注解-->
+						        <bean class="cn.ffcs.zhsq.utils.CustomerDateConverter" />
+						    </list>  
+						</property>
+	                    <property name="formatters">  
+						    <list>
+						    	<!-- 适配Annotation日期格式,自定义日期格式,使用@DateTimeFormat注解 -->
+						        <bean class="org.springframework.format.datetime.DateFormatter" />
+						        <bean class="org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory" />
+						    </list>  
+						</property>
+                    </bean>  
+                </property>  
+            </bean>
+		</property>
+	</bean>
+	
+	<bean id="byteArray_hmc" class="org.springframework.http.converter.ByteArrayHttpMessageConverter" /><!-- 处理.. -->
+	<bean id="string_hmc" class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/plain;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="resource_hmc" class="org.springframework.http.converter.ResourceHttpMessageConverter" /><!-- 处理.. -->
+	<bean id="source_hmc" class="org.springframework.http.converter.xml.SourceHttpMessageConverter" /><!-- 处理.. -->
+	<!-- <bean id="xmlAwareForm_hmc" class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" /> 处理.. -->
+	<bean id="jaxb2RootElement_hmc" class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" /><!-- 处理.. -->
+	<bean id="jackson_hmc" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" /><!-- 处理json-->
+
+	<!-- annotation默认的方法映射适配器 -->
+	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 设置freeMarker的配置文件路径 -->
+	<bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:freemarker.properties" />
+	</bean>
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />
+	<bean id="stringFilter" class="cn.ffcs.zhsq.directive.StringFilterDirective" />
+	<!-- freeMarker的模板配置 -->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath">
+			<value>/WEB-INF/template/</value>
+		</property>
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="xml_escape" value-ref="fmXmlEscape" />
+				<entry key="string_filter" value-ref="stringFilter" />
+				<!-- 按钮权限控制 -->
+				<entry key="actionCheck">
+					<bean class="cn.ffcs.sysManage.ActionDirective" />  
+				</entry>
+				
+				<!-- ftl实现继承、覆盖  开始 -->
+				<entry key="block">
+					<bean class="cn.org.rapid_framework.freemarker.directive.BlockDirective"></bean>
+				</entry>
+				<entry key="override">
+					<bean class="cn.org.rapid_framework.freemarker.directive.OverrideDirective"></bean>
+				</entry>
+				<entry key="extends">
+					<bean class="cn.org.rapid_framework.freemarker.directive.ExtendsDirective"></bean>
+				</entry>
+				<entry key="super">
+					<bean class="cn.org.rapid_framework.freemarker.directive.SuperDirective"></bean>
+				</entry>
+				<!-- ftl实现继承、覆盖  结束 -->
+				
+			</map>
+		</property>
+		<property name="freemarkerSettings" ref="freemarkerConfiguration" />
+	</bean>
+
+	<!-- 配置freeMarker视图解析器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />
+		<!-- <property name="viewNames" value="*.ftl" /> -->
+		<property name="viewNames">
+			<list>
+				<value>*.ftl</value>
+				<value>*.html</value>
+			</list>
+		</property>
+		<property name="contentType" value="text/html; charset=utf-8" />
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value="" />
+		<property name="order" value="2" />
+		<property name="requestContextAttribute" value="rc" />
+	</bean>
+
+	<!-- 让springmvc支持文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxInMemorySize" value="2048"></property>
+		<property name="maxUploadSize" value="1000000000" />
+		<property name="uploadTempDir" value="tmpDir"></property>
+	</bean>
+
+	<bean class="cn.ffcs.zhsq.web.ShequWebExceptionResolver"  />
+		
+	<bean id = "dataIntercept" class= "cn.ffcs.components.dataMasking.security.DataIntercept" />
+	<aop:config>
+		<aop:aspect ref= "dataIntercept">
+			<aop:pointcut id = "cutData"
+						  expression= "execution(* cn.ffcs.zhsq..controller.*Controller.*(..))" />
+			<aop:around method="doIntercept" pointcut-ref="cutData"/>
+		</aop:aspect >
+	</aop:config >
+
+	<!--	盐都地区 楼宇列表数据AOP-->
+	<bean id = "arcgisDataOfBuildingAop" class= "cn.ffcs.shequ.utils.arcgisAop.ArcgisDataOfBuildingAop" />
+	<aop:config>
+		<aop:aspect ref= "arcgisDataOfBuildingAop">
+			<aop:pointcut id = "cutBuildingData"
+						  expression= "execution(* cn.ffcs.zhsq..controller.ArcgisDataOfBuildingController.listData(..))" />
+			<aop:around method="doIntercept" pointcut-ref="cutBuildingData"/>
+		</aop:aspect >
+	</aop:config >
+
+	<bean id = "arcgisDataOfRentRoomAop" class= "cn.ffcs.shequ.utils.arcgisAop.ArcgisDataOfRentRoomAop" />
+	<aop:config>
+		<aop:aspect ref= "arcgisDataOfRentRoomAop">
+			<aop:pointcut id = "cutRentRoomData"
+						  expression= "execution(* cn.ffcs.zhsq..controller.ArcgisDataOfRegionController.rentRoomListData(..))" />
+			<aop:around method="doIntercept" pointcut-ref="cutRentRoomData"/>
+		</aop:aspect >
+	</aop:config >
+
+
+	<bean id = "arcgisDataOfPlaceAop" class= "cn.ffcs.shequ.utils.arcgisAop.ArcgisDataOfPlaceAop" />
+	<aop:config>
+		<aop:aspect ref= "arcgisDataOfPlaceAop">
+			<aop:pointcut id = "cutPlaceData"
+						  expression= "execution(* cn.ffcs.zhsq..controller.ArcgisDataOfRegionController.listData(..))" />
+			<aop:around method="doIntercept" pointcut-ref="cutPlaceData"/>
+		</aop:aspect >
+	</aop:config >
+
+
+	<bean id = "arcgisDataOfCampusAop" class= "cn.ffcs.shequ.utils.arcgisAop.ArcgisDataOfCampusAop" />
+	<aop:config>
+		<aop:aspect ref= "arcgisDataOfCampusAop">
+			<aop:pointcut id = "cutCampusData"
+						  expression= "execution(* cn.ffcs.zhsq..controller.ArcgisDataOfGoodsController.campusListData(..))" />
+			<aop:around method="doIntercept" pointcut-ref="cutCampusData"/>
+		</aop:aspect >
+	</aop:config >
+</beans>

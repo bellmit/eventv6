@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.NanchangVideoDataMapper">
+		
+	<resultMap id="BaseResultMap"
+		type="cn.ffcs.shequ.mybatis.domain.zzgl.globalEyes.MonitorBO">
+		<result property="monitorId" column="MONITOR_ID"/>
+		<result property="siteId" column="SITE_ID" />
+		<result property="monitorType" column="MONITOR_TYPE" />
+		<result property="platformIp" column="PLATFORM_IP" />
+		<result property="platformName" column="PLATFORM_NAME" />
+		<result property="platformUsername" column="PLATFORM_USERNAME" />
+		<result property="platformPassword" column="PLATFORM_PASSWORD" />
+		<result property="channelName" column="CHANNEL_NAME" />
+		<result property="channelId" column="CHANNEL_ID" />
+		<result property="channelIp" column="CHANNEL_IP" />
+		<result property="archiveTime" column="ARCHIVE_TIME" />
+		<result property="archiveUpdateTime" column="ARCHIVE_UPDATE_TIME" />
+		<result property="remark" column="REMARK" />
+		<result property="orgCode" column="ORG_CODE" />
+		<result property="isPublic" column="IS_PUBLIC" />
+		<result property="loginStatus" column="LOGIN_STATUS" />
+		<result property="useType" column="USE_TYPE" />
+		<result property="image" column="IMAGE" />
+		<result property="orgName" column="ORG_NAME" />
+		<result property="companyType" column="COMPANY_TYPE"/>
+		<result property="eyesType" column="EYES_TYPE"/>
+		<result property="globalType" column="GLOBAL_TYPE"/>
+		<result property="port" column="PORT"/>
+		<result property="platformId" column="PLATFORM_ID" />
+	</resultMap>
+	
+	<select id="findCamlistByParams" resultMap="BaseResultMap">
+		select 
+		T.MONITOR_ID,T.SITE_ID,
+		T.MONITOR_TYPE,T.PLATFORM_IP,
+		T.PLATFORM_NAME,T.PLATFORM_USERNAME,
+		T.PLATFORM_PASSWORD,T.CHANNEL_NAME,
+		T.CHANNEL_ID,T.CHANNEL_IP,
+		T.ARCHIVE_TIME,T.ARCHIVE_UPDATE_TIME,
+		T.REMARK,T.ORG_CODE,
+		T.LOGIN_STATUS,T.USE_TYPE,
+		T.IMAGE,
+		T.COMPANY_TYPE,T.EYES_TYPE,
+		T.GLOBAL_TYPE,T.PORT,
+		T.PLATFORM_ID
+		from CMS.CI_MONITOR T
+		INNER JOIN T_ZY_RES_MARKER T1 ON T.MONITOR_ID = T1.RESOURCES_ID 
+		<if test="pointTypes != null ">
+			left join T_ZZ_POINT_MONITOR_REF t2 on t2.monitor_id=t.platform_id
+	   		left join  t_zz_point_info t3 on t3.point_id = t2.point_id 
+	   		inner join MAP_WG_GIS t4 on t3.point_id=t4.wid  and t4.status='001'
+	   		INNER JOIN t_bas_datadict D ON d.dict_general_code=t3.point_type and d.dict_pcode like 'D236002%' and d.dict_level=5
+		</if>
+		WHERE   T.GLOBAL_TYPE = '001'
+		AND T1.MARKER_TYPE = #{markType,jdbcType=VARCHAR}
+		<if test="orgCode != null and orgCode != '' ">
+			AND T.ORG_CODE  LIKE #{orgCode ,jdbcType=VARCHAR}|| '%'
+	     </if>
+		<if test="camSearch != null and camSearch != '' ">
+			AND  
+				T.PLATFORM_NAME LIKE '%'||#{camSearch ,jdbcType=VARCHAR}|| '%'
+				 
+	     </if>
+		<if test="line =='0'.toString() or line =='1'.toString()  ">
+		   	AND T.LOGIN_STATUS = #{line,jdbcType=VARCHAR}
+		</if>
+		<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+			AND  T1.X BETWEEN  #{xmin} and  #{xmax}
+		</if>
+		<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+		  	AND  T1.Y BETWEEN  #{ymin} and  #{ymax}
+		</if>
+		<if test="pointTypes != null ">
+		     and t3.POINT_TYPE in
+		    <foreach item="pointType" index="index" collection="pointTypes"
+			  open="(" separator="," close=")">
+			    #{pointType}
+			</foreach>
+		</if>
+	ORDER BY T.ORG_CODE,T.UPDATEDT DESC,T.MONITOR_ID DESC
+	</select>
+	
+	<select id="countCamlistByParams" resultType="java.lang.Integer">
+		select count(0)
+		from CMS.CI_MONITOR T
+		INNER JOIN T_ZY_RES_MARKER T1 ON T.MONITOR_ID = T1.RESOURCES_ID 
+		<if test="pointTypes != null ">
+			left join T_ZZ_POINT_MONITOR_REF t2 on t2.monitor_id=t.platform_id
+	   		left join  t_zz_point_info t3 on t3.point_id = t2.point_id 
+	   		inner join MAP_WG_GIS t4 on t3.point_id=t4.wid  and t4.status='001'
+	   		INNER JOIN t_bas_datadict D ON d.dict_general_code=t3.point_type and d.dict_pcode like 'D236002%' and d.dict_level=5
+		</if>
+		WHERE  T.GLOBAL_TYPE = '001' 
+		AND T1.MARKER_TYPE = #{markType,jdbcType=VARCHAR}
+		<if test="orgCode != null and orgCode != '' ">
+			AND T.ORG_CODE  LIKE #{orgCode ,jdbcType=VARCHAR}|| '%'
+	     </if>
+		<if test="camSearch != null and camSearch != '' ">
+			AND  
+				T.PLATFORM_NAME LIKE '%'||#{camSearch ,jdbcType=VARCHAR}|| '%'
+				 
+	     </if>
+		<if test="line =='0'.toString() or line =='1'.toString() ">
+		   	AND T.LOGIN_STATUS = #{line,jdbcType=VARCHAR}
+		</if>
+		<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+			AND  T1.X BETWEEN  #{xmin} and  #{xmax}
+		</if>
+		<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+		  	AND  T1.Y BETWEEN  #{ymin} and  #{ymax}
+		</if>
+		<if test="pointTypes != null ">
+		     and t3.POINT_TYPE in
+		    <foreach item="pointType" index="index" collection="pointTypes"
+			  open="(" separator="," close=")">
+			    #{pointType}
+			</foreach>
+		</if>
+	</select>
+	
+	
+	<select id="findCamPointlistByParams" resultType="java.util.HashMap">
+		select 
+		T.MONITOR_ID ID,T.PLATFORM_IP IP,
+		T.PLATFORM_NAME NAME,T.PLATFORM_USERNAME APPKEY,
+		T.CHANNEL_ID APPSECRET,T.CHANNEL_IP CAMEREID,
+		T.ORG_CODE ORGCODE,
+		T.LOGIN_STATUS LINE,
+		T.COMPANY_TYPE COMPANYTYPE,
+		T.GLOBAL_TYPE GLOBALTYPE,T.PORT PORT,
+		T.PLATFORM_ID INDEXCODE,
+		T.USE_TYPE , 
+		T1.X X,T1.Y Y
+		
+		from CMS.CI_MONITOR T
+		INNER JOIN T_ZY_RES_MARKER T1 ON T.MONITOR_ID = T1.RESOURCES_ID 
+		<if test="pointTypes != null ">
+			left join T_ZZ_POINT_MONITOR_REF t2 on t2.monitor_id=t.platform_id
+	   		left join  t_zz_point_info t3 on t3.point_id = t2.point_id 
+	   		inner join MAP_WG_GIS t4 on t3.point_id=t4.wid  and t4.status='001'
+	   		INNER JOIN t_bas_datadict D ON d.dict_general_code=t3.point_type and d.dict_pcode like 'D236002%' and d.dict_level=5
+		</if>
+		WHERE T.GLOBAL_TYPE = '001'
+		AND T1.MARKER_TYPE = #{markType,jdbcType=VARCHAR} 
+		<if test="orgCode != null and orgCode != '' ">
+			AND T.ORG_CODE LIKE #{orgCode ,jdbcType=VARCHAR}|| '%'
+	     </if>
+		<if test="camSearch != null and camSearch != '' ">
+			AND  T.PLATFORM_NAME LIKE '%'||#{camSearch ,jdbcType=VARCHAR}|| '%'				 
+	     </if>
+		<if test="line =='0'.toString() or line =='1'.toString()  ">
+		   	AND T.LOGIN_STATUS = #{line,jdbcType=VARCHAR}
+		</if>
+		<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+			AND  T1.X BETWEEN  #{xmin} and  #{xmax}
+		</if>
+		<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+		  	AND  T1.Y BETWEEN  #{ymin} and  #{ymax}
+		</if>
+		<if test="pointTypes != null ">
+		     and t3.POINT_TYPE in
+		    <foreach item="pointType" index="index" collection="pointTypes"
+			  open="(" separator="," close=")">
+			    #{pointType}
+			</foreach>
+		</if>
+		ORDER BY T.ORG_CODE,T.UPDATEDT DESC,T.MONITOR_ID DESC
+	</select>
+	
+	<select id="countCamPointlistByParams" resultType="java.lang.Integer">
+		select count(0)
+		from CMS.CI_MONITOR T
+		INNER JOIN T_ZY_RES_MARKER T1 ON T.MONITOR_ID = T1.RESOURCES_ID 
+		<if test="pointTypes != null ">
+			left join T_ZZ_POINT_MONITOR_REF t2 on t2.monitor_id=t.platform_id
+	   		left join  t_zz_point_info t3 on t3.point_id = t2.point_id 
+	   		inner join MAP_WG_GIS t4 on t3.point_id=t4.wid  and t4.status='001'
+	   		INNER JOIN t_bas_datadict D ON d.dict_general_code=t3.point_type and d.dict_pcode like 'D236002%' and d.dict_level=5
+		</if>
+		WHERE  T.GLOBAL_TYPE = '001'
+		AND T1.MARKER_TYPE = #{markType,jdbcType=VARCHAR} 
+		<if test="orgCode != null and orgCode != '' ">
+			AND T.ORG_CODE  LIKE #{orgCode ,jdbcType=VARCHAR}|| '%'
+	     </if>
+		<if test="camSearch != null and camSearch != '' ">
+			AND  
+				T.PLATFORM_NAME LIKE '%'||#{camSearch ,jdbcType=VARCHAR}|| '%'
+				 
+	     </if>
+		<if test="line =='0'.toString() or line =='1'.toString()  ">
+		   	AND T.LOGIN_STATUS = #{line,jdbcType=VARCHAR}
+		</if>
+		<if test="xmin !='' and xmin != null  and  xmax !='' and xmax != null">
+			AND  T1.X BETWEEN  #{xmin} and  #{xmax}
+		</if>
+		<if test="ymin !='' and ymin != null  and  ymax !='' and ymax != null">
+		  	AND  T1.Y BETWEEN  #{ymin} and  #{ymax}
+		</if>
+		<if test="pointTypes != null ">
+		     and t3.POINT_TYPE in
+		    <foreach item="pointType" index="index" collection="pointTypes"
+			  open="(" separator="," close=")">
+			    #{pointType}
+			</foreach>
+		</if>
+	</select>
+
+</mapper>

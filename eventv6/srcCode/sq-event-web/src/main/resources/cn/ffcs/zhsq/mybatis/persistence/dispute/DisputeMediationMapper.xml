@@ -1,0 +1,1089 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.DisputeMediationMapper">
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+    <id column="MEDIATION_ID" jdbcType="DECIMAL" property="mediationId" />
+    <result column="MEDIATION_CODE" jdbcType="VARCHAR" property="mediationCode" />
+    <result column="ACCEPTED_DATE" jdbcType="TIMESTAMP" property="acceptedDate" />
+    <result column="ACCEPTED_DATE_STR" jdbcType="VARCHAR" property="acceptedDateStr" />
+    <result column="MEDIATION_DATE" jdbcType="DATE" property="mediationDate" />
+    <result column="MEDIATION_DATE_STR" jdbcType="VARCHAR" property="mediationDateStr" />
+    <result column="DISPUTE_TYPE_1" jdbcType="DECIMAL" property="disputeType1" />
+    <result column="DISPUTE_TYPE_2" jdbcType="VARCHAR" property="disputeType2" />
+    <result column="DISPUTE_CONDITION" jdbcType="VARCHAR" property="disputeCondition" />
+    <result column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="UPDATE_ID" jdbcType="DECIMAL" property="updateId" />
+    <result column="CREATOR_ID" jdbcType="DECIMAL" property="creatorId" />
+    <result column="UPDATE_TIME" jdbcType="DATE" property="updateTime" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="LONGITUDE" jdbcType="DECIMAL" property="longitude" />
+    <result column="LATITUDE" jdbcType="DECIMAL" property="latitude" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="ADDRESS_COLUMN" jdbcType="VARCHAR" property="addressColumn" />
+    <result column="PETITION_ID" jdbcType="VARCHAR" property="petitionId" />
+    <result column="DISPUTE_STATUS" jdbcType="VARCHAR" property="disputeStatus" />
+    <result column="GRID_ID" jdbcType="DECIMAL" property="gridId" />
+    <result column="GRID_NAME" jdbcType="VARCHAR" property="gridName" />
+    <result column="GRID_PATH" jdbcType="VARCHAR" property="gridPath" />
+    <result column="INVOLVED_AMOUNT" jdbcType="DECIMAL" property="involvedAmount" />
+    <result column="EVENT_ID" jdbcType="DECIMAL" property="eventId" />
+    <result column="DISPUTE_EVENT_NAME" jdbcType="VARCHAR" property="disputeEventName" />
+    <result column="HAPPEN_TIME" jdbcType="TIMESTAMP" property="happenTime" />
+    <result column="HAPPEN_TIME_STR" jdbcType="VARCHAR" property="happenTimeStr" />
+    <result column="HAPPEN_ADDR" jdbcType="VARCHAR" property="happenAddr" />
+    <result column="DISPUTE_SCALE" jdbcType="VARCHAR" property="disputeScale" />
+    <result column="INVOLVE_NUM" jdbcType="DECIMAL" property="involveNum" />
+    <result column="MEDIATION_TYPE" jdbcType="VARCHAR" property="mediationType" />
+    <result column="EVA_DATE" jdbcType="DATE" property="evaDate" />
+    <result column="EVA_DATE_STR" jdbcType="VARCHAR" property="evaDateStr" />
+    <result column="EVA_OPN" jdbcType="VARCHAR" property="evaOpn" />
+    <result column="INVOLVED_ORG_NAME" jdbcType="VARCHAR" property="involvedOrgName" />
+    <result column="MEDIATION_DEADLINE" jdbcType="DATE" property="mediationDeadline"/>
+    <result column="MEDIATION_DEADLINE_STR" jdbcType="DATE" property="mediationDeadlineStr"/>
+    <result column="HANDLE_DATE_FLAG" jdbcType="VARCHAR" property="handleDateFlag"/>
+    <result column="INVOLVE_TYPE" jdbcType="VARCHAR" property="involveType"/>
+    <result column="IS_SUCCESS" jdbcType="VARCHAR" property="isSuccess"/>
+    <result column="SOURCE" jdbcType="VARCHAR" property="source"/>
+    <result column="ACCEPTER" jdbcType="VARCHAR" property="accepter"/>
+    <result column="INVALIDREASON" jdbcType="VARCHAR" property="invalidReason"/>
+
+    <result column="DISPUTE_ID" jdbcType="DECIMAL" property="disputeId"/>
+    <result column="SCOPE_INFLUNECE" jdbcType="VARCHAR" property="scopeInfluenece"/>
+    <result column="EVENT_NATURE" jdbcType="VARCHAR" property="eventNature"/>
+    <result column="COUNT" jdbcType="DECIMAL" property="count"/>
+    
+    <result column="HJ_CERT_NUMBER" jdbcType="VARCHAR" property="hjCertNumber"/>
+    <result column="WORK_OEDER_DETAIL" jdbcType="VARCHAR" property="workOrderDetail"/>
+    <result column="RISK_CODE" jdbcType="VARCHAR" property="riskCode"/>
+    <result column="RISK_GRADE" jdbcType="VARCHAR" property="riskGrade"/>
+    <result column="MEASURE_DETAIL" jdbcType="VARCHAR" property="measureDetail"/>
+    
+    <result column="CASE_ASSESSMENT" jdbcType="VARCHAR" property="caseAssessment"/>
+    <result column="INTENSE_DEGREE" jdbcType="VARCHAR" property="intenseDegree"/>
+    <result column="DISPUTE_LEVEL" jdbcType="VARCHAR" property="disputeLevel"/>
+    <result column="WARNING_LEVEL" jdbcType="VARCHAR" property="warningLevel"/>
+    <result column="DISPUTE_TYPE_3" jdbcType="VARCHAR" property="disputeType3"/>
+    <result column="HAPPEN_ADDR_CODE" jdbcType="VARCHAR" property="happenAddrCode"/>
+    <!-- 2020-12-02 江西矛盾纠纷 对接数据 使用的字段 -->
+    <result column="DATA_SOURCE" jdbcType="VARCHAR" property="dataSource" /><!--数据来源-->
+    <result column="IS_OUTSTAND" jdbcType="VARCHAR" property="isOutStand" /><!--是否设为突出事件-->
+    <result column="RELATED_LAKE_TYPE" jdbcType="VARCHAR" property="relatedLakeType" /><!--涉湖类型-->
+    <result column="EVENT_STATUS" jdbcType="VARCHAR" property="eventStatus" /><!--事件类型-->
+    <result column="SUPERVISION_DEPARTMENT" jdbcType="VARCHAR" property="supervisionDepartment"/><!--督办部门-->
+  </resultMap>
+  <!-- 新增修改矛盾纠纷表 T_ZZ_DISPUTE_MEDIATION 字段需同步修改 T_ZZ_DISPUTE_MEDIATION_ZERO-->
+  <sql id="Base_Column_List1">
+    T1.MEDIATION_ID,T3.IS_SUCCESS, T1.MEDIATION_CODE, T1.ACCEPTED_DATE, TO_CHAR(T1.ACCEPTED_DATE,'YYYY-MM-DD') ACCEPTED_DATE_STR, 
+    T1.MEDIATION_DATE, TO_CHAR(T1.MEDIATION_DATE,'YYYY-MM-DD') MEDIATION_DATE_STR, T1.DISPUTE_TYPE_1, T1.DISPUTE_TYPE_2, 
+    T1.DISPUTE_CONDITION, T1.ORG_ID, T1.UPDATE_ID, T1.UPDATE_TIME, T1.STATUS, T1.LONGITUDE, T1.LATITUDE, T1.CREATE_TIME, 
+    T1.ADDRESS_COLUMN, T1.PETITION_ID, T1.DISPUTE_STATUS, T2.GRID_ID, T2.GRID_NAME, 
+    <if test="infoOrgName != null">
+        substr(T2.GRID_PATH, instr(T2.GRID_PATH,#{infoOrgName,jdbcType=VARCHAR},1)+length(#{infoOrgName,jdbcType=VARCHAR})) 
+      </if>  GRID_PATH, T1.INVOLVED_AMOUNT,T1.INVOLVE_TYPE, T1.EVENT_ID, T1.DISPUTE_EVENT_NAME, T1.HAPPEN_TIME, 
+    TO_CHAR(T1.HAPPEN_TIME,'YYYY-MM-DD hh24:mi:ss') HAPPEN_TIME_STR,T1.HAPPEN_ADDR,T1.DISPUTE_SCALE, T1.INVOLVE_NUM, T1.MEDIATION_TYPE, T1.EVA_DATE, 
+    TO_CHAR(T1.EVA_DATE,'YYYY-MM-DD') EVA_DATE_STR, T1.EVA_OPN, TO_CHAR(T1.MEDIATION_DEADLINE,'YYYY-MM-DD') MEDIATION_DEADLINE_STR,
+    T1.INVOLVED_ORG_NAME,T1.SOURCE,T1.ACCEPTER,T1.DISPUTE_ID,T1.SCOPE_INFLUNECE,T1.EVENT_NATURE,T1.CREATOR_ID
+  </sql>
+   <!-- 新增修改矛盾纠纷表 T_ZZ_DISPUTE_MEDIATION 字段需同步修改 T_ZZ_DISPUTE_MEDIATION_ZERO-->
+  <sql id="Base_Column_List">
+    T1.MEDIATION_ID, T1.MEDIATION_CODE, T1.ACCEPTED_DATE, TO_CHAR(T1.ACCEPTED_DATE,'YYYY-MM-DD') ACCEPTED_DATE_STR, 
+    T1.MEDIATION_DATE, TO_CHAR(T1.MEDIATION_DATE,'YYYY-MM-DD') MEDIATION_DATE_STR, T1.DISPUTE_TYPE_1, T1.DISPUTE_TYPE_2, 
+    T1.DISPUTE_CONDITION, T1.ORG_ID, T1.UPDATE_ID, T1.UPDATE_TIME, T1.STATUS, T1.LONGITUDE, T1.LATITUDE, T1.CREATE_TIME, 
+    T1.ADDRESS_COLUMN, T1.PETITION_ID, T1.DISPUTE_STATUS, T2.GRID_ID, T2.GRID_NAME,t2.GRID_PATH, T1.INVOLVED_AMOUNT,T1.INVOLVE_TYPE, T1.EVENT_ID, T1.DISPUTE_EVENT_NAME, T1.HAPPEN_TIME, 
+    TO_CHAR(T1.HAPPEN_TIME,'YYYY-MM-DD hh24:mi:ss') HAPPEN_TIME_STR, 
+    T1.HAPPEN_ADDR,T1.WORK_OEDER_DETAIL,T1.RISK_CODE,T1.RISK_GRADE,T1.MEASURE_DETAIL,
+    T1.DISPUTE_SCALE, T1.INVOLVE_NUM, T1.MEDIATION_TYPE, T1.EVA_DATE, 
+    TO_CHAR(T1.EVA_DATE,'YYYY-MM-DD') EVA_DATE_STR, T1.EVA_OPN,T1.CREATOR_ID,
+    TO_CHAR(T1.MEDIATION_DEADLINE,'YYYY-MM-DD') MEDIATION_DEADLINE_STR,
+    T1.INVOLVED_ORG_NAME,T1.SOURCE,T1.ACCEPTER,T1.DISPUTE_ID,T1.SCOPE_INFLUNECE,T1.EVENT_NATURE,T1.INVALIDREASON,
+    T1.CASE_ASSESSMENT,T1.INTENSE_DEGREE,T1.DISPUTE_LEVEL,T1.WARNING_LEVEL,T1.DISPUTE_TYPE_3,T1.HAPPEN_ADDR_CODE,
+    T1.DATA_SOURCE,T1.IS_OUTSTAND,T1.RELATED_LAKE_TYPE,T1.EVENT_STATUS,T1.SUPERVISION_DEPARTMENT
+  </sql>
+  <select id="findZeroIdByGridId" parameterType="string" resultType="int">
+  SELECT max(MEDIATION_ID) FROM T_ZZ_DISPUTE_MEDIATION_ZERO t where t.status!=0 and t.grid_id=#{gridId} and t.create_time>=TRUNC(SYSDATE)
+  </select>
+  <select id="findCountByGridId" parameterType="string" resultType="int">
+  SELECT count(1) FROM (SELECT * FROM T_ZZ_DISPUTE_MEDIATION  t where t.status!=0 union all 
+SELECT * FROM  T_ZZ_DISPUTE_MEDIATION_ZERO t where t.status!=0) t where t.grid_id=#{gridId} and t.create_time>TRUNC(SYSDATE)
+  </select>
+  <update id="deleteZero" >
+  update T_ZZ_DISPUTE_MEDIATION_ZERO t set t.status=0 where t.MEDIATION_ID in (SELECT MEDIATION_ID FROM T_ZZ_DISPUTE_MEDIATION_ZERO t where t.status!=0 and t.grid_id=#{gridId} and t.create_time>=TRUNC(SYSDATE))
+  </update>
+   <select id="findCountAndZero" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM (SELECT * FROM T_ZZ_DISPUTE_MEDIATION  t where t.status!=0 union all 
+SELECT * FROM  T_ZZ_DISPUTE_MEDIATION_ZERO t where t.status!=0) T1, T_DC_GRID T2,T_ZZ_DISPUTE_MEDIATION_RES T3 
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'  AND T1.MEDIATION_ID = T3.MEDIATION_ID 
+ 
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findPageListAndZero" resultMap="BaseResultMap">
+  	SELECT
+  	<include refid="Base_Column_List1"/> 
+    FROM (SELECT * FROM T_ZZ_DISPUTE_MEDIATION  t where t.status!=0 union all 
+	SELECT * FROM  T_ZZ_DISPUTE_MEDIATION_ZERO t where t.status!=0) T1, T_DC_GRID T2,T_ZZ_DISPUTE_MEDIATION_RES T3 
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001' AND T1.MEDIATION_ID = T3.MEDIATION_ID 
+ 
+  	<include refid="find_where"/>
+  	ORDER BY T1.create_time DESC
+  </select>
+  <insert id="insertZero" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+  	<selectKey keyProperty="mediationId" resultType="long" order="BEFORE">
+		SELECT  SEQ_DISPUTE_MEDIATION_ID.NEXTVAL from DUAL
+	</selectKey>
+    insert into T_ZZ_DISPUTE_MEDIATION_ZERO (MEDIATION_ID, MEDIATION_CODE, ACCEPTED_DATE, 
+      MEDIATION_DATE, DISPUTE_TYPE_1, DISPUTE_TYPE_2, 
+      DISPUTE_CONDITION, ORG_ID, UPDATE_ID, 
+      UPDATE_TIME, STATUS, LONGITUDE, 
+      LATITUDE, CREATE_TIME, ADDRESS_COLUMN, 
+      PETITION_ID, DISPUTE_STATUS, GRID_ID,
+      GRID_NAME, INVOLVED_AMOUNT, EVENT_ID,
+      DISPUTE_EVENT_NAME, HAPPEN_TIME,
+      HAPPEN_ADDR, DISPUTE_SCALE, INVOLVE_NUM,
+      MEDIATION_TYPE, EVA_DATE, EVA_OPN, INVOLVED_ORG_NAME, MEDIATION_DEADLINE, INVOLVE_TYPE,
+    SOURCE,ACCEPTER,DISPUTE_ID,CREATOR_ID,SCOPE_INFLUNECE,EVENT_NATURE)
+    values (#{mediationId,jdbcType=DECIMAL}, #{mediationCode,jdbcType=VARCHAR}, sysdate, 
+       to_date(#{mediationDateStr,jdbcType=VARCHAR},'yyyy-mm-dd'), #{disputeType1,jdbcType=DECIMAL}, #{disputeType2,jdbcType=VARCHAR}, 
+      #{disputeCondition,jdbcType=VARCHAR}, #{orgId,jdbcType=DECIMAL}, #{updateId,jdbcType=DECIMAL}, 
+      sysdate, #{status,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL}, 
+      #{latitude,jdbcType=DECIMAL}, SYSDATE, #{addressColumn,jdbcType=VARCHAR}, 
+      #{petitionId,jdbcType=VARCHAR}, #{disputeStatus,jdbcType=VARCHAR}, #{gridId,jdbcType=DECIMAL},
+      #{gridName,jdbcType=VARCHAR}, #{involvedAmount,jdbcType=DECIMAL}, #{eventId,jdbcType=DECIMAL},
+      #{disputeEventName,jdbcType=VARCHAR}, to_date(#{happenTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'), #{happenAddr,jdbcType=VARCHAR},
+      #{disputeScale,jdbcType=VARCHAR}, #{involveNum,jdbcType=DECIMAL}, #{mediationType,jdbcType=VARCHAR},
+      to_date(#{evaDateStr,jdbcType=VARCHAR},'yyyy-mm-dd'), #{evaOpn,jdbcType=VARCHAR}, 
+      #{involvedOrgName,jdbcType=VARCHAR},to_date(#{mediationDeadlineStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),#{involveType,jdbcType=VARCHAR},
+    #{source,jdbcType=VARCHAR},#{accepter,jdbcType=VARCHAR},#{disputeId,jdbcType=DECIMAL},#{creatorId,jdbcType=DECIMAL}, #{scopeInfluenece,jdbcType=VARCHAR}, #{eventNature,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_ZZ_DISPUTE_MEDIATION T1,T_DC_GRID T2
+    where T1.GRID_ID=T2.GRID_ID AND T2.STATUS = '001' AND T1.MEDIATION_ID = #{mediationId,jdbcType=DECIMAL} AND T1.STATUS != 0
+  </select>
+  <select id="getMediationSequence" resultType="long">  
+  	select SEQ_MEDIATION_CODE.nextval from dual  
+  </select> 
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from T_ZZ_DISPUTE_MEDIATION
+    where MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+  	<selectKey keyProperty="mediationId" resultType="long" order="BEFORE">
+		SELECT  SEQ_DISPUTE_MEDIATION_ID.NEXTVAL from DUAL
+	</selectKey>
+    insert into T_ZZ_DISPUTE_MEDIATION (MEDIATION_ID, MEDIATION_CODE, ACCEPTED_DATE, 
+      MEDIATION_DATE, DISPUTE_TYPE_1, DISPUTE_TYPE_2, 
+      DISPUTE_CONDITION, ORG_ID, UPDATE_ID, 
+      UPDATE_TIME, STATUS, LONGITUDE, 
+      LATITUDE, CREATE_TIME, ADDRESS_COLUMN, 
+      PETITION_ID, DISPUTE_STATUS, GRID_ID,
+      GRID_NAME, INVOLVED_AMOUNT, EVENT_ID,
+      DISPUTE_EVENT_NAME, HAPPEN_TIME,
+      HAPPEN_ADDR, DISPUTE_SCALE, INVOLVE_NUM,
+      MEDIATION_TYPE, EVA_DATE, EVA_OPN, INVOLVED_ORG_NAME, MEDIATION_DEADLINE, INVOLVE_TYPE, WORK_OEDER_DETAIL,RISK_CODE,RISK_GRADE,MEASURE_DETAIL,
+    SOURCE,ACCEPTER,DISPUTE_ID,CREATOR_ID,SCOPE_INFLUNECE,EVENT_NATURE,CASE_ASSESSMENT,INTENSE_DEGREE,DISPUTE_LEVEL,WARNING_LEVEL,DISPUTE_TYPE_3,HAPPEN_ADDR_CODE,DATA_SOURCE,IS_OUTSTAND,RELATED_LAKE_TYPE,EVENT_STATUS,SUPERVISION_DEPARTMENT)
+    values (#{mediationId,jdbcType=DECIMAL}, #{mediationCode,jdbcType=VARCHAR}, to_date(#{acceptedDateStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'), 
+       to_date(#{mediationDateStr,jdbcType=VARCHAR},'yyyy-mm-dd'), #{disputeType1,jdbcType=DECIMAL}, #{disputeType2,jdbcType=VARCHAR}, 
+      #{disputeCondition,jdbcType=VARCHAR}, #{orgId,jdbcType=DECIMAL}, #{updateId,jdbcType=DECIMAL},
+      <choose>
+        <when test="createTime == null">SYSDATE,</when>
+        <otherwise>#{createTime,jdbcType=TIMESTAMP},</otherwise>
+      </choose>
+      #{status,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL},
+      #{latitude,jdbcType=DECIMAL},
+      <choose>
+        <when test="createTime == null">SYSDATE,</when>
+        <otherwise>#{createTime,jdbcType=TIMESTAMP},</otherwise>
+      </choose>
+      #{addressColumn,jdbcType=VARCHAR},
+      #{petitionId,jdbcType=VARCHAR}, #{disputeStatus,jdbcType=VARCHAR}, #{gridId,jdbcType=VARCHAR},
+      #{gridName,jdbcType=VARCHAR}, #{involvedAmount,jdbcType=DECIMAL}, #{eventId,jdbcType=DECIMAL},
+      #{disputeEventName,jdbcType=VARCHAR}, to_date(#{happenTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'), #{happenAddr,jdbcType=VARCHAR},
+      #{disputeScale,jdbcType=VARCHAR}, #{involveNum,jdbcType=DECIMAL}, #{mediationType,jdbcType=VARCHAR},
+      to_date(#{evaDateStr,jdbcType=VARCHAR},'yyyy-mm-dd'), #{evaOpn,jdbcType=VARCHAR}, 
+      #{involvedOrgName,jdbcType=VARCHAR},to_date(#{mediationDeadlineStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),#{involveType,jdbcType=VARCHAR},
+      #{workOrderDetail,jdbcType=VARCHAR},#{riskCode,jdbcType=VARCHAR},#{riskGrade,jdbcType=VARCHAR},#{measureDetail,jdbcType=VARCHAR},
+    #{source,jdbcType=VARCHAR},#{accepter,jdbcType=VARCHAR},#{disputeId,jdbcType=DECIMAL},#{creatorId,jdbcType=DECIMAL}, #{scopeInfluenece,jdbcType=VARCHAR}, #{eventNature,jdbcType=VARCHAR},
+    #{caseAssessment,jdbcType=VARCHAR},#{intenseDegree,jdbcType=VARCHAR},#{disputeLevel,jdbcType=VARCHAR},#{warningLevel,jdbcType=VARCHAR},#{disputeType3,jdbcType=VARCHAR},#{happenAddrCode,jdbcType=VARCHAR},#{dataSource,jdbcType=VARCHAR},#{isOutStand,jdbcType=VARCHAR},#{relatedLakeType,jdbcType=VARCHAR},#{eventStatus,jdbcType=VARCHAR},#{supervisionDepartment,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+    insert into T_ZZ_DISPUTE_MEDIATION
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mediationId != null">
+        MEDIATION_ID,
+      </if>
+      <if test="mediationCode != null">
+        MEDIATION_CODE,
+      </if>
+      <if test="acceptedDate != null">
+        ACCEPTED_DATE,
+      </if>
+      <if test="mediationDate != null">
+        MEDIATION_DATE,
+      </if>
+      <if test="disputeType1 != null">
+        DISPUTE_TYPE_1,
+      </if>
+      <if test="disputeType2 != null">
+        DISPUTE_TYPE_2,
+      </if>
+      <if test="disputeCondition != null">
+        DISPUTE_CONDITION,
+      </if>
+      <if test="orgId != null">
+        ORG_ID,
+      </if>
+      <if test="updateId != null">
+        UPDATE_ID,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="addressColumn != null">
+        ADDRESS_COLUMN,
+      </if>
+      <if test="petitionId != null">
+        PETITION_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mediationId != null">
+        #{mediationId,jdbcType=DECIMAL},
+      </if>
+      <if test="mediationCode != null">
+        #{mediationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptedDate != null">
+        #{acceptedDate,jdbcType=DATE},
+      </if>
+      <if test="mediationDate != null">
+        #{mediationDate,jdbcType=DATE},
+      </if>
+      <if test="disputeType1 != null">
+        #{disputeType1,jdbcType=DECIMAL},
+      </if>
+      <if test="disputeType2 != null">
+        #{disputeType2,jdbcType=DECIMAL},
+      </if>
+      <if test="disputeCondition != null">
+        #{disputeCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null">
+        #{orgId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateId != null">
+        #{updateId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null">
+        SYSDATE,
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        SYSDATE,
+      </if>
+      <if test="addressColumn != null">
+        #{addressColumn,jdbcType=VARCHAR},
+      </if>
+      <if test="petitionId != null">
+        #{petitionId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="deleteByPrimaryKeyForLogic" >
+  	update T_ZZ_DISPUTE_MEDIATION 
+  	<set>
+  		STATUS = '0',
+  		UPDATE_ID = #{userId,jdbcType=DECIMAL}
+  	</set>
+  	where MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+    update T_ZZ_DISPUTE_MEDIATION
+    <set>
+        UPDATE_TIME = sysdate,
+      <if test="mediationCode != null">
+        MEDIATION_CODE = #{mediationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="acceptedDateStr != null">
+        ACCEPTED_DATE = to_date(#{acceptedDateStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+      <if test="disputeType1 != null">
+        DISPUTE_TYPE_1 = #{disputeType1,jdbcType=DECIMAL},
+      </if>
+      <if test="disputeType2 != null">
+        DISPUTE_TYPE_2 = #{disputeType2,jdbcType=DECIMAL},
+      </if>
+      <if test="disputeCondition != null">
+        DISPUTE_CONDITION = #{disputeCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="orgId != null">
+        ORG_ID = #{orgId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateId != null">
+        UPDATE_ID = #{updateId,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null">
+        LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      </if>
+      <if test="latitude != null">
+        LATITUDE = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="addressColumn != null">
+        ADDRESS_COLUMN = #{addressColumn,jdbcType=VARCHAR},
+      </if>
+      <if test="petitionId != null">
+        PETITION_ID = #{petitionId,jdbcType=VARCHAR},
+      </if>
+      <if test="disputeStatus != null">
+        DISPUTE_STATUS = #{disputeStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="gridId != null">
+        GRID_ID = #{gridId,jdbcType=DECIMAL},
+      </if>
+      <if test="gridName != null">
+        GRID_NAME = #{gridName,jdbcType=VARCHAR},
+      </if>
+      <if test="involvedAmount != null">
+        INVOLVED_AMOUNT = #{involvedAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="eventId != null">
+        EVENT_ID = #{eventId,jdbcType=DECIMAL},
+      </if>
+      <if test="disputeEventName != null">
+        DISPUTE_EVENT_NAME = #{disputeEventName,jdbcType=VARCHAR},
+      </if>
+      <if test="happenTimeStr != null">
+        HAPPEN_TIME = to_date(#{happenTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+      <if test="mediationDateStr != null">
+        MEDIATION_DATE = to_date(#{mediationDateStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+      <if test="happenAddr != null">
+        HAPPEN_ADDR = #{happenAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="disputeScale != null">
+        DISPUTE_SCALE = #{disputeScale,jdbcType=VARCHAR},
+      </if>
+      <if test="involveNum != null">
+        INVOLVE_NUM = #{involveNum,jdbcType=DECIMAL},
+      </if>
+      <if test="involveType != null">
+        INVOLVE_TYPE = #{involveType,jdbcType=VARCHAR},
+      </if>
+      <if test="mediationType != null">
+        MEDIATION_TYPE = #{mediationType,jdbcType=VARCHAR},
+      </if>
+      <if test="evaDate != null">
+        EVA_DATE = #{evaDate,jdbcType=DATE},
+      </if>
+      <if test="evaOpn != null">
+        EVA_OPN = #{evaOpn,jdbcType=VARCHAR},
+      </if>
+      <if test="involvedOrgName != null">
+        INVOLVED_ORG_NAME = #{involvedOrgName,jdbcType=VARCHAR},
+      </if>
+
+      <if test="scopeInfluenece != null">
+        SCOPE_INFLUNECE = #{scopeInfluenece,jdbcType=VARCHAR},
+      </if>
+
+      <if test="eventNature != null">
+        EVENT_NATURE = #{eventNature,jdbcType=VARCHAR},
+      </if>
+
+      <if test="mediationDeadlineStr != null">
+        MEDIATION_DEADLINE = to_date(#{mediationDeadlineStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+
+      <if test="invalidReason != null">
+        INVALIDREASON = #{invalidReason,jdbcType=VARCHAR},
+      </if>
+
+       <if test="workOrderDetail != null">
+        WORK_OEDER_DETAIL = #{workOrderDetail,jdbcType=VARCHAR},
+      </if>  
+      <if test="riskCode != null">
+        RISK_CODE = #{riskCode,jdbcType=VARCHAR},
+      </if>  
+      <if test="riskGrade != null">
+        RISK_GRADE = #{riskGrade,jdbcType=VARCHAR},
+      </if>  
+      <if test="measureDetail != null">
+        MEASURE_DETAIL = #{measureDetail,jdbcType=VARCHAR},
+      </if>
+	  <if test="caseAssessment != null">
+	  	CASE_ASSESSMENT = #{caseAssessment,jdbcType=VARCHAR},
+	  </if>
+	  <if test="intenseDegree != null">
+	  	INTENSE_DEGREE = #{intenseDegree,jdbcType=VARCHAR},
+	  </if>
+	  <if test="disputeLevel != null">
+	  	DISPUTE_LEVEL = #{disputeLevel,jdbcType=VARCHAR},
+	  </if>
+	  <if test="warningLevel != null">
+	  	WARNING_LEVEL = #{warningLevel,jdbcType=VARCHAR},
+	  </if>
+	  <if test="disputeType3 != null">
+	  	DISPUTE_TYPE_3 = #{disputeType3,jdbcType=VARCHAR},
+	  </if>
+	  <if test="happenAddrCode != null">
+	    HAPPEN_ADDR_CODE = #{happenAddrCode,jdbcType=VARCHAR},
+	  </if>
+	  <if test="dataSource != null">
+        DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="isOutStand != null">
+        IS_OUTSTAND = #{isOutStand,jdbcType=VARCHAR},
+      </if>
+      <if test="relatedLakeType != null">
+        RELATED_LAKE_TYPE = #{relatedLakeType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventStatus != null">
+        EVENT_STATUS = #{eventStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="supervisionDepartment != null">
+        SUPERVISION_DEPARTMENT = #{supervisionDepartment,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediation">
+    update T_ZZ_DISPUTE_MEDIATION
+    set MEDIATION_CODE = #{mediationCode,jdbcType=VARCHAR},
+      ACCEPTED_DATE = #{acceptedDate,jdbcType=DATE},
+      MEDIATION_DATE = #{mediationDate,jdbcType=DATE},
+      DISPUTE_TYPE_1 = #{disputeType1,jdbcType=DECIMAL},
+      DISPUTE_TYPE_2 = #{disputeType2,jdbcType=DECIMAL},
+      DISPUTE_CONDITION = #{disputeCondition,jdbcType=VARCHAR},
+      ORG_ID = #{orgId,jdbcType=DECIMAL},
+      UPDATE_ID = #{updateId,jdbcType=DECIMAL},
+      UPDATE_TIME = SYSDATE,
+      STATUS = #{status,jdbcType=DECIMAL},
+      LONGITUDE = #{longitude,jdbcType=DECIMAL},
+      LATITUDE = #{latitude,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=DATE},
+      ADDRESS_COLUMN = #{addressColumn,jdbcType=VARCHAR},
+      PETITION_ID = #{petitionId,jdbcType=VARCHAR}
+    where MEDIATION_ID = #{mediationId,jdbcType=DECIMAL}
+  </update>
+  
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM T_ZZ_DISPUTE_MEDIATION T1, T_DC_GRID T2, T_ZZ_DISPUTE_MEDIATION_RES T3
+    <if test="eventAndDisputeMediation != '' and eventAndDisputeMediation != null  ">
+    ,T_DC_ORG_SOCIAL_INFO T4
+        , t_bi_event_org_list e 
+        <if test="@Ognl@isNotEmpty( chiefLevel )">
+			,  t_dc_org_social_info s  
+		  </if>
+    </if>
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+    <if test="eventAndDisputeMediation != '' and eventAndDisputeMediation != null  ">
+      AND T4.ORG_ID = T1.ORG_ID AND T4.STATUS = '001'
+    </if>
+  	AND T1.MEDIATION_ID = T3.MEDIATION_ID
+  	AND T1.STATUS != '0'
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findCountByCriteriaNC" resultType="java.lang.Integer" >
+  	select COUNT(*)  from (SELECT
+  	<include refid="Base_Column_List"/>,
+    T3.IS_SUCCESS,case when T1.INVOLVE_NUM > 3 then 1 else 0 end +case when T1.INVOLVED_AMOUNT > 3000 then 1 else 0 end+case when nvl(T1.SCOPE_INFLUNECE,0)>2 then 1 else 0 end+case when nvl(T1.EVENT_NATURE,0)>1 then 1 else 0 end  as COUNT
+    FROM T_ZZ_DISPUTE_MEDIATION T1, T_DC_GRID T2, T_ZZ_DISPUTE_MEDIATION_RES T3 
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND T1.MEDIATION_ID = T3.MEDIATION_ID
+  	AND T1.STATUS != '0'
+  	<include refid="find_where"/>
+  	ORDER BY T1.MEDIATION_ID DESC) dis 
+     where dis.COUNT !=0	
+  </select>
+  
+  <select id="findPageListByCriteria" resultMap="BaseResultMap">
+  	SELECT
+  	<include refid="Base_Column_List"/>,
+    T3.HJ_CERT_NUMBER,T3.IS_SUCCESS,case when T1.INVOLVE_NUM > 3 then 1 else 0 end +case when T1.INVOLVED_AMOUNT > 3000 then 1 else 0 end+case when nvl(T1.SCOPE_INFLUNECE,0)>2 then 1 else 0 end+case when nvl(T1.EVENT_NATURE,0)>1 then 1 else 0 end  as COUNT
+    FROM T_ZZ_DISPUTE_MEDIATION T1, T_DC_GRID T2, T_ZZ_DISPUTE_MEDIATION_RES T3
+    <if test="eventAndDisputeMediation != '' and eventAndDisputeMediation != null  ">
+        , T_DC_ORG_SOCIAL_INFO T4 , t_bi_event_org_list e 
+        <if test="@Ognl@isNotEmpty( chiefLevel )">
+			,  t_dc_org_social_info s  
+		  </if>
+    </if>
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND T1.MEDIATION_ID = T3.MEDIATION_ID
+  	AND T1.STATUS != '0'
+    <if test="eventAndDisputeMediation != '' and eventAndDisputeMediation != null  ">
+      AND T4.ORG_ID = T1.ORG_ID AND T4.STATUS = '001'
+    </if>
+     
+  	<include refid="find_where"/>
+  	ORDER BY T1.MEDIATION_ID DESC
+  </select>
+  
+  
+  <select id="findPageListByCriteriaNC" resultMap="BaseResultMap">
+  	select dis.*   from (SELECT
+  	<include refid="Base_Column_List"/>,
+    T3.IS_SUCCESS,case when T1.INVOLVE_NUM > 3 then 1 else 0 end +case when T1.INVOLVED_AMOUNT > 3000 then 1 else 0 end+case when nvl(T1.SCOPE_INFLUNECE,0)>2 then 1 else 0 end+case when nvl(T1.EVENT_NATURE,0)>1 then 1 else 0 end  as COUNT
+    FROM T_ZZ_DISPUTE_MEDIATION T1, T_DC_GRID T2, T_ZZ_DISPUTE_MEDIATION_RES T3
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND T1.MEDIATION_ID = T3.MEDIATION_ID
+  	AND T1.STATUS != '0'
+  	<include refid="find_where"/>
+  	ORDER BY T1.MEDIATION_ID DESC) dis 
+     where dis.COUNT !=0
+  </select>
+  
+  <select id="findList" resultMap="BaseResultMap">
+  	SELECT
+  	<include refid="Base_Column_List"/>
+  	FROM T_ZZ_DISPUTE_MEDIATION T1, T_DC_GRID T2, T_ZZ_DISPUTE_MEDIATION_RES T3
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+  	AND T1.MEDIATION_ID = T3.MEDIATION_ID
+  	AND T1.STATUS != '0'
+  	<include refid="find_where"/>
+  	ORDER BY T1.HAPPEN_TIME DESC
+  </select>
+  
+  <select id="findMaxDisputeType" resultType="map">
+  with t_dispute_temp as
+ (select t.dispute_type_2 dispute_type, count(t.dispute_type_2) c
+	  from t_zz_dispute_mediation t
+	  where 1=1
+	<if test="startHappenTime!=null">
+        AND T.HAPPEN_TIME <![CDATA[>=]]> TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+  	<if test="endHappenTime!=null">
+        AND T.HAPPEN_TIME <![CDATA[<]]> TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+    <if test="gridId!=null">
+        AND T.GRID_ID IN (SELECT A.GRID_ID FROM T_DC_GRID A WHERE A.STATUS = '001' START WITH A.GRID_ID = #{gridId,jdbcType=DECIMAL}
+      	  		 CONNECT BY PRIOR A.GRID_ID = A.PARENT_GRID_ID)
+    </if>
+	 group by t.dispute_type_2
+	having count(t.dispute_type_2) > 0)
+select *
+  from t_dispute_temp tt
+ where tt.c = (select max(c) from t_dispute_temp) and rownum = 1;
+  </select>
+  	
+  <sql id="find_where">
+  	<if test="gridId != null and ownLevel == null and @Ognl@isEmpty(infoOrgCode)">
+        AND T2.INFO_ORG_CODE LIKE (SELECT A.INFO_ORG_CODE FROM T_DC_GRID A WHERE A.GRID_ID = #{gridId,jdbcType=DECIMAL}) || '%'
+    </if>
+    <if test="infoOrgCode != null and infoOrgCode != '' and type == 'jx' ">
+        AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+    </if>
+    <if test="infoOrgCode != null and infoOrgCode != '' and @cn.ffcs.zhsq.utils.Ognl@isEmpty(type)">
+      AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+    </if>
+    
+    <if test="ownLevel!=null">
+        AND T2.INFO_ORG_CODE = (SELECT A.INFO_ORG_CODE FROM T_DC_GRID A WHERE A.GRID_ID = #{gridId,jdbcType=DECIMAL}) 
+    </if>
+  	<if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(handleDateFlag)">
+        AND T1.HANDLE_DATE_FLAG = #{handleDateFlag,jdbcType=VARCHAR}
+    </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(disputeStatus)">
+    AND T1.DISPUTE_STATUS = #{disputeStatus,jdbcType=VARCHAR}
+  </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(scopeInfluenece)">
+      AND T1.SCOPE_INFLUENECE = #{scopeInfluenece,jdbcType=VARCHAR}
+    </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(eventNature)">
+      AND T1.EVENT_NATURE = #{eventNature,jdbcType=VARCHAR}
+    </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(source)">
+      AND T1.SOURCE = #{source,jdbcType=VARCHAR}
+    </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(creatorId)">
+      AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+    </if>
+    <if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(noDisputeStatus)">
+      AND T1.DISPUTE_STATUS != #{noDisputeStatus,jdbcType=VARCHAR}
+    </if>
+
+    <if test="disputeStatuss != null">
+      AND T1.DISPUTE_STATUS IN
+      <foreach collection="disputeStatuss" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+
+  	<if test="isSuccess!=null">
+        AND T3.IS_SUCCESS = #{isSuccess,jdbcType=VARCHAR}
+    </if>
+  	<if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(involveType)">
+        AND T1.INVOLVE_TYPE = #{involveType,jdbcType=VARCHAR}
+    </if>
+    <if test="mediationType != null and mediationType != ''">
+    	AND INSTR(T1.MEDIATION_TYPE, #{mediationType,jdbcType=VARCHAR}) = 1
+    </if>
+    <if test="disputeType != null and disputeType != ''">
+        AND T1.DISPUTE_TYPE_2 = #{disputeType,jdbcType=VARCHAR}
+    </if>
+    <if test="disputeTypeList != null">
+        AND T1.DISPUTE_TYPE_2 IN
+        <foreach collection="disputeTypeList" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+    </if>
+  	<if test="mediationDeadlineStart!=null">
+        AND T1.MEDIATION_DEADLINE <![CDATA[>=]]> TO_DATE(#{mediationDeadlineStart,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+  	<if test="mediationDeadlineEnd!=null">
+        AND T1.MEDIATION_DEADLINE <![CDATA[<]]> TO_DATE(#{mediationDeadlineEnd,jdbcType=VARCHAR}, 'yyyy-mm-dd') +1
+    </if>
+  	<if test="startHappenTime!=null">
+        AND T1.HAPPEN_TIME <![CDATA[>=]]> TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+  	<if test="endHappenTime!=null">
+        AND T1.HAPPEN_TIME <![CDATA[<]]> TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd') +1
+    </if>
+    <if test="startCreateTime != null">
+        AND T1.CREATE_TIME <![CDATA[>=]]> TO_DATE(#{startCreateTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+  	<if test="endCreateTime != null">
+        AND T1.CREATE_TIME <![CDATA[<]]> TO_DATE(#{endCreateTime,jdbcType=VARCHAR}, 'yyyy-mm-dd') + 1
+    </if>
+  	<if test="startAcceptedDate!=null">
+        AND T1.ACCEPTED_DATE <![CDATA[>=]]> TO_DATE(#{startAcceptedDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+  	<if test="endAcceptedDate!=null">
+        AND T1.ACCEPTED_DATE <![CDATA[<]]> TO_DATE(#{endAcceptedDate,jdbcType=VARCHAR}, 'yyyy-mm-dd') +1
+    </if>
+    <if test="status!=null">
+        AND T1.DISPUTE_STATUS = #{status,jdbcType=VARCHAR}
+    </if>
+    <if test="reportCase!=null">
+        AND (T1.DISPUTE_STATUS = 2 OR T1.DISPUTE_STATUS = 3)
+    </if>
+ <!--    <if test="createId!=null">
+        AND T1.CREATOR_ID = #{createId,jdbcType=VARCHAR}
+    </if> -->
+    <if test="createTimeStart!=null">
+        AND T1.CREATE_TIME <![CDATA[>=]]> TO_DATE(#{createTimeStart,jdbcType=VARCHAR},'yyyy-mm-dd')
+    </if>
+    <if test="createTimeEnd!=null">
+        AND T1.CREATE_TIME <![CDATA[<]]> TO_DATE(#{createTimeEnd,jdbcType=VARCHAR},'yyyy-mm-dd') + 1
+    </if>
+  	<if test="disputeCondition!=null">
+  		AND T1.DISPUTE_CONDITION LIKE '%' || #{disputeCondition,jdbcType=VARCHAR} || '%')
+       <!-- 
+        AND T1.DISPUTE_CONDITION LIKE CONCAT('%', CONCAT(#{disputeCondition,jdbcType=VARCHAR}, '%'))
+        
+        AND REGEXP_LIKE(T1.DISPUTE_CONDITION,#{disputeCondition,jdbcType=VARCHAR})
+         -->
+    </if>
+  	<if test="@cn.ffcs.zhsq.utils.Ognl@isNotEmpty(disputeEventName)">
+  	AND T1.DISPUTE_EVENT_NAME LIKE  '%' || #{disputeEventName,jdbcType=VARCHAR} || '%'
+       <!--
+        AND T1.DISPUTE_EVENT_NAME LIKE CONCAT('%', CONCAT(#{disputeEventName,jdbcType=VARCHAR}, '%'))
+     
+        AND REGEXP_LIKE(T1.DISPUTE_EVENT_NAME,#{disputeEventName,jdbcType=VARCHAR})
+           -->
+    </if>
+  	<if test="keyWord!=null">
+  	AND (T1.DISPUTE_EVENT_NAME LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/'
+        	OR T1.HAPPEN_ADDR LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/'
+        	OR T1.DISPUTE_CONDITION LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/')
+        
+       <!-- 
+        AND (T1.DISPUTE_EVENT_NAME LIKE CONCAT('%', CONCAT(#{keyWord,jdbcType=VARCHAR}, '%'))
+        	OR T1.HAPPEN_ADDR LIKE CONCAT('%', CONCAT(#{keyWord,jdbcType=VARCHAR}, '%')))
+        
+         AND (REGEXP_LIKE(T1.DISPUTE_EVENT_NAME,#{keyWord,jdbcType=VARCHAR}) 
+        	OR REGEXP_LIKE(T1.HAPPEN_ADDR,#{keyWord,jdbcType=VARCHAR}))
+        	 -->
+    </if>
+    <if test="@Ognl@isNotEmpty(updateStart)">
+      AND T1.UPDATE_TIME <![CDATA[>=]]> TO_DATE(#{updateStart,jdbcType=VARCHAR},'YYYY-MM-DD')
+    </if>
+    <if test="@Ognl@isNotEmpty(updateEnd)">
+      <![CDATA[ AND T1.UPDATE_TIME < TO_DATE(#{updateEnd,jdbcType=VARCHAR},'YYYY-MM-DD') + 1]]>
+    </if>
+   	<if test="disputeScale != null">
+        AND T1.DISPUTE_SCALE = #{disputeScale,jdbcType=VARCHAR}
+    </if>
+    
+    <if test="isPerfect!=null">
+        AND T1.IS_PERFECT = #{isPerfect,jdbcType=VARCHAR}
+    </if>
+    <if test="eventAndDisputeMediation != '' and eventAndDisputeMediation != null  ">
+    <if test="orgCode != null and orgCode != '' and type == 'jx' ">
+        AND T4.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+    </if>
+    <if test="orgType != null and orgType!= '' and type == 'jx' ">
+      AND T4.ORG_TYPE = #{orgType,jdbcType=VARCHAR}
+    </if>
+      AND T1.MEDIATION_ID = e.event_id AND e.type_ = '0' 
+      <if test="@Ognl@isNotEmpty( chiefLevel )">
+			and e.org_id=s.org_id  and s.chief_level=#{chiefLevel} and s.org_type='0'
+		  </if>
+      <if test="@Ognl@isNotEmpty( department )">
+	  		and e.chief_level in ('1','2','3','4','5')  
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( departmentAndGrid )">
+	  		and e.chief_level in ('1','2','3','4','5','6')  
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( orgLevel )">
+	  		and e.chief_level =#{orgLevel}
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( bizPlatform )">
+	  		and e.source_ =#{bizPlatform}
+	  		
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( orgType )">
+	  		and e.org_type= #{orgType,jdbcType=VARCHAR} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( listStatus )">
+	  		 and e.task_id = #{listStatus} 
+	  	</if>
+	  	<if test="@Ognl@isNotEmpty( listOrgId )">
+	  		 and e.org_Id = #{listOrgId} 
+	  	</if>
+    </if>
+    <if test="@Ognl@isNotEmpty(disputeType1)">
+      AND T1.DISPUTE_TYPE_1 LIKE #{disputeType1,jdbcType=VARCHAR}||'%'
+    </if>
+  </sql>
+  <!-- 
+   <select id="findZeroCountProject" parameterType="map" resultType="map">
+  SELECT nvl(t.c, 0) c, g.grid_name
+  FROM (SELECT count(1) c, max(info_org_code) info_org_code
+          FROM (SELECT t.Mediation_Id,
+                       CONNECT_BY_ROOT(g.info_org_code) info_org_code
+                  FROM (SELECT t.grid_id, t.Mediation_Id
+                          FROM T_ZZ_DISPUTE_MEDIATION_ZERO t
+                         where t.status = 3
+                           and t.create_time between
+                               to_date(#{startDate}, 'yyyy-MM-dd') and
+                               to_date(#{endDate}, 'yyyy-MM-dd')) t
+                 right join t_dc_grid g
+                    on g.grid_id = t.grid_id
+                 where g.status = '001'
+                 START WITH g.GRID_ID = #{gridId}
+                CONNECT BY PRIOR g.GRID_ID = g.PARENT_GRID_ID) t
+         where t.mediation_id is not null
+        union
+        SELECT count(info_org_code) c, info_org_code
+          FROM (SELECT t.Mediation_Id,
+                       CONNECT_BY_ROOT(g.info_org_code) info_org_code
+                  FROM (SELECT t.grid_id, t.Mediation_Id
+                          FROM T_ZZ_DISPUTE_MEDIATION_ZERO t
+                         where t.status = 3
+                           and t.create_time between
+                               to_date(#{startDate}, 'yyyy-MM-dd') and
+                               to_date(#{endDate}, 'yyyy-MM-dd')) t
+                 right join t_dc_grid g
+                    on g.grid_id = t.grid_id
+                 where g.status = '001'
+                 START WITH g.PARENT_GRID_ID = #{gridId}
+                CONNECT BY PRIOR g.GRID_ID = g.PARENT_GRID_ID) t
+         where t.mediation_id is not null
+         group by t.info_org_code) t
+ right join t_dc_grid g
+    on t.info_org_code = g.info_org_code
+ where g.status = '001'
+   and g.parent_grid_id = #{gridId}
+    or g.grid_id = #{gridId}
+ order by g.info_org_code
+  
+  </select> -->
+
+  <select id="searchByDisputeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+        T1.MEDIATION_ID,
+        T1.MEDIATION_CODE,
+        T1.ACCEPTED_DATE,
+        TO_CHAR(T1.ACCEPTED_DATE,'YYYY-MM-DD') ACCEPTED_DATE_STR,
+        T1.MEDIATION_DATE,
+        TO_CHAR(T1.MEDIATION_DATE,'YYYY-MM-DD') MEDIATION_DATE_STR,
+        T1.DISPUTE_TYPE_1,
+        T1.DISPUTE_TYPE_2,
+        T1.DISPUTE_CONDITION,
+        T1.ORG_ID,
+        T1.UPDATE_ID,
+        T1.UPDATE_TIME,
+        T1.STATUS,
+        T1.LONGITUDE,
+        T1.LATITUDE,
+        T1.CREATE_TIME,
+        T1.ADDRESS_COLUMN,
+        T1.PETITION_ID,
+        T1.DISPUTE_STATUS,
+        T1.INVOLVED_AMOUNT,
+        T1.INVOLVE_TYPE,
+        T1.EVENT_ID,
+        T1.DISPUTE_EVENT_NAME,
+        T1.HAPPEN_TIME,
+        TO_CHAR(T1.HAPPEN_TIME,'YYYY-MM-DD hh24:mi:ss') HAPPEN_TIME_STR,
+        T1.HAPPEN_ADDR,
+        T1.WORK_OEDER_DETAIL,
+        T1.RISK_CODE,
+        T1.RISK_GRADE,
+        T1.MEASURE_DETAIL,
+        T1.DISPUTE_SCALE,
+        T1.INVOLVE_NUM,
+        T1.MEDIATION_TYPE,
+        T1.EVA_DATE,
+        TO_CHAR(T1.EVA_DATE,'YYYY-MM-DD') EVA_DATE_STR,
+        T1.EVA_OPN,
+        T1.CREATOR_ID,
+        TO_CHAR(T1.MEDIATION_DEADLINE,'YYYY-MM-DD') MEDIATION_DEADLINE_STR,
+        T1.INVOLVED_ORG_NAME,
+        T1.SOURCE,
+        T1.ACCEPTER,
+        T1.DISPUTE_ID,
+        T1.SCOPE_INFLUNECE,
+        T1.EVENT_NATURE,
+        T1.INVALIDREASON,
+        T1.CASE_ASSESSMENT,
+        T1.INTENSE_DEGREE,
+        T1.DISPUTE_LEVEL,
+        T1.WARNING_LEVEL,
+        T1.DISPUTE_TYPE_3,
+        T1.HAPPEN_ADDR_CODE,
+        T1.DATA_SOURCE,
+        T1.IS_OUTSTAND,
+        T1.RELATED_LAKE_TYPE,
+        T1.EVENT_STATUS,
+        T1.SUPERVISION_DEPARTMENT
+    from T_ZZ_DISPUTE_MEDIATION T1 WHERE T1.DISPUTE_ID = #{disputeId,jdbcType=DECIMAL}
+  </select>
+
+  <delete id="deleteByDisputeId">
+    UPDATE T_ZZ_DISPUTE_MEDIATION SET STATUS = '0',UPDATE_TIME = SYSDATE
+    where DISPUTE_ID = #{disputeId,jdbcType=DECIMAL}
+  </delete>
+
+  <select id="getGridDisputeNum" resultType="map">
+    WITH DATA_1 AS (
+    SELECT G.INFO_ORG_CODE,T.DISPUTE_STATUS
+    FROM T_ZZ_DISPUTE_MEDIATION T,T_DC_GRID G
+    WHERE T.GRID_ID=G.GRID_ID
+    AND G.STATUS = '001'
+    AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+    AND T.STATUS !='0'
+    <if test="reportCase != null">
+      AND (T.DISPUTE_STATUS = '2' OR T.DISPUTE_STATUS = '3')
+    </if>
+    <if test="startHappenTime != null">
+      AND T.HAPPEN_TIME <![CDATA[>=]]> TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+    <if test="endHappenTime != null">
+      AND T.HAPPEN_TIME <![CDATA[<]]> TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd') +1
+    </if>
+    )
+    SELECT G2.INFO_ORG_CODE,G2.GRID_NAME,COUNT(D.INFO_ORG_CODE) TOTAL
+    FROM T_DC_GRID G2
+    LEFT JOIN DATA_1 D ON D.INFO_ORG_CODE LIKE G2.INFO_ORG_CODE||'%'
+    WHERE G2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%' AND G2.GRID_LEVEL = #{gridLevel,jdbcType=DECIMAL} AND G2.STATUS = '001'
+    GROUP BY G2.INFO_ORG_CODE,G2.GRID_NAME
+    ORDER BY G2.INFO_ORG_CODE
+  </select>
+
+  <select id="getGridDispiteTop" resultType="map">
+    SELECT * FROM (SELECT T.CREATOR_ID,COUNT(1) TOTAL_
+    FROM T_ZZ_DISPUTE_MEDIATION T, T_DC_GRID G
+    WHERE T.GRID_ID = G.GRID_ID
+    AND T.STATUS = '1'
+    AND G.STATUS = '001'
+    <if test="reportCase != null">
+      AND (T.DISPUTE_STATUS = '2' OR T.DISPUTE_STATUS = '3')
+    </if>
+    <if test="startHappenTime != null">
+      AND T.HAPPEN_TIME <![CDATA[>=]]> TO_DATE(#{startHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+    </if>
+    <if test="endHappenTime != null">
+      AND T.HAPPEN_TIME <![CDATA[<]]> TO_DATE(#{endHappenTime,jdbcType=VARCHAR}, 'yyyy-mm-dd') +1
+    </if>
+    AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+    GROUP BY T.CREATOR_ID
+    ORDER BY TOTAL_ DESC) WHERE ROWNUM <![CDATA[<=]]> 10
+  </select>
+
+  <select id="getGridDisputeTopGridName" resultType="map">
+    SELECT GA.PARTY_NAME2 PARTY_NAME,listagg(G.GRID_NAME,',') within GROUP (order by G.GRID_NAME) GRID_NAME from T_DC_GRID_ADMIN GA, T_DC_GRID G
+    WHERE G.GRID_ID = GA.GRID_ID
+      AND G.STATUS = '001'
+      AND GA.STATUS = '001'
+      AND GA.USER_ID = #{userId,jdbcType=DECIMAL}
+      AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+    GROUP BY GA.PARTY_NAME2
+  </select>
+
+  <select id="searchDisputeJX" resultMap="BaseResultMap">
+    SELECT
+           T.MEDIATION_ID,
+           T.DISPUTE_EVENT_NAME,
+           TO_CHAR(T.HAPPEN_TIME,'YYYY-MM-DD hh24:mi:ss') HAPPEN_TIME_STR,
+           T.CREATE_TIME,
+           T.DISPUTE_TYPE_2,
+           T.DISPUTE_SCALE,
+           T.HAPPEN_ADDR
+    FROM T_ZZ_DISPUTE_MEDIATION T
+    <if test="@Ognl@isNotEmpty(listType) and listType == 'n1' ">
+      ,T_BI_DISPUTE_MEDI_PEOPLE_LINE T1
+    </if>
+    <if test="@Ognl@isNotEmpty(listType) and listType == 'n2' ">
+      ,T_BI_DISPUTE_MEDI_REPORT_LINE T1
+    </if>
+    <include refid="sql_where_jx"/>
+    ORDER BY T.CREATE_TIME DESC
+  </select>
+
+  <select id="countDisputeJX" resultType="java.lang.Integer">
+    SELECT
+        COUNT(1)
+    FROM T_ZZ_DISPUTE_MEDIATION T
+    <if test="@Ognl@isNotEmpty(listType) and listType == 'n1' ">
+      ,T_BI_DISPUTE_MEDI_PEOPLE_LINE T1
+    </if>
+    <if test="@Ognl@isNotEmpty(listType) and listType == 'n2' ">
+      ,T_BI_DISPUTE_MEDI_REPORT_LINE T1
+    </if>
+    <include refid="sql_where_jx"/>
+  </select>
+
+  <sql id="sql_where_jx">
+    <where>
+      <if test="@Ognl@isNotEmpty(listType)">
+        <![CDATA[ T1.CREATOR_ID <> 30105616 ]]>
+        AND T.MEDIATION_ID = T1.MEDIATION_ID
+      </if>
+      AND T.STATUS = '1'
+      <if test="@Ognl@isNotEmpty(orgCode)">
+        AND T1.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+      </if>
+      <if test="@Ognl@isNotEmpty(happenStart)">
+        <![CDATA[ AND T.HAPPEN_TIME >= TO_DATE(#{happenStart,jdbcType=VARCHAR},'YYYY-MM-DD')  ]]>
+      </if>
+      <if test="@Ognl@isNotEmpty(happenEnd)">
+        <![CDATA[ AND T.HAPPEN_TIME < TO_DATE(#{happenEnd,jdbcType=VARCHAR},'YYYY-MM-DD') + 1 ]]>
+      </if>
+      <if test="@Ognl@isNotEmpty(createStart)">
+        <![CDATA[ AND T.CREATE_TIME >= TO_DATE(#{createStart,jdbcType=VARCHAR},'YYYY-MM-DD')  ]]>
+      </if>
+      <if test="@Ognl@isNotEmpty(createEnd)">
+        <![CDATA[ AND T.CREATE_TIME < TO_DATE(#{createEnd,jdbcType=VARCHAR},'YYYY-MM-DD') + 1 ]]>
+      </if>
+      <if test="@Ognl@isNotEmpty(keyWord)">
+        AND (T.DISPUTE_EVENT_NAME LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/'
+        OR T.HAPPEN_ADDR LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/'
+        OR T.DISPUTE_CONDITION LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%' escape '/')
+      </if>
+      <if test="disputeType != null and disputeType != ''">
+        AND T.DISPUTE_TYPE_2 = #{disputeType,jdbcType=VARCHAR}
+      </if>
+      <if test="disputeTypeList != null">
+        AND T.DISPUTE_TYPE_2 IN
+        <foreach collection="disputeTypeList" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    </where>
+  </sql>
+
+  <select id="searchDisputeUserJX" resultType="Map">
+    WITH A AS
+    (SELECT T1.CREATOR_ID
+    FROM T_BI_DISPUTE_MEDI_REPORT_LINE T1
+    WHERE T1.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+    <![CDATA[AND T1.CREATE_TIME >= TO_DATE(#{createStart,jdbcType=VARCHAR}, 'YYYY-MM-DD') ]]>
+    <![CDATA[AND T1.CREATE_TIME < TO_DATE(#{createEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1 ]]>
+    <![CDATA[AND T1.CREATOR_ID <> 30105616 ]]>
+    GROUP BY T1.CREATOR_ID),
+    B AS
+    (SELECT DISTINCT T.USER_ID,
+    T.PARTY_NAME,
+    T.IDENTITY_CARD,
+    T2.ORG_ID,
+    T2.ORG_NAME
+    FROM T_DC_USER_ENTITY T
+    INNER JOIN T_DC_PRIVILEGE_EXAMPLE T1
+    ON T.USER_ID = T1.USER_ID
+    AND T.STATUS = '001'
+    INNER JOIN T_DC_ORG_SOCIAL_INFO T2
+    ON T1.SOCIAL_ORG_ID = T2.ORG_ID
+    AND T2.STATUS = '001'
+    WHERE T.STATUS = '001'
+    AND T2.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+    <if test="@Ognl@isNotEmpty(keyWord)">
+      AND T.PARTY_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+    </if>
+        )
+    SELECT B.* FROM A, B WHERE A.CREATOR_ID = B.USER_ID
+  </select>
+
+  <select id="countDisputeUserJX" resultType="java.lang.Integer">
+      WITH A AS
+             (SELECT T1.CREATOR_ID
+              FROM T_BI_DISPUTE_MEDI_REPORT_LINE T1
+              WHERE T1.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+    <![CDATA[AND T1.CREATE_TIME >= TO_DATE(#{createStart,jdbcType=VARCHAR}, 'YYYY-MM-DD') ]]>
+    <![CDATA[AND T1.CREATE_TIME < TO_DATE(#{createEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1 ]]>
+    <![CDATA[AND T1.CREATOR_ID <> 30105616 ]]>
+    GROUP BY T1.CREATOR_ID),
+           B AS
+             (SELECT DISTINCT T.USER_ID,
+                              T.PARTY_NAME,
+                              T.IDENTITY_CARD,
+                              T2.ORG_ID,
+                              T2.ORG_NAME
+              FROM T_DC_USER_ENTITY T
+                     INNER JOIN T_DC_PRIVILEGE_EXAMPLE T1
+                                ON T.USER_ID = T1.USER_ID
+                                  AND T.STATUS = '001'
+                     INNER JOIN T_DC_ORG_SOCIAL_INFO T2
+                                ON T1.SOCIAL_ORG_ID = T2.ORG_ID
+                                  AND T2.STATUS = '001'
+              WHERE T.STATUS = '001'
+                AND T2.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+                <if test="@Ognl@isNotEmpty(keyWord)">
+                  AND T.PARTY_NAME LIKE '%'||#{keyWord,jdbcType=VARCHAR}||'%'
+                </if>
+    )
+      SELECT count(1) FROM A, B WHERE A.CREATOR_ID = B.USER_ID
+  </select>
+
+  <update id="deleteAllByGridId" parameterType="map">
+    update T_ZZ_DISPUTE_MEDIATION
+    <set>
+      STATUS = '0',
+      UPDATE_ID = #{userId,jdbcType=DECIMAL}
+    </set>
+    where GRID_ID = #{gridId,jdbcType=DECIMAL}
+  </update>
+</mapper>

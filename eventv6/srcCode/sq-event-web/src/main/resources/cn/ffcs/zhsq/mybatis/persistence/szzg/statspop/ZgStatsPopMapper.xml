@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.statspop.ZgStatsPopMapper">
+	<resultMap id="ZgStatsPop" type="cn.ffcs.zhsq.mybatis.domain.szzg.statspop.ZgStatsPop">
+        <result column="seqid" property="seqId"  jdbcType="DECIMAL"/>
+        <result column="syear" property="syear"  jdbcType="VARCHAR"/>
+        <result column="stype" property="stype"  jdbcType="VARCHAR"/>
+        <result column="stypeStr" property="stypeStr"  jdbcType="VARCHAR"/>
+        <result column="smonth" property="smonth"  jdbcType="VARCHAR"/>
+        <result column="org_code" property="orgCode" jdbcType="VARCHAR"/>
+        <result column="org_name" property="orgName"  jdbcType="VARCHAR"/>
+        <result column="sex" property="sex"  jdbcType="VARCHAR"/>
+        <result column="agegroup" property="agegroup"  jdbcType="VARCHAR"/>
+        <result column="create_id" property="createId"  jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" />
+        <result column="update_id" property="updateId"  jdbcType="DECIMAL"/>
+        <result column="update_time" property="updateTime" />
+        <result column="snum" property="snum"  jdbcType="DECIMAL"/>
+    </resultMap>
+	<select id="findDataDict" resultType="map">
+	SELECT * FROM t_bas_datadict d where d.status='001' 
+	<if test="dictCode !=null and dictCode !=''"> and d.dict_code=#{dictCode} </if>
+	<if test="dictGeneralCode !=null and dictGeneralCode !=''"> and d.dict_general_code=#{dictGeneralCode} </if>
+	<if test="dictLevel !=null and dictLevel !=''"> AND d.dict_level=#{dictLevel} </if>
+	
+	</select>
+    <select id="findFRateByQS" parameterType="map" resultType="map">
+SELECT SYEAR,decode(MAN_NUM,0,0,Round((JUVENILE_NUM+ELDERLY_NUM)/MAN_NUM*100,2)) AS BURDEN_NUM,
+decode(MAN_NUM,0,0,Round(JUVENILE_NUM/MAN_NUM*100,2)) AS JUVENILE_NUM,
+decode(MAN_NUM,0,0,Round(ELDERLY_NUM/MAN_NUM*100,2)) AS ELDERLY_NUM  
+  FROM( 
+         SELECT SYEAR,SUM(DECODE(T.STYPE,'S001003001',T.SNUM,'S001003002',T.SNUM,0)) AS Juvenile_num,--少年
+         SUM(DECODE(T.STYPE,'S001003007',T.SNUM,'S001003008',T.SNUM,'S001003009',T.SNUM,'S001003010',T.SNUM,'S001003021',T.SNUM,0)) AS elderly_num,--老年
+         SUM(DECODE(T.STYPE,'S001003004',T.SNUM,'S001003005',T.SNUM,'S001003006',T.SNUM,'S001003003',T.SNUM,0)) AS MAN_num
+   FROM ${dbuser.zhsq_szzg}.ZG_STATS_POP T 
+  join t_bas_datadict d
+            on t.stype = d.dict_code
+         WHERE d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode ='S001003' 
+  and T.ORG_CODE=#{orgCode} 
+  GROUP BY SYEAR 
+  ORDER BY SYEAR)T1
+    </select>
+    <select id="findRateByQS" parameterType="map" resultType="map">
+    SELECT SYEAR,
+       Round((SUM(DECODE(T.STYPE, 'S001001012', T.SNUM, 0)) -
+             SUM(DECODE(T.STYPE, 'S001001011', T.SNUM, 0))) /
+             SUM(DECODE(T.STYPE, 'S001001010', T.SNUM, 0)) * 100,
+             2) AS GROWTH_NUM,
+       Round(SUM(DECODE(T.STYPE, 'S001001012', T.SNUM, 0)) /
+             SUM(DECODE(T.STYPE, 'S001001010', T.SNUM, 0)) * 100,
+             2) AS BIRTHS_NUM,
+       Round(SUM(DECODE(T.STYPE, 'S001001011', T.SNUM, 0)) /
+             SUM(DECODE(T.STYPE, 'S001001010', T.SNUM, 0)) * 100,
+             2) AS DEATHS_NUM
+  FROM ${dbuser.zhsq_szzg}.ZG_STATS_POP T
+ WHERE T.ORG_CODE = #{orgCode}  AND t.status='1' 
+   AND T.STYPE IN ('S001001011', 'S001001012', 'S001001010')
+ GROUP BY SYEAR
+ ORDER BY SYEAR
+    </select>
+    <select id="findMultipleByJJYL" parameterType="map" resultType="map">
+    SELECT t.syear ,sum(decode(t.stype,'S001010005',t.snum,'S001010010',t.snum,'S001010015',t.snum)) as money
+ ,sum(decode(t.stype,'S001010001',t.snum,'S001010006',t.snum,'S001010011',t.snum)) as person
+ ,sum(decode(t.stype,'S001010002',t.snum,'S001010007',t.snum,'S001010012',t.snum)) as new_num
+ ,sum(decode(t.stype,'S001010003',t.snum,'S001010008',t.snum,'S001010013',t.snum)) as over_num
+  FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t   where t.status = '1'
+           and t.stype in('S001010005','S001010010','S001010015', 'S001010001','S001010006','S001010011',
+ 'S001010002','S001010007','S001010012','S001010003','S001010008','S001010013') group by t.syear  order by t.syear
+    </select>
+    <select id="findAgeByJJYL" parameterType="map" resultMap="ZgStatsPop">
+    SELECT stype,sum(t.snum) as snum FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t 
+           where t.status = '1'
+           and t.stype in('S001010001','S001010006','S001010011') and t.syear=#{syear} 
+           group by stype order by stype
+    </select>
+    <!-- 帮扶对象table -->
+   <select id="findTableByJJYL" parameterType="map" resultType="map">
+   SELECT t.*,g.grid_name FROM ( SELECT  t.org_code ,max(t.status) as status
+     ,SUM(DECODE(T.STYPE,'S001010001',T.SNUM,0)) AS ALL_80_NUM--80-89发放总人数(人)
+       ,SUM(DECODE(T.STYPE,'S001010005',T.SNUM,0)) AS ALL_80_MONEY--80-89实发金额(元)
+       ,SUM(DECODE(T.STYPE,'S001010006',T.SNUM,0)) AS ALL_90_NUM--
+       ,SUM(DECODE(T.STYPE,'S001010010',T.SNUM,0)) AS ALL_90_MONEY--
+        ,SUM(DECODE(T.STYPE,'S001010011',T.SNUM,0)) AS ALL_100_NUM--
+       ,SUM(DECODE(T.STYPE,'S001010015',T.SNUM,0)) AS ALL_100_MONEY
+ FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t 
+          join t_bas_datadict d
+            on t.stype = d.dict_code
+         and d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode ='S001010' and t.syear=#{syear}       
+       GROUP BY t.org_code)t 
+       left join T_DC_GRID g
+            on g.info_org_code = t.org_code
+           and g.status = '001' and t.status='1'
+   </select>
+   <select id="findChartByCJ" parameterType="map" resultMap="ZgStatsPop">
+   SELECT <if  test="stype == 'name'">d.dict_name as stypeStr</if>
+   <if  test="stype == 'level'">d.dict_level||'级' as stypeStr</if>
+     ,sum(t.snum) as snum 
+	  from ${dbuser.zhsq_szzg}.zg_STATS_POP t
+	  join (SELECT d.dict_code,substr(d.dict_name, 0, 2) as dict_name ,
+	  substr(d.dict_name, 3, 1) dict_level 
+          FROM t_bas_datadict d
+         where d.status = '001'
+           and d.dict_pcode = 'S001009') d
+	    on t.stype = d.dict_code
+	 where t.status = '1'
+	   and t.syear = #{syear}
+	 group by <if  test="stype == 'name'">d.dict_name</if>
+   <if  test="stype == 'level'">d.dict_level</if>
+   </select>
+    <!-- 残疾人 table -->
+    <select id="findTableByCJ" parameterType="map" resultType="map">
+    SELECT d.dict_name,
+       TO_CHAR(SUM(DECODE(d.dict_level, 1, t.SNUM, 0))) AS G1,
+       TO_CHAR(SUM(DECODE(d.dict_level, 2, t.SNUM, 0))) AS G2,
+       TO_CHAR(SUM(DECODE(d.dict_level, 3, t.SNUM, 0))) AS G3,
+       TO_CHAR(SUM(DECODE(d.dict_level, 4, t.SNUM, 0))) AS G4,
+       TO_CHAR(SUM(SNUM)) AS SUMNUM
+	  from ${dbuser.zhsq_szzg}.zg_STATS_POP t
+	  join (SELECT d.dict_code,
+	               substr(d.dict_name, 0, 2) as dict_name,
+	               substr(d.dict_name, 3, 1) dict_level
+	          FROM t_bas_datadict d
+	         where d.status = '001'
+	           and d.dict_pcode = 'S001009') d
+	    on t.stype = d.dict_code
+	 where t.status = '1'
+	   and t.syear = #{syear}
+	 group by d.dict_name
+    </select>
+    <!-- 低保 金额 人数-->
+    <select id="findChartByDB"  parameterType="map" resultMap="ZgStatsPop">
+   SELECT g.grid_name as org_name,sum(t.snum) as snum FROM  
+   ${dbuser.zhsq_szzg}.zg_STATS_POP t 
+     left join T_DC_GRID g
+            on g.info_org_code = t.org_code
+            where t.syear=#{syear} and g.status = '001'
+           and t.status = '1' and 
+           t.stype in (${stype}) 
+           group by g.grid_name
+    </select>
+    <!-- 低保table -->
+    <select id="findTableByDB"  parameterType="map" resultType="map">
+SELECT t.*,g.grid_name FROM ( SELECT  t.org_code ,max(t.status) as status
+     ,SUM(DECODE(T.STYPE,'S001006001',T.SNUM,0)) AS DB_CS_HS_NUM--城市低保户数(户)
+       ,SUM(DECODE(T.STYPE,'S001006002',T.SNUM,0)) AS DB_CS_RS_NUM--城市低保人数(人)
+       ,SUM(DECODE(T.STYPE,'S001006003',T.SNUM,0)) AS DB_CS_JE_NUM--城市低保金额(元)
+       ,SUM(DECODE(T.STYPE,'S001006004',T.SNUM,0)) AS DB_RC_HS_NUM--农村低保户数(户)
+       ,SUM(DECODE(T.STYPE,'S001006005',T.SNUM,0)) AS DB_RC_RS_NUM--农村低保人数(人)
+       ,SUM(DECODE(T.STYPE,'S001006006',T.SNUM,0)) AS DB_RC_JE_NUM--农村低保金额(元)
+       ,SUM(DECODE(T.STYPE,'S001006007',T.SNUM,0)) AS WB_RC_HS_NUM--农村五保户数(户)
+       ,SUM(DECODE(T.STYPE,'S001006008',T.SNUM,0)) AS WB_RC_RS_NUM--农村五保人数(人)
+       ,SUM(DECODE(T.STYPE,'S001006009',T.SNUM,0)) AS WB_RC_JE_NUM--农村五保金额(元)
+ FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t 
+          join t_bas_datadict d
+            on t.stype = d.dict_code
+         and d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode ='S001006' and t.syear=#{syear}       
+       GROUP BY t.org_code)t 
+       left join T_DC_GRID g
+            on g.info_org_code = t.org_code
+           and g.status = '001' and t.status='1'
+  	</select>
+  
+    <select id="findChartByZDYear"  parameterType="map" resultMap="ZgStatsPop">
+	  	 SELECT sum(t.snum) as snum, t.syear 
+          FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+          join t_bas_datadict d
+            on t.stype = d.dict_code
+         where d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode = #{stype}
+         group by t.syear order by t.syear
+  	</select>
+    <select id="findChartByZDAge"  parameterType="map" resultMap="ZgStatsPop">
+	  	 SELECT sum(t.snum) as snum, d.dict_name as stypeStr 
+          FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+          join t_bas_datadict d
+            on t.stype = d.dict_code
+         where d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode = #{stype} 
+           <if test="qsCode !=null and qsCode !=''"> and  t.org_code =  #{qsCode}  </if>
+           AND T.SYEAR = (SELECT MAX(SYEAR)
+                    FROM ZHSQ_SZZG.ZG_STATS_POP T
+                    JOIN T_BAS_DATADICT D
+                      ON T.STYPE = D.DICT_CODE
+                   WHERE D.STATUS = '001'
+                     AND D.DICT_PCODE = #{stype} 
+            <if test="qsCode !=null and qsCode !=''"> and  t.org_code =  #{qsCode}  </if>
+                     AND T.STATUS = '1')
+         group by d.dict_name,d.dict_orderby order by d.dict_orderby
+  	</select>
+    <select id="findChartByZDOrgCode"  parameterType="map" resultMap="ZgStatsPop">
+	  	 SELECT sum(t.snum) as snum, g.grid_name as org_name 
+          FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t 
+            join T_DC_GRID g
+            on g.info_org_code = t.org_code
+           and g.status = '001'
+           and t.status = '1'
+          join t_bas_datadict d
+            on t.stype = d.dict_code
+         and d.status = '001'
+           and t.status = '1'
+           and d.dict_pcode = #{stype} AND t.syear=(SELECT MAX(t.syear)
+			  FROM ${dbuser.zhsq_szzg}.ZG_STATS_POP T
+			  JOIN T_BAS_DATADICT D
+			    ON T.STYPE = D.DICT_CODE
+			 WHERE D.STATUS = '001'
+			   AND T.STATUS = '1'
+			   AND D.DICT_PCODE = #{stype}) 
+         group by g.grid_name 
+  	</select>
+    
+    <select id="findPersonAllYear"  parameterType="map" resultMap="ZgStatsPop">
+	  	SELECT  t.syear,t.snum, d.dict_name as stypeStr ,t.stype  
+		  FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+		  join t_bas_datadict d
+		    on t.stype = d.dict_code
+		 where d.status = '001' and t.status = '1'
+		   and d.dict_code in (${stype})
+		   and t.org_code =  #{orgCode} order by t.syear,d.dict_code
+  	</select>
+    <select id="findChartByJB" resultType="map" parameterType="map">
+	  	SELECT  t.snum, t.stype, d.dict_name as stypeStr 
+		  FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+		  join t_bas_datadict d
+		    on t.stype = d.dict_code
+		 where d.status = '001' and t.status = '1'
+		   and d.dict_code in (${stype})
+		   and t.org_code =  #{orgCode}   
+		   and t.syear =#{syear}
+  	</select>
+    <select id="findCount" resultType="java.lang.Integer" parameterType="map">
+	  	select count(*)  from ${dbuser.zhsq_szzg}.zg_STATS_POP t where t.status='1' 
+	  	<if test="orgCode !=null and orgCode !=''"> and  t.org_code =  #{orgCode} </if>
+	  	<if test="stype !=null and stype !=''"> and  t.stype = #{stype}</if>
+	  	<if test="syear !=null and syear !=''"> and  t.syear = #{syear}</if>
+	  	<if test="seqId !=null and seqId !=''"> and  t.seqId != #{seqId}</if>
+  	</select>
+    <select id="findListByParams" resultMap="ZgStatsPop" parameterType="map">
+	  	SELECT t.seqid,t.syear,t.org_code,t.snum,stype,d.dict_name stypeStr,g.grid_name org_name
+		 FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+		left join T_DC_GRID G on t.org_code=g.info_org_code  and g.status='001' and t.status='1'
+		 left join t_bas_datadict d 
+		on t.stype=d.dict_code and d.status='001' and t.status='1'  where 1=1
+	  	<if test="orgCode !=null and orgCode !=''"> and  t.org_code =  #{orgCode} </if>
+	  	<if test="stype !=null and stype !=''"> and  t.stype = #{stype}</if>
+	  	<if test="syear !=null and syear !=''"> and  t.syear = #{syear}</if>
+  	</select>
+  	
+  	<select id="findPageListByCriteria"  parameterType="map" resultMap="ZgStatsPop">
+  	SELECT t.seqid,t.syear,t.org_code,t.snum,stype,d.dict_name stypeStr,g.grid_path AS org_name
+     FROM  ${dbuser.zhsq_szzg}.zg_STATS_POP  t,
+     (SELECT * FROM T_DC_GRID g where g.status='001' and g.info_org_code like #{orgCode} || '%') G,
+     (SELECT * FROM t_bas_datadict d where d.status='001' and d.dict_pcode=#{pcode})d 
+     where t.org_code=g.info_org_code and t.stype=d.dict_code     and t.status='1'
+	<if test="stype !=null and stype !=''"> and  t.stype = #{stype}</if>
+	  	<if test="syear !=null and syear !=''"> and  t.syear = #{syear}</if>
+	  	order by t.seqid desc
+  	</select>
+  
+  	<select id="findCountByCriteria" parameterType="map" resultType="java.lang.Integer">
+	  	SELECT count(*) FROM  ${dbuser.zhsq_szzg}.zg_STATS_POP  t,
+     (SELECT * FROM T_DC_GRID g where g.status='001' and g.info_org_code like #{orgCode} || '%') G,
+     (SELECT * FROM t_bas_datadict d where d.status='001' and d.dict_pcode=#{pcode})d 
+     where t.org_code=g.info_org_code and t.stype=d.dict_code     and t.status='1'
+	  	<if test="stype !=null and stype !=''"> and  t.stype = #{stype}</if>
+	  	<if test="syear !=null and syear !=''"> and  t.syear = #{syear}</if>
+  	</select>
+    <select id="findById" resultMap="ZgStatsPop" parameterType="int">
+    SELECT t.seqid,t.syear,t.org_code,t.snum,stype,d.dict_name stypeStr,g.grid_path org_name FROM ${dbuser.zhsq_szzg}.zg_STATS_POP t
+	left join T_DC_GRID G on t.org_code=g.info_org_code  and g.status='001' and t.status='1' 
+	 left join t_bas_datadict d on t.stype=d.dict_code and d.status='001' and t.status='1' where t.seqid=#{id}
+    </select>
+    <insert id="insert">
+    	 <selectKey keyProperty="seqId" resultType="long" order="BEFORE">
+			select ${dbuser.zhsq_szzg}.seq_stats_pop.nextval from DUAL
+		</selectKey>
+		insert into ${dbuser.zhsq_szzg}.zg_stats_pop (seqid,SYEAR,ORG_CODE,STYPE,SNUM,create_id,create_time ) 
+    	values(#{seqId},#{syear},#{orgCode},#{stype},#{snum},#{createId},sysdate)
+    </insert>
+    <update id="update">
+    update ${dbuser.zhsq_szzg}.zg_stats_pop set 
+      <if test="syear != null" >syear = #{syear},</if>
+      <if test="orgCode != null" >org_Code = #{orgCode},</if>
+      <if test="stype != null" >stype = #{stype},</if>
+      <if test="snum != null" >snum = #{snum},</if>
+      update_id = #{updateId},update_time = sysdate where seqid=#{seqId}
+    </update>
+    <delete id="delete" parameterType="map">
+    	update ${dbuser.zhsq_szzg}.zg_stats_pop set status='0',update_id = #{updateId},update_time =sysdate where seqid=#{id}
+    </delete>
+    
+     <insert id="insertByList" parameterType="java.util.List">
+    	insert into ${dbuser.zhsq_szzg}ZG_STATS_POP (seqid,SYEAR,ORG_CODE,STYPE,SNUM,create_id,create_time ) 
+    	select ${dbuser.zhsq_szzg}.seq_stats_pop.nextval, A.* FROM ( 
+    	<foreach collection="list" item="item" index="index" separator="union all"> 
+		select #{item.syear} as SYEAR,#{item.orgCode} as ORG_CODE,
+		#{item.stype} as STYPE,#{item.snum} as SNUM,#{createId} as create_id,sysdate as create_time from dual 
+		</foreach>) A 
+    </insert>
+    <!-- 更新 -->
+	<update id="updateByList" parameterType="java.util.List" >
+		<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+          update ${dbuser.zhsq_szzg}.ZG_STATS_POP T <set>t.snum=#{item.snum} </set> where t.seqid=#{item.seqid, jdbcType=VARCHAR}
+       </foreach>
+	</update>
+	 <delete id="deleteByParam" parameterType="map">
+    	update ${dbuser.zhsq_szzg}.zg_stats_pop set status='0' where seqid in	(${seqIds})
+    </delete>
+</mapper>

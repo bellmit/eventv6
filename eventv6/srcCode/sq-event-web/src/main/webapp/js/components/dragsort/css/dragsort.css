@@ -1,0 +1,79 @@
+.dragsortlist {
+	width: 100%;
+	list-style-type: none;
+	margin: 0px;
+}
+
+.dragsortlist li {
+	position: relative;
+	float: left;
+	padding: 10px;
+}
+
+.dragsortlist li span {
+	position: absolute;
+	top: 2px;
+	left: 0px;
+	background: #95a5a5;
+	border-radius: 50px;
+	color: #fff;
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 3px 6px;
+	line-height: 13px;
+}
+
+.dragsortlist div { /* opacity: 0.8; */
+	font-size: 14px;
+	width: 120px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	font-family: microsoft yahei;
+	background: #f6f8f8;
+	overflow: hidden;
+}
+
+.placeHolder div {
+	background-color: white !important;
+	border: dashed 1px gray !important;
+}
+
+.dragsortloading {
+	background: url(../img/loading.gif) no-repeat right;
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	margin: -2px 5px 0 0;
+	vertical-align: middle;
+}
+
+.dragsortlist div.qingse {
+	background: #1bbc9b;
+	color: #fff;
+}
+
+.dragsortlist div.lvse {
+	background: #a0d468;
+	color: #fff;
+}
+
+.dragsortlist div.lanse {
+	background: #38bcd2;
+	color: #fff;
+}
+
+.dragsortlist div.huangse {
+	background: #f1c40f;
+	color: #fff;
+}
+
+.dragsortlist div.hongse {
+	background: #fa8287;
+	color: #fff;
+}
+
+.dragsortlist div.heise {
+	background: #656668;
+	color: #fff;
+}

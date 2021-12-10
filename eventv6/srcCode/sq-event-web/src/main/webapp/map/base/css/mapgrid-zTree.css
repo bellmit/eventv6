@@ -1,0 +1,36 @@
+@charset "utf-8";
+/*cpt-zTree.html 样式 start*/
+.ztree-header{ margin: 13px 3px;}
+.ztree-header>a{ font-family: "微软雅黑"; transition: all .05s linear; -webkit-transition: all .05s linear; display: block; height: 32px; text-align: center; font-size: 14px; color: #454e63; background-color: #f0f2f7; line-height: 32px; text-decoration: none;}
+.ztree-header>a:hover{ background-color: #3784e6; color: #fff;}
+.left-ztree {
+    top:40px;
+    left: 0;
+}
+.ztree * { font-family:"Microsoft YaHei"; font-size:12px; }
+ul.ztree {width:100%; max-height: 200px; background:#fff; margin-top:0px; padding:0px; border:0px;  overflow:auto;}
+.ztree li a { color:#454e63; height:26px;border-right: none;}
+.ztree li span { line-height:26px;}
+.ztree li ul.line { background:url(../../../map/base/images/zTree_line_conn.png) 4px 0 repeat-y;}
+.ztree li span.button.switch { width:26px; height:26px;}
+.ztree li span.button { background-image:url(../../../map/base/images/zTreeStandard_new.png); }
+.ztree li span.button.switch { background-position:-52px 0; }
+.ztree li span.button.root_open {background-position:-26px -1px; }
+.ztree li span.button.roots_open {background-position:-26px -1px; }
+.ztree li span.button.center_open { background-position:-26px -28px; }
+.ztree li span.button.center_close { background-position:-51px -28px; }
+.ztree li span.button.bottom_open { background-position:-26px -54px; }
+.ztree li span.button.bottom_close { background-position:-52px -54px; }
+.ztree li span.button.ico_docu{ background-image: none;}
+.ztree li span.button{ width: 6px;}
+.ztree li a{ padding: 2px 8px 2px 2px; vertical-align: baseline; display: inline;}
+.ztree li a:hover { text-decoration: none; background-color: #fff2d9; border: 1px solid #ffe399;}
+.ztree li a.curSelectedNode { background-color: transparent; color: #666;  opacity: 1; background-color: #fff2d9; border: 1px solid #ffe399;}
+.ztree li ul { padding: 0 0 0 22px;}
+.ztree li span.button.center_docu {
+    background-position: 0px -30px;
+}
+.ztree li span.button.bottom_docu {
+    background-position: 0px -54px;
+}
+/*cpt-zTree.html 样式 end*/

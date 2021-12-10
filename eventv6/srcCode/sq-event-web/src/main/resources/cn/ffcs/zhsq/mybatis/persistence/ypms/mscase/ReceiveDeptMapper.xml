@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.ypms.mscase.ReceiveDeptMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.ReceiveDept">
+		<id column="RD_ID" property="rdId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="RELA_CASE_ID" property="relaCaseId" jdbcType="DECIMAL" /> <!--关联案件ID-->
+		<result column="LDORG_ID" property="ldorgId" jdbcType="DECIMAL" /> <!--联动单位主键ID-->
+		<result column="HANDLE_STATUS" property="handleStatus" jdbcType="VARCHAR" /> <!--处理状态-->
+		<result column="MSG_SEND_PEPO" property="msgSendPepo" jdbcType="VARCHAR" /> <!--短信发送位置-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_ID" property="createId" jdbcType="DECIMAL" /> <!--创建人ID-->
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" /> <!--伪删列-->
+		
+		<result column="LD_TYPE" property="ldType" jdbcType="VARCHAR" /> <!--单位类型-->
+		<result column="LD_NAME" property="ldName" jdbcType="VARCHAR" /> <!--名称-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--组织编码-->
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" /> <!--组织ID-->
+	</resultMap>
+		
+	<sql id="all_col">
+		T.RD_ID,
+		T.RELA_CASE_ID,
+		T.LDORG_ID,
+		T.HANDLE_STATUS,
+		T.MSG_SEND_PEPO,
+		T.CREATE_TIME,
+		T.CREATE_ID,
+		T.DEL_FLAG
+	</sql>		
+	<sql id="ldorgTable_col">
+		L.LD_TYPE,
+		L.LD_NAME,
+		L.ORG_CODE,
+		L.ORG_ID
+	</sql>		
+
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) 
+		FROM 
+			T_YP_MS_RECEIVE_DEPT T
+		WHERE 
+			T.DEL_FLAG = '1'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countUnfinishDept"  resultType="java.lang.Long">
+		SELECT COUNT(1) 
+		FROM 
+     	 	T_YP_MS_RECEIVE_DEPT T, T_YP_MS_LD_ORG l
+    	WHERE 
+      		T.DEL_FLAG = '1'
+      		AND L.STATUS = '1'
+      		AND T.LDORG_ID = L.LD_ID
+      		AND T.HANDLE_STATUS = '01'
+      		AND L.LD_TYPE = '0'
+		<if test="relaCaseId != null and relaCaseId != ''" >
+			<![CDATA[ AND T.RELA_CASE_ID = #{relaCaseId,jdbcType=DECIMAL} ]]>
+		</if> 
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.RD_ID,
+			T.RELA_CASE_ID,
+			T.LDORG_ID,
+			T.HANDLE_STATUS,
+			T.MSG_SEND_PEPO,
+			T.CREATE_TIME,
+			T.CREATE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_RECEIVE_DEPT T
+		WHERE 
+			T.DEL_FLAG = '1'
+		<include refid="find_where" />
+		ORDER BY 
+			T.RD_ID DESC ,
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchListByParams"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="all_col" />,
+			<include refid="ldorgTable_col" />
+		FROM
+			T_YP_MS_RECEIVE_DEPT T,
+			T_YP_MS_LD_ORG L
+		WHERE 
+			T.DEL_FLAG = '1'
+			AND L.STATUS = '1'
+			AND T.LDORG_ID = L.LD_ID
+			<include refid="find_where_params" />
+	</select>
+	
+	<!-- 获取派发单位数据List -->	
+	<select id="getReceiveDeptListByRelaCaseId"  resultMap="BaseResultMap">
+		SELECT
+			<include refid="all_col" />,
+			<include refid="ldorgTable_col" />
+		FROM
+			T_YP_MS_RECEIVE_DEPT T,
+			T_YP_MS_LD_ORG L
+		WHERE 
+			T.DEL_FLAG = '1'
+			AND L.STATUS = '1'
+			AND T.LDORG_ID = L.LD_ID
+		<include refid="find_where_forlist" />
+		ORDER BY 
+			T.RD_ID DESC ,
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 获取派发单位数据List（条件） -->	
+	<sql id="find_where_forlist">
+			<if test="rdId != null and rdId != ''" >
+				<![CDATA[ AND T.RD_ID = #{rdId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="relaCaseId != null and relaCaseId != ''" >
+				<![CDATA[ AND T.RELA_CASE_ID = #{relaCaseId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="handleStatus != null and handleStatus != ''" >
+				<![CDATA[ AND T.HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="ldType != null and ldType != ''" >
+				<![CDATA[ AND L.LD_TYPE = #{ldType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="rdIdList != null and rdIdList.size > 0 " >
+				AND T.RD_ID IN
+				<foreach collection="rdIdList" open="(" close=")" item="item" separator=",">
+					#{item,jdbcType=DECIMAL}
+				</foreach>
+			</if>
+	</sql>
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+			<if test="rdId != null and rdId != ''" >
+				<![CDATA[ AND T.RD_ID = #{rdId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="relaCaseId != null and relaCaseId != ''" >
+				<![CDATA[ AND T.RELA_CASE_ID = #{relaCaseId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="handleStatus != null and handleStatus != ''" >
+				<![CDATA[ AND T.HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR} ]]>
+			</if> 
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.ReceiveDept">
+		<selectKey keyProperty="rdId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_YP_MS_RECEIVE_DEPT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_RECEIVE_DEPT
+		(
+			RD_ID,
+			RELA_CASE_ID,
+			LDORG_ID,
+			HANDLE_STATUS,
+			MSG_SEND_PEPO,
+			CREATE_TIME,
+			CREATE_ID,
+			DEL_FLAG
+		) VALUES (
+			#{rdId,jdbcType=DECIMAL},
+			#{relaCaseId,jdbcType=DECIMAL},
+			#{ldorgId,jdbcType=DECIMAL},
+			#{handleStatus,jdbcType=VARCHAR},
+			#{msgSendPepo,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP},
+			#{createId,jdbcType=DECIMAL},
+			'1'
+		)
+	</insert>
+	
+	<!-- 批量新增 -->	
+	<insert id="insertBatch" parameterType="java.util.List" >
+		INSERT INTO
+			T_YP_MS_RECEIVE_DEPT
+		(
+			RD_ID,
+			RELA_CASE_ID,
+			LDORG_ID,
+			HANDLE_STATUS,
+			MSG_SEND_PEPO,
+			CREATE_TIME,
+			CREATE_ID,
+			DEL_FLAG
+		)
+		select SEQ_YP_MS_RECEIVE_DEPT.NEXTVAL,v.* from(
+        <foreach collection="list" item="item" index="index" close=")" open="(" separator="union">
+            select
+            #{item.rdId,jdbcType=DECIMAL},
+			#{item.relaCaseId,jdbcType=DECIMAL},
+			#{item.ldorgId,jdbcType=DECIMAL},
+			#{item.handleStatus,jdbcType=VARCHAR},
+			#{item.msgSendPepo,jdbcType=VARCHAR},
+			#{item.createTime,jdbcType=TIMESTAMP},
+			#{item.createId,jdbcType=DECIMAL},
+			'1'
+            from dual
+        </foreach>
+        ) v
+	</insert>
+	
+	
+	
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.ReceiveDept">
+		UPDATE
+			T_YP_MS_RECEIVE_DEPT
+		<set> 
+			<if test="relaCaseId != null " >
+				RELA_CASE_ID=#{relaCaseId,jdbcType=DECIMAL},
+			</if>
+			<if test="ldorgId != null " >
+				LDORG_ID=#{ldorgId,jdbcType=DECIMAL},
+			</if>
+			<if test="handleStatus != null " >
+				HANDLE_STATUS=#{handleStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="msgSendPepo != null " >
+				MSG_SEND_PEPO=#{msgSendPepo,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createId != null " >
+				CREATE_ID=#{createId,jdbcType=DECIMAL},
+			</if>
+			<if test="delFlag != null " >
+				DEL_FLAG=#{delFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			RD_ID= #{rdId,jdbcType=DECIMAL} 
+	</update>
+	
+	
+	
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.RD_ID,
+			T.RELA_CASE_ID,
+			T.LDORG_ID,
+			T.HANDLE_STATUS,
+			T.MSG_SEND_PEPO,
+			T.CREATE_TIME,
+			T.CREATE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_RECEIVE_DEPT T
+		WHERE
+			RD_ID= #{rdId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 根据参数查询对象 -->	
+	<select id="searchByParams"   resultMap="BaseResultMap">
+		SELECT
+			<include refid="all_col" />,
+			<include refid="ldorgTable_col" />
+		FROM
+			T_YP_MS_RECEIVE_DEPT T,
+			T_YP_MS_LD_ORG L
+		WHERE 
+			T.DEL_FLAG = '1'
+			AND L.STATUS = '1'
+			AND T.LDORG_ID = L.LD_ID
+			<include refid="find_where_params" />
+	</select>
+	
+	<sql id="find_where_params">
+		<if test="relaCaseId != null and relaCaseId != ''" >
+			<![CDATA[ AND T.RELA_CASE_ID = #{relaCaseId,jdbcType=DECIMAL} ]]>
+		</if>
+		<if test="handleStatus != null and handleStatus != ''" >
+			<![CDATA[ AND T.HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR} ]]>
+		</if>  
+		<if test="@Ognl@isNotEmpty(statusList)" >
+			AND T.HANDLE_STATUS IN   
+			<foreach collection="statusList" open="(" close=")" item="item" separator=",">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>  
+		<if test="deptOrgCode != null and deptOrgCode != ''" >
+			<![CDATA[ AND L.ORG_CODE = #{deptOrgCode,jdbcType=VARCHAR} ]]>
+		</if> 
+		<if test="ldType != null and ldType != ''" >
+			<![CDATA[ AND L.LD_TYPE = #{ldType,jdbcType=VARCHAR} ]]>
+		</if> 
+		<if test="rdId != null and rdId != ''" >
+			<![CDATA[ AND L.RD_ID = #{rdId,jdbcType=DECIMAL} ]]>
+		</if> 
+	</sql>
+	
+	
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.ReceiveDept">
+		UPDATE
+			T_YP_MS_RECEIVE_DEPT
+		SET
+			DEL_FLAG='0'
+		WHERE
+			RD_ID= #{rdId,jdbcType=DECIMAL} 
+	</delete>
+	<!-- 删除 -->	
+	<delete id="deleteByRelaCaseId" parameterType="long">
+		UPDATE
+			T_YP_MS_RECEIVE_DEPT
+		SET
+			DEL_FLAG='0'
+		WHERE
+			RELA_CASE_ID= #{relaCaseId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

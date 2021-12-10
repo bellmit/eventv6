@@ -1,0 +1,782 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://dubbo.apache.org/schema/dubbo
+	http://dubbo.apache.org/schema/dubbo/dubbo.xsd"
+	default-lazy-init="false">
+	<dubbo:application register-consumer="true" metadata-type="remote" name="${dubbo.application.name:event}" owner="${dubbo.application.owner:zhsq_event}" version="v3.0.114" />
+	<dubbo:protocol name="hessian" server="servlet"
+		contextpath="${dubbo.protocol.contextpath:zhsq_event/dubbo}"
+		port="${dubbo.protocol.port:8450}"/>
+	<!--全局的提供者配置-->
+	<dubbo:provider version="${dubbo.service.version:${dubbo.provider.version:3.0}}"
+		cluster="${dubbo.service.cluster:${dubbo.provider.cluster:failfast}}"
+		filter="${dubbo.service.filter:${dubbo.provider.filter:default,-monitor}}"
+		timeout="${dubbo.service.timeout:${dubbo.provider.timeout:30000}}"/>
+	<!--全局的消费者配置-->
+	<dubbo:consumer
+		version="${dubbo.reference.version:${dubbo.consumer.version:3.0}}"
+		cluster="${dubbo.reference.cluster:${dubbo.consumer.cluster:failfast}}"
+		filter="${dubbo.reference.filter:${dubbo.consumer.filter:default,-monitor,dispatchLog}}"
+		check="${dubbo.reference.check:${dubbo.consumer.check:false}}"
+		timeout="${dubbo.reference.timeout:${dubbo.consumer.timeout:30000}}"/>
+	<!-- 元数据中心 -->
+	<dubbo:metadata-report address="${dubbo.zookeeper.address.metadata:${dubbo.zookeeper.address}}"/>
+	
+	<dubbo:registry address="${dubbo.zookeeper.address}" simplified="true" id="product"/>
+	<dubbo:registry address="zookeeper://127.0.0.1:2181" check="false" simplified="true" id="dev" register="${dubbo.registry.dev.register}" subscribe="${dubbo.registry.dev.subscribe}"/>
+	<!-- <dubbo:registry address="${dubbo.zookeeper.address.weixin}" check="false" id="weixin"/> -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:global.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+	<dubbo:reference id="twoStationServiceImpl" interface="cn.ffcs.lzly.service.twoStation.ITwoStationService"/>
+	<dubbo:reference id="userRoleOutService" interface="cn.ffcs.uam.service.UserRoleOutService"/>
+
+	<dubbo:reference id="twoMemberServiceImpl" interface="cn.ffcs.lzly.service.twoMember.ITwoMemberService"/>
+
+	<dubbo:reference id="improtantUnitService" interface="cn.ffcs.lzly.service.importantUnit.ImportantUnitService"/>
+	<dubbo:reference id="propagandaPositionService" interface="cn.ffcs.lzly.service.propagandaPosition.IPropagandaPositionService"/>
+	<dubbo:reference id="pointInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IPointInfoService"/>
+
+	<bean id="fiveKeyElementServiceImpl" class="cn.ffcs.zhsq.keyelement.impl.FiveKeyElementServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.keyelement.service.IFiveKeyElementService" ref="fiveKeyElementServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:service interface="cn.ffcs.zhsq.intermediateData.clue.service.IEventClueService" ref="eventClueService" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="arcgisInfoServiceImpl" class="cn.ffcs.zhsq.map.arcgis.service.impl.ArcgisInfoServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IArcgisInfoService" ref="arcgisInfoServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+    <!-- 海南万宁督办消息回复保存&发送接口 -->
+	<bean id="eventSuperviseRespServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventSuperviseRespServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventSuperviseRespService" ref="eventSuperviseRespServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<bean id="menuConfigServiceImpl" class="cn.ffcs.zhsq.map.menuconfigure.service.impl.MenuConfigServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.menuconfigure.service.IMenuConfigService" ref="menuConfigServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<bean id="disputeMediationServiceImpl" class="cn.ffcs.zhsq.controller.service.impl.DisputeMediationServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.dispute.service.IDisputeMediationService" ref="disputeMediationServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:service interface="cn.ffcs.zhsq.relatedEvents.service.IRelatedEventsService" ref="relatedEventsServiceServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.resource.service.ZgResourceInfoService" ref="zgResourceInfoServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.relatedEvents.service.ICommonRelatedEventsService" ref="commonRelatedEventsServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<bean id="eventDisposalWorkflowServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventDisposalWorkflowServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventDisposalWorkflowService" ref="eventDisposalWorkflowServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="eventDisposalServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventDisposalServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventDisposalService" ref="eventDisposalServiceImpl" retries="0" registry="${dubbo.zookeeper.id}">
+		<!-- 所有新增方法不进行重试,查询、修改、删除可以进行重试
+		<dubbo:method name="saveEventDisposalReturnId" retries="0" />
+		<dubbo:method name="saveEventExtendInfo" retries="0" />
+		<dubbo:method name="saveEventLabelRelaInfo" retries="0" />
+		<dubbo:method name="saveEventInvolvedPersion" retries="0" />
+		<dubbo:method name="saveEventLabelContent" retries="0" />
+		<dubbo:method name="saveEventResmarker" retries="0" />
+		<dubbo:method name="saveEventReportRecordInfo" retries="0" />
+		<dubbo:method name="saveEventInterAndReturnId" retries="0" />
+		<dubbo:method name="saveEventProcess" retries="0" />-->
+	</dubbo:service>
+
+	<bean id="baseConversionServiceImpl" class="cn.ffcs.zhsq.map.coordinateconversion.service.impl.BaseConversionServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.coordinateconversion.service.IBaseConversionService" ref="baseConversionServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="arcgisDataOfLocalServiceImpl" class="cn.ffcs.zhsq.map.arcgis.service.impl.ArcgisDataOfLocalServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IArcgisDataOfLocalService" ref="arcgisDataOfLocalServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="smsTaskServiceImpl" class="cn.ffcs.zhsq.smsTask.service.impl.SmsTaskServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.smsTask.service.ISmsTaskService" ref="smsTaskServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+
+	<!-- 接口 -->
+	
+	<dubbo:service interface="cn.ffcs.zhsq.time.ITimerManageService" ref="timerManageServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.aqi.service.IZgAQIService" ref="zgAQIServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<dubbo:service interface="cn.ffcs.zhsq.bus.service.BusService" ref="busService" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.map.taxi.service.ITaxiService" ref="iTaxiService" registry="${dubbo.zookeeper.id}"/>
+
+<!--  -->
+
+	<!-- 事件对接接口 -->
+	<bean id="eventDisposalDockingServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventDisposalDockingServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventDisposalDockingService" ref="eventDisposalDockingServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+
+    <!-- 事件拓展接口 -->
+	<bean id="eventDisposalExpandService" class="cn.ffcs.zhsq.eventExpand.service.impl.EventDisposalExpandServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventExpand.service.IEventDisposal4ExpandService" ref="eventDisposalExpandService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 事件迁移gis发布接口 start 20210112 -->
+	<bean id="eventDisposal4ExtraService" class="cn.ffcs.zhsq.event.service.impl.EventDisposal4ExtraServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventDisposal4ExtraService" ref="eventDisposal4ExtraService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 事件迁移gis发布接口 end 20210112 -->
+
+	<!-- 数据交换状态维护 -->
+	<bean id="dataExchangeStatusServiceImpl" class="cn.ffcs.zhsq.dataExchange.service.impl.DataExchangeStatusServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.dataExchange.service.IDataExchangeStatusService" ref="dataExchangeStatusServiceImpl" />
+
+	<!-- 数据交换状态维护 -->
+	<bean id="basDataExchangeServiceImpl" class="cn.ffcs.zhsq.dataExchange.service.impl.BasDataExchangeServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.dataExchange.service.IBasDataExchangeService" ref="basDataExchangeServiceImpl" />
+
+	<!-- 工作流回调中间表 -->
+	<bean id="eventProcessServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventProcessServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventProcessService" ref="eventProcessServiceImpl" />
+
+	<!-- 框选统计 -->
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IKuangXuanStatService" ref="kuangXuanStat" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 新事件工作流决策接口 -->
+	<bean id="workflowDecisionMakingService" class="cn.ffcs.zhsq.decisionMaking.WorkflowDecisionMakingServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.decisionMaking.IWorkflowDecisionMakingService" ref="workflowDecisionMakingService" registry="${dubbo.zookeeper.id}"/>
+	<!--  新事件五要素接口 -->
+	<bean id="eventOrgInfoServiceImpl" class="cn.ffcs.zhsq.keyelement.impl.EventOrgInfoServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.keyelement.service.IEventOrgInfoService" ref="eventOrgInfoServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 联防接口 -->
+	<bean id="jointDefenceService" class="cn.ffcs.zhsq.jointDefence.impl.JointDefenceServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.jointDefence.service.IJointDefenceService" ref="jointDefenceService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 工作流基本接口 -->
+	<bean id="workflow4BaseService" class="cn.ffcs.zhsq.base.workflow.service.impl.Workflow4BaseServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.base.workflow.IWorkflow4BaseService" ref="workflow4BaseService"  registry="${dubbo.zookeeper.id}"/>
+	
+	<!--  涉及人员接口 -->
+	<bean id="involvedPeopleServiceImpl" class="cn.ffcs.zhsq.event.service.impl.InvolvedPeopleServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IInvolvedPeopleService" ref="involvedPeopleServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 禁毒事件接口 -->
+	<bean id="drugEnforcementEventService" class="cn.ffcs.zhsq.drugEnforcementEvent.service.impl.DrugEnforcementEventServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.drugEnforcementEvent.service.IDrugEnforcementEventService" ref="drugEnforcementEventService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 事件核对接口 -->
+	<bean id="eventVerifyBaseService" class="cn.ffcs.zhsq.intermediateData.eventVerify.service.impl.EventVerifyBaseServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.intermediateData.eventVerify.service.IEventVerifyBaseService" ref="eventVerifyBaseService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 案件接口 -->
+	<bean id="eventCaseService" class="cn.ffcs.zhsq.eventCase.service.impl.EventCaseServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventCase.service.IEventCaseService" ref="eventCaseService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 事件扩展属性接口 -->
+	<bean id="eventExtendService" class="cn.ffcs.zhsq.eventExtend.service.impl.EventExtendServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventExtend.service.IEventExtendService" ref="eventExtendService" registry="${dubbo.zookeeper.id}">
+		<dubbo:method name="saveEventExtend" retries="0"/>
+	</dubbo:service>
+	
+	<!-- 延时申请接口 -->
+	<bean id="timeApplicationService" class="cn.ffcs.zhsq.timeApplication.service.impl.TimeApplicationServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.timeApplication.ITimeApplicationService" ref="timeApplicationService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 事件与工作流关联相关接口 -->
+	<bean id="event4WorkflowService" class="cn.ffcs.zhsq.event.service.impl.Event4WorkflowServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEvent4WorkflowService" ref="event4WorkflowService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 重复事件关联接口 -->
+	<bean id="eventDuplicationService" class="cn.ffcs.zhsq.eventDuplication.service.impl.EventDuplicationServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventDuplication.service.IEventDuplicationService" ref="eventDuplicationService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 重点关注上报对外接口 -->
+    <bean id="reportIntegrationService" class="cn.ffcs.zhsq.reportFocus.service.impl.ReportIntegrationServiceImpl"/>
+    <dubbo:service interface="cn.ffcs.zhsq.reportFocus.IReportIntegrationService" ref="reportIntegrationService" registry="${dubbo.zookeeper.id}" />
+
+	<!-- 南安入格事件反馈对外接口 -->
+    <bean id="reportFeedbackService" class="cn.ffcs.zhsq.reportFocus.reportFeedback.service.impl.ReportFeedbackServiceImpl"/>
+    <dubbo:service interface="cn.ffcs.zhsq.reportFocus.reportFeedback.IReportFeedbackService" ref="reportFeedbackService" registry="${dubbo.zookeeper.id}" />
+    
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">  
+		<!-- sessionFactoryMybatis在applicationContext-mybatix.xml中 -->
+		<constructor-arg index="0" ref="sessionFactoryMybatis"/>  
+	</bean>  
+
+	 <!-- 
+	<bean id="patrolServiceImpl" class="cn.ffcs.zhsq.event.service.impl.PatrolServiceImpl" /> 
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IPatrolService" ref="patrolServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:reference id="patrolService" interface="cn.ffcs.zhsq.event.service.IPatrolService"/>
+	-->
+	<!-- -->
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IPatrolService" ref="patrolServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 引用楼宇经济服务 START -->
+
+	<!-- LYJJ楼宇Service -->
+	<dubbo:reference id="buildingService" interface="cn.ffcs.zhsq.be.service.building.BuildingService" />
+	<!-- LYJJ企业Service -->
+	<dubbo:reference id="corpBaseService" interface="cn.ffcs.zhsq.be.service.corpbase.CorpBaseService"/>
+	<!-- LYJJ地理信息Service -->
+	<dubbo:reference id="lyjjArcgisInfoService" interface="cn.ffcs.zhsq.be.service.arcgis.ArcgisInfoService"  registry="${dubbo.zookeeper.id}"/>
+	<!-- LYJJ事件信息Service -->
+	<dubbo:reference id="eventService" interface="cn.ffcs.zhsq.be.service.event.EventService"  registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 引用楼宇经济服务 END -->
+
+	<dubbo:reference id="annexInfoService" interface="cn.ffcs.shequ.base.service.IAnnexInfoService"/>
+
+
+	<dubbo:reference id="dictionaryService" interface="cn.ffcs.shequ.base.service.IDictionaryService"/>
+
+	<dubbo:reference id="messageOutService" interface="cn.ffcs.uam.service.MessageOutService"/>
+
+
+	<dubbo:reference id="cacheService" interface="cn.ffcs.cookie.service.CacheService"/>
+
+
+	<dubbo:reference id="userService" interface="cn.ffcs.shequ.base.service.IUserService"/>
+
+
+	<dubbo:reference id="areaBuildingInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IAreaBuildingInfoService"/>
+
+	<dubbo:reference id="IVisitRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IVisitRecordService"/>
+
+
+	<dubbo:reference id="userCookieService" interface="cn.ffcs.cookie.service.UserCookieService"/>
+
+
+	<dubbo:reference id="monitorService" interface="cn.ffcs.shequ.zzgl.service.globalEyes.MonitorService"/>
+
+	<dubbo:reference id="eyesBindService" interface="cn.ffcs.shequ.zzgl.service.eyesbind.IEyesBindService"/>
+
+	<dubbo:reference id="eventRelaItemServiceImpl" interface="cn.ffcs.shequ.zzgl.service.event.IEventRelaItemService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="evaResultService" interface="cn.ffcs.shequ.zzgl.service.event.IEvaResultService"/>
+
+
+	<dubbo:reference id="storeInfoServiceImpl" interface="cn.ffcs.shequ.grid.service.IStoreInfoService"/>
+
+
+	<dubbo:reference id="ciRsRoomService" interface="cn.ffcs.shequ.zzgl.service.grid.ICiRsRoomService"/>
+
+	<dubbo:reference id="ciRsRoomServiceForRs" interface="cn.ffcs.resident.service.CiRsRoomService"/>
+
+	<!-- 事件工作流接口 -->
+	<dubbo:reference id="hessianFlowService" interface="cn.ffcs.workflow.spring.HessianFlowService"  />
+	<!-- 工作流基本应用接口 -->
+	<dubbo:reference id="baseWorkflowService" interface="cn.ffcs.workflow.spring.IBaseWorkflowService"  />
+
+	<dubbo:reference id="workFlowService" interface="cn.ffcs.uam.service.WorkFlowService"/>
+
+
+	<dubbo:reference id="barService" interface="cn.ffcs.shequ.zzgl.service.grid.IBarService"/>
+
+
+	<dubbo:reference id="orgService" interface="cn.ffcs.shequ.base.service.IOrgService"/>
+
+
+	<dubbo:reference id="gridResultModelService" interface="cn.ffcs.shequ.grid.service.IGridResultModelService"/>
+
+
+	<dubbo:reference id="fileUploadService" interface="cn.ffcs.file.service.FileUploadService"/>
+	
+	<!-- 附件格式转换 -->
+	<dubbo:reference id="fileTransferService" interface="cn.ffcs.file.service.IFileTransferService"/>
+
+
+	<dubbo:reference id="gridAdminService" interface="cn.ffcs.shequ.zzgl.service.grid.IGridAdminService"/>
+
+
+	<dubbo:reference id="icGridMapService" interface="cn.ffcs.icgrid.grid.service.IIcGridMapService"/>
+
+
+	<dubbo:reference id="campusService" interface="cn.ffcs.shequ.zzgl.service.grid.ICampusService"/>
+
+
+	<dubbo:reference id="resMarkerService" interface="cn.ffcs.shequ.zzgl.service.res.IResMarkerService"/>
+
+	<dubbo:reference id="resGisMarkerService" interface="cn.ffcs.gis.base.service.IResMarkerService"/>
+
+	<dubbo:reference id="ciRsPartyService" interface="cn.ffcs.resident.service.CiRsPartyService"/>
+
+
+	<dubbo:reference id="mentalIllnessRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IMentalIllnessRecordService"/>
+
+
+	<dubbo:reference id="careRoadService" interface="cn.ffcs.shequ.zzgl.service.grid.ICareRoadService"/>
+
+
+	<dubbo:reference id="segmentGridService" interface="cn.ffcs.shequ.zzgl.service.grid.ISegmentGridService"/>
+
+
+	<dubbo:reference id="drugRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IDrugRecordService"/>
+
+	<!-- 组织域 -->
+	<dubbo:reference id="orgSocialInfoService" interface="cn.ffcs.uam.service.OrgSocialInfoOutService"/>
+	<!-- 信息域 -->
+	<dubbo:reference id="orgEntityInfoOutService" interface="cn.ffcs.uam.service.OrgEntityInfoOutService"/>
+	<!-- 组织专业 -->
+	<dubbo:reference id="ProfessionService" interface="cn.ffcs.uam.service.ProfessionOutService"/>
+	<!-- redis -->
+	<dubbo:reference id="manipulateRedisService" interface="cn.ffcs.cache.redis.service.ManipulateRedisService" />
+	
+	<dubbo:reference id="organizationService" interface="cn.ffcs.shequ.grid.service.IOrganizationService"/>
+
+	<!--
+        <dubbo:reference id="ieventDisposalService" interface="cn.ffcs.shequ.zzgl.service.event.IEventDisposalService"/>
+     -->
+
+	<dubbo:reference id="petitionRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IPetitionRecordService"/>
+
+
+	<dubbo:reference id="sendSmsService" interface="cn.ffcs.sms.service.SendSmsService"/>
+
+
+	<dubbo:reference id="areaRoomRentService" interface="cn.ffcs.shequ.zzgl.service.grid.IAreaRoomRentService"/>
+
+
+	<dubbo:reference id="eventDisposalService" interface="cn.ffcs.shequ.zzgl.service.event.IEventDisposalService"/>
+
+
+	<dubbo:reference id="placeInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IPlaceInfoService" registry="${dubbo.zookeeper.id}"/>
+
+
+	<dubbo:reference id="userManageService" interface="cn.ffcs.uam.service.UserManageOutService"/>
+	<dubbo:reference id="positionInfoOutService" interface="cn.ffcs.uam.service.PositionInfoOutService"/>
+
+	<dubbo:reference id="userInfoService" interface="cn.ffcs.uam.service.UserInfoOutService"/>
+
+	<dubbo:reference id="correctionalRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.ICorrectionalRecordService"/>
+
+
+	<dubbo:reference id="resTypeService" interface="cn.ffcs.shequ.zzgl.service.res.IResTypeService"/>
+
+	<dubbo:reference id="youthService" interface="cn.ffcs.shequ.zzgl.service.crowd.IYouthService"/>
+
+	<dubbo:reference id="gridStatisticsService" interface="cn.ffcs.shequ.statistics.service.IGridStatisticsService"/>
+
+
+	<dubbo:reference id="logService" interface="cn.ffcs.log.api.service.LogService"/>
+	<dubbo:reference id="logDataService" interface="cn.ffcs.log.api.service.LogDataService"/>
+
+
+
+	<dubbo:reference id="dangerousGoodsRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IDangerousGoodsRecordService"/>
+
+
+	<dubbo:reference id="attachmentService" interface="cn.ffcs.shequ.zzgl.service.attachment.IAttachmentService"/>
+
+
+	<dubbo:reference id="corBaseInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.ICorBaseInfoService"/>
+
+
+	<dubbo:reference id="ciRsService" interface="cn.ffcs.resident.service.CiRsService"/>
+
+	<dubbo:reference id="ciRsRelService" interface="cn.ffcs.resident.service.CiRsRelService"/>
+
+	<dubbo:reference id="disputeMediationService" interface="cn.ffcs.shequ.zzgl.service.dispute.IDisputeMediationService"/>
+
+	<dubbo:reference id="fileUrlProvideService" interface="cn.ffcs.file.service.FileUrlProvideService"/>
+
+
+	<dubbo:reference id="residentService" interface="cn.ffcs.shequ.resident.service.IResidentService"/>
+
+
+	<dubbo:reference id="ciPartyGroupService" interface="cn.ffcs.resident.service.CiPartyGroupService"/>
+
+	<dubbo:reference id="ciRsCarService" interface="cn.ffcs.shequ.zzgl.service.main.ICiRsCarService"/>
+
+	<dubbo:reference id="carRecordService" interface="cn.ffcs.doorsys.service.record.ICarRecordService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="residentRecordService" interface="cn.ffcs.doorsys.service.record.IResidentRecordService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="orgEntityInfoService" interface="cn.ffcs.shequ.grid.service.IOrgEntityInfoService"/>
+
+
+	<dubbo:reference id="cultMemberRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.ICultMemberRecordService"/>
+
+
+	<dubbo:reference id="resInfoService" interface="cn.ffcs.shequ.zzgl.service.res.IResInfoService"/>
+
+
+	<dubbo:reference id="partyIndividualService" interface="cn.ffcs.resident.service.PartyIndividualService"/>
+
+
+	<dubbo:reference id="mixedGridInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IMixedGridInfoService"/>
+	<dubbo:reference id="casesService" interface="cn.ffcs.shequ.grid.service.ICasesService"/>
+
+
+	<dubbo:reference id="orgConfigService" interface="cn.ffcs.shequ.base.service.IOrgConfigService"/>
+
+	<dubbo:reference id="dailyActivityService" interface="cn.ffcs.shequ.zzgl.service.dailyactivity.IDailyActivityService"/>
+
+	<dubbo:reference id="releasedRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.IReleasedRecordService"/>
+
+	<dubbo:reference id="majorIndustryService" interface="cn.ffcs.gmis.majorindustry.service.MajorIndustryService"/>
+
+	<dubbo:reference id="safeCheckDetailService" interface="cn.ffcs.shequ.workflow.ict.service.ISafeCheckDetailService" registry="${dubbo.zookeeper.id}"/>
+
+
+	<dubbo:reference id="gisInfoService" interface="cn.ffcs.shequ.zzgl.service.map.IGisInfoService" registry="${dubbo.zookeeper.id}"/>
+
+
+	<dubbo:reference id="preResourcesServiceImpl" interface="cn.ffcs.shequ.zzgl.service.res.IPreResourcesService"/>
+
+	<dubbo:reference id="menuService" interface="cn.ffcs.uam.service.MenuOutService"/>
+
+	<dubbo:reference id="eventReportRecordService" interface="cn.ffcs.shequ.eventReportRecord.service.IEventReportRecordService"/>
+
+	<dubbo:reference id="funConfigurationService" interface="cn.ffcs.uam.service.IFunConfigurationService"/>
+
+	<dubbo:reference id="funConfigureService" interface="cn.ffcs.uam.service.IFunConfigureService"/>
+
+	<dubbo:reference id="waterMonitorService" interface="cn.ffcs.water.service.MonitorService"/>
+
+	<dubbo:reference id="iCareRoadOrgService" interface="cn.ffcs.shequ.zzgl.service.grid.ICareRoadOrgService"/>
+
+	<dubbo:reference id="teamMembersService" interface="cn.ffcs.gmis.teamMembers.service.ITeamMembersService" />
+
+	<dubbo:reference id="routineExaminationService" interface="cn.ffcs.shequ.zzgl.service.productSafety.IRoutineExaminationService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="fireResourceService" interface="cn.ffcs.shequ.zzgl.service.firegrid.IFireResourceService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="fireTeamService" interface="cn.ffcs.shequ.zzgl.service.firegrid.IFireTeamService" />
+
+	<dubbo:reference id="baseDictionaryService" interface="cn.ffcs.uam.service.IBaseDictionaryService"/>
+
+	<dubbo:reference id="serviceOutletsService" interface="cn.ffcs.gmis.serviceOutlets.service.IServiceOutletsService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="landscapeManageService" interface="cn.ffcs.gmis.landscapeManage.service.ILandscapeManageService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 重点单位接口 -->
+	<dubbo:reference id="importUnitService" interface="cn.ffcs.shequ.zzgl.service.main.IImportUnitService" />
+
+	<!-- 安监队伍接口 -->
+	<dubbo:reference id="prvetionTeamService" interface="cn.ffcs.shequ.zzgl.service.grid.IPrvetionTeamService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 两车管理 -->
+	<dubbo:reference id="parkingManageService" interface="cn.ffcs.gmis.parkingManage.service.IParkingManageService"  registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 寄递物流安全管理 -->
+	<dubbo:reference id="logisticsSafetyService" interface="cn.ffcs.gmis.logisticsSafety.service.ILogisticsSafetyService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 违法建设 -->
+	<dubbo:reference id="ctIllegalConstructionService" interface="cn.ffcs.gmis.ctIllegalConstruction.service.ICtIllegalConstructionService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 江西信访 -->
+	<dubbo:reference id="petitionerService" interface="cn.ffcs.shequ.zzgl.service.crowd.IPetitionerService"/>
+
+	<!-- 九小场所 -->
+	<dubbo:reference id="zzSmallPlacesService" interface="cn.ffcs.gmis.railwayDefence.zzSmallPlaces.service.IZzSmallPlacesService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 功能检测服务接口 -->
+	<bean id="checkConfigBaseServiceImpl" class="cn.ffcs.zhsq.checkConfig.service.impl.CheckConfigBaseServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.checkConfig.service.ICheckConfigBaseService" ref="checkConfigBaseServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 域名检测服务接口实现
+	<bean id="appDomainCheckServiceImpl" class="cn.ffcs.zhsq.checkConfig.service.impl.AppDomainCheckServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.checkConfig.service.ICheckConfigService" ref="appDomainCheckServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	 -->
+	<!-- 精准扶贫 -->
+	<dubbo:reference id="plcService" interface="cn.ffcs.gmis.plc.service.IPlcService"/>
+	<dubbo:reference id="agricultureService" interface="cn.ffcs.service.ag.Interface.AgricultureService"/>
+	<dubbo:reference id="populationService" interface="cn.ffcs.service.ag.Interface.PopulationService"/>
+	<dubbo:reference id="homeInfoService" interface="cn.ffcs.resident.service.HomeInfoService"/>
+	<dubbo:reference id="homeHelpService" interface="cn.ffcs.resident.service.HomeHelpService"/>
+	<dubbo:reference id="rsPoorHoldService" interface="cn.ffcs.resident.service.RsPoorHoldService"/>
+	<!-- 队伍信息服务实现类 -->
+	<dubbo:reference id="prvetionTeamServiceGmis" interface="cn.ffcs.gmis.prvetionTeam.service.IPrvetionTeamService" />
+
+	<!-- 框选配置 -->
+	<bean id="gisStatConfigServiceImpl" class="cn.ffcs.zhsq.map.arcgis.service.impl.GisStatConfigServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IGisStatConfigService" ref="gisStatConfigServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 框选配置小类 -->
+	<bean id="gisStatContConfigServiceImpl" class="cn.ffcs.zhsq.map.arcgis.service.impl.GisStatContConfigServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IGisStatContConfigService" ref="gisStatContConfigServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="numberConfigureService" interface="cn.ffcs.uam.service.INumberConfigureService" />
+
+	<dubbo:reference id="campusInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.ICampusInfoService" />
+
+	<!-- 地址库 -->
+	<dubbo:reference id="geoStdAddressService" interface="cn.ffcs.geo.geoStdAddress.service.IGeoStdAddressService" />
+	<!-- 操作按钮权限 -->
+	<dubbo:reference id="priActionUtilService" interface="cn.ffcs.sysManage.PriActionUtilService"/>
+	<!-- 消防队伍服务 -->
+	<dubbo:reference id="fireTeamNewService" interface="cn.ffcs.shequ.zzgl.service.firegrid.IFireTeamNewService" />
+	<!-- 图片附件 -->
+	<dubbo:reference id="workAttService" interface="cn.ffcs.shequ.zzgl.service.work.IWorkAttService" />
+	<!-- 道路 -->
+	<dubbo:reference id="roadManagementService" interface="cn.ffcs.shequ.zzgl.service.res.IRoadManagementService"/>
+
+	<dubbo:reference id="memberInfoService" interface="cn.ffcs.shequ.zzgl.service.res.IMemberInfoService"/>
+
+	<!-- 星云 迁徙图数据 -->
+	<dubbo:service interface="cn.ffcs.zhsq.map.arcgis.service.IMigrationMapService" ref="migrationMapService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 地图楼宇服务 -->
+	<dubbo:reference id="gisBuildingInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IGisBuildingInfoService" registry="${dubbo.zookeeper.id}"/>
+	<!-- 地图网格服务 -->
+	<dubbo:reference id="gisGridInfoService" interface="cn.ffcs.shequ.zzgl.service.grid.IGisGridInfoService"/>
+	<!-- 海康 设备信息 车闸设备记录 -->
+	<dubbo:reference id="apsLogService" interface="cn.ffcs.doorsys.service.equipment.IApsLogService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 各视联网信息中心 -->
+	<dubbo:reference id="nicService" interface="cn.ffcs.gmis.nic.service.INicService"/>
+
+	<!-- 艾滋病 -->
+	<dubbo:reference id="aidsPersonService" interface="cn.ffcs.shequ.zzgl.service.crowd.IAidsPersonService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 海康 设备信息 -->
+	<dubbo:reference id="equipmentService" interface="cn.ffcs.doorsys.service.equipment.IEquipmentService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 报警机信息 -->
+	<dubbo:reference id="amsLogService" interface="cn.ffcs.doorsys.service.equipment.IAmsLogService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="ppsLogService" interface="cn.ffcs.doorsys.service.equipment.IPpsLogService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 门禁设备日志 -->
+	<dubbo:reference id="acsLogService" interface="cn.ffcs.doorsys.service.equipment.IAcsLogService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 地图统计服务 -->
+	<dubbo:service interface="cn.ffcs.zhsq.map.gisstat.service.IGisStatService" ref="gisStatServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 巡查管理 -->
+	<dubbo:reference id="busInspectionRecordService" interface="cn.ffcs.gmis.busInspectionRecord.service.IBusInspectionRecordService"/>
+
+	<dubbo:reference id="busInspectionRecordServiceZZGL" interface="cn.ffcs.shequ.zzgl.service.grid.IBusInspectionRecordService"/>
+
+	<dubbo:service interface="cn.ffcs.zhsq.map.zhoubian.service.IZhouBianStatService" ref="zhouBianStatService" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="iInfoOpenService" interface="cn.ffcs.shequ.infoOpen.service.IInfoOpenService"/>
+
+	<dubbo:reference id="urbanObjService" interface="cn.ffcs.shequ.zzgl.service.res.IUrbanObjService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 地图标注组件 -->
+	<dubbo:service interface="cn.ffcs.zhsq.map.labelLocation.service.ILabelLocationService" ref="labelLocationServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 事件配置 -->
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventTypeProcCfg" ref="eventTypeProcCfgServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 手机消息推送 -->
+	<dubbo:reference id="pushService" interface="cn.ffcs.mobile.api.service.PushService"/>
+
+	<bean id="coordinateInverseQueryServiceImpl" class="cn.ffcs.zhsq.CoordinateInverseQuery.service.CoordinateInverseQueryServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.CoordinateInverseQuery.service.ICoordinateInverseQueryService" ref="coordinateInverseQueryServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 危险化学品企业管理 -->
+	<dubbo:reference id="dangerChemistryManagerService" interface="cn.ffcs.gmis.dangerChemistryManager.service.IDangerChemistryManagerService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 积分接口 -->
+	<dubbo:reference id="userScoreService" interface="cn.ffcs.gmis.userscore.service.UserScoreService" />
+
+	<!-- 重点车辆 -->
+	<dubbo:reference id="keyVehiclesService" interface="cn.ffcs.lzly.keyVehicles.service.IKeyVehiclesService" />
+
+	<!-- bi -->
+	<dubbo:reference id="gridEventService" interface="cn.ffcs.bi.report.service.gridEvent.IGridEventService" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 两站两员 隐患路段、隐患路口 -->
+	<dubbo:reference id="dangRoadService" interface="cn.ffcs.lzly.service.dangroad.DangRoadService" />
+
+	<!-- 微信事件对接，微信端接口 -->
+	<dubbo:reference id="wehatEventService" interface="cn.ffcs.module.event.service.EventService" />
+	<!-- 消息中间表 -->
+	<dubbo:reference id="msgSendMidService" interface="cn.ffcs.uam.service.IMsgSendMidOutService" />
+	<!-- 工作圈接口 -->
+	<dubbo:reference id="workCircleService" interface="cn.ffcs.gmis.workcircle.service.WorkCircleService" />
+	<!-- 驰名商标 -->
+	<dubbo:reference id="trademarkService" interface="cn.ffcs.gmis.wellKnownTrademark.service.TrademarkService" registry="${dubbo.zookeeper.id}"/>
+
+
+	<bean id="buildingBindServiceImpl" class="cn.ffcs.zhsq.map.buildingBind.service.impl.BuildingBindServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.buildingBind.service.IBuildingBindService" ref="buildingBindServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+   <!-- 设备基础信息服务 -->
+	<dubbo:service interface="cn.ffcs.zhsq.deviceinfos.service.DeviceInfosService" ref="deviceInfosServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 设备正常数据接口 -->
+	<dubbo:service interface="cn.ffcs.zhsq.devicecollectdata.service.DeviceCollectDataService" ref="deviceCollectDataServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 设备告警 -->
+	<dubbo:service interface="cn.ffcs.zhsq.devicecollectdata.service.DeviceCollectAlertService" ref="deviceCollectAlertServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 公众诉求模块服务 -->
+	<dubbo:service interface="cn.ffcs.zhsq.publicAppeal.service.PublicAppealService" ref="publicAppealServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 招商引资 -->
+	<dubbo:reference id="attractInvestmentService" interface="cn.ffcs.gmis.attractInvestment.service.IAttractInvestmentService" registry="${dubbo.zookeeper.id}"/>
+
+
+
+	<!-- 宜居罗坊 -->
+	<dubbo:reference id="livableLFService" interface="cn.ffcs.gmis.livableLF.LivableLFService"/>
+
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.DoubleRandomTaskService" ref="doubleRandomTaskServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 假期管理 -->
+	<dubbo:reference id="holidayInfoService" interface="cn.ffcs.shequ.zzgl.service.holidayinfo.IHolidayInfoService"/>
+
+	<!-- 协警地址服务 -->
+	<dubbo:reference id="xieJingAddressService" interface="cn.ffcs.geo.xieJingAddress.service.IXieJingAddressService"/>
+
+	<dubbo:reference id="requestionService" interface="cn.ffcs.workflow.spring.RequestionService" />
+	<dubbo:reference id="mwInternetService" interface="cn.ffcs.workflow.spring.MWInternetService" />
+	<!-- 告警任务 -->
+	<dubbo:service interface="cn.ffcs.zhsq.mwInternet.service.WarnTaskService" ref="warnTaskServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.mwInternet.service.RepairTaskService" ref="repairTaskServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<dubbo:service interface="cn.ffcs.zhsq.mwInternet.service.DailyTaskService" ref="dailyTaskServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 政企互联 -->
+	<dubbo:service interface="cn.ffcs.zhsq.requestion.service.IRequestionService" ref="requestionServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!--地图数据维护接口服务-->
+	<bean id="mapDataMaintainServiceImpl" class="cn.ffcs.zhsq.map.mapDataMaintain.service.impl.MapDataMaintainServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.mapDataMaintain.service.IMapDataMaintainService" ref="mapDataMaintainServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!--Es相关接口-->
+	<!-- <dubbo:reference id="restClientFactory" interface="cn.ffcs.resident.elastic.IRestClientFactory"/> -->
+
+	<!--ES事件综合查询服务-->
+	<bean id="eventDisposalEsComprehensiveServiceImpl" class="cn.ffcs.zhsq.event.service.impl.EventDisposalEsComprehensiveServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.event.service.IEventDisposalEsComprehensiveService" ref="eventDisposalEsComprehensiveServiceImpl" registry="${dubbo.zookeeper.id}"/>
+  	
+  	<!-- 模块事件上报记录，事件关联登记服务 -->
+	<!--  
+	<dubbo:reference id="disputeWeiXinService" interface="cn.ffcs.dispute.service.DisputeService" registry="${dubbo.zookeeper.id}"/>
+	-->
+	
+	<!--理想地图管道测试服务-->
+	<bean id="pipeLineServiceImpl" class="cn.ffcs.zhsq.map.test.service.impl.PipeLineServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.map.test.service.IPipeLineService" ref="pipeLineServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!--法人库服务-->
+	<dubbo:reference id="legalInfoService" interface="cn.ffcs.shequ.zzgl.service.legal.ILegalInfoService"/>
+	<dubbo:reference id="legalTagDictService" interface="cn.ffcs.shequ.zzgl.service.legal.ILegalTagDictService"/>
+
+	<!--二次刑拘-->
+	<dubbo:reference id="detentionService" interface="cn.ffcs.shequ.zzgl.service.crowd.IDetentionService"/>
+	<!--独居人-->
+	<dubbo:reference id="liveAloneService" interface="cn.ffcs.shequ.zzgl.service.crowd.ILiveAloneService"/>
+	<!--涉羟人员-->
+	<dubbo:reference id="involveHydroxylService" interface="cn.ffcs.shequ.zzgl.service.crowd.IInvolveHydroxylService"/>
+	<!--危重人-->
+	<dubbo:reference id="criticalRecordService" interface="cn.ffcs.shequ.zzgl.service.crowd.CriticalRecordService"/>
+	<!--暖心对象-->
+	<dubbo:reference id="ciRsWarmHeartService" interface="cn.ffcs.resident.service.CiRsWarmHeartService"/>
+
+	<!-- 民警管理 -->
+	<dubbo:reference id="policeManagementServiceImpl" interface="cn.ffcs.gmis.policeManagement.PoliceManagementService"/>
+	<dubbo:reference id="visitRecordService" interface="cn.ffcs.resident.service.VisitRecordService"/>
+
+	<!--空气检测站点服务-->
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.aqi.service.IZgAqiStationService" ref="zgAqiStationServiceImpl"  registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 盐都事件推送 列表接口 -->
+	<dubbo:service interface="cn.ffcs.zhsq.eventPush.service.IEventPushService" ref="eventPushServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!-- 盐都事件列表jsonp add by os.wuzhj-->
+	<dubbo:service interface="cn.ffcs.zhsq.eventDay.IEventDayService" ref="eventDayServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<dubbo:reference id="fileAttachmentService" interface="cn.ffcs.file.service.IAttachmentService" />
+	
+	<dubbo:reference id="workAttachmentService" interface="cn.ffcs.shequ.zzgl.service.work.IWorkAttachmentService" />
+	
+	
+	<!--响水网格化日志统计 列表接口 -->
+	<dubbo:service interface="cn.ffcs.zhsq.xiangshui.service.LogStatisticsService" ref="logStatisticsServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!--工作圈接口 -->
+	<bean id="workCircleServiceImpl" class="cn.ffcs.zhsq.workcircle.service.WorkCircleServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.workcircle.service.IWorkCircleService" ref="workCircleServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 使用BaseFilter需要的服务 -->
+	<dubbo:reference id="commonService" interface="cn.ffcs.uam.service.ICommonService"/>
+	<!-- 使用BaseFilter需要的服务 -->
+	<dubbo:reference id="commonUtilService" interface="cn.ffcs.sysManage.CommonUtilService"/>
+
+    <dubbo:reference id="legalInfoServiceImpl" interface="cn.ffcs.shequ.zzgl.service.legal.ILegalInfoService"/>
+
+	<!--网格员协助 -->
+	<bean id="gdPersionSendFlowServiceImpl" class="cn.ffcs.zhsq.gdpersionsendflow.service.GdPersionSendFlowServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.gdpersionsendflow.service.IGdPersionSendFlowService" ref="gdPersionSendFlowServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!--网格员工作流协助 -->
+	<bean id="gdPersionSendWorkflowServiceImpl" class="cn.ffcs.zhsq.gdpersionsendflow.service.GdPersionSendWorkflowServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.gdpersionsendflow.service.IGdPersionSendWorkflowService" ref="gdPersionSendWorkflowServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<!--法院协同办公 -->
+	<bean id="courtSynergismServiceImpl" class="cn.ffcs.zhsq.courtsynergism.service.CourtSynergismServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.courtsynergism.service.ICourtSynergismService" ref="courtSynergismServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+	<dubbo:reference id="smsLogService" interface="cn.ffcs.sms.service.SmsLogService"/>
+	<dubbo:reference id="hiLogoutService" interface="cn.ffcs.resident.service.HiLogoutService"/>
+
+	<dubbo:reference id="courtService" interface="cn.ffcs.gmis.fgv.court.service.ICourtService" />
+
+
+	<!--南安矛盾纠纷-->
+	<bean id="mediationNaServiceImpl" class="cn.ffcs.zhsq.dispute.service.impl.MediationNaServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.dispute.service.IMediationNaService" ref="mediationNaServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!--南安12345对接-->
+	<bean id="hotlineServiceImpl" class="cn.ffcs.zhsq.hotLine.service.impl.HotlineServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.hotLine.service.HotlineService" ref="hotlineServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!--事件标签模块-->
+	<bean id="eventLabelServiceImpl" class="cn.ffcs.zhsq.eventExpand.service.impl.EventLabelServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventExpand.service.IEventLabelService" ref="eventLabelServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<bean id="eventLabelRelaServiceImpl" class="cn.ffcs.zhsq.eventExpand.service.impl.EventLabelRelaServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.eventExpand.service.IEventLabelRelaService" ref="eventLabelRelaServiceImpl" registry="${dubbo.zookeeper.id}"/>
+
+    <!--智慧云眼接口-->
+    <bean id="pointInfoServiceImpl" class="cn.ffcs.zhsq.pointInfo.service.impl.PointInfoServiceImpl"/>
+    <dubbo:service interface="cn.ffcs.zhsq.pointInfo.service.PointInfoService" ref="pointInfoServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	<!-- 通讯录 -->
+	<dubbo:reference id="oaCommunicatPersonService" interface="cn.ffcs.oa.service.OaCommunicatPersonService"/>
+	<dubbo:reference id="oaCommunicatGroupService" interface="cn.ffcs.oa.service.OaCommunicatGroupService"/>
+	<!-- OA积分模块 -->
+	<dubbo:reference id="integralRuleService" interface="cn.ffcs.oa.service.interalrule.IntegralRuleService" />
+	
+	<!-- 日常督察 -->
+	<dubbo:reference id="dailySupervisionService" interface="cn.ffcs.gmis.dailySupervision.DailySupervisionService"/>
+	<dubbo:reference id="attachmentByUUIDService" interface="cn.ffcs.file.service.IAttachmentByUUIDService"/>
+
+	<!--江西矛盾纠纷 对接接口提供-->
+	<bean id="disputeMediationJXServiceImpl" class="cn.ffcs.zhsq.controller.service.impl.DisputeMediationJXServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.dispute.service.IDisputeMediationJXService" ref="disputeMediationJXServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- gbp 贫困户接口 -->
+	<dubbo:reference id="poorHouseholdService" interface="cn.ffcs.gbp.poorhold.service.IPoorHouseholdService" />
+	
+	<!-- 抛出昌都民生接口 -->
+	<bean id="peopleLivelihoodInfoServiceImpl" class="cn.ffcs.zhsq.peopleLivelihoodInfo.service.impl.PeopleLivelihoodInfoServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.peopleLivelihoodInfo.service.IPeopleLivelihoodInfoService" ref="peopleLivelihoodInfoServiceImpl" registry="${dubbo.zookeeper.id}"/>
+	
+	<bean id="eventAndReportJsonpService" class="cn.ffcs.zhsq.szzg.event.service.impl.EventAndReportJsonpServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.event.service.IEventAndReportJsonpService" ref="eventAndReportJsonpService" registry="${dubbo.zookeeper.id}"/>
+	<!--南安地图组件地址列表服务-->
+	<dubbo:reference id="standardAddressService" interface="cn.ffcs.geo.standardAddress.service.IStandardAddressService"/>
+	
+	<bean id="eventDisposal4JsonpService" class="cn.ffcs.zhsq.szzg.event.service.impl.EventDisposal4JsonpServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.event.service.IEventDisposal4JsonpService" ref="eventDisposal4JsonpService" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="briefReportService" class="cn.ffcs.zhsq.szzg.event.service.impl.BriefingServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.event.service.IBriefingService" ref="briefReportService" registry="${dubbo.zookeeper.id}"/>
+	
+	<dubbo:reference id="appCfgService" interface="cn.ffcs.components.dataMasking.IAppCfgService"/>
+
+	<dubbo:reference id="appMetaService" interface="cn.ffcs.components.dataMasking.IAppMetaService"/>
+
+	<dubbo:reference id="roleConfigService" interface="cn.ffcs.components.dataMasking.IRoleConfigService"/>
+
+	<dubbo:service interface="cn.ffcs.components.dataMasking.security.IDataMaskingUpdate" ref="dataMaskingUpdate" registry="${dubbo.zookeeper.id}" group="eventV6"/>
+	
+	<!-- 工作流假期管理 -->
+	<dubbo:reference id="workflowHolidayInfoServiceImpl" interface="cn.ffcs.workflow.spring.WorkflowHolidayInfoService"/>
+
+	<bean id="emeryencyPlanTreeService" class="cn.ffcs.zhsq.szzg.EmeryencyPlan.service.impl.EmeryencyPlanTreeServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.EmeryencyPlan.service.EmeryencyPlanTreeService" ref="emeryencyPlanTreeService" registry="${dubbo.zookeeper.id}"/>
+
+	<bean id="emeryencyPlanContentService" class="cn.ffcs.zhsq.szzg.EmeryencyPlan.service.impl.EmeryencyPlanContentServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.szzg.EmeryencyPlan.service.EmeryencyPlanContentService" ref="emeryencyPlanContentService" registry="${dubbo.zookeeper.id}"/>
+	
+	<!-- 江西省事件上报接口 -->
+ 	<bean id="operationInstanceService" class="cn.ffcs.zhsq.docking.event.service.impl.OperationInstanceServiceImpl" />
+	<dubbo:service interface="cn.ffcs.zhsq.docking.event.IOperationInstanceService" ref="operationInstanceService" registry="${dubbo.zookeeper.id}"/>
+
+	<!--江西矛盾纠纷 运营简报接口-->
+	<bean id="disputeMediationDataServiceImpl" class="cn.ffcs.zhsq.dispute.service.impl.DisputeMediationDataServiceImpl"/>
+	<dubbo:service interface="cn.ffcs.zhsq.dispute.service.IDisputeMediationDataService" ref="disputeMediationDataServiceImpl" registry="${dubbo.zookeeper.id}" />
+</beans>

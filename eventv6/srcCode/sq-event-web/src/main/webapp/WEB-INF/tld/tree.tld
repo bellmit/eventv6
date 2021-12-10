@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>2.0</jspversion>
+	<shortname>tree</shortname>
+	<uri>http://www.ffcs.cn/tld/ui</uri>
+	<!-- 树型菜单 -->
+	<tag>
+		<name>tree</name>
+		<tagclass>cn.ffcs.tree.web.taglib.TreeTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<!-- 模块标记 -->		
+		<attribute>
+			<name>module</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 逻辑组件 -->
+		<attribute>
+			<name>controller</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 展示组件 -->
+		<attribute>
+			<name>displayer</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 顶点显示文本值 -->		
+		<attribute>
+			<name>displayName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 初始化数据 -->
+		<attribute>
+			<name>initData</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 获取数据URL -->		
+		<attribute>
+			<name>action</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 获取数据类型 -->		
+		<attribute>
+			<name>dataType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		
+		<!-- 回调JS函数 -->		
+		<attribute>
+			<name>callBack</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 数据表 -->		
+		<attribute>
+			<name>tableName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>				
+		<!-- 单选＼多选 -->		
+		<attribute>
+			<name>boxType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 选择框 radio|checkbox-->
+		<attribute>
+			<name>boxSelector</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<attribute>
+			<name>rootIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<attribute>
+			<name>openRootIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<attribute>
+			<name>folderIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<attribute>
+			<name>openFolderIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		<attribute>
+			<name>fileIcon</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>	
+	</tag>
+	<tag>
+		<name>dataColunm</name>
+		<tagclass>cn.ffcs.tree.web.taglib.TreeDataColunmTag</tagclass>
+		<bodycontent>JSP</bodycontent>
+		<!-- 列名 -->		
+		<attribute>
+			<name>code</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 字段初始化参数值 -->
+		<attribute>
+			<name>initValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>				
+		<!-- 字段默认参数值 -->
+		<attribute>
+			<name>defaultValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>				
+		<!-- 是否值字段，boolean -->		
+		<attribute>
+			<name>isKey</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 是否显示字段，boolean -->		
+		<attribute>
+			<name>isText</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<!-- 是否上级字段，boolean -->		
+		<attribute>
+			<name>isParent</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	<!-- END -->
+</taglib>	

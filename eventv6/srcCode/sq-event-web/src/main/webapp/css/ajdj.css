@@ -1,0 +1,42 @@
+.width-52{
+	
+	font-size: 14px;
+    font-weight: bold;
+    color: #666;
+}
+.width-52 input{
+	font-size: 14px;
+    font-weight: bold;
+    color: #666;
+}
+.text-14{
+	font-size: 14px;
+    font-weight: bold;
+}
+@media screen and (min-width: 1160px){
+.width-52{
+	width: 52% !important;
+}
+}
+
+@media screen and (max-width: 960px) {
+	.register_tital {
+		width: 17%;
+	}
+	.register_concent {
+		margin-left: 4%;
+	}
+	.register_concent>div {
+		margin-right: 14px;
+	}
+	.ld_con{
+		min-width: 140px;
+	}
+	.inp {
+	    width: 48%;
+	    margin: 0 2%;
+	}
+	.icon_magnifier {
+     margin-left: 0; 
+}
+}

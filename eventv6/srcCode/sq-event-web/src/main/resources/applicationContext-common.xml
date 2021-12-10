@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+	 					http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd 
+	 					http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	 					http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+	<context:component-scan base-package="cn.ffcs.zhsq,cn.ffcs.components.dataMasking.security" />
+	<import resource="classpath:spring_quartz.xml"/>
+	<!--  
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	-->
+	<bean class="cn.ffcs.zhsq.utils.SpringContextUtil"></bean> 
+	<bean id="applicationContext"
+        class="org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder" />
+	<!-- 事务管理 -->
+	<bean name="transactionManagerJdbc" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceOracle" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManagerJdbc" />
+	
+	<!-- 缓存抽象 -->
+	<cache:annotation-driven />
+	<bean id="cacheManager" class = "org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="ecache" />
+	</bean>
+	<bean id="ecache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml" />
+		<property name="cacheManagerName" value="cacheManager" />
+	</bean>
+	
+	<bean id="eventDisposalServImplStub" class="cn.ffcs.zhsq.event.service.impl.EventDisposalServImplStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	
+	<bean id="eventServImplStub" class="cn.ffcs.zhsq.event.service.stub.EventDisposalServImplStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	
+	<bean id="eventDockingServiceImplStub" class="cn.ffcs.zhsq.event.service.stub.EventDockingServiceImplStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	
+	<bean id="webServicePublishImplServiceStub" class="cn.ffcs.zhsq.event.service.stub.WebServicePublishImplServiceStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="webServiceStub" class="cn.ffcs.zhsq.event.service.stub.WebServiceStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="sendDataServiceStub" class="cn.ffcs.zhsq.event.service.stub.gansu.SendDataServiceStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="thirdService2Stub" class="cn.ffcs.zhsq.event.service.stub.jiangyin.ThirdService2Stub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="thirdService_NewStub" class="cn.ffcs.zhsq.event.service.stub.jiangyin.ThirdService_NewStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="fileServiceStub" class="cn.ffcs.zhsq.event.service.stub.jiangyin.FileServiceStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="messagePushStub" class="cn.ffcs.zhsq.event.service.stub.jiangyin.XunfangApp.MessagePushStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	<bean id="sXDataPoolWebServiceStub" class="cn.ffcs.zhsq.event.service.stub.yanping.szcg.SXDataPoolWebServiceStub" scope="prototype">
+		<constructor-arg ref="axisConfigContext" />
+	</bean>
+	
+    <bean id ="axisConfigContext" class ="org.apache.axis2.context.ConfigurationContextFactory" factory-method ="createConfigurationContextFromFileSystem">
+        <constructor-arg index ="0" ><null /></constructor-arg>
+        <constructor-arg index ="1" ><null /></constructor-arg>
+    </bean>
+    <bean id="taskExecutor" name="deviceBindExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 线程池维护线程的最少数量 -->
+        <property name="corePoolSize" value="5" />
+        <!-- 允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="360" />
+        <!-- 线程池维护线程的最大数量 -->
+        <property name="maxPoolSize" value="10" />
+        <!-- 缓存队列 -->
+        <property name="queueCapacity" value="1000" />
+        <!-- 对拒绝task的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+        </property>
+    </bean>
+</beans>

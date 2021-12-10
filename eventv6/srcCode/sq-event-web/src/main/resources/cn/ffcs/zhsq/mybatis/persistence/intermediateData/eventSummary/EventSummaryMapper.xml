@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.intermediateData.eventSummary.EventSummaryMapper">
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="java.util.Map">
+		INSERT INTO
+			T_EVENT_SUMMARY
+		(
+			ID, NAME_, CONTENT_,REGION_CODE,CREATE_TIME,SOURCE_PLATFORM,HAPPEND_ADDR,X,Y
+		) VALUES (
+			#{id,jdbcType=DECIMAL}, #{name,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+			#{regionCode,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{sourcePlatform,jdbcType=VARCHAR}, 
+			#{happendAddr,jdbcType=VARCHAR}, #{x,jdbcType=VARCHAR}, #{y,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 删除 -->	
+	<delete id="delete">
+		DELETE  FROM T_EVENT_SUMMARY T
+		WHERE T.ID = #{id,jdbcType=DECIMAL} AND T.SOURCE_PLATFORM = #{sourcePlatform,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id ="findEventSummaryById" resultType="java.lang.Integer">
+	
+    select count(1) from t_event_summary h where h.source_platform = #{sourcePlatform,jdbcType=VARCHAR}
+     and h.id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	
+</mapper>

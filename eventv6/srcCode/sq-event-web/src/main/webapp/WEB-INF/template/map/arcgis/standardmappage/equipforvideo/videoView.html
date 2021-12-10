@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="IE=edge" >
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+<title>Aliplayer在线配置</title>
+    <link rel="stylesheet" href="${uiDomain}/web-assets/extend/aliplayer/aliplayer-min.css" />
+    <script>
+        var uiDomain =  "${uiDomain!''}";
+    </script>
+    <script type="text/javascript" src="${uiDomain!''}/web-assets/common/js/jqry-9-1-12-4.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="${uiDomain}/web-assets/extend/aliplayer/aliplayer-ffcs-2.7.2.js"></script>
+</head>
+<body>
+<div class="prism-player" id="player-con"></div>
+<script>
+var hls = '${hls}';
+var player = new Aliplayer({
+  "id": "player-con",
+  "source": hls,
+  //"source": "s://jxsr-api.antelopecloud.cn/cloud/v2/live/538456582.m3u8?client_token=538456582_3356491776_1590657536_080a1653d66041c1e8b4809599d0b601",
+  //"source": "https://da5f241b-server.antelopecloud.cn/live/538456582/index.m3u8?access=3356491776&expire=1590657536&token=080a1653d66041c1e8b4809599d0b601",
+ // "source": "http://wtl.fjsq.org:7388/zhsq_event/zhsq/map/arcgis/arcgisdataofgoods/showSewageManager.jhtml",
+  "width": "100%",
+  "height": "500px",
+  "autoplay": true,
+  "isLive": true,
+  "rePlay": false,
+  "playsinline": true,
+  "preload": true,
+  "controlBarVisibility": "hover",
+  "useH5Prism": true
+}, function (player) {
+    console.log("播放器创建了。");
+  }
+);
+</script>
+</body>

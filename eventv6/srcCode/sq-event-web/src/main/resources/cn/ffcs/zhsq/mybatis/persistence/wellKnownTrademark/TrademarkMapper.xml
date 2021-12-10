@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="cn.ffcs.zhsq.mybatis.persistence.wellKnownTrademark.TrademarkMapper">
+    <resultMap id="BaseResultMap"
+               type="cn.ffcs.zhsq.mybatis.domain.wellKnownTrademark.Trademark">
+        <id column="TRADEMARK_ID" property="trademarkId" jdbcType="DECIMAL"></id>
+        <result column="UNIT_NAME" property="unitName" jdbcType="VARCHAR"></result>
+        <result column="BRAND" property="brand" jdbcType="VARCHAR"></result>
+        <result column="THAT_TIME" property="thatTimeDate" jdbcType="TIMESTAMP"></result>
+        <result column="SCOPE" property="scope" jdbcType="VARCHAR"></result>
+        <result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR"></result>
+        <result column="CREATOR" property="creatorId" jdbcType="DECIMAL"></result>
+        <result column="CREATED" property="creatTimeDate" jdbcType="TIMESTAMP"></result>
+        <result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR"></result>
+        <result column="UPDATER" property="updaterId" jdbcType="DECIMAL"></result>
+        <result column="UPDATED" property="updateTimeDate" jdbcType="TIMESTAMP"></result>
+        <result column="UPDATER_NAME" property="updaterName" jdbcType="VARCHAR"></result>
+        <result column="TRADEMARK_ADDRESS" property="unitAddress" jdbcType="VARCHAR"></result>
+        <result column="LATITUDE_" property="latitude" jdbcType="VARCHAR"></result>
+        <result column="LONGITUDE_" property="longitude" jdbcType="VARCHAR"></result>
+        <result column="TRADEMARK_IMG" property="trademarkImg" jdbcType="VARCHAR"></result>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"></result>
+
+
+        <result column="GRID_ID" property="gridId" jdbcType="DECIMAL"></result><!-- 所属网格 -->
+        <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR"></result><!-- 网格编码 -->
+        <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR"></result><!-- 网格名称 -->
+        <result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR"></result><!-- 网格名称 -->
+    </resultMap>
+
+    <!--列表总数-->
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE AND G.status = '001'
+        WHERE T.STATUS = '1'
+        <include refid="find_where" />
+    </select>
+
+    <!-- 列表(分页) -->
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT T.*,
+        G.GRID_NAME,
+        G.GRID_PATH,
+        G.GRID_CODE
+        FROM ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE AND G.status='001'
+        WHERE T.STATUS = '1'
+
+        <include refid="find_where" />
+        ORDER BY
+        T.TRADEMARK_ID DESC
+    </select>
+
+    <!--列表(条件查询) -->
+    <sql id="find_where">
+        <if test="gridCode != null and gridCode != ''">
+            AND G.INFO_ORG_CODE LIKE '%' || #{gridCode} || '%'
+        </if>
+        <if test="unitName != null and unitName != ''">
+            AND T.UNIT_NAME LIKE '%' || #{unitName} || '%'
+        </if>
+        <if test="unitAddress != null">
+            AND T.TRADEMARK_ADDRESS LIKE '%' || #{unitAddress} || '%'
+        </if>
+    </sql>
+
+    <!-- 新增商标信息 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.wellKnownTrademark.Trademark">
+        <selectKey keyProperty="trademarkId" resultType="java.lang.Long" order="BEFORE">
+            SELECT SEQ_WELL_KNOWN_TRADEMARK_ID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK
+        (
+        TRADEMARK_ID,
+        UNIT_NAME,
+        BRAND,
+        THAT_TIME,
+        SCOPE,
+        CREATOR,
+        CREATED,
+        CREATOR_NAME,
+        UPDATER,
+        UPDATED,
+        UPDATER_NAME,
+        TRADEMARK_ADDRESS,
+        LONGITUDE_,
+        LATITUDE_,
+        REGION_CODE,
+        TRADEMARK_IMG,
+        STATUS
+        )VALUES (
+        #{trademarkId,jdbcType=DECIMAL},
+        #{unitName,jdbcType=VARCHAR},
+        #{brand,jdbcType=VARCHAR},
+        #{thatTimeDate,jdbcType=TIMESTAMP},
+        #{scope,jdbcType=VARCHAR},
+        #{creatorId,jdbcType=DECIMAL},
+        #{creatTimeDate,jdbcType=TIMESTAMP},
+        #{creatorName,jdbcType=VARCHAR},
+        #{updaterId,jdbcType=DECIMAL},
+        #{updateTimeDate,jdbcType=TIMESTAMP},
+        #{updaterName,jdbcType=VARCHAR},
+        #{unitAddress,jdbcType=VARCHAR},
+        #{longitude,jdbcType=VARCHAR},
+        #{latitude,jdbcType=VARCHAR},
+        #{regionCode,jdbcType=VARCHAR},
+        #{trademarkImg,jdbcType=VARCHAR},
+        '1'
+        )
+
+
+    </insert>
+
+    <!--根据商标Id查找商标信息-->
+    <select id="findById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT T.*,
+        G.GRID_NAME,
+        G.GRID_PATH,
+        G.GRID_CODE
+        FROM ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK T
+        LEFT JOIN T_DC_GRID G
+        ON T.REGION_CODE = G.INFO_ORG_CODE
+        WHERE
+        TRADEMARK_ID = #{trademarkId,jdbcType=DECIMAL}
+    </select>
+
+    <!--修改驰名商标信息-->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.wellKnownTrademark.Trademark">
+        UPDATE
+        ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK
+        <set>
+            <if test="unitName != null">
+                UNIT_NAME = #{unitName,jdbcType=VARCHAR},
+            </if>
+            <if test="brand != null">
+                BRAND = #{brand,jdbcType=VARCHAR},
+            </if>
+            <if test="thatTimeDate != null">
+                THAT_TIME = #{thatTimeDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null">
+                SCOPE = #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorId != null">
+                CREATOR = #{creatorId,jdbcType=DECIMAL},
+            </if>
+            <if test="creatTimeDate != null">
+                CREATED = #{creatTimeDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updaterId != null">
+                UPDATER = #{updaterId,jdbcType=DECIMAL},
+            </if>
+            <if test="updateTimeDate != null">
+                UPDATED = #{updateTimeDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updaterName != null">
+                UPDATER_NAME = #{updaterName,jdbcType=VARCHAR},
+            </if>
+            <if test="unitAddress != null">
+                TRADEMARK_ADDRESS = #{unitAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                LATITUDE_ = #{latitude,jdbcType=VARCHAR},
+            </if>
+            <if test="longitude != null">
+                LONGITUDE_ = #{longitude,jdbcType=VARCHAR},
+            </if>
+            <if test="trademarkImg != null">
+                TRADEMARK_IMG = #{trademarkImg,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                REGION_CODE = #{regionCode,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE
+        TRADEMARK_ID = #{trademarkId,jdbcType=DECIMAL}
+    </update>
+
+
+
+    <!-- 伪删除商标信息 -->
+    <delete id="delete"
+            parameterType="cn.ffcs.zhsq.mybatis.domain.wellKnownTrademark.Trademark">
+        UPDATE ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK T
+        <set>
+            T.STATUS = '0',
+            T.UPDATED = SYSDATE
+        </set>
+        WHERE
+        TRADEMARK_ID = #{trademarkId,jdbcType=DECIMAL}
+    </delete>
+
+</mapper>

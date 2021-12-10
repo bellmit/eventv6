@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.DisputeMediationDataMapper">
+
+    <select id="getConfictTopListByOrgCode" resultType="map">
+        select A.*,B.GRID_NAME FROM
+         (SELECT T.* FROM T_BI_DISPUTE_MEDI_TYPE_STAT T
+             WHERE T.REGION_CODE = #{orgCode,jdbcType=VARCHAR}
+             AND T.STAT_DATE = #{monthYear,jdbcType=VARCHAR}
+             AND T.STAT_DATE_TYPE = #{statDateType,jdbcType=VARCHAR}
+             AND T.MEDI_SMALL_TYPE is  NUll
+         ) A INNER JOIN T_DC_GRID B ON A.REGION_CODE = B.INFO_ORG_CODE
+        ORDER BY A.REGION_CODE ASC, A.ALL_TOTAL DESC
+    </select>
+
+    <select id="getOutStandingNum" resultType="map">
+        SELECT COUNT(1) TOTAL_NUM,NVL(SUM(T.INVOLVE_NUM),0) GROUP_NUM,
+        COUNT(DISTINCT CASE WHEN T.IS_OUTSTAND = '1' AND T.INVOLVE_NUM <![CDATA[>=]]> 30 THEN T.MEDIATION_ID END) GROUP_30_NUM,
+        COUNT(DISTINCT CASE WHEN T.IS_OUTSTAND = '1' AND T.INVOLVE_NUM <![CDATA[>=]]> 20 AND T.INVOLVE_NUM <![CDATA[<]]> 30 THEN T.MEDIATION_ID END) GROUP_20_30_NUM,
+        COUNT(DISTINCT CASE WHEN T.IS_OUTSTAND = '1' AND NVL(T.INVOLVE_NUM, 0) <![CDATA[<]]> 20 THEN T.MEDIATION_ID END) GROUP_20_NUM
+        FROM T_ZZ_DISPUTE_MEDIATION T
+        INNER JOIN T_DC_GRID G ON G.STATUS = '001' AND G.GRID_ID = T.GRID_ID
+        WHERE T.STATUS != '0' AND T.IS_OUTSTAND = '1' AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%' AND TO_CHAR(T.HAPPEN_TIME,'YYYYMM') = #{monthYear,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getOutStandingDistribution" resultType="map">
+        WITH A AS (
+		 SELECT G.GRID_ID ,G.GRID_NAME,G.INFO_ORG_CODE,G.ORDER_ID
+		 FROM T_DC_GRID G
+		 WHERE G.STATUS = '001'
+		   AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+		   AND G.GRID_LEVEL = #{gridLevel,jdbcType=VARCHAR}
+		)
+		SELECT A.GRID_NAME,A.INFO_ORG_CODE,COUNT(T.GRID_ID) TOTAL_NUM
+        FROM A
+        LEFT JOIN (SELECT T.*, G.INFO_ORG_CODE
+                FROM T_ZZ_DISPUTE_MEDIATION T, T_DC_GRID G
+                WHERE G.GRID_ID = T.GRID_ID
+                  AND G.STATUS = '001'
+                  AND T.STATUS = '1'
+                  AND T.IS_OUTSTAND = '1'
+                  AND TO_CHAR(T.HAPPEN_TIME, 'YYYYMM') = #{monthYear,jdbcType=VARCHAR}) T
+               ON T.INFO_ORG_CODE LIKE A.INFO_ORG_CODE || '%'
+        GROUP BY A.GRID_NAME, A.INFO_ORG_CODE, A.ORDER_ID
+        ORDER BY TOTAL_NUM DESC, A.INFO_ORG_CODE DESC
+    </select>
+
+    <select id="getDataForResolutionRateNext" resultType="map">
+        WITH A AS (
+            SELECT G.GRID_ID ,G.GRID_NAME,G.INFO_ORG_CODE FROM T_DC_GRID G
+            WHERE G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+            AND G.GRID_LEVEL = #{gridLevel,jdbcType=VARCHAR}
+            AND G.STATUS = '001'
+            )
+        SELECT A.GRID_NAME, T.REGION_CODE, NVL(SUM(ALL_TOTAL), 0) TOTAL,NVL(SUM(t.medi_total),0) END_TOTAL
+        FROM A LEFT JOIN ZHSQ.T_BI_DISPUTE_MEDI_TYPE_STAT T ON A.INFO_ORG_CODE = T.REGION_CODE
+            AND T.REGION_CODE LIKE #{orgCode,jdbcType=VARCHAR}||'%'
+            AND LENGTH(T.REGION_CODE) = #{orgCodeLength,jdbcType=DECIMAL}
+            AND T.STAT_DATE = #{monthYear,jdbcType=VARCHAR}
+            AND T.STAT_DATE_TYPE = 'M'
+            AND T.MEDI_SMALL_TYPE IS NULL
+        GROUP BY A.GRID_NAME,T.REGION_CODE
+        ORDER BY T.REGION_CODE ASC
+
+    </select>
+
+    <select id="getConfictMediationNum" resultType="map">
+        SELECT T.* FROM T_BI_DISPUTE_MEDI_TIME_STAT T
+        WHERE T.REGION_CODE = #{orgCode,jdbcType=VARCHAR}
+          AND T.STAT_DATE = #{monthYear,jdbcType=VARCHAR}
+          AND T.STAT_DATE_TYPE = #{statDateType,jdbcType=VARCHAR}
+        ORDER BY T.ALL_TOTAL DESC
+    </select>
+
+    <select id="findTwoYearByMap" resultType="map">
+        SELECT SUBSTR(T.STAT_DATE,0,4) YEAR_,SUBSTR(T.STAT_DATE,5) MONTH_,SUM(T.ALL_TOTAL) DISPUTE_VALUE
+        FROM T_BI_DISPUTE_MEDI_TIME_STAT T
+        WHERE T.REGION_CODE = #{orgCode,jdbcType=VARCHAR}
+          AND t.STAT_DATE IN
+            <foreach collection="timeList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+          AND T.STAT_DATE_TYPE = #{statDateType,jdbcType=VARCHAR}
+        GROUP BY T.STAT_DATE
+        ORDER BY T.STAT_DATE
+    </select>
+
+    <select id="getDisputeNum" resultType="map">
+        SELECT COUNT(1) TOTAL,
+               COUNT(DISTINCT CASE WHEN T.DISPUTE_STATUS = '3' THEN T.MEDIATION_ID END) END_TOTAL,
+               COUNT(DISTINCT CASE WHEN T.DISPUTE_STATUS = '2' THEN T.MEDIATION_ID END) DEAL_TOTAL
+        FROM T_ZZ_DISPUTE_MEDIATION T
+                 INNER JOIN T_DC_GRID G ON G.STATUS = '001' AND G.GRID_ID = T.GRID_ID
+        WHERE T.STATUS != '0'
+        AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+        AND T.DISPUTE_STATUS IN ('2','3')
+        <if test="@Ognl@isNotEmpty(nowYear)">
+            AND TO_CHAR(T.HAPPEN_TIME,'YYYY') = #{nowYear,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(disputeType)">
+            AND T.DISPUTE_TYPE_3 = #{disputeType,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="getTwoYearMoM" resultType="map">
+        SELECT substr(TO_CHAR(T.HAPPEN_TIME,'YYYYMM'),0,4) YEAR_,
+               ABS(substr(TO_CHAR(T.HAPPEN_TIME,'YYYYMM'),5)) MONTH_,
+               COUNT(T.MEDIATION_ID) TOTAL_,
+               COUNT(DISTINCT CASE WHEN T.DISPUTE_STATUS = '3' THEN T.MEDIATION_ID END) END_TOTAL_
+        FROM T_ZZ_DISPUTE_MEDIATION T
+        INNER JOIN T_DC_GRID G
+        ON G.GRID_ID = T.GRID_ID
+        AND G.STATUS = '001'
+        WHERE T.STATUS != '0'
+        AND T.DISPUTE_STATUS IN ('2','3')
+        AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(nowYear) and @Ognl@isNotEmpty(lastYear)">
+            AND TO_CHAR(T.HAPPEN_TIME,'YYYY') IN (#{nowYear,jdbcType=VARCHAR} ,#{lastYear,jdbcType=VARCHAR})
+        </if>
+        <if test="@Ognl@isNotEmpty(nowYear) and @Ognl@isEmpty(lastYear)">
+            AND TO_CHAR(T.HAPPEN_TIME,'YYYY') = #{nowYear,jdbcType=VARCHAR}
+        </if>
+        GROUP BY TO_CHAR(T.HAPPEN_TIME,'YYYYMM')
+    </select>
+
+    <select id="getDisputeTypeNum" resultType="map">
+        SELECT * FROM (
+            SELECT REPLACE(A.DISPUTE_TYPE_3,' ') TYPE_, COUNT(0) TOTAL_
+            FROM T_ZZ_DISPUTE_MEDIATION A
+            INNER JOIN T_DC_GRID G
+            ON A.GRID_ID = G.GRID_ID
+            AND G.STATUS = '001'
+            WHERE A.STATUS != '0'
+            AND A.DISPUTE_STATUS IN ('2', '3')
+            AND A.DISPUTE_TYPE_2 IS NOT NULL
+            AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+            <if test="@Ognl@isNotEmpty(nowYear)">
+                AND TO_CHAR(A.HAPPEN_TIME,'YYYY') = #{nowYear,jdbcType=VARCHAR}
+            </if>
+            GROUP BY A.DISPUTE_TYPE_3
+            ORDER BY COUNT(0) DESC)
+        ORDER BY TOTAL_ DESC
+    </select>
+
+    <select id="getGridInfoByInfoOrgCode" resultType="map">
+        SELECT
+            T.GRID_ID,
+            T.INFO_ORG_ID,
+            T.INFO_ORG_CODE,
+            T.PARENT_GRID_ID,
+            T.GRID_NAME,
+            T.GRID_CODE,
+            T.GRID_LEVEL,
+            T.GRID_PATH
+        FROM T_DC_GRID T
+        WHERE
+            T.STATUS = '001'
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            AND T.INFO_ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(parentGridId)">
+            AND T.PARENT_GRID_ID = #{parentGridId,jdbcType=DECIMAL}
+        </if>
+    </select>
+
+    <select id="getRegionsTypeTop1" resultType="map">
+        SELECT * FROM (
+        SELECT REPLACE(A.DISPUTE_TYPE_3,' ') TYPE_, COUNT(0) TOTAL_ ,
+        COUNT(DISTINCT CASE WHEN A.dispute_status = '3' THEN A.MEDIATION_ID END) END_TOTAL
+        FROM T_ZZ_DISPUTE_MEDIATION A
+        INNER JOIN T_DC_GRID G
+        ON A.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        WHERE A.STATUS != '0' --非删除
+        AND A.DISPUTE_STATUS IN ('2', '3') --非草稿
+        AND A.DISPUTE_TYPE_2 IS NOT NULL --事项类别
+        AND A.DISPUTE_TYPE_3 IS NOT NULL
+        AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(nowYear)">
+            AND TO_CHAR(A.HAPPEN_TIME,'YYYY') = #{nowYear,jdbcType=VARCHAR}
+        </if>
+        GROUP BY A.DISPUTE_TYPE_3
+        ORDER BY COUNT(0) DESC
+        ) WHERE ROWNUM  <![CDATA[<]]> 2
+    </select>
+
+    <select id="searchList" resultType="map">
+        SELECT A.MEDIATION_ID,A.HAPPEN_TIME,A.DISPUTE_CONDITION,A.DISPUTE_EVENT_NAME,A.HAPPEN_ADDR
+        FROM T_ZZ_DISPUTE_MEDIATION A
+        INNER JOIN T_DC_GRID G
+        ON A.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        WHERE A.STATUS != '0'
+        AND A.DISPUTE_STATUS in ('2','3')
+        AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(disputeType)">
+            AND A.DISPUTE_TYPE_3 = #{disputeType,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(disputeEventName)">
+            AND A.DISPUTE_EVENT_NAME like '%'|| #{disputeEventName,jdbcType=VARCHAR}||'%'
+        </if>
+        ORDER BY A.HAPPEN_TIME DESC
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT count(1)
+        FROM T_ZZ_DISPUTE_MEDIATION A
+        INNER JOIN T_DC_GRID G
+        ON A.GRID_ID = G.GRID_ID
+        AND G.STATUS = '001'
+        WHERE A.STATUS != '0'
+        AND A.DISPUTE_STATUS in ('2','3')
+        AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(disputeType)">
+            AND A.DISPUTE_TYPE_3 = #{disputeType,jdbcType=VARCHAR}
+        </if>
+        <if test="@Ognl@isNotEmpty(disputeEventName)">
+            AND A.DISPUTE_EVENT_NAME like '%'|| #{disputeEventName,jdbcType=VARCHAR}||'%'
+        </if>
+    </select>
+</mapper>

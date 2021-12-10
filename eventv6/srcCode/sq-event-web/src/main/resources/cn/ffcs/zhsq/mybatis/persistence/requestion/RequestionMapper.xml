@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.requestion.RequestionMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.requestion.Requestion">
+		<id column="REQ_ID" property="reqId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="REQ_OBJ_ID" property="reqObjId" jdbcType="DECIMAL" /> <!--诉求对象ID-->
+		<result column="REQ_OBJ_NAME" property="reqObjName" jdbcType="VARCHAR" /> <!--诉求对象名称-->
+		<result column="REQ_OBJ_CODE" property="reqObjCode" jdbcType="VARCHAR" /> <!--诉求对象名称-->
+		<result column="LINK_MAN" property="linkMan" jdbcType="VARCHAR" /> <!--联系人-->
+		<result column="LINK_TEL" property="linkTel" jdbcType="VARCHAR" /> <!--联系方式-->
+		<result column="CODE_" property="code" jdbcType="VARCHAR" /> <!--编号-->
+		<result column="TITLE" property="title" jdbcType="VARCHAR" /> <!--标题-->
+		<result column="TYPE_" property="type" jdbcType="VARCHAR" /> <!--类型-->
+		<result column="CONTENT_" property="content" jdbcType="VARCHAR" /> <!--内容-->
+		<result column="EXPECT_TIME" property="expectTime" jdbcType="TIMESTAMP" /> <!--期望时间-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态-->
+		<result column="USER_ID" property="userId" jdbcType="DECIMAL" /> <!--发起人id-->
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" /> <!--发起人name-->
+		<result column="CREAT_TIME" property="creatTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="SOURCE" property="source" jdbcType="VARCHAR" /> <!--来源-->
+		<result column="STATE" property="state" jdbcType="VARCHAR" /> <!--状态-->
+		<result column="DESC_" property="desc" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="KEY_ID_" property="keyId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="CHILDSTATE" property="childState" jdbcType="VARCHAR" /> <!--主键-->
+		<result column="VISIT" property="visit" jdbcType="VARCHAR" /> <!--主键-->
+		<result column="SATISFACTION" property="satisfaction" jdbcType="VARCHAR" /> <!--主键-->
+		<result column="ORG_ID" property="orgId" jdbcType="DECIMAL" /> <!--发起人id-->
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" /> <!--发起人name-->
+		
+		<!--工作流-->
+		<result column="WF_DBID_" property="wfDbid_" jdbcType="DECIMAL" />
+		<result column="WF_ACTIVITY_NAME_" property="wfActivityName_" jdbcType="VARCHAR" />
+		<result column="WF_STATUS" property="wfStatus" jdbcType="VARCHAR" />
+		<result column="WF_INSTANCE_ID" property="wfInstanceId" jdbcType="DECIMAL" />
+		<result column="WF_CUR_ORG" property="wfCurOrg" jdbcType="VARCHAR" />
+		<result column="TASKTYPE" property="tasktype" jdbcType="VARCHAR" />
+		
+		<result column="CREATTIMESTR" property="creatTimeStr" jdbcType="VARCHAR" />
+		<result column="EXPECTTIMESTR" property="expectTimeStr" jdbcType="VARCHAR" />
+		<result column="OVERTIMESTATUS" property="overTimeStatus" jdbcType="VARCHAR" />
+		
+		
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_REQUESTION T
+		where
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.REQ_ID,
+			T.REQ_OBJ_ID,
+			T.REQ_OBJ_NAME,
+			T.LINK_MAN,
+			T.LINK_TEL,
+			T.CODE_,
+			T.TITLE,
+			T.TYPE_,
+			T.CONTENT_,
+			T.EXPECT_TIME,
+			T.STATUS,
+			T.USER_ID,
+			T.USER_NAME,
+			T.CREAT_TIME,
+			T.SOURCE,
+			T.STATE,
+			T.DESC_,
+			T.KEY_ID_
+		FROM
+			T_REQUESTION T
+			where
+		<include refid="find_where" />
+		ORDER BY 
+			T.REQ_ID DESC 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countDBList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM (
+			SELECT	T.REQ_ID
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+	
+			union all 
+			 
+			SELECT  T4.rlu_id as REQ_ID
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.rlu_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1' and t4.status='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchDBList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,
+				T.STATUS,T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,t2.DBID_ AS WF_DBID_, T2.ACTIVITY_NAME_ AS WF_ACTIVITY_NAME_,
+				t1.STATUS AS WF_STATUS,t1.INSTANCE_ID AS WF_INSTANCE_ID,'1' as taskType,
+				TO_CHAR(t2.CREATE_, 'YYYY-MM-DD HH24:MI:SS') AS WF_CREATE_, t1.CUR_ORG as WF_CUR_ORG,
+				t.REQ_OBJ_CODE
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+	
+			union all 
+			
+			SELECT
+				T4.RLU_ID as REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,t4.STATE,t2.DBID_ AS WF_DBID_, T2.ACTIVITY_NAME_ AS WF_ACTIVITY_NAME_,
+				t1.STATUS AS WF_STATUS,t1.INSTANCE_ID AS WF_INSTANCE_ID,'2' as taskType,
+				TO_CHAR(t2.CREATE_, 'YYYY-MM-DD HH24:MI:SS') AS WF_CREATE_, t1.CUR_ORG as WF_CUR_ORG,
+				t.REQ_OBJ_CODE
+				
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.rlu_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1' and t4.status='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		)
+				
+		ORDER BY WF_CREATE_ DESC 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countDBList_Main"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM (
+			SELECT	T.REQ_ID,case when t5.OVER_TIME is not null and 
+				sysdate - (to_date(t5.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			left join (
+				select t4.REQ_ID,min(t4.OVER_TIME) OVER_TIME from T_REQ_LINKAGE_UNIT t4 where t4.STATUS='1' 
+				and t4.STATE in ('7','8') and t4.OVER_TIME is not null group by t4.REQ_ID
+			) t5 on t5.REQ_ID = T.REQ_ID
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCSTART_TIMEHAR}||'%' 
+			</if>
+		) where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>	
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchDBList_Main"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,
+				T.STATUS,T.USER_ID,T.USER_NAME,TO_CHAR(T1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,t2.DBID_ AS WF_DBID_, T2.ACTIVITY_NAME_ AS WF_ACTIVITY_NAME_,
+				t1.STATUS AS WF_STATUS,t1.INSTANCE_ID AS WF_INSTANCE_ID,'1' as taskType,
+				TO_CHAR(t2.CREATE_, 'YYYY-MM-DD HH24:MI:SS') AS WF_CREATE_, t1.CUR_ORG as WF_CUR_ORG,
+				T.CHILDSTATE,case when t5.OVER_TIME is not null and 
+				sysdate - (to_date(t5.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			left join (
+				select t4.REQ_ID,min(t4.OVER_TIME) OVER_TIME from T_REQ_LINKAGE_UNIT t4 where t4.STATUS='1' 
+				and t4.STATE in ('7','8') and t4.OVER_TIME is not null group by t4.REQ_ID
+			) t5 on t5.REQ_ID = T.REQ_ID
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		) where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>	
+		ORDER BY WF_CREATE_ DESC 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countDBList_Task"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM (
+			SELECT  T4.rlu_id as REQ_ID,case when t4.OVER_TIME is not null and t4.STATE in ('7','8') and
+				sysdate - (to_date(t4.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.rlu_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1' and t4.status='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		)
+		where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>	
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchDBList_Task"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT
+				T4.RLU_ID as REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,t4.STATE,t2.DBID_ AS WF_DBID_, T2.ACTIVITY_NAME_ AS WF_ACTIVITY_NAME_,
+				t1.STATUS AS WF_STATUS,t1.INSTANCE_ID AS WF_INSTANCE_ID,'2' as taskType,
+				TO_CHAR(t2.CREATE_, 'YYYY-MM-DD HH24:MI:SS') AS WF_CREATE_, t1.CUR_ORG as WF_CUR_ORG,
+				case when t4.OVER_TIME is not null and t4.STATE in ('7','8') and
+				sysdate - (to_date(t4.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+				
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.rlu_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1' and t4.status='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		)
+		where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>		
+		ORDER BY WF_CREATE_ DESC 
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countJBList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT distinct T.REQ_ID
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+		
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status in ('1','2')
+	
+			union all 
+			
+			SELECT distinct	T4.RLU_ID as REQ_ID
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status in ('1','2')
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchJBList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT distinct
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'1' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+		
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+	
+			union all 
+			
+			SELECT distinct
+				T4.RLU_ID as REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,t4.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'2' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG
+				
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		)
+		order by WF_STATUS asc,UPDATE_TIME desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countJBList_Task"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT distinct	T4.RLU_ID as REQ_ID,
+				case when t4.OVER_TIME is not null and t4.STATE in ('7','8') and sysdate-(to_date(t4.OVER_TIME,'yyyy-mm-dd')+1)>0 
+				then '1' else '' end as overTimeStatus
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			and t4.STATUS = '1'
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status in ('1','2')
+		)
+		where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>		
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchJBList_Task"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT distinct
+				T4.RLU_ID as REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,t4.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'2' as taskType,t1.UPDATE_TIME, 
+				t1.CUR_ORG as WF_CUR_ORG,
+				case when t4.OVER_TIME is not null and t4.STATE in ('7','8') 
+				and sysdate-(to_date(t4.OVER_TIME,'yyyy-mm-dd')+1)>0 
+				then '1' else '' end as overTimeStatus
+				
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+			
+			where 
+			<include refid="find_where" />
+			and t4.STATUS = '1'
+			<if test="transactorId != null ">
+				and t2.transactor_id = #{transactorId,jdbcType=DECIMAL}
+			</if>
+			<if test="transactorOrgId != null ">
+				and t2.org_id = #{transactorOrgId,jdbcType=DECIMAL}
+			</if>
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		)
+		where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>		
+		order by WF_STATUS asc,UPDATE_TIME desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countAllList"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.REQ_ID
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.wf_task t2 on t1.instance_id = t2.instance_id
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+	
+			union all 
+			
+			SELECT	T4.RLU_ID as REQ_ID
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchAllList"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'1' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+	
+			union all 
+			
+			SELECT
+				T4.RLU_ID as REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,t4.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'2' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG
+				
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.RLU_ID = t1.form_id
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		)
+		order by WF_STATUS asc,CREATTIMESTR desc
+	</select>
+	
+	<!-- 列表（总数） -->	
+	<select id="countAllList_Main"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.REQ_ID,case when t5.OVER_TIME is not null and 
+				sysdate - (to_date(t5.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join (
+				select t4.REQ_ID,min(t4.OVER_TIME) OVER_TIME from T_REQ_LINKAGE_UNIT t4 where t4.STATUS='1' 
+				and t4.STATE in ('7','8') and t4.OVER_TIME is not null group by t4.REQ_ID
+			) t5 on t5.REQ_ID = T.REQ_ID
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		) where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>	
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchAllList_Main"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(T1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd') AS WF_END_,'1' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG,
+				T.CHILDSTATE,case when t5.OVER_TIME is not null and 
+				sysdate - (to_date(t5.OVER_TIME, 'yyyy-mm-dd') + 1) > 0 then '1' else '' end as overTimeStatus
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join (
+				select t4.REQ_ID,min(t4.OVER_TIME) OVER_TIME from T_REQ_LINKAGE_UNIT t4 where t4.STATUS='1' 
+				and t4.STATE in ('7','8') and t4.OVER_TIME is not null group by t4.REQ_ID
+			) t5 on t5.REQ_ID = T.REQ_ID
+				
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			and t1.status in ('1','2')
+		)
+		where 1=1
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '1'.toString() ">
+		 	AND overTimeStatus = '1'
+		</if>
+		<if test="overTimeStatus != null and overTimeStatus !='' and overTimeStatus == '2'.toString() ">
+		 	AND overTimeStatus is null 
+		</if>	
+		order by WF_STATUS asc,CREATTIMESTR desc
+	</select>
+	
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		t.STATUS = '1'
+		<if test="keyWord != null and keyWord !=''">
+			AND (T.CODE_ LIKE '%'|| #{keyWord,jdbcType=VARCHAR}||'%' 
+			  OR  T.TITLE LIKE '%'|| #{keyWord,jdbcType=VARCHAR}||'%')
+		</if>
+		<if test="type != null and type !=''">
+			AND t.TYPE_ = #{type,jdbcType=VARCHAR}
+		</if>
+		<if test="happenTimeStr !=null and happenTimeStr !=''">
+			<![CDATA[AND T1.START_TIME >= TO_DATE(#{happenTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:ss')]]>
+		</if>
+		<if test="endTimeStr !=null and endTimeStr !=''">
+			<![CDATA[AND T1.START_TIME <= TO_DATE(#{endTimeStr,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:ss')]]>
+		</if>
+		<if test="state != null and state !=''">
+			AND t.STATE = #{state,jdbcType=VARCHAR}
+		</if>
+		<if test="childState != null and childState !=''">
+			AND t.CHILDSTATE = #{childState,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.Requestion">
+		<selectKey keyProperty="reqId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_REQUESTION.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_REQUESTION
+		(
+			REQ_ID,
+			REQ_OBJ_ID,
+			REQ_OBJ_NAME,
+			LINK_MAN,
+			LINK_TEL,
+			CODE_,
+			TITLE,
+			TYPE_,
+			CONTENT_,
+			EXPECT_TIME,
+			STATUS,
+			USER_ID,
+			USER_NAME,
+			CREAT_TIME,
+			SOURCE,
+			STATE,
+			DESC_,
+			KEY_ID_,
+			REQ_OBJ_CODE,
+			ORG_ID,
+			ORG_NAME
+		) VALUES (
+			#{reqId,jdbcType=DECIMAL},
+			#{reqObjId,jdbcType=DECIMAL},
+			#{reqObjName,jdbcType=VARCHAR},
+			#{linkMan,jdbcType=VARCHAR},
+			#{linkTel,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{title,jdbcType=VARCHAR},
+			#{type,jdbcType=VARCHAR},
+			#{content,jdbcType=VARCHAR},
+			#{expectTime,jdbcType=TIMESTAMP},
+			'1',
+			#{userId,jdbcType=DECIMAL},
+			#{userName,jdbcType=VARCHAR},
+			#{creatTime,jdbcType=TIMESTAMP},
+			#{source,jdbcType=VARCHAR},
+			#{state,jdbcType=VARCHAR},
+			#{desc,jdbcType=VARCHAR},
+			#{keyId,jdbcType=DECIMAL},
+			#{reqObjCode,jdbcType=VARCHAR},
+			#{orgId,jdbcType=DECIMAL},
+			#{orgName,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.Requestion">
+		UPDATE
+			T_REQUESTION
+		<set> 
+			<if test="reqObjId != null " >
+				REQ_OBJ_ID=#{reqObjId,jdbcType=DECIMAL},
+			</if>
+			<if test="reqObjName != null " >
+				REQ_OBJ_NAME=#{reqObjName,jdbcType=VARCHAR},
+			</if>
+			<if test="linkMan != null " >
+				LINK_MAN=#{linkMan,jdbcType=VARCHAR},
+			</if>
+			<if test="linkTel != null " >
+				LINK_TEL=#{linkTel,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null " >
+				CODE_=#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null " >
+				TITLE=#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null " >
+				TYPE_=#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null " >
+				CONTENT_=#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="expectTime != null " >
+				EXPECT_TIME=#{expectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null " >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null " >
+				USER_ID=#{userId,jdbcType=DECIMAL},
+			</if>
+			<if test="userName != null " >
+				USER_NAME=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="creatTime != null " >
+				CREAT_TIME=#{creatTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="source != null " >
+				SOURCE=#{source,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null " >
+				STATE=#{state,jdbcType=VARCHAR},
+			</if>
+			<if test="desc != null " >
+				DESC_=#{desc,jdbcType=VARCHAR},
+			</if>
+			<if test="childState != null " >
+				CHILDSTATE=#{childState,jdbcType=VARCHAR},
+			</if>
+			<if test="reqObjCode != null " >
+				REQ_OBJ_CODE=#{reqObjCode,jdbcType=VARCHAR},
+			</if>
+			<if test="visit != null " >
+				VISIT=#{visit,jdbcType=VARCHAR},
+			</if>
+			<if test="satisfaction != null " >
+				SATISFACTION=#{satisfaction,jdbcType=VARCHAR},
+			</if>
+			
+		</set>
+		WHERE
+			REQ_ID= #{reqId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.REQ_ID,
+			T.REQ_OBJ_ID,
+			T.REQ_OBJ_NAME,
+			T.LINK_MAN,
+			T.LINK_TEL,
+			T.CODE_,
+			T.TITLE,
+			T.TYPE_,
+			T.CONTENT_,
+			TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,
+			T.STATUS,
+			T.USER_ID,
+			T.USER_NAME,
+			T.CREAT_TIME,
+			T.SOURCE,
+			t.STATE,
+			T.DESC_,
+			T.KEY_ID_,
+			T.CHILDSTATE,
+			t.REQ_OBJ_CODE,
+			TO_CHAR(T1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+			t.VISIT,
+			t.SATISFACTION
+		FROM
+			T_REQUESTION T
+			left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+		WHERE
+			REQ_ID= #{reqId,jdbcType=DECIMAL} 
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=VARCHAR}
+			</if>
+	</select>
+	
+	<!-- 详情 -->	
+	<select id="searchByKeyId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.REQ_ID,
+			T.REQ_OBJ_ID,
+			T.REQ_OBJ_NAME,
+			T.LINK_MAN,
+			T.LINK_TEL,
+			T.CODE_,
+			T.TITLE,
+			T.TYPE_,
+			T.CONTENT_,
+			TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI') as EXPECTTIMESTR,
+			T.STATUS,
+			T.USER_ID,
+			T.USER_NAME,
+			T.CREAT_TIME,
+			T.SOURCE,
+			t.STATE,
+			T.DESC_,
+			T.KEY_ID_,
+			T.CHILDSTATE,
+			t.REQ_OBJ_CODE
+		FROM
+			T_REQUESTION T
+		WHERE
+			KEY_ID_= #{keyId,jdbcType=DECIMAL} 
+	</select>
+	
+	
+	<!-- PC端列表（分页） -->	
+	<select id="searchList_Main"  resultMap="BaseResultMap">
+		SELECT * FROM (
+			SELECT 
+				T.REQ_ID,T.REQ_OBJ_ID,T.REQ_OBJ_NAME,T.LINK_MAN,T.LINK_TEL,T.CODE_,T.TITLE,
+				T.TYPE_,T.CONTENT_,TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI:SS') as EXPECTTIMESTR,T.STATUS,
+				T.USER_ID,T.USER_NAME,TO_CHAR(t1.START_TIME, 'YYYY-MM-DD HH24:MI') as CREATTIMESTR,
+				T.SOURCE,T.STATE,T1.INSTANCE_ID AS WF_INSTANCE_ID ,T1.STATUS AS WF_STATUS,
+				TO_CHAR(T1.END_TIME, 'yyyy-mm-dd HH24:MI:SS') AS WF_END_,'1' as taskType,t1.UPDATE_TIME, t1.CUR_ORG as WF_CUR_ORG,
+				T.CHILDSTATE
+				
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id and (t1.status in ('1','2') or t1.status is null)
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			where 
+			<include refid="find_where" />
+			
+			<if test="userId != null ">
+				AND t.USER_ID = #{userId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+			
+		)
+		order by CODE_ desc
+	</select>
+	
+	<!-- PC列表（总数） -->	
+	<select id="countRequest"  resultType="java.lang.Long">
+		SELECT count(1) FROM (
+			SELECT T.REQ_ID
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id and (t1.status in ('1','2') or t1.status is null)
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			<if test="wfCurOrg != null and wfCurOrg !=''">
+			 	AND t1.CUR_ORG LIKE '%'|| #{wfCurOrg,jdbcType=VARCHAR}||'%' 
+			</if>
+		)
+	</select>
+	
+	
+	<!-- PC详情 -->	
+	<select id="searchBy_id" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.REQ_ID,
+			T.REQ_OBJ_ID,
+			T.REQ_OBJ_NAME,
+			T.LINK_MAN,
+			T.LINK_TEL,
+			T.CODE_,
+			T.TITLE,
+			T.TYPE_,
+			T.CONTENT_,
+			TO_CHAR(T.EXPECT_TIME, 'YYYY-MM-DD HH24:MI:SS') as EXPECTTIMESTR,
+			T.STATUS,
+			T.USER_ID,
+			T.USER_NAME,
+			TO_CHAR(T.CREAT_TIME, 'YYYY-MM-DD HH24:MI:SS') as CREATTIMESTR,
+			T.SOURCE,
+			t.STATE,
+			T.DESC_,
+			T.KEY_ID_,
+			T.CHILDSTATE
+		FROM
+			T_REQUESTION T
+		WHERE
+			REQ_ID= #{reqId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.requestion.Requestion">
+		UPDATE
+			T_REQUESTION
+		SET
+			STATUS='0'
+		WHERE
+			REQ_ID= #{reqId,jdbcType=DECIMAL} 
+	</delete>
+	
+	
+	<select id="countDB"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM (
+			SELECT	T.REQ_ID
+			from T_REQUESTION t left join ${dbuser.workflow}.wf_process_instance t1 on t.req_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+		
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId != null ">
+				AND t1.form_type_id = #{formTypeId,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+	
+			union  
+			 
+			SELECT  T.REQ_ID
+			from T_REQUESTION t left join T_REQ_LINKAGE_UNIT t4 on t.req_id = t4.req_id
+			left join ${dbuser.workflow}.wf_process_instance t1 on t4.rlu_id = t1.form_id
+			left join ${dbuser.workflow}.JBPM4_TASK t2 ON t2.PROCINST_ = t1.INSTANCE_ID
+			LEFT JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION t3 on T2.DBID_= t3.TASK_
+			
+			where 
+			<include refid="find_where" />
+			<if test="formTypeId_ != null ">
+				AND t1.form_type_id = #{formTypeId_,jdbcType=DECIMAL}
+			</if>
+			and t1.status ='1' and t4.status='1'
+			and (
+				t3.GROUPID_= #{dbOrgId,jdbcType=VARCHAR}
+			)
+		)
+	</select>
+</mapper>

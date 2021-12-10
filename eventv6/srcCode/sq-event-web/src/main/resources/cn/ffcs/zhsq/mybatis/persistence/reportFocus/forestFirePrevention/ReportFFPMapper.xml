@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.forestFirePrevention.ReportFFPMapper" >
+  	<!-- 森林防灭火信息查询列 -->
+  	<sql id="sameCol">
+  		T2.FFP_UUID				"ffpUUID",
+  		T2.REPORT_UUID			"reportUUID",
+  		T2.DATA_SOURCE			"dataSource",
+  		T2.COLLECT_SOURCE		"collectSource",
+  		T2.VERIFY_TIME			"verifyTime",
+  		T2.REMARK				"remark"
+  	</sql>
+  	
+  	<!-- 草稿列表查询列 -->
+  	<sql id="list_column_draft">
+  		T1.REPORT_ID		"reportId",
+		T1.REPORT_UUID		"reportUUID",
+		T1.REPORT_CODE		"reportCode",
+		T2.FFP_UUID			"ffpUUID",
+		T1.REPORTER_NAME	"reporterName",
+		T1.OCCURRED			"occurred", 
+		T1.REPORT_TIME		"reportTime", 
+		T1.REPORT_STATUS	"reportStatus"
+  	</sql>
+  	
+  	<!-- 列表查询列 -->
+  	<sql id="list_column">
+  		<include refid="list_column_draft"></include>,
+  		T3.INSTANCE_ID		"instanceId", 
+  		T3.FORM_TYPE_ID		"formTypeId"
+  	</sql>
+  	
+  	<!-- 重点关注上报查询列 -->
+  	<sql id="reportSameCol">
+  		T1.REPORT_ID			"reportId",
+  		T1.REPORT_CODE			"reportCode",
+  		T1.REPORT_TYPE			"reportType",
+  		T1.REPORT_WAY			"reportWay",
+  		T1.REPORTER_NAME		"reporterName",
+  		T1.REPORTER_ORG_ID		"reporterOrgId",
+  		T1.OCCURRED				"occurred",
+  		T1.TIPOFF_CONTENT		"tipoffContent",
+  		T1.REGION_CODE			"regionCode",
+  		T1.REPORT_TIME			"reportTime",
+  		T1.REPORT_STATUS		"reportStatus",
+  		T1.REPORT_SUB_STATUS	"reportSubStatus"
+  	</sql>
+  	
+  	<!-- 新增森林防灭火信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="ffpUUID" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_FOREST_FIRE_PREVENTION (
+			FFP_UUID, REPORT_UUID,
+			DATA_SOURCE,
+			COLLECT_SOURCE,
+			REMARK, VERIFY_TIME,
+			CREATOR, CREATE_TIME, 
+			UPDATOR, UPDATE_TIME
+        )
+        VALUES(
+        	#{ffpUUID,jdbcType=VARCHAR}, #{reportUUID,jdbcType=VARCHAR}, 
+        	<choose>
+        		<when test="@Ognl@isNotEmpty(dataSource)">
+        			#{dataSource,jdbcType=VARCHAR},
+        		</when>
+        		<otherwise>
+        			DEFAULT,
+        		</otherwise>
+        	</choose>
+        	<choose>
+        		<when test="@Ognl@isNotEmpty(collectSource)">
+        			#{collectSource,jdbcType=VARCHAR},
+        		</when>
+        		<otherwise>
+        			DEFAULT,
+        		</otherwise>
+        	</choose>
+        	NULLIF(#{remark,jdbcType=VARCHAR}, ''), #{verifyTime,jdbcType=TIMESTAMP},
+        	#{creator,jdbcType=DECIMAL}, SYSDATE, 
+        	#{updator,jdbcType=DECIMAL}, SYSDATE
+        )
+  	</insert>
+  	
+  	<!-- 依据id更新森林防灭火信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_FOREST_FIRE_PREVENTION T2 
+		<set>
+			<choose>
+				<when test="@Ognl@isNotEmpty(dataSource)">
+					T2.DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},
+				</when>
+				<when test="dataSource == ''">
+					T2.DATA_SOURCE = DEFAULT,
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(collectSource) ">
+					T2.COLLECT_SOURCE = #{collectSource,jdbcType=VARCHAR},
+				</when>
+				<when test="collectSource == ''">
+					T2.COLLECT_SOURCE = DEFAULT,
+				</when>
+			</choose>
+			<if test="verifyTime != null ">
+				T2.VERIFY_TIME = #{verifyTime,jdbcType=TIMESTAMP},
+			</if>
+			
+			<choose>
+				<when test="@Ognl@isNotEmpty(storey) ">
+					T2.STOREY = #{storey,jdbcType=DECIMAL},
+				</when>
+				<when test="storey == ''">
+					T2.STOREY = DEFAULT,
+				</when>
+			</choose>
+			<if test="remark != null">
+				T2.REMARK = NULLIF(#{remark,jdbcType=VARCHAR}, ''),
+			</if>
+			<if test="updator != null ">
+				T2.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+		  	
+			T2.UPDATE_TIME = SYSDATE
+		</set>
+		
+		<where>
+			<choose>
+				<when test="@Ognl@isNotEmpty(ffpUUID)">
+					T2.FFP_UUID = #{ffpUUID,jdbcType=VARCHAR}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T2.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+		</where>
+  	</update>
+  	
+  	<!-- 依据id删除森林防灭火信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_FOREST_FIRE_PREVENTION T2
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T2.UPDATOR = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T2.IS_VALID = '0', 
+	  		T2.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	<where>
+			<choose>
+				<when test="@Ognl@isNotEmpty(ffpUUID)">
+					T2.FFP_UUID = #{ffpUUID,jdbcType=VARCHAR}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T2.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+		</where>
+  	</delete>
+  	
+  	<!-- 依据id获取森林防灭火信息 -->
+  	<select id="findByIdSimple" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_FOREST_FIRE_PREVENTION T2
+	  	<where>
+			<choose>
+				<when test="@Ognl@isNotEmpty(ffpUUID)">
+					T2.FFP_UUID = #{ffpUUID,jdbcType=VARCHAR}
+				</when>
+				<when test="@Ognl@isNotEmpty(reportUUID)">
+					T2.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					1 = 2
+				</otherwise>
+			</choose>
+			AND T2.IS_VALID = '1'
+		</where>
+  	</select>
+  	
+  	<!-- 依据id获取森林防灭火信息 -->
+  	<select id="findById" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="sameCol"/>,
+	  		<include refid="reportSameCol"></include>
+	  	FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID AND T1.IS_VALID IN ('1', '2') AND T2.IS_VALID = '1'
+		<choose>
+			<when test="@Ognl@isNotEmpty(ffpUUID)">
+				AND T2.FFP_UUID = #{ffpUUID,jdbcType=VARCHAR}
+			</when>
+			<when test="reportId != null ">
+				AND T1.REPORT_ID = #{reportId,jdbcType=DECIMAL}
+			</when>
+			<when test="@Ognl@isNotEmpty(reportUUID)">
+				AND T2.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND 1 = 2
+			</otherwise>
+		</choose>
+  	</select>
+  	
+  	<!-- 森林防灭火信息草稿列表 开始 -->
+  	<select id="findCount4Draft" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+		<include refid="sql4Draft"></include>
+  	</select>
+  	<select id="findList4Draft" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column_draft"></include>
+		<include refid="sql4Draft"></include>
+		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4Draft">
+  		FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID 
+		<if test="@Ognl@isNotEmpty(createUserId)">
+			AND T1.CREATOR = #{createUserId,jdbcType=DECIMAL}
+		</if>
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息草稿列表 结束 -->
+  	
+  	<!-- 森林防灭火信息待办列表 开始 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+		<include refid="sql4Todo"></include>
+  	</select>
+  	<select id="findList4Todo" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>,
+  			T9.SUPERVISE_MARK	"superviseMark"
+		<include refid="sql4Todo"></include>
+		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4Todo">
+  		FROM T_EVENT_REPORT_FOCUS T1
+  		INNER JOIN T_EVENT_FOREST_FIRE_PREVENTION T2
+  			ON T1.REPORT_UUID = T2.REPORT_UUID
+  		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+  			ON T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358 
+  		INNER JOIN ${dbuser.workflow}.JBPM4_TASK T4
+  			ON T3.INSTANCE_ID = T4.PROCINST_
+  		INNER JOIN ${dbuser.workflow}.JBPM4_PARTICIPATION T11
+  			ON T4.DBID_ = T11.TASK_
+  		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T9
+			ON T3.INSTANCE_ID = T9.INSTANCE_ID
+		WHERE T3.STATUS = '1' AND T11.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T11.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T11.TYPE_ = '3'
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息待办列表 结束 -->
+  	
+  	<!-- 森林防灭火信息经办列表 开始 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4Handled"></include>
+  	</select>
+  	<select id="findList4Handled" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>,
+  			T3.CUR_USER	"curUserName",
+  			T3.CUR_ORG	"curOrgName"
+  		<include refid="sql4Handled"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4Handled">
+		FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID AND T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		AND EXISTS (
+		    SELECT 1
+		    FROM ${dbuser.workflow}.WF_PROCESS_INSTANCE T3_1, ${dbuser.workflow}.WF_TASK T6, ${dbuser.workflow}.WF_TASK_PARTICIPATION T5
+		    WHERE T3_1.FORM_ID = T1.REPORT_ID AND T3_1.INSTANCE_ID = T6.INSTANCE_ID AND T6.TASK_ID = T5.TASK_ID
+		    AND T3_1.FORM_TYPE_ID = 358
+		    AND T3_1.STATUS IN ('1','2')
+		    AND T5.USER_ID = #{handledUserId,jdbcType=DECIMAL} AND T5.ORG_ID = #{handledOrgId,jdbcType=DECIMAL} AND T5.USER_TYPE = '3'
+		    AND T5.ISDONE = '1'
+		)
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息经办列表 结束 -->
+  	
+  	<!-- 森林防灭火信息我发起的列表 开始 -->
+  	<select id="findCount4Initiator" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4Initiator"></include>
+  	</select>
+  	<select id="findList4Initiator" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>
+  		<include refid="sql4Initiator"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4Initiator">
+		FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID AND T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		AND T3.STATUS IN ('1','2')
+		AND T3.USER_ID = #{initiatorId,jdbcType=DECIMAL} 
+		AND T3.ORG_ID = #{initiatorOrgId,jdbcType=DECIMAL} 
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息我发起的列表 结束 -->
+  	
+  	<!-- 森林防灭火信息辖区所有列表(精简) 开始 -->
+  	<select id="findCount4JurisdictionSimplify" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4JurisdictionSimplify"></include>
+  	</select>
+  	<select id="findList4JurisdictionSimplify" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>
+  		<include refid="sql4JurisdictionSimplify"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4JurisdictionSimplify">
+		FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID AND T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		AND T3.STATUS IN ('1','2')
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息辖区所有(精简) 结束 -->
+  	
+  	<!-- 森林防灭火信息辖区所有列表 开始 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4Jurisdiction"></include>
+  	</select>
+  	<select id="findList4Jurisdiction" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>,
+  			T9.SUPERVISE_MARK	"superviseMark",
+  			T3.CUR_USER			"curUserName",
+  			T3.CUR_ORG			"curOrgName"
+  		<include refid="sql4Jurisdiction"></include>
+  		ORDER BY T1.ORDER_BY DESC, T1.REPORT_ID DESC
+  	</select>
+  	<sql id="sql4Jurisdiction">
+		FROM T_EVENT_REPORT_FOCUS T1
+		INNER JOIN T_EVENT_FOREST_FIRE_PREVENTION T2
+			ON T1.REPORT_UUID = T2.REPORT_UUID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+			ON T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T9
+			ON T3.INSTANCE_ID = T9.INSTANCE_ID
+		WHERE T3.STATUS IN ('1','2')
+		<if test="@Ognl@isNotEmpty(superviseMark)">
+			AND T9.SUPERVISE_MARK = #{superviseMark,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+  	</sql>
+  	<!-- 森林防灭火信息辖区所有 结束 -->
+
+	<!-- 森林防灭火信息辖区所有列表（带地域全路径） 开始 -->
+	<select id="findCount4JurisdictionWithRegionPath" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		<include refid="sql4JurisdictionWithRegionPath"></include>
+	</select>
+	<select id="findList4JurisdictionWithRegionPath" resultType="java.util.Map">
+		SELECT
+		<include refid="list_column"></include>,
+		T9.SUPERVISE_MARK	"superviseMark",
+		T3.CUR_USER			"curUserName",
+		T3.CUR_ORG			"curOrgName",
+		T12.ORG_ENTITY_PATH "regionPath"
+		<include refid="sql4JurisdictionWithRegionPath"></include>
+		ORDER BY T1.ORDER_BY DESC, T1.REPORT_ID DESC
+	</select>
+	<sql id="sql4JurisdictionWithRegionPath">
+		FROM T_EVENT_REPORT_FOCUS T1
+		INNER JOIN T_EVENT_FOREST_FIRE_PREVENTION T2
+		ON T1.REPORT_UUID = T2.REPORT_UUID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		ON T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T9
+		ON T3.INSTANCE_ID = T9.INSTANCE_ID
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T12
+		ON T1.REGION_CODE = T12.ORG_CODE
+		AND T12.STATUS = '001'
+		WHERE T3.STATUS IN ('1','2')
+		<if test="@Ognl@isNotEmpty(superviseMark)">
+			AND T9.SUPERVISE_MARK = #{superviseMark,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+	</sql>
+	<!-- 森林防灭火信息辖区所有（带地域全路径） 结束 -->
+  	
+  	
+  	<!-- 森林防灭火信息辖区所有列表(附带经纬度) 开始 -->
+  	<select id="findCount4JurisdictionWithMarker" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4JurisdictionWithMarker"></include>
+  	</select>
+  	<select id="findList4JurisdictionWithMarker" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>,
+  			T10.X "longitude",
+  			T10.Y "latitude",
+  			T10.Z "z"
+  		<include refid="sql4JurisdictionWithMarker"></include>
+  		<include refid="order_by_marker"></include>
+  	</select>
+  	<sql id="sql4JurisdictionWithMarker">
+		FROM T_EVENT_REPORT_FOCUS T1
+		INNER JOIN T_EVENT_FOREST_FIRE_PREVENTION T2
+			ON T1.REPORT_UUID = T2.REPORT_UUID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+			ON T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		LEFT JOIN T_ZY_RES_MARKER T10
+			ON T1.REPORT_ID=T10.RESOURCES_ID
+		<choose>
+			<when test="@Ognl@isNotEmpty(markerType)">
+				AND T10.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T10.MARKER_TYPE='FOREST_FIRE_PREVENTION'
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(mapType)">
+				AND T10.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T10.MAP_TYPE = '5'
+			</otherwise>
+		</choose>
+		WHERE T3.STATUS IN ('1','2')
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+		<include refid="find_where_marker"></include>
+  	</sql>
+  	
+  	<!-- 经纬度查询条件 -->
+  	<sql id="find_where_marker">
+  		<choose>
+			<when test="existPosition != null and existPosition == 1 ">
+				AND (T10.X IS NOT NULL AND T10.Y IS NOT NULL)
+			</when>
+			<when test="existPosition != null and existPosition == 0 ">
+				AND (T10.X IS NULL OR T10.Y IS NULL)
+			</when>
+		</choose>
+  	</sql>
+  	
+  	<!-- 经纬度排序字段 -->
+  	<sql id="order_by_marker">
+  		<choose>
+	  		<when test="@Ognl@isNotEmpty(orderByField)">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+  				ORDER BY T1.REPORT_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+  	
+  	<!-- 森林防灭火信息辖区所有(附带经纬度) 结束 -->
+  	
+  	
+  	<!-- 森林防灭火信息辖区归档列表 开始 -->
+  	<select id="findCount4Archived" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4Archived"></include>
+  	</select>
+  	<select id="findList4Archived" resultType="java.util.Map">
+  		SELECT 
+  			<include refid="list_column"></include>,
+  			T3.END_TIME	"instanceEndTime"
+  		<include refid="sql4Archived"></include>
+  		<include refid="order_by"></include>
+  	</select>
+  	<sql id="sql4Archived">
+		FROM T_EVENT_REPORT_FOCUS T1, T_EVENT_FOREST_FIRE_PREVENTION T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+		WHERE T1.REPORT_UUID = T2.REPORT_UUID AND T1.REPORT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 358
+		AND T3.STATUS = '2'
+		<include refid="find_where_report_focus"></include>
+		<include refid="find_where_ffp"></include>
+		<include refid="find_where_workflow"></include>
+  	</sql>
+  	<!-- 森林防灭火信息辖区归档 结束 -->
+  	
+  	<!-- 森林防灭火信息我的阅办列表 开始 -->
+  	<select id="findCount4MsgReading" resultType="java.lang.Integer">
+  		SELECT 
+  			COUNT(1)
+  		<include refid="sql4MsgReading"></include>
+  	</select>
+  	<select id="findList4MsgReading" resultType="java.util.Map">
+  		SELECT 
+  			T7.MSG_ID		"msgId",
+  			T1.REPORT_ID	"reportId",
+  			T1.REPORT_UUID	"reportUUID",
+  			T1.REPORT_CODE	"reportCode",
+  			T3.INSTANCE_ID	"instanceId",
+  			T7.SENDER_NAME	"msgSenderName", 
+  			T7.MSG_CONTENT	"msgContent", 
+  			T7.SEND_TIME	"msgSendTime", 
+  			T8.STATUS_		"msgReceiveStatus"
+  		<include refid="sql4MsgReading"></include>
+  		ORDER BY T8.STATUS_, T7.MSG_ID DESC 
+  	</select>
+  	<sql id="sql4MsgReading">
+  		FROM T_EVENT_REPORT_FOCUS         T1,
+  			 ${dbuser.workflow}.WF_PROCESS_INSTANCE T3,
+  			 ${dbuser.workflow}.WF_TASK             T6,
+  			 T_BAS_MSG                    T7,
+  			 T_BAS_MSG_RECEIVER           T8
+  		WHERE T1.REPORT_ID = T3.FORM_ID
+  		AND T3.FORM_TYPE_ID = 358
+	   	AND T3.INSTANCE_ID = T6.INSTANCE_ID
+	   	AND T7.BIZ_ID = T6.TASK_ID
+	   	AND T7.MSG_ID = T8.MSG_ID
+	   	AND T7.IS_DEL = '0'
+   		<choose>
+   			<when test="@Ognl@isNotEmpty(msgModuleCode)">
+   				AND T7.MODULE_CODE = #{msgModuleCode,jdbcType=VARCHAR}
+   			</when>
+   			<when test="@Ognl@isNotEmpty(msgModuleCodeArray)">
+   				AND T7.MODULE_CODE IN
+				<foreach collection="msgModuleCodeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+   			</when>
+   		</choose>
+   		<if test="@Ognl@isNotEmpty(msgKeyWord)">
+   			AND (
+   				T7.SENDER_NAME LIKE '%' || #{msgKeyWord,jdbcType=VARCHAR} || '%'
+   				OR
+   				T7.MSG_CONTENT LIKE '%' || #{msgKeyWord,jdbcType=VARCHAR} || '%'
+   			)
+   		</if>
+   		<if test="@Ognl@isNotEmpty(msgSendDayStart)">
+   			AND T7.SEND_TIME <![CDATA[>=]]> #{msgSendDayStart,jdbcType=TIMESTAMP}
+   		</if>
+   		<if test="@Ognl@isNotEmpty(msgSendDayEnd)">
+   			AND T7.SEND_TIME <![CDATA[<]]> #{msgSendDayEnd,jdbcType=TIMESTAMP} + 1
+   		</if>
+		<if test="msgReceiveUserId != null ">
+			AND T8.RECEIVER_ID = #{msgReceiveUserId,jdbcType=DECIMAL}
+		</if>
+		<if test="msgReceiveOrgId != null ">
+			AND T8.RECEIVE_ORG_ID = #{msgReceiveOrgId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(msgReceiveStatus)">
+				AND T8.STATUS_ = #{msgReceiveStatus,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T8.STATUS_ IN ('0', '1')
+			</otherwise>
+		</choose>
+		<include refid="find_where_report_focus"></include>
+  	</sql>
+  	<!-- 森林防灭火信息我的阅办 结束 -->
+  	
+  	<!-- 排序字段 -->
+  	<sql id="order_by">
+  		ORDER BY T1.REPORT_ID DESC
+  	</sql>
+  	
+  	<!-- 重点关注上报查询条件 -->
+  	<sql id="find_where_report_focus">
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(reportValid)">
+  				AND T1.IS_VALID = #{reportValid,jdbcType=VARCHAR}
+  			</when>
+  			<when test='@Ognl@isEmpty(reportValid) and listType == "7" '>
+  				AND T1.IS_VALID IN ('1', '2')
+  			</when>
+  			<otherwise>
+  				AND T1.IS_VALID = '1'
+  			</otherwise>
+  		</choose>
+  		<if test="reporterId != null ">
+  			AND T1.CREATOR = #{reporterId,jdbcType=DECIMAL}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(regionCode)">
+  			AND T1.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="@Ognl@isNotEmpty(occurred)">
+  			AND T1.OCCURRED LIKE '%' || #{occurred,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="@Ognl@isNotEmpty(keyWord)">
+  			AND (
+  				T1.OCCURRED LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%'
+  				OR
+  				T1.REPORTER_NAME LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%'
+  			)
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportUUID)">
+  			AND T1.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportCode)">
+  			AND T1.REPORT_CODE = #{reportCode,jdbcType=VARCHAR}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportDayStart)">
+   			AND T1.REPORT_TIME <![CDATA[>=]]> #{reportDayStart,jdbcType=TIMESTAMP}
+   		</if>
+   		<!-- 传入空字符串时，会导致时间计算异常，因此需要同时将null和空串排除 -->
+   		<if test="@Ognl@isNotEmpty(reportDayEnd)">
+   			AND T1.REPORT_TIME <![CDATA[<]]> #{reportDayEnd,jdbcType=TIMESTAMP} + 1
+   		</if>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(reportStatus)">
+  				AND T1.REPORT_STATUS = #{reportStatus,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(reportStatusArray)">
+  				AND T1.REPORT_STATUS IN
+  				<foreach collection="reportStatusArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+  			</when>
+  			<when test="@Ognl@isNotEmpty(reportStatusRemoveArray)">
+  				AND T1.REPORT_STATUS NOT IN
+  				<foreach collection="reportStatusRemoveArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+  			</when>
+  		</choose>
+		<if test='@Ognl@isNotEmpty(isOvertime) and @Ognl@isNotEmpty(listType) and listType == "2" '>
+			<![CDATA[ AND T4.DUEDATE_ < SYSDATE ]]>
+		</if>
+  	</sql>
+  	
+  	<!-- 森林防灭火信息查询条件 -->
+  	<sql id="find_where_ffp">
+  		AND T2.IS_VALID = '1'
+		<if test="@Ognl@isNotEmpty(dataSourceArray)">
+			AND T2.DATA_SOURCE IN
+			<foreach collection="dataSourceArray" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+  	</sql>
+  	
+  	<!-- 工作流相关查询条件 -->
+  	<sql id="find_where_workflow">
+  		<if test="@Ognl@isNotEmpty(instanceEndDayStart)">
+   			AND T3.END_TIME <![CDATA[>=]]> #{instanceEndDayStart,jdbcType=TIMESTAMP}
+   		</if>
+   		<!-- 传入空字符串时，会导致时间计算异常，因此需要同时将null和空串排除 -->
+   		<if test="@Ognl@isNotEmpty(instanceEndDayEnd)">
+   			AND T3.END_TIME <![CDATA[<]]> #{instanceEndDayEnd,jdbcType=TIMESTAMP} + 1
+   		</if>
+  	</sql>
+</mapper>

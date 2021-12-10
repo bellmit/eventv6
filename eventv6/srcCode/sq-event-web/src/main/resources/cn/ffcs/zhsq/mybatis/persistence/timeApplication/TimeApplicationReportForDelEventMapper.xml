@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.timeApplication.TimeApplicationReportForDelEventMapper" >
+
+    <!-- 无分页获取删除事件数据信息 -->
+    <select id="findListDataOfDelEvent" resultType="java.util.Map">
+        WITH EVENT_COLLECT AS (
+        SELECT T1.EVENT_ID, T2.INFO_ORG_CODE
+        FROM T_EVENT T1,
+        T_DC_GRID T2,
+        ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+        WHERE T1.GRID_ID = T2.GRID_ID AND T1.EVENT_ID = T3.FORM_ID
+        AND T3.FORM_TYPE_ID = 300 AND T2.STATUS = '001'
+        AND T1.STATUS IN ('00', '01', '02', '03', '04')
+        AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(beginTime)">
+            AND T1.CREATE_TIME <![CDATA[>=]]> TO_DATE(#{beginTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)" >
+            AND T1.CREATE_TIME <![CDATA[<]]> TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') + 1
+        </if>
+        ),
+        EVENT_DEL AS (
+        SELECT T1.EVENT_ID, T2.INFO_ORG_CODE
+        FROM T_EVENT T1,
+        T_DC_GRID T2,
+        ${dbuser.workflow}.WF_PROCESS_INSTANCE T3,
+        T_EVENT_TIME_APPLICATION T4,
+        T_EVENT_TIME_CHECK T5
+        WHERE T1.GRID_ID = T2.GRID_ID
+        AND T1.EVENT_ID = T3.FORM_ID
+        AND T4.BUSINESS_KEY_ID = T1.EVENT_ID
+        AND T4.APPLICATION_ID = T5.APPLICATION_ID
+        AND T3.FORM_TYPE_ID = 300
+        AND T2.STATUS = '001'
+        AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+        <if test="@Ognl@isNotEmpty(beginTime)">
+            AND T4.CREATE_TIME <![CDATA[>=]]> TO_DATE(#{beginTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+        </if>
+        <if test="@Ognl@isNotEmpty(endTime)">
+            AND T4.CREATE_TIME <![CDATA[<]]> TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS') + 1
+        </if>
+        AND T4.APPLICATION_TYPE = '6'
+        AND T4.STATUS = '1' AND T5.STATUS = '1'  AND T1.STATUS = '06'
+        )
+        SELECT T2_1.GRID_PATH GRID_NAME,
+        (  SELECT COUNT(1)  FROM EVENT_COLLECT T1_1  WHERE T1_1.INFO_ORG_CODE LIKE T2_1.INFO_ORG_CODE || '%'  ) TOTAL_NUM_REPORTED,
+        (   SELECT COUNT(1)   FROM EVENT_DEL T1_2   WHERE T1_2.INFO_ORG_CODE LIKE T2_1.INFO_ORG_CODE || '%'   ) TOTAL_NUM_DELTED
+        FROM T_DC_GRID T2_1
+        WHERE T2_1.STATUS = '001'
+        <if test="gridId != null and gridId != '' ">
+            AND
+            (T2_1.GRID_ID = #{gridId,jdbcType=DECIMAL} OR T2_1.PARENT_GRID_ID = #{gridId,jdbcType=DECIMAL})
+        </if>
+
+        ORDER BY T2_1.GRID_LEVEL, T2_1.GRID_ID
+    </select>
+
+
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.zgAlarm.ZgAlarmMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.zgAlarm.ZgAlarm">
+		<id column="ALARM_ID" property="alarmId" jdbcType="DECIMAL" /> <!--主键-->
+		<result column="ALARM_CONTENT" property="alarmContent" jdbcType="VARCHAR" /> <!--告警内容-->
+		<result column="ALARM_TYPE" property="alarmType" jdbcType="VARCHAR" /> <!--告警类型：如高温预警、火灾告警-->
+		<result column="ALARM_URL" property="alarmUrl" jdbcType="VARCHAR" /> <!--链接地址-->
+		<result column="ALARM_SOURCE" property="alarmSource" jdbcType="VARCHAR" /> <!--来源-->
+		<result column="INVALID_DATE" property="invalidDate" jdbcType="TIMESTAMP" /> <!--失效日期-->
+		<result column="ALARM_LEVEL" property="alarmLevel" jdbcType="DECIMAL" /> <!--优先级:从上到下依次递减.1是最高  （紧急，重要，一般）-->
+		<result column="STATUS" property="status" jdbcType="VARCHAR" /> <!--状态（1有效0失效）-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" /> <!--创建人id-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" /> <!--更新人-->
+		
+		<!-- 冗余字段 -->
+		<result column="ALARM_TYPE_NAME" property="alarmTypeName" jdbcType="VARCHAR" /> <!--告警类型名称：如高温预警、火灾告警-->
+		<result column="ALARM_LEVEL_NAME" property="alarmLevelName" jdbcType="VARCHAR" /> <!--优先级名称:从上到下依次递减.1是最高  （紧急，重要，一般）-->
+	</resultMap>
+	<sql id="common_columns">
+			T.ALARM_ID,
+			T.ALARM_CONTENT,
+			T.ALARM_TYPE,
+			T.ALARM_URL,
+			T.ALARM_SOURCE,
+			T.INVALID_DATE,
+			T.ALARM_LEVEL,
+			T.STATUS,
+			T.CREATE_TIME,
+			T.CREATE_USER_ID,
+			T.UPDATE_TIME,
+			T.UPDATE_USER_ID,
+			D1.dict_name ALARM_TYPE_NAME,
+			D2.dict_name ALARM_LEVEL_NAME
+	</sql>
+	
+	 <sql id="commSql">
+		FROM ${dbuser.zhsq_szzg}.ZG_ALARM  T
+		 left join t_bas_datadict D1 on D1.DICT_GENERAL_CODE = T.ALARM_TYPE and D1.status='001' and D1.DICT_PCODE = '${@cn.ffcs.zhsq.utils.ConstantValue@ZG_ALARM_TYPE}'
+   		 left join t_bas_datadict D2 on D2.DICT_GENERAL_CODE = T.ALARM_LEVEL and D2.status='001' and D2.DICT_PCODE = '${@cn.ffcs.zhsq.utils.ConstantValue@ZG_ALARM_LEVEL}'
+	 </sql>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="int">
+		SELECT COUNT(1) 
+		<include refid="commSql" />
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="common_columns" />
+		<include refid="commSql" />
+		<include refid="find_where" />
+		ORDER BY 
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+		   	 AND  T.STATUS='1'
+			<if test="alarmContent != null and alarmContent != ''" >
+				<![CDATA[ AND T.ALARM_CONTENT LIKE '%'||#{alarmContent,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="alarmType != null and alarmType != ''" >
+				<![CDATA[ AND T.ALARM_TYPE = #{alarmType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="alarmUrl != null and alarmUrl != ''" >
+				<![CDATA[ AND T.ALARM_URL LIKE '%'||#{alarmUrl,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="alarmSource != null and alarmSource != ''" >
+				<![CDATA[ AND T.ALARM_SOURCE LIKE '%'||#{alarmSource,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="invalidDate != null and invalidDate != ''" >
+				<![CDATA[ AND T.INVALID_DATE > #{invalidDate,jdbcType=TIMESTAMP} ]]>
+			</if> 
+			<if test="alarmLevel != null and alarmLevel != ''" >
+				<![CDATA[ AND T.ALARM_LEVEL = #{alarmLevel,jdbcType=DECIMAL} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.zgAlarm.ZgAlarm">
+		<selectKey keyProperty="alarmId" resultType="long" order="BEFORE"> 
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_ALARM.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			${dbuser.zhsq_szzg}.ZG_ALARM
+		(
+			ALARM_ID,
+			ALARM_CONTENT,
+			ALARM_TYPE,
+			ALARM_URL,
+			ALARM_SOURCE,
+			INVALID_DATE,
+			ALARM_LEVEL,
+			STATUS,
+			CREATE_TIME,
+			CREATE_USER_ID,
+			UPDATE_TIME,
+			UPDATE_USER_ID
+		) VALUES (
+			#{alarmId,jdbcType=DECIMAL},
+			#{alarmContent,jdbcType=VARCHAR},
+			#{alarmType,jdbcType=VARCHAR},
+			#{alarmUrl,jdbcType=VARCHAR},
+			#{alarmSource,jdbcType=VARCHAR},
+			#{invalidDate,jdbcType=TIMESTAMP},
+			#{alarmLevel,jdbcType=DECIMAL},
+			'1',
+			sysdate,
+			#{createUserId,jdbcType=DECIMAL},
+			#{updateTime,jdbcType=TIMESTAMP},
+			#{updateUserId,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.zgAlarm.ZgAlarm">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_ALARM
+		<set> 
+		     UPDATE_TIME=sysdate,
+			<if test="alarmContent != null" >
+				ALARM_CONTENT=#{alarmContent,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmType != null" >
+				ALARM_TYPE=#{alarmType,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmUrl != null" >
+				ALARM_URL=#{alarmUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmSource != null" >
+				ALARM_SOURCE=#{alarmSource,jdbcType=VARCHAR},
+			</if>
+			<if test="invalidDate != null" >
+				INVALID_DATE=#{invalidDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="alarmLevel != null" >
+				ALARM_LEVEL=#{alarmLevel,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null" >
+				STATUS=#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null" >
+				UPDATE_USER_ID=#{updateUserId,jdbcType=DECIMAL},
+			</if>
+		</set>
+		WHERE
+			ALARM_ID= #{alarmId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="common_columns" />
+		<include refid="commSql" />
+		WHERE
+			T.ALARM_ID= #{alarmId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 获取有效的条数-->	
+	<select id="findZgAlarmCount"  resultType="int">
+		SELECT
+		count(1)
+		<include refid="commSql" />
+		WHERE  T.STATUS='1' AND T.INVALID_DATE > SYSDATE
+		ORDER BY 
+			T.CREATE_TIME DESC 
+	</select>
+	<!-- 获取有效的告警信息列表-->	
+	<select id="findZgAlarmList"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="common_columns" />
+		<include refid="commSql" />
+		WHERE  T.STATUS='1' AND T.INVALID_DATE > SYSDATE
+		ORDER BY 
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.zgAlarm.ZgAlarm">
+		UPDATE
+			${dbuser.zhsq_szzg}.ZG_ALARM
+		SET
+			STATUS='0'
+		WHERE
+			ALARM_ID= #{alarmId,jdbcType=DECIMAL} 
+	</delete>
+	
+
+	
+</mapper>

@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<!--
+  ArcGIS API for JavaScript, https://js.arcgis.com
+  For more information about the intro-layers sample, read the original sample description at developers.arcgis.com.
+  https://developers.arcgis.com/javascript/latest/sample-code/intro-layers/index.html
+  -->
+<title>Intro to layers - 4.12</title>
+
+
+<script type="text/javascript">
+	var uiDomain = "${uiDomain!''}";
+    var gmisDomain = "${GMIS_DOMAIN!''}";
+	var js_ctx =  "${rc.getContextPath()}";
+	var _myServer ="${uiDomain!''}/js/map/arcgis/4.11";
+	_myServer = _myServer.replace("http://","");
+</script>
+<link rel="stylesheet" href="${uiDomain!''}/js/map/arcgis/4.11/esri/themes/light/main.css" />
+<script src="${uiDomain!''}/js/map/arcgis/4.11/init.js"></script>
+
+<style>
+html, body, #viewDiv {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
+#layerToggle {
+	top: 20px;
+	right: 20px;
+	position: absolute;
+	z-index: 99;
+	background-color: white;
+	border-radius: 8px;
+	padding: 10px;
+	opacity: 0.75;
+}
+</style>
+
+<script>
+	require([ "esri/Map", "esri/views/SceneView", "esri/layers/TileLayer" ], function(Map, SceneView, TileLayer) {
+		/*****************************************************************
+		 * Create two TileLayer instances. One pointing to a
+		 * cached map service depicting U.S. male population and the other
+		 * pointing to a layer of roads and highways.
+		 *****************************************************************/
+
+		var transportationLayer  = new TileLayer({
+			url : "https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer",
+			id : "World_Terrain_Base",
+			opacity : 0.9
+		});
+		
+		var housingLayer = new TileLayer({
+		    url: "https://tiles.arcgis.com/tiles/nGt4QxSblgDfeJn9/arcgis/rest/services/New_York_Housing_Density/MapServer",
+		    id: "ny-housing"
+		  });
+		
+		var NCLayer  = new TileLayer({
+			url : "https://10.18.24.15/arcgis/rest/services/NCmap/NWYX_BL_L18_20_2015/MapServer"
+		});
+
+		/*****************************************************************
+		 * Layers may be added to the map in the map's constructor
+		 *****************************************************************/
+		var map = new Map({
+			layers : [ NCLayer ]
+		});
+
+		/*****************************************************************
+		 * Or they may be added to the map using map.add()
+		 *****************************************************************/
+
+		var view = new SceneView({
+			container : "viewDiv",
+			map : map
+		});
+
+		/*****************************************************************
+		 * The map handles the layers' data while the view and layer views
+		 * take care of renderering the layers
+		 *****************************************************************/
+		view.on("layerview-create", function(event) {
+			if (event.layer.id === "ny-housing") {
+				// Explore the properties of the population layer's layer view here
+				console.log("LayerView for male population created!", event.layerView);
+			}
+			if (event.layer.id === "streets") {
+				// Explore the properties of the transportation layer's layer view here
+				// Explore the properties of the transportation layer's layer view here
+				console.log("LayerView for streets created!", event.layerView);
+			}
+		});
+		
+		// Create a variable referencing the checkbox node
+		  var streetsLayerToggle = document.getElementById("streetsLayer");
+
+		  // Listen to the change event for the checkbox
+		  streetsLayerToggle.addEventListener("change", function() {
+		    // When the checkbox is checked (true), set the layer's visibility to true
+		    transportationLayer.visible = streetsLayerToggle.checked;
+		  });
+
+		/*****************************************************************
+		 * Layers are promises that resolve when loaded, or when all their
+		 * properties may be accessed. Once the population layer has loaded,
+		 * the view will animate to it's initial extent.
+		 *****************************************************************/
+		view.when(function() {
+			NCLayer.when(function() {
+				view.goTo(NCLayer.fullExtent);
+			});
+		});
+
+	});
+</script>
+</head>
+
+<body>
+	<div id="viewDiv"></div>
+	<span id="layerToggle" class="esri-widget"> <input
+		type="checkbox" id="streetsLayer" /> Transportation
+	</span>
+</body>
+</html>

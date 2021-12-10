@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventTypeProcCfgMapper" >
+
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventTypeProcCfgPO" >
+		<result column="ETPC_ID" property="etpcId" jdbcType="DECIMAL" />
+		<result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" />
+		<result column="TYPE_" property="type" jdbcType="VARCHAR" />
+		<result column="COLLECT_EVENT_SPEC" property="collectEventSpec" jdbcType="VARCHAR" />
+		<result column="TIME_LIMIT_TYPE" property="timeLimitType" jdbcType="VARCHAR" />
+		<result column="TIME_LIMIT_VAL" property="timeLimitVal" jdbcType="DECIMAL" />
+		<result column="EVENT_CLOSE_SPEC" property="eventCloseSpec" jdbcType="VARCHAR" />
+		<result column="GRID_NAME" property="regionName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventTypeProcCfgPO">
+	  	<selectKey keyProperty="etpcId" resultType="long" order="BEFORE">
+			select SEQ_ETPC_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_TYPE_PROC_CFG
+		  (ETPC_ID, REGION_CODE, TYPE_,  COLLECT_EVENT_SPEC, TIME_LIMIT_TYPE, TIME_LIMIT_VAL, EVENT_CLOSE_SPEC)
+		VALUES
+		  (
+		  	#{etpcId,jdbcType=DECIMAL},#{regionCode,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},
+		  	#{collectEventSpec,jdbcType=VARCHAR},
+		  	#{timeLimitType,jdbcType=VARCHAR},#{timeLimitVal,jdbcType=VARCHAR},#{eventCloseSpec,jdbcType=VARCHAR}
+		  )
+	</insert>
+	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventTypeProcCfgPO">
+		UPDATE T_EVENT_TYPE_PROC_CFG T
+		<set>
+			T.TYPE_ = #{type,jdbcType=VARCHAR},
+			T.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+			T.COLLECT_EVENT_SPEC = #{collectEventSpec,jdbcType=VARCHAR},
+			T.TIME_LIMIT_TYPE = #{timeLimitType,jdbcType=VARCHAR},
+			T.TIME_LIMIT_VAL = #{timeLimitVal,jdbcType=DECIMAL},
+			T.EVENT_CLOSE_SPEC = #{eventCloseSpec,jdbcType=VARCHAR}
+		</set>
+		WHERE T.ETPC_ID = #{etpcId,jdbcType=DECIMAL}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM T_EVENT_TYPE_PROC_CFG T WHERE T.ETPC_ID = #{id, jdbcType=DECIMAL}
+	</delete>
+	
+	<delete id="deletePO">
+		DELETE FROM T_EVENT_TYPE_PROC_CFG T WHERE T.REGION_CODE = #{regionCode,jdbcType=VARCHAR}
+		AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+	</delete>
+	
+	<sql id="viewCol">
+		T.ETPC_ID,
+		T.REGION_CODE,
+		T.TYPE_,
+		T.COLLECT_EVENT_SPEC,
+		T.TIME_LIMIT_TYPE,
+		T.TIME_LIMIT_VAL,
+		T.EVENT_CLOSE_SPEC,
+		G.GRID_NAME
+	</sql>
+	
+	<sql id="find_where">
+		WHERE G.STATUS = '001'
+		<if test="regionCode != null and regionCode != ''">
+			<choose>
+				<when test="schType != null and schType == 'eq'">
+					AND G.INFO_ORG_CODE = #{regionCode,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND G.INFO_ORG_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="type != null and type != ''">
+			<choose>
+				<when test="schEventType != null and schEventType == 'like'">
+					AND T.TYPE_ like #{type,jdbcType=VARCHAR} || '%'
+				</when>
+				<otherwise>
+					AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT COUNT(0)
+		  FROM T_EVENT_TYPE_PROC_CFG T
+		  LEFT JOIN T_DC_GRID G
+		    ON T.REGION_CODE = G.INFO_ORG_CODE
+		 <include refid="find_where"/>
+	</select>
+	
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT T.REGION_CODE, T.TYPE_, G.GRID_NAME
+		  FROM T_EVENT_TYPE_PROC_CFG T
+		  LEFT JOIN T_DC_GRID G
+		    ON T.REGION_CODE = G.INFO_ORG_CODE
+		 <include refid="find_where"/>
+		 GROUP BY T.REGION_CODE, T.TYPE_, G.GRID_NAME
+		 ORDER BY T.REGION_CODE
+	</select>
+	
+	<select id="findPO" resultMap="BaseResultMap">
+		SELECT <include refid="viewCol"/> FROM T_EVENT_TYPE_PROC_CFG T LEFT JOIN T_DC_GRID G 
+		ON T.REGION_CODE = G.INFO_ORG_CODE
+		<include refid="find_where"/>
+	</select>
+	
+</mapper>

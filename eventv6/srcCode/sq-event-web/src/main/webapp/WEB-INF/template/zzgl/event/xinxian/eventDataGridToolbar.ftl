@@ -1,0 +1,1 @@
+<@extends name="/zzgl/event/eventDataGridToolbar.ftl" />

@@ -1,0 +1,130 @@
+UL {
+	PADDING-BOTTOM: 0px; LIST-STYLE-TYPE: none; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; FLOAT: left; PADDING-TOP: 0px
+}
+LI {
+	PADDING-BOTTOM: 0px; LIST-STYLE-TYPE: none; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; FLOAT: left; PADDING-TOP: 0px
+}
+#tip {
+	Z-INDEX: 999; BORDER: #37bbfd 1px dashed; POSITION: absolute;  LINE-HEIGHT: 22px; PADDING-LEFT: 22px; BACKGROUND: url(../images/loading.gif) #fff no-repeat 3px 3px; HEIGHT: 22px; COLOR: #ccc;  TOP: 0px; LEFT: 278px
+}
+#top {
+	WIDTH: 100%; BACKGROUND: url(../images/topbg.gif) #fff repeat-x; FLOAT: left; HEIGHT: 97px; OVERFLOW: hidden;position:relative;
+}
+#logo {
+	WIDTH: 350px;  HEIGHT: 63px; OVERFLOW: hidden;
+	position:absolute;left:0;top:0;
+}
+#nav {
+	MARGIN-TOP: 61px; HEIGHT: 27px; OVERFLOW: hidden;margin-left:225px;float:left;
+}
+#nav LI {
+	TEXT-ALIGN: center; LINE-HEIGHT: 27px; WIDTH: 111px; HEIGHT: 27px
+}
+#nav A:link {
+	
+}
+#nav A:visited {
+	
+}
+#nav A:active {
+	
+}
+#nav A:hover {
+	COLOR: #f86500; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+#subline {
+	BORDER-BOTTOM: #77bff3 1px solid; WIDTH: 100%; BACKGROUND: url(../images/topbg2.gif) #fffaf7 repeat-x; HEIGHT: 35px; CLEAR: both; OVERFLOW: hidden
+}
+.download {
+	MARGIN: 0px 0px 0px 20px; WIDTH: 228px; FLOAT: left
+}
+.download A:link {
+	COLOR: #0890de; FONT-WEIGHT: bold
+}
+.download A:visited {
+	COLOR: #0890de; FONT-WEIGHT: bold
+}
+.download A:active {
+	COLOR: #0890de; FONT-WEIGHT: bold
+}
+.download hover {
+	COLOR: #0890de; FONT-WEIGHT: bold
+}
+#subline LI {
+	LINE-HEIGHT: 37px
+}
+.position {
+ FLOAT: left
+}
+.position LI {
+	MARGIN-LEFT: 8px
+}
+.position .title {
+	PADDING-LEFT: 22px; BACKGROUND: url(../images/public.gif) no-repeat 0px -64px; COLOR: #0a62a3; FONT-WEIGHT: bold
+}
+.position .first {
+	COLOR: #0a62a3
+}
+.position .normal {
+	PADDING-LEFT: 16px; BACKGROUND: url(../images/public.gif) no-repeat 0px -27px; COLOR: #0a62a3
+}
+.bg_image {
+	DISPLAY: block; BACKGROUND: url(../images/public.gif) no-repeat; COLOR: #0a62a3; CURSOR: pointer; FONT-WEIGHT: bold
+}
+.bg_image_onclick {
+	DISPLAY: block; BACKGROUND: url(../images/public.gif) no-repeat -111px 0px; COLOR: #fff; CURSOR: pointer; FONT-WEIGHT: bold
+}
+#info {
+ WIDTH: 237px;  FLOAT: right; HEIGHT: 73px; OVERFLOW: hidden; 
+}
+.person {
+	TEXT-ALIGN: center; WIDTH: 92px; FLOAT: left; HEIGHT: 65px; PADDING-TOP: 8px
+}
+.person P {
+	PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px
+}
+.photo IMG {
+	BORDER-BOTTOM: #d1d1d1 1px solid; BORDER-LEFT: #d1d1d1 1px solid; PADDING-BOTTOM: 1px; PADDING-LEFT: 1px; PADDING-RIGHT: 1px; BACKGROUND: #fff; BORDER-TOP: #d1d1d1 1px solid; BORDER-RIGHT: #d1d1d1 1px solid; PADDING-TOP: 1px
+}
+.admin {
+	LINE-HEIGHT: 22px; OVERFLOW: hidden
+}
+.tip {
+	WIDTH: 138px; FLOAT: left; HEIGHT: 50px; PADDING-TOP: 18px
+}
+#right_main_nav {
+	OVERFLOW-X: hidden; OVERFLOW-Y: auto; WIDTH: 210px;  FLOAT: left;
+}
+.list_tilte {
+	LINE-HEIGHT: 24px; MARGIN-TOP: 4px; PADDING-LEFT: 55px; WIDTH: 135px; BACKGROUND: url(../images/public.gif) no-repeat 14px -170px; FLOAT: left; HEIGHT: 24px; CURSOR: pointer
+}
+.list_tilte_onclick {
+	LINE-HEIGHT: 24px; MARGIN-TOP: 4px; PADDING-LEFT: 55px; WIDTH: 135px; BACKGROUND: url(../images/public.gif) no-repeat 14px -110px; FLOAT: left; HEIGHT: 24px; CURSOR: pointer
+}
+.list_tilte SPAN {
+	COLOR: #fff; FONT-SIZE: 12px; FONT-WEIGHT: bold
+}
+.list_tilte_onclick SPAN {
+	COLOR: #e2f5ff; FONT-SIZE: 12px; FONT-WEIGHT: bold
+}
+.list_detail {
+	FLOAT: left
+}
+.list_detail LI {
+	LINE-HEIGHT: 27px; PADDING-LEFT: 55px; WIDTH: 173px; BACKGROUND: url(../images/public.gif) no-repeat 19px -140px; HEIGHT: 27px
+}
+.switch {
+	PADDING-BOTTOM: 200px; PADDING-LEFT: 0px; WIDTH: 11px; PADDING-RIGHT: 0px; HEIGHT: 100%; OVERFLOW: hidden; PADDING-TOP: 200px
+}
+.close {
+	TEXT-INDENT: -999px; WIDTH: 11px; DISPLAY: block; BACKGROUND: url(../images/public.gif) no-repeat -232px -101px; HEIGHT: 31px; OVERFLOW: hidden
+}
+.open {
+	TEXT-INDENT: -999px; WIDTH: 11px; DISPLAY: block; BACKGROUND: url(../images/public.gif) no-repeat -221px -101px; HEIGHT: 31px; OVERFLOW: hidden
+}
+#CFun {
+	Z-INDEX: 999;  WIDTH: 200px; HEIGHT: 32px;float:right; cursor:pointer;
+}
+#CFun BUTTON {
+	BORDER-BOTTOM-STYLE: none; TEXT-ALIGN: left; LINE-HEIGHT: 32px; BORDER-LEFT-STYLE: none; PADDING-LEFT: 25px; WIDTH: 96px; BORDER-TOP-STYLE: none; BACKGROUND: url(../images/public.gif) no-repeat 0px -308px; HEIGHT: 34px; COLOR: #68bb0c; MARGIN-LEFT: 8px; BORDER-RIGHT-STYLE: none; OVERFLOW: hidden
+}

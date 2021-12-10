@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.accountabilityEnforcement.AccountabilityEnforcementMapper" >
+	<!-- 列表查询列 -->
+	<sql id="list_column">
+		T.PROB_ID                   "probId",
+		T.PROB_TITLE                "probTitle",
+		T.SOURCE                    "source",
+		T1.ORG_ENTITY_PATH			"regionPath",
+		T.VIOLATION_DATE            "violationDate",
+		T.VIOLATION_OBJ_TYPE        "violationObjType",
+		T.CREATED                   "created"
+	</sql>
+	<!-- 查询列 -->
+	<sql id="detail_column">
+		<include refid="list_column"></include>,
+		T.PROB_NO						"probNo",
+       	T.REGION_CODE					"regionCode",
+       	T.RPT_PERSON_NAME				"rptPersonName",
+       	T.RPT_PERSON_TEL				"rptPersonTel",
+       	T.AMOUNT_INVOLVED				"amountInvolved",
+       	T.VIOLATION_MONEY				"violationMoney",
+       	T.VIOLATION_MONEY_TYPE			"violationMoneyType",
+       	T.VIOLATION_TYPE				"violationType",
+       	T.CASE_BRIEF					"caseBrief",
+       	T.PROC_TYPE						"procType",
+       	T.PROC_STATUS					"procStatus",
+       	T.PROC_DEADLINE					"procDeadline",
+       	T.FIN_TIME						"finTime",
+       	T.BLAME_FLAG					"blameFlag",
+       	T.ORG_PROC_TYPE					"orgProcType",
+       	T.ORG_PROC_DATE					"orgProcDate",
+       	T.ORG_PROC_ORGAN				"orgProcOrgan",
+       	T.PARTY_FLAG					"partyFlag",
+       	T.PARTY_PUNISHMENT_DATE			"partyPunishmentDate",
+       	T.PARTY_PUNISHMENT_ORGAN		"partyPunishmentOrgan",
+       	T.DISCIPLINE_FLAG				"disciplineFlag",
+       	T.DISCIPLINE_PUNISHMENT_DATE	"disciplinePunishmentDate",
+       	T.DISCIPLINE_PUNISHMENT_ORGAN	"disciplinePunishmentOrgan",
+       	T.TRANSFER_JUSTICE_FLAG			"transferJusticeFlag",
+       	T.SHAPE							"shape",
+       	T.DISCIPLINARY_PUNISHMENT		"disciplinaryPunishment",
+       	T.ACCOUNTABILITY_DISPOSITION	"accountabilityDisposition",
+       	T.AMOUNT_OF_RECOVERY			"amountOfRecovery",
+       	T.PROC_RESULT					"procResult",
+       	T.STATUS_						"status",
+       	T.RPT_UNIT_NAME             	"rptUnitName",
+        T1.ORG_NAME						"regionName"
+	</sql>
+	
+    <!--查询草稿问题总数-->
+    <select id="findCountByCriteria" resultType="java.lang.Integer">
+        SELECT COUNT(1) 
+        <include refid="draftListSql"></include>
+    </select>
+    
+    <!--查询草稿问题总数-->
+    <select id="findPageListByCriteria" resultType="java.util.Map">
+        SELECT
+	        <include refid="list_column"></include>
+        <include refid="draftListSql"></include>
+        <include refid="order_by"></include>
+    </select>
+    
+    <!-- 草稿事件列表语句 -->
+    <sql id="draftListSql">
+        FROM T_PROBLEM T
+		INNER JOIN T_DC_ORG_ENTITY_INFO T1
+			ON T.REGION_CODE = T1.ORG_CODE
+		LEFT JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T2
+			ON T.PROB_ID = T2.FORM_ID AND T2.FORM_TYPE_ID = 500
+		WHERE T1.STATUS = '001' AND T2.STATUS IS NULL
+		<include refid="find_where"></include>
+    </sql>
+
+	<!-- 待办列表统计 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="todoListSql"></include>
+  	</select>
+  	
+  	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="list_column"/>,
+	  		T2.CUR_NODE	"curNode"
+	  	<include refid="todoListSql"></include>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 待办列表语句 -->
+  	<sql id="todoListSql">
+  		FROM T_PROBLEM T, T_DC_ORG_ENTITY_INFO T1, ${dbuser.workflow}.WF_PROCESS_INSTANCE T2, ${dbuser.workflow}.JBPM4_TASK T3, ${dbuser.workflow}.JBPM4_PARTICIPATION T4
+    	WHERE T.PROB_ID = T2.FORM_ID AND T.REGION_CODE = T1.ORG_CODE AND T2.FORM_TYPE_ID = 500 AND T2.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+    	AND ((T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3') OR (T4.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '1'))
+    	AND T1.STATUS = '001'
+		<include refid="find_where"/>
+  	</sql>
+  	
+  	<!-- 经办列表统计 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="handledListSql"></include>
+		<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 经办列表数据 -->
+  	<select id="findPageList4Handled" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="list_column"/>,
+	  		NVL(T8.NODE_NAME_ZH, '归档')	"curNodeNameZH"
+	  	<include refid="handledListSql"></include>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 经办列表语句 -->
+  	<sql id="handledListSql">
+		FROM T_PROBLEM T
+		INNER JOIN T_DC_ORG_ENTITY_INFO T1
+			ON T.REGION_CODE = T1.ORG_CODE
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T2
+			ON T.PROB_ID = T2.FORM_ID
+		INNER JOIN ${dbuser.workflow}.WF_WORKFLOW T7
+			ON T2.WORKFLOW_ID = T7.WORKFLOW_ID
+		LEFT JOIN ${dbuser.workflow}.WF_NODE T8
+			ON T2.CUR_NODE = T8.NODE_NAME AND T7.DEPLOYMENT_ID = T8.DEPLOYMENT_ID
+		WHERE T2.FORM_TYPE_ID = 500 AND T1.STATUS = '001'
+			AND EXISTS(
+				SELECT 1
+				FROM ${dbuser.workflow}.WF_TASK T5, ${dbuser.workflow}.WF_TASK_PARTICIPATION T6
+				WHERE T5.INSTANCE_ID = T2.INSTANCE_ID AND T5.TASK_ID = T6.TASK_ID AND T6.USER_ID = #{handledUserId,jdbcType=VARCHAR} AND T6.ORG_ID = #{handledOrgId,jdbcType=VARCHAR} AND T6.USER_TYPE = '3'
+			)
+		<include refid="find_where"/>
+  	</sql>
+  	
+  	<!-- 我发起的列表统计 -->
+  	<select id="findCount4Initiator" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		<include refid="initiatorListSql"></include>
+  	</select>
+  	
+  	<!-- 我发起的列表数据 -->
+  	<select id="findPageList4Initiator" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="list_column"/>
+	  	<include refid="initiatorListSql"></include>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 我发起的列表语句 -->
+  	<sql id="initiatorListSql">
+  		FROM T_PROBLEM T, T_DC_ORG_ENTITY_INFO T1, ${dbuser.workflow}.WF_PROCESS_INSTANCE T2
+		WHERE T.PROB_ID = T2.FORM_ID AND T.REGION_CODE = T1.ORG_CODE AND T2.FORM_TYPE_ID = 500 AND T1.STATUS = '001'
+		AND T2.USER_ID = #{initiatorId,jdbcType=VARCHAR} AND T2.ORG_ID = #{initiatorOrgId,jdbcType=VARCHAR}
+	  	<include refid="find_where"/>
+  	</sql>
+  	
+  	<!-- 辖区所有列表统计 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		<include refid="jurisdictionListSql"></include>
+	  	<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 辖区所有列表数据 -->
+  	<select id="findPageList4Jurisdiction" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="list_column"/>,
+	  		NVL(T8.NODE_NAME_ZH, '归档')	"curNodeNameZH"
+	  	<include refid="jurisdictionListSql"></include>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区所有列表语句 -->
+  	<sql id="jurisdictionListSql">
+    	FROM T_PROBLEM T
+		INNER JOIN T_DC_ORG_ENTITY_INFO T1
+			ON T.REGION_CODE = T1.ORG_CODE
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T2
+			ON T.PROB_ID = T2.FORM_ID
+		INNER JOIN ${dbuser.workflow}.WF_WORKFLOW T7
+			ON T2.WORKFLOW_ID = T7.WORKFLOW_ID
+		LEFT JOIN ${dbuser.workflow}.WF_NODE T8
+			ON T2.CUR_NODE = T8.NODE_NAME AND T7.DEPLOYMENT_ID = T8.DEPLOYMENT_ID
+      	WHERE T2.FORM_TYPE_ID = 500 AND T1.STATUS = '001'
+      		AND T2.STATUS IN ('1', '2') 
+	  	<include refid="find_where"/>
+  	</sql>
+  	
+  	<!-- 辖区归档列表统计 -->
+  	<select id="findCount4JurisdictionArchived" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		<include refid="jurisdictionArchivedListSql"></include>
+	  	<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 辖区归档列表数据 -->
+  	<select id="findPageList4JurisdictionArchived" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="list_column"/>
+	  	<include refid="jurisdictionArchivedListSql"></include>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区归档列表语句 -->
+  	<sql id="jurisdictionArchivedListSql">
+    	FROM T_PROBLEM T
+		INNER JOIN T_DC_ORG_ENTITY_INFO T1
+			ON T.REGION_CODE = T1.ORG_CODE
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T2
+			ON T.PROB_ID = T2.FORM_ID
+      	WHERE T2.FORM_TYPE_ID = 500 AND T1.STATUS = '001' AND T2.STATUS = '2'
+	  	<include refid="find_where"/>
+  	</sql>
+  	
+    <!--新增问题-->
+    <insert id="insert">
+        <selectKey keyProperty="probId" resultType="long" order="BEFORE">
+            SELECT SEQ_T_PROBLEM.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO T_PROBLEM (
+        	PROB_ID, PROB_NO, PROB_TITLE, REGION_CODE,
+        	SOURCE, RPT_UNIT_NAME, RPT_PERSON_NAME, RPT_PERSON_TEL,
+        	VIOLATION_DATE, VIOLATION_OBJ_TYPE, AMOUNT_INVOLVED, VIOLATION_MONEY,
+        	VIOLATION_MONEY_TYPE, VIOLATION_TYPE, CASE_BRIEF, PROC_TYPE,
+        	PROC_STATUS, PROC_DEADLINE, FIN_TIME, BLAME_FLAG,
+        	ORG_PROC_TYPE, ORG_PROC_DATE, ORG_PROC_ORGAN, PARTY_FLAG,
+        	PARTY_PUNISHMENT_DATE, PARTY_PUNISHMENT_ORGAN, DISCIPLINE_FLAG, DISCIPLINE_PUNISHMENT_DATE,
+        	DISCIPLINE_PUNISHMENT_ORGAN, TRANSFER_JUSTICE_FLAG, SHAPE, DISCIPLINARY_PUNISHMENT,
+        	ACCOUNTABILITY_DISPOSITION, AMOUNT_OF_RECOVERY, PROC_RESULT, CREATED,
+        	CREATOR, UPDATED, UPDATER, STATUS_
+        )
+        VALUES (
+        	#{probId,jdbcType=DECIMAL}, #{probNo,jdbcType=VARCHAR}, #{probTitle,jdbcType=VARCHAR}, #{regionCode,jdbcType=VARCHAR},
+        	#{source,jdbcType=VARCHAR}, #{rptUnitName,jdbcType=VARCHAR}, #{rptPersonName,jdbcType=VARCHAR}, #{rptPersonTel,jdbcType=VARCHAR},
+        	#{violationDate,jdbcType=TIMESTAMP}, #{violationObjType,jdbcType=VARCHAR}, #{amountInvolved,jdbcType=DECIMAL}, #{violationMoney,jdbcType=DECIMAL},
+        	#{violationMoneyType,jdbcType=VARCHAR}, #{violationType,jdbcType=VARCHAR}, #{caseBrief,jdbcType=VARCHAR}, #{procType,jdbcType=VARCHAR},
+        	#{procStatus,jdbcType=VARCHAR}, #{procDeadline,jdbcType=TIMESTAMP}, #{finTime,jdbcType=TIMESTAMP}, #{blameFlag,jdbcType=VARCHAR},
+        	#{orgProcType,jdbcType=VARCHAR}, #{orgProcDate,jdbcType=TIMESTAMP}, #{orgProcOrgan,jdbcType=VARCHAR}, #{partyFlag,jdbcType=VARCHAR},
+        	#{partyPunishmentDate,jdbcType=TIMESTAMP}, #{partyPunishmentOrgan,jdbcType=VARCHAR}, #{disciplineFlag,jdbcType=VARCHAR}, #{disciplinePunishmentDate,jdbcType=TIMESTAMP},
+        	#{disciplinePunishmentOrgan,jdbcType=VARCHAR}, #{transferJusticeFlag,jdbcType=VARCHAR}, #{shape,jdbcType=VARCHAR}, #{disciplinaryPunishmen,jdbcType=VARCHAR},
+        	#{accountabilityDisposition,jdbcType=VARCHAR}, #{amountOfRecovery,jdbcType=DECIMAL}, #{procResult,jdbcType=VARCHAR}, SYSDATE,
+        	#{creator,jdbcType=DECIMAL}, SYSDATE, #{updater,jdbcType=DECIMAL}, '1'
+        )
+    </insert>
+
+    <!-- 依据问题id更新问题记录 -->
+    <update id="update">
+        UPDATE T_PROBLEM T
+        <set>
+            <if test="probTitle != null and probTitle != ''">
+                T.PROB_TITLE = #{probTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null and regionCode != ''">
+                T.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="source != null and source != ''">
+                T.SOURCE = #{source,jdbcType=VARCHAR},
+            </if>
+            <if test="rptUnitName != null and rptUnitName != ''">
+                T.RPT_UNIT_NAME = #{rptUnitName,jdbcType=VARCHAR},
+            </if>
+            <if test="rptPersonName != null ">
+            	T.RPT_PERSON_NAME = #{rptPersonName,jdbcType=VARCHAR},
+            </if>
+            <if test="rptPersonTel != null ">
+            	T.RPT_PERSON_TEL = #{rptPersonTel,jdbcType=VARCHAR},
+            </if>
+            <if test="violationDate != null ">
+            	T.VIOLATION_DATE = #{violationDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="violationObjType != null ">
+            	T.VIOLATION_OBJ_TYPE = #{violationObjType,jdbcType=VARCHAR},
+            </if>
+            <if test="amountInvolved != null">
+            	T.AMOUNT_INVOLVED = #{amountInvolved,jdbcType=DECIMAL},
+            </if>
+            <if test="violationMoney != null">
+            	T.VIOLATION_MONEY = #{violationMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="violationMoneyType != null ">
+            	T.VIOLATION_MONEY_TYPE = #{violationMoneyType,jdbcType=VARCHAR},
+            </if>
+            <if test="violationType != null ">
+            	T.VIOLATION_TYPE = #{violationType,jdbcType=VARCHAR},
+            </if>
+            <if test="caseBrief != null ">
+            	T.CASE_BRIEF = #{caseBrief,jdbcType=VARCHAR},
+            </if>
+            <if test="procType != null ">
+            	T.PROC_TYPE = #{procType,jdbcType=VARCHAR},
+            </if>
+            <if test="procStatus != null ">
+            	T.PROC_STATUS = #{procStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="procDeadline != null ">
+            	T.PROC_DEADLINE = #{procDeadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finTime != null ">
+            	T.FIN_TIME = #{finTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="blameFlag != null ">
+            	T.BLAME_FLAG = #{blameFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="orgProcType != null ">
+            	T.ORG_PROC_TYPE = #{orgProcType,jdbcType=VARCHAR},
+            </if>
+            <if test="orgProcDate != null ">
+            	T.ORG_PROC_DATE = #{orgProcDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orgProcOrgan != null ">
+            	T.ORG_PROC_ORGAN = #{orgProcOrgan,jdbcType=VARCHAR},
+            </if>
+            <if test="partyFlag != null ">
+            	T.PARTY_FLAG = #{partyFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="partyPunishmentDate != null ">
+            	T.PARTY_PUNISHMENT_DATE = #{partyPunishmentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="partyPunishmentOrgan != null ">
+            	T.PARTY_PUNISHMENT_ORGAN = #{partyPunishmentOrgan,jdbcType=VARCHAR},
+            </if>
+            <if test="disciplineFlag != null ">
+            	T.DISCIPLINE_FLAG = #{disciplineFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="disciplinePunishmentDate != null ">
+            	T.DISCIPLINE_PUNISHMENT_DATE = #{disciplinePunishmentDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="disciplinePunishmentOrgan != null ">
+            	T.DISCIPLINE_PUNISHMENT_ORGAN = #{disciplinePunishmentOrgan,jdbcType=VARCHAR},
+            </if>
+            <if test="transferJusticeFlag != null ">
+            	T.TRANSFER_JUSTICE_FLAG = #{transferJusticeFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="shape != null ">
+            	T.SHAPE = #{shape,jdbcType=VARCHAR},
+            </if>
+            <if test="disciplinaryPunishment != null ">
+            	T.DISCIPLINARY_PUNISHMENT = #{disciplinaryPunishment,jdbcType=VARCHAR},
+            </if>
+            <if test="accountabilityDisposition != null ">
+            	T.ACCOUNTABILITY_DISPOSITION = #{accountabilityDisposition,jdbcType=VARCHAR},
+            </if>
+            <if test="amountOfRecovery != null ">
+            	T.AMOUNT_OF_RECOVERY = #{amountOfRecovery,jdbcType=DECIMAL},
+            </if>
+            <if test="procResult != null ">
+            	T.PROC_RESULT = #{procResult,jdbcType=VARCHAR},
+            </if>
+            <if test="updater != null ">
+            	T.UPDATER = #{updater,jdbcType=DECIMAL},
+            </if>
+            
+            T.UPDATED = SYSDATE
+        </set>
+        
+        WHERE T.PROB_ID = #{probId,jdbcType=DECIMAL}
+    </update>
+    
+    <!-- 依据主键删除问题记录 -->
+    <delete id="deleteByProbId">
+        UPDATE T_PROBLEM T
+        <set>
+            <if test="delUserId != null ">
+                T.UPDATER = #{delUserId,jdbcType=DECIMAL},
+            </if>
+            T.STATUS_ = '0',
+            T.UPDATED = SYSDATE
+        </set>
+        WHERE T.PROB_ID = #{probId,jdbcType=DECIMAL}
+    </delete>
+    
+   <!--根据问题id查询数据-->
+    <select id="findById" resultType="java.util.Map" parameterType="java.lang.Long">
+        SELECT 
+        	<include refid="detail_column"></include>
+        FROM T_PROBLEM T, T_DC_ORG_ENTITY_INFO T1
+        WHERE T.REGION_CODE = T1.ORG_CODE AND T.PROB_ID = #{probId,jdbcType=DECIMAL} 
+        AND T.STATUS_ = '1' AND T1.STATUS = '001'
+    </select>
+    
+    <!-- 查询条件 -->
+    <sql id="find_where">
+    	AND T.STATUS_ = '1'
+    	<if test="creator != null ">
+    		AND T.CREATOR = #{creator,jdbcType=DECIMAL}
+    	</if>
+    	<if test="regionCode != null and regionCode != '' ">
+    		AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+    	</if>
+    	<if test="source != null and source != '' ">
+    		AND T.SOURCE = #{source,jdbcType=VARCHAR}
+    	</if>
+    	<if test="violationObjType != null and violationObjType != '' ">
+    		AND T.VIOLATION_OBJ_TYPE = #{violationObjType,jdbcType=VARCHAR}
+    	</if>
+    	<if test="probNo != null and probNo != '' ">
+    		AND T.PROB_NO LIKE '%' || #{probNo,jdbcType=VARCHAR} || '%'
+    	</if>
+    	<if test="probTitle != null and probTitle != '' ">
+    		AND T.PROB_TITLE LIKE '%' || #{probTitle,jdbcType=VARCHAR} || '%'
+    	</if>
+    	<if test="createdStart != null and createdStart != '' ">
+	  		AND T.CREATED <![CDATA[>=]]>TO_DATE(#{createdStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="createdEnd != null and createdEnd != '' ">
+	   		AND T.CREATED <![CDATA[<]]>TO_DATE(#{createdEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	   	<if test="violationDateStart != null and violationDateStart != '' ">
+	  		AND T.VIOLATION_DATE <![CDATA[>=]]>TO_DATE(#{violationDateStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="violationDateEnd != null and violationDateEnd != '' ">
+	   		AND T.VIOLATION_DATE <![CDATA[<]]>TO_DATE(#{violationDateEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	   	<if test="amountInvolvedStart != null ">
+	  		AND T.AMOUNT_INVOLVED <![CDATA[>=]]>#{violationDateStart,jdbcType=DECIMAL}
+	  	</if>
+	   	<if test="amountInvolvedEnd != null ">
+	   		AND T.AMOUNT_INVOLVED <![CDATA[<=]]>#{violationDateEnd,jdbcType=DECIMAL}
+	   	</if>
+        <if test="rptUnitName != null and rptUnitName != '' ">
+            AND T.RPT_UNIT_NAME LIKE '%' || #{rptUnitName,jdbcType=VARCHAR} || '%'
+        </if>
+    </sql>
+    
+    <!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		ORDER BY T.PROB_ID DESC
+  	</sql>
+</mapper>

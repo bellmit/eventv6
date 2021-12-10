@@ -1,0 +1,79 @@
+<@override name="eventListPageTitle">
+	南安市事件列表页面
+</@override>
+
+<@override name="eventToolbar">
+<#include "/zzgl/event/nananshi/eventDataGridToolbar.ftl" />
+</@override>
+
+<@override name="gridPathField">
+	{field:'gridPath',title:'所属区域', align:'center',width:fixWidth(0.18), formatter: titleFormatter},
+</@override>
+
+<@override name="function_clickFormatter_body">
+	var urgency = rec.urgencyDegree,
+            urgencyName = rec.urgencyDegreeName,
+            urgencyPic = "",
+            handleStatus = rec.handleDateFlag,
+            remindStatus = rec.remindStatus,
+            isAttention = rec.isAttention,
+            wfStatus = rec.wfStatus,
+            eventType = "${eventType!}",
+            value = value || "";
+
+    if(value.length > 20) {
+        value = value.substring(0,20);
+    }
+
+    var attentionVal = '';
+<#if isShowAttentionBtn?? && isShowAttentionBtn>
+    if(isAttention) {
+        attentionVal = '<li class="guanzhu" onMouseover="showVal(this)" onMouseout="hideVal(this)"  onclick=attentionEvent(this,"'+ rec.isAttention+ '",'+rec.eventId+')>已关注</li>';
+    } else {
+        attentionVal = '<li class="guanzhu"  onclick=attentionEvent(this,"'+ rec.isAttention + '",'+rec.eventId+')>添加关注</li>';
+    }
+</#if>
+
+    var handlePic = "";
+<#if eventType != 'draft'>
+    if(handleStatus == '2'){
+        handlePic = '<i title="将到期" class="ToolBarDue"></i>';
+    } else if(handleStatus == '3'){
+        handlePic = '<i title="已过期" class="ToolBarOverDue"></i>';
+    }
+</#if>
+
+    var influencePic = "";
+    
+    if(remindStatus == '2' || remindStatus == '3') {
+		var supervisionType = rec.supervisionType;//改为实际值
+		influencePic = '<img src="${rc.getContextPath()}/images/duban'+ supervisionType +'.png" style="margin:0 10px 0 0; width:28px; height:28px;">';
+	}
+
+    if(rec.influenceDegree == '04'){
+        influencePic += "<b class='FontRed'>[重大]</b>";
+    }
+
+    var tab = '';
+<#if eventType == "all" || eventType == "toRemind">
+    tab = '<div class="OperateNotice" style="display:none"><div class="operate"><ul>'+attentionVal+'</ul><div class="arrow"></div></div></div>';
+<#elseif eventType == "my">
+    if(wfStatus == '1') {
+        var urgeVal = '<li class="cuiban" onclick=urgeEvent(this,'+rec.eventId+','+rec.instanceId+')>催办</li>';
+        tab = '<div class="OperateNotice" style="display:none"><div class="operate"><ul>'+urgeVal+'</ul><div class="arrow"></div></div></div>';
+    }
+<#elseif eventType == "todo">
+    if(remindStatus == '1' || remindStatus == '3') {
+        urgencyPic += '<i title="催办" class="ToolBarRemind"></i>';
+    }
+</#if>
+
+    if(urgencyName && urgency != '01') {
+        urgencyPic += '<i title="'+ urgencyName +'" class="ToolBarUrgency"></i>';
+    }
+
+    var f = tab + influencePic+'<a class="eName" href="###" title="'+ rec.eventName +'" onclick=showDetailRow('+ rec.eventId+ ','+rec.instanceId+','+rec.workFlowId+',"'+rec.bizPlatform+'","'+rec.type+'")>'+value+'</a>'+urgencyPic+handlePic;
+    return f;
+</@override>
+
+<@extends name="/zzgl/event/list_event.ftl" />

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dataExchange.DataExchangeStatusTwoWayMapper" >
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchangeStatus" >
+		<result column="INTER_ID" property="interId" jdbcType="DECIMAL" />
+		<result column="OPPO_SIDE_BIZ_TYPE" property="oppoSideBizType" jdbcType="VARCHAR" />
+	    <result column="OPPO_SIDE_BIZ_CODE" property="oppoSideBizCode" jdbcType="VARCHAR" />
+	    <result column="OPPO_SIDE_BIZ_STATUS" property="oppoSideBizStatus" jdbcType="VARCHAR" />
+	    
+	    <result column="OWN_SIDE_BIZ_TYPE" property="ownSideBizType" jdbcType="VARCHAR" />
+	    <result column="OWN_SIDE_BIZ_CODE" property="ownSideBizCode" jdbcType="VARCHAR" />
+	    <result column="OWN_SIDE_BIZ_STATUS" property="ownSideBizStatus" jdbcType="VARCHAR" />
+	    
+	    <result column="SRC_PLATFORM" property="srcPlatform" jdbcType="VARCHAR" />
+	    <result column="DEST_PLATFORM" property="destPlatform" jdbcType="VARCHAR" />
+	    
+	    <result column="EXCHANGE_FLAG" property="exchangeFlag" jdbcType="VARCHAR" />
+	    <result column="STATUS_" property="status" jdbcType="VARCHAR" />
+	    
+	    <result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+	    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+	    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="sameColumn">
+	   T1.INTER_ID,
+       T1.OPPO_SIDE_BIZ_TYPE,
+       T1.OPPO_SIDE_BIZ_CODE,
+       T1.OPPO_SIDE_BIZ_STATUS,
+       T1.OWN_SIDE_BIZ_TYPE,
+       T1.OWN_SIDE_BIZ_CODE,
+       T1.OWN_SIDE_BIZ_STATUS,
+       T1.SRC_PLATFORM,
+       T1.DEST_PLATFORM,
+       T1.EXCHANGE_FLAG,
+       T1.STATUS_,
+       T1.CREATE_USER_ID,
+       T1.CREATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.UPDATE_TIME
+	</sql>
+	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchangeStatus" >
+	  	<selectKey keyProperty="interId" resultType="long" order="BEFORE">
+			SELECT SEQ_DATA_EXCHANGE_STATUS.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BAS_DATA_EXCHANGE_STATUS(INTER_ID, OPPO_SIDE_BIZ_TYPE, OPPO_SIDE_BIZ_CODE, OPPO_SIDE_BIZ_STATUS, 
+			OWN_SIDE_BIZ_TYPE, OWN_SIDE_BIZ_CODE, OWN_SIDE_BIZ_STATUS, SRC_PLATFORM, DEST_PLATFORM, EXCHANGE_FLAG,  
+			STATUS_, CREATE_USER_ID, CREATE_TIME, UPDATE_USER_ID, UPDATE_TIME)
+		VALUES(
+			#{interId,jdbcType=DECIMAL},#{oppoSideBizType,jdbcType=VARCHAR},#{oppoSideBizCode,jdbcType=VARCHAR},
+			#{oppoSideBizStatus,jdbcType=VARCHAR},#{ownSideBizType,jdbcType=VARCHAR},#{ownSideBizCode,jdbcType=VARCHAR},
+			#{ownSideBizStatus,jdbcType=VARCHAR},#{srcPlatform,jdbcType=VARCHAR},#{destPlatform,jdbcType=VARCHAR},
+			#{exchangeFlag,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{createUserId,jdbcType=DECIMAL},SYSDATE,
+			#{updateUserId,jdbcType=DECIMAL},#{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE T_BAS_DATA_EXCHANGE_STATUS T1
+		<set>
+			<if test="oppoSideBizType != null">
+				T1.OPPO_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR},
+			</if>
+			<if test="oppoSideBizCode != null">
+				T1.OPPO_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR},
+			</if>
+			<if test="oppoSideBizStatus != null">
+				T1.OPPO_SIDE_BIZ_STATUS = #{oppoSideBizStatus,jdbcType=VARCHAR},
+			</if>
+			
+			<if test="ownSideBizType != null">
+				T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR},
+			</if>
+			<if test="ownSideBizCode != null">
+				T1.OWN_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR},
+			</if>
+			<if test="ownSideBizStatus != null">
+				T1.OWN_SIDE_BIZ_STATUS = #{ownSideBizStatus,jdbcType=VARCHAR},
+			</if>
+			
+			<if test="srcPlatform != null">
+				T1.SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR},
+			</if>
+			<if test="destPlatform != null">
+				T1.DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR},
+			</if>
+			
+			<if test="exchangeFlag != null and exchangeFlag != '' ">
+				T1.EXCHANGE_FLAG = #{exchangeFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				T1.STATUS_ = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null">
+				T1.UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.INTER_ID = #{interId,jdbcType=DECIMAL}
+	</update>
+	
+	<delete id="delete">
+		UPDATE T_BAS_DATA_EXCHANGE_STATUS T1
+		<set>
+			<if test="updateUserId != null">
+				T1.UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE,
+			T1.STATUS_ = '0'
+		</set>
+		WHERE T1.INTER_ID = #{interId,jdbcType=DECIMAL}
+	</delete>
+	
+	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+		SELECT COUNT(1) FROM T_BAS_DATA_EXCHANGE_STATUS T1
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<select id="findPageListByCriteria" resultMap="BaseResultMap" >
+		SELECT <include refid="sameColumn"/> 
+		FROM T_BAS_DATA_EXCHANGE_STATUS T1
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<select id="findEventNewDocking" resultType="map">
+		SELECT T2.*,T3.*
+		FROM T_EVENT T2
+		LEFT JOIN T_BAS_DATA_EXCHANGE_STATUS T3 ON T2.EVENT_ID = T3.OWN_SIDE_BIZ_CODE
+		WHERE T2.STATUS IN ('00', '01', '02', '03', '04')
+		AND T3.EXCHANGE_FLAG = '0'
+		AND EXISTS (
+       	   SELECT T1.INTER_ID 
+       	   FROM T_BAS_DATA_EXCHANGE_STATUS T1
+       	   WHERE 1 = 1 
+       	   <include refid="find_where_event"/>
+        )
+		<if test="eventStatuss != null and eventStatuss != '' ">
+			AND T2.STATUS IN 
+		 	<foreach item="item" index="index" collection="eventStatuss" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		</if>
+	</select>
+	
+	<select id="findCloseEventAppointed" resultType="map">
+		select *
+		  from T_EVENT t1
+		  left join T_BAS_DATA_EXCHANGE_STATUS t2
+		    on t1.event_id = t2.own_side_biz_code
+		   and t2.oppo_side_biz_type = '2'
+		   and t2.own_side_biz_type = '2'
+		   and t2.exchange_flag = '0'
+		   <if test="srcPlatform != null ">
+		   		and t2.src_platform = #{srcPlatform,jdbcType=VARCHAR}
+		   </if>
+		 where t1.status = '03'
+		   and t2.inter_id is not null
+		 order by t1.event_id desc
+	</select>
+	
+	<select id="findSubTaskAppointed" resultType="map">
+		SELECT T.*, T4.*
+		  FROM workflow.WF_TASK_DETAIL T
+		  LEFT JOIN workflow.WF_PROCESS_INSTANCE T1
+		    ON T1.INSTANCE_ID = T.INSTANCE_ID
+		  LEFT JOIN T_EVENT T2
+		    ON T1.FORM_ID = T2.EVENT_ID
+		   AND T1.FORM_TYPE_ID = 300
+		  LEFT JOIN T_BAS_DATA_EXCHANGE_STATUS T4
+		    ON T4.OWN_SIDE_BIZ_CODE = T2.EVENT_ID
+		   AND T4.STATUS_ = 1
+		   AND T4.OPPO_SIDE_BIZ_TYPE = '2'
+		   AND T4.OWN_SIDE_BIZ_TYPE = '2'
+		   <if test="srcPlatform != null ">
+		   		and t4.src_platform = #{srcPlatform,jdbcType=VARCHAR}
+		   </if>
+		  LEFT JOIN T_BAS_DATA_EXCHANGE_STATUS T3
+		    ON T.TASK_ID = T3.OWN_SIDE_BIZ_CODE
+		   AND T3.STATUS_ = 1
+		   AND T3.OPPO_SIDE_BIZ_TYPE = '3'
+		   AND T3.OWN_SIDE_BIZ_TYPE = '3'
+		 WHERE T2.STATUS IN ('01', '02')
+		   AND T3.INTER_ID IS NULL
+		   AND T4.INTER_ID IS NOT NULL
+	</select>
+	
+	<!-- 当一条事件有多个办理人员时，该语句会查出多条事件，故需要添加DISTINCT去重 -->
+	<select id="findEventNewAppointed" resultType="map">
+		SELECT DISTINCT T2.*
+		  FROM WORKFLOW.JBPM4_TASK T5
+		 INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE T3
+		    ON T5.PROCINST_ = T3.INSTANCE_ID
+		   AND T3.STATUS = '1'
+		   AND T3.FORM_TYPE_ID = '300'
+		  LEFT JOIN WORKFLOW.JBPM4_PARTICIPATION T6
+			ON T5.DBID_ = T6.TASK_
+		  LEFT JOIN T_EVENT T2
+		    ON T2.EVENT_ID = T3.FORM_ID
+		 WHERE 1 = 1
+		 <if test="activityNames != null and activityNames != '' ">
+		 	AND T5.ACTIVITY_NAME_ IN 
+		 	<foreach item="item" index="index" collection="activityNames" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="userIds != null and userIds != '' "><!-- 当前任务办理人 -->
+		 	AND T6.TYPE_ = '3' AND T6.USERID_ IN 
+		 	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="groupIds != null and groupIds != '' "><!-- 当前任务办理人所属组织 -->
+		 	AND T6.GROUPID_ IN 
+		 	<foreach item="item" index="index" collection="groupIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="orgIds != null and orgIds != '' "><!-- 当前任务办理组织 -->
+		 	AND T6.TYPE_ = '1' AND T6.USERID_ IN 
+		 	<foreach item="item" index="index" collection="orgIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		   AND T2.STATUS IN ('00', '01', '02')
+	       AND NOT EXISTS (
+	       	   SELECT T1.INTER_ID 
+	       	   FROM T_BAS_DATA_EXCHANGE_STATUS T1
+	       	   WHERE 1 = 1
+	       	   <include refid="find_where_event"/>
+	       )
+		
+	</select>
+	
+	<select id="findEventAppointed" resultType="map">
+		SELECT DISTINCT T2.*
+		  FROM WORKFLOW.JBPM4_TASK T5
+		 INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE T3
+		    ON T5.PROCINST_ = T3.INSTANCE_ID
+		   AND T3.STATUS = '1'
+		   AND T3.FORM_TYPE_ID = '300'
+		  LEFT JOIN WORKFLOW.JBPM4_PARTICIPATION T6
+			ON T5.DBID_ = T6.TASK_
+		  LEFT JOIN T_EVENT T2
+		    ON T2.EVENT_ID = T3.FORM_ID
+		  LEFT JOIN T_BAS_DATA_EXCHANGE_STATUS T
+    		ON T.OWN_SIDE_BIZ_CODE = T2.EVENT_ID AND T.STATUS_ = '1'
+		 WHERE 1 = 1
+		 <if test="activityNames != null and activityNames != '' ">
+		 	AND T5.ACTIVITY_NAME_ IN 
+		 	<foreach item="item" index="index" collection="activityNames" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="userIds != null and userIds != '' "><!-- 当前任务办理人 -->
+		 	AND T6.TYPE_ = '3' AND T6.USERID_ IN 
+		 	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="groupIds != null and groupIds != '' "><!-- 当前任务办理人所属组织 -->
+		 	AND T6.GROUPID_ IN 
+		 	<foreach item="item" index="index" collection="groupIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 <if test="orgIds != null and orgIds != '' "><!-- 当前任务办理组织 -->
+		 	AND T6.TYPE_ = '1' AND T6.USERID_ IN 
+		 	<foreach item="item" index="index" collection="orgIds" open="(" separator="," close=")" >
+		 		#{item}
+		 	</foreach>
+		 </if>
+		 	AND T.INTER_ID IS NULL
+		   AND T2.STATUS IN ('00', '01', '02')
+	</select>
+	
+	<select id="findTaskNewAppointed" resultType="map">
+		SELECT T6.userid_,T6.GROUPID_,T6.TYPE_,T4.*,T2.EVENT_ID,T7.*
+		  FROM T_EVENT                        T2,
+		       WORKFLOW.WF_PROCESS_INSTANCE   T3,
+		       WORKFLOW.WF_TASK T4,
+		       workflow.jbpm4_task t5,
+		       workflow.jbpm4_participation t6,
+		       T_BAS_DATA_EXCHANGE_STATUS   T7
+		 WHERE T2.EVENT_ID = T3.FORM_ID
+   		   AND T7.OWN_SIDE_BIZ_CODE = T2.EVENT_ID
+		   AND T3.INSTANCE_ID = T4.INSTANCE_ID
+		   AND T5.DBID_ = T6.TASK_
+		   AND T6.TYPE_ = 3
+		   AND T5.PROCINST_ = T3.INSTANCE_ID
+		   AND T2.STATUS IN ('00', '01', '02', '03', '04')
+		   AND T3.STATUS IN ('1', '2', '3')
+		   AND T3.FORM_TYPE_ID = '300'
+		   AND T4.REMARKS IS NOT NULL
+		   AND T4.ORG_ID IS NOT NULL
+		   <if test="eventStatuss != null and eventStatuss != '' ">
+				AND T2.STATUS IN 
+			 	<foreach item="item" index="index" collection="eventStatuss" open="(" separator="," close=")" >
+			 		#{item}
+			 	</foreach>
+			</if>
+		   <if test="eventId != null ">
+		   		AND T2.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+		   </if>
+		   <if test="eventIds != null and eventIds != '' ">
+		   		AND T2.EVENT_ID IN 
+			 	<foreach item="item" index="index" collection="eventIds" open="(" separator="," close=")" >
+			 		#{item}
+			 	</foreach>
+		   </if>
+		   <if test="isEventExclude != null and isEventExclude==false ">
+		   		AND EXISTS (
+		       	   SELECT T1.INTER_ID 
+		       	   FROM T_BAS_DATA_EXCHANGE_STATUS T1
+		       	   WHERE 1 = 1
+		       	   <if test="srcPlatform != null and destPlatform != null ">
+			AND ((T1.SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR}
+						AND T1.OWN_SIDE_BIZ_CODE = TO_CHAR(T2.EVENT_ID)
+					<if test="ownSideBizType != null">
+						AND T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				) OR
+				(T1.SRC_PLATFORM = #{destPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{srcPlatform,jdbcType=VARCHAR}
+						AND T1.OWN_SIDE_BIZ_CODE = TO_CHAR(T2.EVENT_ID)
+					<if test="ownSideBizType != null">
+						AND T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				) OR
+				(
+					T1.SRC_PLATFORM = #{destPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{srcPlatform,jdbcType=VARCHAR}
+						AND T1.OPPO_SIDE_BIZ_CODE = TO_CHAR(T2.EVENT_ID)
+					<if test="ownSideBizType != null">
+						AND T1.OPPO_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				))
+		</if>
+		<include refid="find_where_status"/>
+		        )
+		   </if>
+		   AND NOT EXISTS (
+	       	   SELECT T1.INTER_ID 
+	       	   FROM T_BAS_DATA_EXCHANGE_STATUS T1 
+	       	   WHERE 1 = 1
+	       	   <include refid="find_where_task"/>
+	       )
+	</select>
+	
+	<sql id="find_where_event">
+		<if test="srcPlatform != null and destPlatform != null ">
+			AND ((T1.SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR}
+						AND T1.OWN_SIDE_BIZ_CODE = TO_CHAR(T2.EVENT_ID)
+					<if test="ownSideBizType != null">
+						AND T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				) OR
+				(
+					T1.SRC_PLATFORM = #{destPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{srcPlatform,jdbcType=VARCHAR}
+						AND T1.OPPO_SIDE_BIZ_CODE = TO_CHAR(T2.EVENT_ID)
+					<if test="ownSideBizType != null">
+						AND T1.OPPO_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				))
+		</if>
+		<include refid="find_where_status"/>
+	</sql>
+	
+	<sql id="find_where_task">
+		<if test="srcPlatformTask != null and destPlatformTask != null ">
+			AND ((T1.SRC_PLATFORM = #{srcPlatformTask,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{destPlatformTask,jdbcType=VARCHAR}
+							AND T1.OWN_SIDE_BIZ_CODE = TO_CHAR(T4.TASK_ID)
+						<if test="ownSideBizTypeTask != null">
+							AND T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizTypeTask,jdbcType=VARCHAR}
+						</if>
+					) OR
+					(
+						T1.SRC_PLATFORM = #{destPlatformTask,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{srcPlatformTask,jdbcType=VARCHAR}
+							AND T1.OPPO_SIDE_BIZ_CODE = TO_CHAR(T4.TASK_ID)
+						<if test="ownSideBizTypeTask != null">
+							AND T1.OPPO_SIDE_BIZ_TYPE = #{ownSideBizTypeTask,jdbcType=VARCHAR}
+						</if>
+					))
+		</if>
+		<if test="exchangeFlagTask != null and exchangeFlagTask != '' ">
+			AND T1.EXCHANGE_FLAG = #{exchangeFlagTask,jdbcType=VARCHAR}
+		</if>
+		<if test="statusTask != null">
+			AND T1.STATUS_ = #{statusTask,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="find_where">
+		<if test="srcPlatform != null and destPlatform != null ">
+			AND ((T1.SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR}
+					<if test="ownSideBizCode != null">
+						AND T1.OWN_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR}
+					</if>
+					<if test="ownSideBizType != null">
+						AND T1.OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+					<if test="oppoSideBizCode != null">
+						AND T1.OPPO_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR}
+					</if>
+					<if test="oppoSideBizType != null">
+						AND T1.OPPO_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR}
+					</if>
+				) OR
+				(
+					T1.SRC_PLATFORM = #{destPlatform,jdbcType=VARCHAR} AND T1.DEST_PLATFORM = #{srcPlatform,jdbcType=VARCHAR}
+					<if test="oppoSideBizCode != null">
+						AND T1.OWN_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR}
+					</if>
+					<if test="oppoSideBizType != null">
+						AND T1.OWN_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR}
+					</if>
+					<if test="ownSideBizCode != null">
+						AND T1.OPPO_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR}
+					</if>
+					<if test="ownSideBizType != null">
+						AND T1.OPPO_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+					</if>
+				))
+		</if>
+		<include refid="find_where_status"/>
+	</sql>
+	
+	<sql id="find_where_status">
+		<if test="exchangeFlag != null and exchangeFlag != '' ">
+			AND T1.EXCHANGE_FLAG = #{exchangeFlag,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null">
+			AND T1.STATUS_ = #{status,jdbcType=VARCHAR}
+		</if>
+	</sql>
+</mapper>

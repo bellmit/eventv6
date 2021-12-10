@@ -1,0 +1,173 @@
+﻿body{font-size: 12px;color: #5e5e5e; font-family:"宋体","Arial Narrow"; margin:0; padding:0;}
+a{text-decoration: none;color: #5e5e5e;}
+a:hover {text-decoration:underline;color: #5e5e5e;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3, label, em{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom; font-family:"微软雅黑","Arial Narrow";}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.h_20{height:20px; font-size:0; line-height:0; overflow:hidden;}
+.hide{display:none;}
+.inp1{width:55%; border:1px solid #c7c7c7; height:32px; *height:30px; line-height:32px; *line-height:28px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.inp1:hover{border:1px solid #36c;}
+.sel1{width:55%; border:1px solid #c7c7c7; height:32px; line-height:32px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e; *margin-top:3px;}
+.sel1:hover{border:1px solid #36c;}
+.area1{width:55%; border:1px solid #c7c7c7; height:84px; line-height:26px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.area1:hover{border:1px solid #36c;}
+
+.InpDisable{background:white;color:black;}
+/*---------------------------------字体颜色 begin---------------------------------*/
+.FontRed{color:#F00;}
+.FontOrange{color:#f39800;}
+.FontCyan{color:#3dc9a0;}
+.FontPurple{color:#b9a3f3;}
+.FontBlue{color:#79b0f5;}
+.FontGreen{color:#b3d465;}
+.FontYanghong{color:#ec6941;}
+.FontDarkBlue{color:#0075a9;}
+/*---------------------------------字体颜色 end---------------------------------*/
+
+/*---------------------------------选项卡 begin---------------------------------*/
+.ConList .nav{height:36px; background:url(../images/sys_05.png) repeat-x bottom;}
+.ConList .nav ul li{font-size:16px; text-align:center; line-height:34px; height:34px; background:#f9f9f9; padding:0 10px; float:left; margin-right:10px; cursor:pointer; font-family:"微软雅黑"; border-top:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc;}
+.ConList .nav ul li.current{border-top:2px solid #448aca; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; background:#fff; color:#175fa1;}
+.ConList .nav ul li.dubanNav{border-top:1px solid #a40035; border-left:1px solid #a40035; border-right:1px solid #a40035; background:#ff3e3e; color:#fff;}‍
+.greyback{background:#eee;}
+.ListShow{border-top:none 0; border-bottom:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc;}
+.ListShow table{line-height:40px;}
+.ListShow table tr:hover{background:#448aca; color:#fff;}
+.ListShow2 table tr:hover{background:url(../images/sys_03.png) repeat-x bottom; color:#5e5e5e;}/*修复兼容模式下的显示问题*/
+.DotLine{background:url(../images/sys_03.png) repeat-x bottom;}
+.ListShow table code{color:#175fa1;}
+.ListShow table code a{color:#175fa1;}
+.ListShow table tr:hover code{color:#fff;}
+.ListShow table tr:hover code a{color:#fff;}
+.ListShow2 table tr:hover code{color:#175fa1;}
+.ListShow2 table tr:hover code a{color:#175fa1;}
+.SeePic{background:url(../images/pic.png) no-repeat 0 0; padding-left:20px;}
+.ListShow table tr:hover .SeePic{background:url(../images/pic2.png) no-repeat 0 0;}
+.ListShow2 table tr:hover .SeePic{background:url(../images/pic.png) no-repeat 0 0;}
+/*---------------------------------选项卡 end---------------------------------*/
+
+/*---------------------------------操作按钮 begin---------------------------------*/
+.tool{height:28px;}
+.NorToolBtn{padding:4px 7px; color:#fff; margin-right:10px; display:block; float:left; line-height:14px;}
+.NorToolBtn img{vertical-align:middle; margin-top:-4px; *margin-top:0px; margin-right:7px;}
+.NorToolBtn:hover{color:#fff; text-decoration:none;}
+.BlueBtn{background:#448aca;}
+.BlueBtn:hover{background:#ff9f00;}
+.GreenBtn{background:#8fc31f;}
+.GreenBtn:hover{background:#ff9f00;}
+
+.BigTool{height:45px; background:#fafafa; padding:10px; position:relative;}
+.BtnList{margin:0 auto; height:45px;}
+.BigNorToolBtn{display:inline-block; padding:0 15px; height:45px; color:#fff; font-size:18px; font-family:"微软雅黑"; text-align:center; line-height:45px; float:right; margin-right:10px;}
+.BigNorToolBtn img{vertical-align:middle; margin-top:-4px; *margin-top:0px; margin-right:7px;}
+.BigNorToolBtn:hover{color:#fff; text-decoration:none;}
+
+/*---------------------------------操作按钮 end---------------------------------*/
+
+/*---------------------------------边框阴影 begin---------------------------------*/
+.LeftShadow{background:url(../images/leftshadow.png) no-repeat left bottom; padding-left:5px;}
+.RightShadow{background:url(../images/rightshadow.png) no-repeat right bottom; padding-right:5px;}
+.BottomShadow{background:url(../images/bottomshadow.png) repeat-x 0 -2px; height:7px; width:100%;}
+/*---------------------------------边框阴影 end---------------------------------*/
+
+.MainContent{padding:0 10px;}
+.TreeHide{position:absolute; left:0; top:50%; z-index:1; width:16px; height:68px; cursor:pointer; background:url(../images/sys_22.png);}
+.TreeShow{background:#f9f9f9; width:250px; height:100%; z-index:2; position:absolute; left:0; top:0; display:none;}
+.TreeClose{position:absolute; left:250px; top:50%; z-index:1; width:16px; height:68px; cursor:pointer; background:url(../images/sys_23.png);}
+.TreeShow .nav ul li{float:left; background:url(../images/sys_34.png) repeat-x bottom; cursor:pointer; width:125px; height:34px; line-height:34px; text-align:center; font-size:14px;}
+.TreeShow .nav ul li.current{background:url(../images/sys_33.png) repeat-x bottom;}
+
+.ConSearch{height:32px; position:relative; padding:10px 10px 0 10px;}
+.AdvanceSearchBtn{text-decoration:underline;}
+.AdvanceSearchBtn:hover{color:#f39800; text-decoration:none;}
+.AdvanceSearch{position:absolute; z-index:1; top: 42px; left: -160px;}
+.AdvanceSearch .list{background:#fff; border:1px solid #c5d0dc;}
+.ConSearch .fl ul li{float:left; height:32px; margin-right:10px; line-height:32px; font-size:14px; position:relative;}
+.ConSearch .btns{width: 160px; float:left; height:32px; line-height:32px; font-size:14px;}
+.ConSearch .btns ul li{float:left;}
+.ConSearch .btns ul li a{margin-right: 9px;}
+.chaxun, .chongzhi{display:block; width: 75px; height:32px; text-align:center; border-radius:3px; line-height:30px; color:#fff; font-family:Microsoft YaHei; font-size:16px;}
+.chaxun img, .chongzhi img{margin-right: 5px; vertical-align:middle; margin-top:-3px; *margin-top:0;}
+.chaxun:hover, .chongzhi:hover{color:#fff; text-decoration:none;}
+‍
+.xinzeng{background:url(../images/sys_17.png) no-repeat 0 5px;}
+.shanchu{background:url(../images/sys_18.png) no-repeat 0 5px;}
+.chongqi{background:url(../images/sys_19.png) no-repeat 0 5px;}
+.page{background:#f2f2f2; height:24px;}
+.sel2{height:24px; width:50px;}
+.page ul li{float:left; color:#fff; line-height:24px; margin-right:10px;}
+.page ul li.line{background:#cacaca; width:1px; height:24px;}
+.inp2{height:24px; width:50px; text-align:center;}
+.more{width:100px; background:#fff; border:1px solid #d3d3d3; height:130px; position:absolute; z-index:2; top:47px; right:10px;}
+.more ul li{margin-top:10px;}
+
+
+/*-------------------------------------事件--------------------------------------------*/
+.ToolBar{background:#f2f2f2; border-bottom:1px solid #d8d8d8; border-top:1px solid #d8d8d8; height:32px; position:relative;}
+.ToolBar .fl{line-height:32px; color:#5e5e5e; width:260px;}
+.ToolBar .fl img{vertical-align:middle; margin-top:-2px; margin-right:5px; margin-left:10px; width:12px; height:12px;}
+.ToolBar .fr{width:420px;}
+.ToolBar div.tool{padding-top:4px;}
+.ToolBar .fr a{float:right;}
+.ColumnView{width:260px;}
+.ColumnView .nav{width:250px; height:34px; line-height:34px; background:#3078ba; padding:0 5px; color:#fff;}
+.MetterList .line{background:#f2f2f2; width:4px; border-left:1px solid #d8d8d8; border-right:1px solid #d8d8d8;}
+.PreNav{background:url(../images/sys_36.png) no-repeat 0 12px; padding-left:15px; width:60px; cursor:pointer;}
+.NextNav{background:url(../images/sys_38.png) no-repeat right 12px; padding-right:15px; width:60px; text-align:right; cursor:pointer;}
+.PreNav:hover, .NextNav:hover{color:#fff100; font-weight:bold;}
+.CurrentNav{font-size:14px; font-weight:bold; width:100px; text-align:center;}
+.ColumnView .con{line-height:20px; overflow:auto;}
+.ColumnView .con dl{cursor:pointer; border-bottom:1px solid #d8d8d8; padding:5px;}
+.ColumnView .con dl:hover{background:#f2f2f2;}
+.ColumnView .con dl dd{color:#939393;}
+.MetterList .box, .MetterList .box2{overflow:auto; position:relative;}
+.MetterContent{padding-left:20px; padding-top:20px; padding-right:20px;}
+.MetterContent .title{border-top:1px solid #c5d0dc; background:#f9f9f9; padding:0 10px; min-height:171px; *height:171px; height:auto;}
+.MetterContent .title ul li{float:left; line-height:30px; font-size:14px;}
+.MetterContent .title ul li.level{width:34px; background:url(../images/sys1_33.png); height:45px; font-weight:bold; color:#fff; line-height:18px; text-align:center; padding-top:5px; margin-right:20px;}
+.MetterContent .title ul li span{color:#175fa1;}
+.BtnPre{display:inline-block; padding:7px 10px 0; height:28px; line-height:35px; background:#b4d0ea; text-align:center; float:right; margin-right:10px; margin-top:5px;}
+.BtnPre:hover{background:#ff9f00;}
+
+.PreNext{width:54px; height:18px; position:absolute; top:-21px; right:0;}
+.PreNext ul li{float:left; width:26px; height:13px; background:#8fc31f; text-align:center; padding-top:5px; cursor:pointer;}
+.PreNext ul li:hover{background:#ff9f00;}
+
+/*----------------------------7-18---------------------------------*/
+.ListShow table tr td{position:relative;}
+.OperateNotice{position:absolute; z-index:99999999; top:40px; left:20px; width:150px;}
+.operate{position:relative; background:#fff4e7; border:1px solid #f8ca93; height:28px; z-index:2; top:0; left:0; padding-right:7px;}
+.operate ul li{float:left; color:#996c33; padding-left:20px; height:28px; line-height:28px; cursor:pointer; margin-left:7px;}
+.guanzhu{background:url(../images/icon_10.png) no-repeat 0 6px;}
+.guanzhu:hover{background:url(../images/icon_11.png) no-repeat 0 6px; font-weight:bold; color:#dc4f39;}
+.duban{background:url(../images/icon_12.png) no-repeat 0 6px;}
+.duban:hover{background:url(../images/icon_13.png) no-repeat 0 6px; font-weight:bold; color:#dc4f39;}
+.cuiban{background:url(../images/icon_14.png) no-repeat 0 6px;}
+.cuiban:hover{background:url(../images/icon_15.png) no-repeat 0 6px; font-weight:bold; color:#dc4f39;}
+.operate ul li.line{background:url(../images/icon_01.png); width:2px; height:16px; padding:0; margin-top:6px;}
+.arrow{background:url(../images/arrow.png); position:absolute; z-index:3; top:-7px; left:10px; width:13px; height:7px;}
+/*----------------------------8-1窗帘效果div---------------------------------*/
+.blind{width:100%; height:32px; line-height:32px; text-align:center; font-size:12px; border:1px solid #facd89; background:#fffbcc; display:none; text-align:center; color:#A9560C; position:absolute; z-index:1; top:0; left:0;}
+/*-----------------------------------------------------*/
+/* 列表查询层（写死） */
+.rssearch {
+	display:none;
+	z-index: 100;
+	position: fixed;
+	background-color: #FAFAFA;
+    border:1px solid #DDDDDD;
+    color: #444444;
+}
+
+/*----------------------------9-2---------------------------------*/
+.dubanIcon{background:url(../images/duban.png); position:absolute; z-index:3; top: -20px; right: 20px; width:80px; height:80px;}
+#contentDiv{position:relative;}
+.MainContent ul.ztree li, .MC_Top ul.ztree li {float: none; line-height:0; margin:0; padding:0; height:auto;}/*树形下拉不要浮动*/

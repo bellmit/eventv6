@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.statistics.ZgStatisticsMapper" >
+  <resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.statistics.ZgStatistics" >
+    <id column="SEQID" property="seqId"  jdbcType="DECIMAL"/>
+    <result column="SYEAR" property="syear"  jdbcType="DECIMAL"/>
+    <result column="SMONTH" property="smonth"  jdbcType="DECIMAL"/>
+    <result column="dict_code" property="dictCode"  jdbcType="VARCHAR"/>
+    <result column="STYPE" property="stype"  jdbcType="VARCHAR"/>
+    <result column="S1" property="s1"  jdbcType="VARCHAR"/>
+    <result column="S2" property="s2"  jdbcType="VARCHAR"/>
+    <result column="S3" property="s3"  jdbcType="VARCHAR"/>
+    <result column="S4" property="s4"  jdbcType="VARCHAR"/>
+    <result column="create_id" property="createId"  jdbcType="DECIMAL"/>
+    <result column="create_time" property="createTime" />
+    <result column="update_id" property="updateId"  jdbcType="DECIMAL"/>
+    <result column="update_time" property="updateTime" />
+    
+    <result column="dict_id" property="dictId"  jdbcType="DECIMAL"/>
+    <result column="dict_pid" property="dictPid"  jdbcType="DECIMAL"/>
+    <result column="dict_name" property="dictName"  jdbcType="VARCHAR"/>
+    <result column="dict_remark" property="dictRemark"  jdbcType="VARCHAR"/>
+  </resultMap>
+  <delete id="delLastKXData">
+  delete FROM t_event_kuangxuan t where t.code_=#{lastDateNo}  
+  </delete>
+  
+  <select id="findGridByParentCode" resultType="map" parameterType="map">
+		SELECT g.grid_id,g.info_org_code,g.grid_name,'0' COUNT FROM t_dc_grid g where g.status='001' and 
+    g.parent_grid_id=(SELECT d.grid_id FROM t_dc_grid d where d.info_org_code=#{infoOrgCode} and d.status='001') order by g.order_id
+	  </select>	
+  <select id="findGridCountByToday" resultType="map" parameterType="map">
+		with data_ as( SELECT g.grid_id, g.info_org_code FROM t_event t join t_dc_grid g on t.grid_id=g.grid_id 
+join ${dbuser.workflow}.wf_process_instance p on t.event_id=p.form_id 
+where t.status in ('00','01','02','03','04') and g.status='001' and g.info_org_code like #{infoOrgCode}||'%' 
+and t.create_time between trunc(sysdate) and  trunc(sysdate+1)) 
+SELECT t3.info_org_code,count(1) C 
+  FROM data_ t, t_dc_grid t2, t_dc_grid t3
+ where t.grid_id = t2.grid_id and t3.parent_grid_id=(SELECT d.grid_id FROM t_dc_grid d where d.info_org_code=#{infoOrgCode} and d.status='001')
+   and t2.info_org_code like t3.info_org_code || '%'
+   and t2.status = '001'   and t3.status = '001'    
+   group by t3.info_org_code order by c desc
+	  </select>
+  <select id="findEventIdByDate" resultType="map" parameterType="map">
+		SELECT min(event_id) min_id,max(event_id) max_id FROM t_event t  join t_dc_grid g on t.grid_id=g.grid_id and g.status='001'
+ where t.status in ('00','01','02','03','04') and g.info_org_code like #{orgCode}||'%'
+  and t.end_time between to_date(#{beginTime},'yyyy-MM-dd hh24:mi:ss')
+   and to_date(#{endTime},'yyyy-MM-dd hh24:mi:ss')
+	  </select>	
+	  
+	  <select id="findEventKXCount" resultType="int" parameterType="map">
+		select count(1)  FROM t_event_kuangxuan k  where k.code_=#{dateNo}
+       <if test="conditions != null">
+		 and k.grid_code like  #{orgCode, jdbcType=VARCHAR} || '%'
+    	<if test="type != null"> and k.type_ like #{type}||'%' </if>
+       <if test="keyWord != null">
+       	and ( k.event_name like '%'||#{keyWord} ||'%' or k.occurred like '%'||#{keyWord} ||'%' or k.content_ like '%'||#{keyWord} ||'%' )
+       </if>
+       </if>
+	  </select>
+
+
+	<select id="findEventCount" resultType="int" parameterType="map" databaseId="dm">
+		select count(1)
+		 FROM t_event t
+		 join t_dc_grid g
+		   on t.grid_id=g.grid_id
+		  and g.status='001'
+		 JOIN t_zy_res_marker m
+		   on t.event_id = m.resources_id
+	    where t.GRID_CODE LIKE #{orgCode, jdbcType=VARCHAR} || '%'
+	      AND t.STATUS in ( '00','01','02','03','04') AND t.event_id BETWEEN   ${MIN_ID} and  ${MAX_ID}
+		  AND DMGEO.ST_WITHIN(
+					DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${points},',') ||'))', 4326),
+					m.sdo
+			  ) = '1'
+	  </select>
+	  <!-- 框选列表总数 -->
+	  <select id="findEventCount" resultType="int" parameterType="map" databaseId="oracle">
+		select count(1)  FROM t_event t  join t_dc_grid g on t.grid_id=g.grid_id and g.status='001'
+		 join t_zy_res_marker m  on t.event_id = m.resources_id  where   t.GRID_CODE LIKE #{orgCode, jdbcType=VARCHAR} || '%'
+   AND t.STATUS in ( '00','01','02','03','04') AND t.event_id BETWEEN   ${MIN_ID} and  ${MAX_ID} 
+    and SDO_RELATE(m.sdo,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${points})),'MASK=ANYINTERACT') = 'TRUE' 
+	  </select>
+
+
+
+	  <select id="findEventDatadictLength" resultType="int" parameterType="map">
+		SELECT subNum FROM (SELECT subNum,count(1) c FROM (
+SELECT length(d.dict_general_code) subNum 
+ FROM t_bas_datadict d where d.dict_level=6 and d.is_common='1' start with d.dict_pcode='A001093199'  and d.status='001' 
+connect by prior d.dict_code=d.dict_pcode  and d.status='001' ) group by subNum order by c desc) where rownum &lt;2
+	  </select>
+	  <!-- 框选列表 -->
+	  <select id="findEventList" resultType="map" parameterType="map">
+	  SELECT g.GRID_PATH,T.EVENT_ID,t.HAPPEN_TIME,T.EVENT_NAME,k.TYPE_,T.GRID_ID,t.STATUS,t.HANDLE_DATE,t.CREATE_TIME
+  FROM t_event_kuangxuan k join t_event t on k.event_id=t.event_id   join t_dc_grid g    on t.grid_id = g.grid_id 
+  where k.code_=#{dateNo}  and k.grid_code like  #{orgCode, jdbcType=VARCHAR} || '%'
+    	<if test="type != null"> and k.type_ like #{type}||'%' </if>
+       <if test="keyWord != null">
+       	and ( k.event_name like '%'||#{keyWord} ||'%' or k.occurred like '%'||#{keyWord} ||'%' or k.content_ like '%'||#{keyWord} ||'%' )
+       </if> 
+	  </select>
+	
+  	<!--框选 前5类 -->
+  	<!-- SELECT d.dict_general_code FROM t_bas_datadict d   where  d.status='001' and d.dict_pcode='A001093199'  start with d.dict_general_code=t.type_ connect by prior d.dict_pcode=d.dict_code -->
+	  <select id="findEventTop5" resultType="map" parameterType="map">
+with data_ as(SELECT t.type_  ,count(1) count_,(SELECT d.dict_orderby||'_'||d.dict_name  FROM t_bas_datadict d
+ where d.dict_pcode = 'A001093199' and d.status='001'  start with d.dict_general_code=t.type_ 
+ connect by  d.dict_id=prior d.dict_pid ) dict_name FROM t_event_kuangxuan t where t.code_=#{dateNo} group by t.type_ )
+ SELECT substr(dict_name,0, instr(dict_name,'_')-1) order_,dict_name,total_,round(ratio_to_report(total_) over()*100,2) present_ FROM (
+SELECT dict_name,sum(count_) total_ FROM data_ d group by dict_name) order by total_ desc,to_number(order_) 
+     </select>
+	  <!-- 根据时间范围所有点 -->
+	  <select id="findEventHeatData" resultType="string" parameterType="map">
+		<!-- 改用jdbcTemplateOracle 查询 -->
+		SELECT  substr(m.x,0,10) ||':' || substr(m.y,0,10)    FROM t_event t  join t_dc_grid g on t.grid_id=g.grid_id and g.status='001'  join t_zy_res_marker m
+    on t.event_id = m.resources_id 
+		 where   t.GRID_CODE LIKE #{orgCode, jdbcType=VARCHAR} || '%'
+   AND t.STATUS in ( '00','01','02','03','04') AND t.HAPPEN_TIME BETWEEN
+       TO_DATE('${beginTime}', 'yyyy-MM-dd hh24:mi:ss') AND
+       TO_DATE('${endTime}', 'yyyy-MM-dd hh24:mi:ss')  and m.marker_type = '0301'
+	  </select>
+  
+  <sql id="eventSql">
+    where   t.GRID_CODE LIKE #{orgCode, jdbcType=VARCHAR} || '%'
+   AND t.STATUS in ( '00','01','02','03','04') AND t.event_id BETWEEN
+       ${}
+       <if test="type != null"> and t.type_ like #{type}||'%' </if>
+       <if test="keyWord != null">
+       and ( t.event_name like '%'||#{keyWord} ||'%' or t.occurred like '%'||#{keyWord} ||'%' or t.content_ like '%'||#{keyWord} ||'%' )
+       </if> 
+ and m.marker_type = '0301'
+ <if test="points != null">
+ 
+   and SDO_RELATE(m.sdo,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${points})),'MASK=ANYINTERACT') = 'TRUE'
+ </if>
+  </sql>
+  
+  
+  <select id="findGeneralOrgCode" resultType="map" parameterType="map">
+  SELECT t.dim_time,t.idx_val,t.idx_param FROM ${dbuser.zhsq_szzg}.zg_general_idx t WHERE t.region_code=#{orgCode} ORDER BY t.dim_time,t.idx_param
+  </select>
+  <select id="findGeneralTypeYear" resultType="map" parameterType="map">
+  SELECT t.idx_val,t.region_code,t.region_name FROM ${dbuser.zhsq_szzg}.zg_general_idx t WHERE t.idx_param=#{type} AND t.dim_time=#{year}
+  </select>
+  <select id="findGeneralYear" resultType="map" parameterType="map">
+  SELECT T.IDX_VAL,T.IDX_PARAM,G.INFO_ORG_CODE,B.CEN_LON X,B.CEN_LAT Y, T.REGION_NAME
+  FROM ${dbuser.zhsq_szzg}.ZG_GENERAL_IDX T
+  JOIN T_DC_GRID G
+    ON T.REGION_CODE = G.INFO_ORG_CODE
+   AND G.STATUS = '001'
+  LEFT JOIN MAP_BUS_GRID_GIS B
+    ON G.GRID_ID = B.WID
+   AND B.STATUS = '001'
+ WHERE T.DIM_TIME = #{year}
+   AND T.IDX_PARAM IN (${type})
+ ORDER BY T.IDX_PARAM, T.REGION_CODE 
+  </select>
+  <select id="findGeneralDate" resultType="map" parameterType="map">
+  SELECT Distinct(dim_time) YEAR_ FROM ${dbuser.zhsq_szzg}.zg_general_idx t WHERE t.idx_param=#{type} ORDER BY t.dim_time DESC 
+  </select>
+  
+  <select id="findGDPYears" resultType="map" parameterType="map">
+SELECT *
+  FROM (SELECT T.YEAR_,T.MONTH_,
+  <if test="table == 'zg_ecno_gdp' ">
+  T.GDP_SUM,T.ONE_SUM,T.TWO_SUM,T.PARTY_SUM THREE_SUM,T.GDP_INC,T.ONE_INC,T.TWO_INC,T.PARTY_INC THREE_INC,
+  </if>
+  <if test="table == 'zg_ecno_invest' ">
+   T.INVEST_SUM GDP_SUM, T.FIRST_SUM ONE_SUM, T.SECOND_SUM TWO_SUM, T.PARTY_SUM THREE_SUM, T.INVEST_INC GDP_INC, T.FIRST_INC ONE_INC, T.SECOND_INC TWO_INC,
+  </if>
+  <if test="table == 'zg_ecno_gpbr' ">    T.Gpbr_Sum GDP_SUM, T.Gpbr_INC GDP_INC,  </if>
+  <if test="table == 'zg_ecno_retail' ">    T.val_,T.val_inc,  </if>
+ROW_NUMBER() OVER(PARTITION BY T.YEAR_ ORDER BY TO_NUMBER(T.MONTH_) DESC) RN
+          FROM ${dbuser.zhsq_szzg}.${table} T
+         WHERE T.REGION_CODE = #{orgCode}<if test="table == 'zg_ecno_retail' "> AND t.type=#{type} <if test="type == 1 "> and t.val_>0 </if></if>
+         ORDER BY T.YEAR_ DESC)
+ WHERE RN = 1
+   AND ROWNUM &lt; 6
+  </select>
+  <select id="findGDPYearOrMonth" resultType="map" parameterType="map">
+  	select * from (SELECT T.YEAR_,T.MONTH_,
+  	<if test="table == 'zg_ecno_gdp' ">
+  		T.GDP_SUM,T.ONE_SUM,T.TWO_SUM,T.PARTY_SUM THREE_SUM,T.GDP_INC,T.ONE_INC,T.TWO_INC,T.PARTY_INC THREE_INC
+ 	</if>
+ 	<if test="table == 'zg_ecno_invest' ">
+		  	t.invest_inc gdp_inc,t.first_inc one_inc,t.second_inc two_inc,t.party_inc THREE_INC,t.invest_sum gdp_sum,t.first_sum one_sum,t.second_sum two_sum,t.party_sum THREE_SUM
+ 	</if>
+ 	<if test="table == 'zg_ecno_gpbr' ">
+		  t.gpbr_sum,t.gpbr_inc 
+	 	</if>
+ 	  <if test="table == 'zg_ecno_retail' ">    T.val_,T.val_inc  </if>
+	  FROM ${dbuser.zhsq_szzg}.${table} T	 WHERE  T.REGION_CODE = #{orgCode} 
+	  <if test="table == 'zg_ecno_gdp' "> and  t.gdp_sum>0 	</if>
+	  <if test="table == 'zg_ecno_retail' "> AND t.type=#{type} <if test="type == 1 "> and t.val_>0 </if></if>
+	  <if test="year != null "> AND T.YEAR_ =#{year} ORDER BY TO_NUMBER(T.MONTH_)</if>
+	  <if test="month != null "> AND t.month_=#{month} ORDER BY t.year_</if>
+	  
+	  )r 
+  </select>
+  <select id="findGDPYearAndMonth" resultType="map" parameterType="map">
+  	SELECT 
+	  	<if test="table == 'zg_ecno_gdp' ">
+	  		t.gdp_inc,t.one_inc,t.two_inc,t.party_inc THREE_INC,t.gdp_sum,t.one_sum,t.two_sum,t.party_sum THREE_SUM
+	 	</if>
+	 	<if test="table == 'zg_ecno_invest' ">
+		  	t.invest_inc gdp_inc,t.first_inc one_inc,t.second_inc two_inc,t.party_inc THREE_INC,
+			t.invest_sum gdp_sum,t.first_sum one_sum,t.second_sum two_sum,t.party_sum THREE_SUM
+	 	</if>
+	 	<if test="table == 'zg_ecno_gpbr' ">
+		  t.gpbr_sum,t.gpbr_inc 
+	 	</if>
+	 	  <if test="table == 'zg_ecno_retail' ">    T.val_ ,T.val_inc  </if>
+	 	,g.info_org_code,b.cen_lon x,b.cen_lat y,g.grid_name as region_name
+	
+		 FROM t_dc_grid g 
+		 LEFT JOIN ${dbuser.zhsq_szzg}.${table} t ON t.region_code=g.info_org_code AND g.status='001' and t.year_=#{year} AND t.month_=#{month} 
+	 	 LEFT JOIN map_bus_grid_gis b ON b.wid=g.grid_id and b.status='001' 
+		 WHERE  G.INFO_ORG_CODE LIKE '350701%' and g.grid_level=4 
+	     <if test="table == 'zg_ecno_retail' "> AND t.type=#{type} </if>
+	     ORDER BY t.region_code
+  </select>
+  
+  <select id="findStatisticsDate" resultType="map" parameterType="map">
+  	SELECT t.year_,t.month_ FROM ${dbuser.zhsq_szzg}.${table} t WHERE  t.region_code IS NOT NULL 
+  	<if test="table == 'zg_ecno_gdp' "> 
+  		and t.gdp_sum>0 	 	
+  	</if>
+  	<if test="table == 'zg_ecno_retail' "> 
+  		AND t.type=#{type} 
+  		<if test="type == 1 "> 
+  			and t.val_>0
+  		</if>
+  	</if>
+	GROUP BY t.year_,t.month_ ORDER BY t.year_ DESC ,to_number(t.month_) DESC
+  </select>
+    
+  <select id="findChart12Month" resultType="map" parameterType="map">
+  	  SELECT t.smonth,t.s1,t.s2,t.dict_code  FROM ${dbuser.zhsq_szzg}.zg_statistics t JOIN t_bas_datadict d
+ ON d.dict_code =t.dict_code WHERE t.syear=#{syear} AND t.status='1' AND d.status='001' 
+ AND d.dict_general_code= #{stype} AND d.dict_level=#{level} AND t.stype=#{stype}  ORDER BY t.smonth
+  </select>
+  <select id="findTreeTable" resultMap="BaseResultMapper" parameterType="map">
+  	  SELECT d.dict_name, d.dict_id, d.dict_pid, t.*
+    FROM ${dbuser.zhsq_szzg}.zg_statistics t
+    right join   t_bas_datadict d   
+      on  d.dict_code =t.dict_code       
+   where   d.dict_general_code= #{stype} 
+	 and t.stype = #{stype}
+	   and t.syear = #{syear}
+	   	   <if test="smonth != null ">and t.smonth = #{smonth}</if>
+	  	ORDER BY t.dict_code 
+  </select>
+  <select id="findCount" parameterType="map" resultType="int">
+  	SELECT count(*) FROM ${dbuser.zhsq_szzg}.zg_statistics s 
+  	where  s.stype = #{stype}  and s.status = '1'  and s.syear=#{syear}   and s.smonth=#{smonth}
+  </select>
+  <select id="findTitle" parameterType="map" resultType="map">
+  	SELECT t.dict_name,t.dict_orderby,t.dict_code,t.dict_remark FROM t_bas_datadict t 
+  	where t.dict_general_code=#{stype} and t.dict_level=4 and t.status='001' order by dict_orderby
+  </select>
+  <select id="findByParam" parameterType="map" resultMap="BaseResultMapper">
+  	SELECT t.dict_id,t.dict_pid,t.dict_code,t.dict_name,t.dict_remark,s.s1,s.s2,s.s3,s.s4,s.seqid
+	  FROM (select * from ${dbuser.zhsq_szzg}.zg_statistics s where s.stype = #{stype}
+	   and s.status = '1'   and s.syear=#{syear}   and s.smonth=#{smonth} ) s
+	 ${join} join (SELECT t.dict_id, t.dict_pid, t.dict_code, t.dict_name,t.dict_remark
+	               FROM (SELECT *
+	                       FROM t_bas_datadict t
+	                      where t.status = '001'
+	                        and t.dict_general_code = #{stype}) t
+	              start with t.dict_level = 3
+	             connect by prior t.dict_id = t.dict_pid) t
+	    on s.dict_code = t.dict_code
+  	order by t.dict_code
+  </select>
+	<delete id="deleteByParam" parameterType="map">
+	update ${dbuser.zhsq_szzg}.zg_statistics s set s.status='0',update_id = #{updateId},
+	update_time =sysdate where  s.stype = #{stype} and s.syear=#{syear} and s.smonth=#{smonth}
+	</delete>
+	<insert id="insertByList" >
+		insert into ${dbuser.zhsq_szzg}.ZG_STATISTICS(seqid,  S1, S2, S3, S4,create_id,SYEAR, SMONTH,dict_code,STYPE) 
+		select ${dbuser.zhsq_szzg}.SEQ_STATISTICS_ID.nextval,t.* from (
+		<foreach collection="list" item="item" index="index" separator="union all" > 
+		select 
+		<if test="item.s1 != null ">#{item.s1},</if>
+		<if test="item.s1 == null">'',</if>
+		<if test="item.s2 != null ">#{item.s2},</if>
+		<if test="item.s2 == null">'',</if>
+		<if test="item.s3 != null ">#{item.s3},</if>
+		<if test="item.s3 == null">'',</if>
+		<if test="item.s4 != null ">#{item.s4}, </if>
+		<if test="item.s4 == null">'', </if>
+		#{item.createId}  , #{item.syear},#{item.smonth},#{item.dictCode},#{item.stype}
+		from dual
+		</foreach>)t
+		
+	</insert>
+	
+	<update id="updateByList" >
+		<foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";"> 
+			update ${dbuser.zhsq_szzg}.ZG_STATISTICS t 
+			<set>
+					
+                	<if test="item.updateId != '' and item.updateId != null">
+						 t.update_id = #{item.updateId, jdbcType=DECIMAL},
+						 t.update_time = sysdate,
+					</if>
+                	<if test=" item.s1 != null">
+						 t.s1 = #{item.s1, jdbcType=VARCHAR},
+					</if>
+					<if test=" item.s2 != null">
+						 t.s2 = #{item.s2, jdbcType=VARCHAR},
+					</if>
+					<if test=" item.s3 != null">
+						 t.s3 = #{item.s3, jdbcType=VARCHAR},
+					</if>
+					<if test=" item.s4 != null">
+						 t.s4 = #{item.s4, jdbcType=VARCHAR},
+					</if>
+                </set>
+                where t.seqid = #{item.seqId}
+		</foreach>
+	</update>
+	
+	<!-- 招商引资-延平   字典：查询所有行业分类 -->
+	<select id="findAttractInvestmentSort" parameterType="map" resultType="string">
+		SELECT DICT_NAME from t_bas_datadict d WHERE d.DICT_PCODE = #{pcode}
+	</select>
+	
+	<!-- 招商引资-延平   柱形图：签约及开工项目情况 -->
+	<select id="findAttractInvestmentBarData" parameterType="map" resultType="map">
+		SELECT SUM(decode(t.SYEAR,#{beforeYear},1,0)) YEAR1,
+		SUM(decode(t.SYEAR,#{lastYear},1,0)) YEAR2,
+		SUM(decode(t.SYEAR,#{currentYear},1,0)) YEAR3
+		FROM ${dbuser.zhsq_szzg}.zg_statistics t
+		where t.STYPE = #{type} 
+		and t.S2 = #{status} 
+		and t.STATUS = '1'
+	</select>
+	
+	<!-- 招商引资-延平   饼图:查询该年份的行业签约或开工占比 -->
+	<select id="findAttractInvestmentByYearAndStatus" parameterType="map" resultType="map">
+		SELECT d.dict_name "name","SUM"(t.S1) "value"
+		FROM ${dbuser.zhsq_szzg}.zg_statistics t
+		right join t_bas_datadict d   
+		on  d.dict_code =t.dict_code  
+		where t.STYPE = #{type}
+		and t.SYEAR = #{year} 
+		and t.S2 = #{status} 
+		and t.STATUS = '1' 
+		GROUP BY d.dict_name
+	</select>
+</mapper>

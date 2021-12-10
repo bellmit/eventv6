@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.ReportFocusExtendMapper" >
+	<!-- 查询列 -->
+	<sql id="sameCol">
+		T1.REPORT_TYPE		"reportType",
+		T1.OCCURRED			"occurred",
+		T1.REPORT_TIME		"reportTime",
+		T1.REPORT_STATUS	"reportStatus"
+	</sql>
+	
+  	<!-- 统计入格事件主流程待办信息 开始 -->
+  	<select id="findCount4IntegrationTodo" resultType="java.util.Map" >
+  		SELECT
+  			T1.REPORT_TYPE		"reportType",
+  			COUNT(T1.REPORT_ID)	"reportTotal"
+		FROM T_EVENT_REPORT_FOCUS T1, ${dbuser.workflow}.WF_PROCESS_INSTANCE T2,
+			 ${dbuser.workflow}.JBPM4_TASK T3, ${dbuser.workflow}.JBPM4_PARTICIPATION T4
+		WHERE T1.REPORT_ID = T2.FORM_ID AND T2.INSTANCE_ID = T3.PROCINST_ AND T3.DBID_ = T4.TASK_
+		AND T2.FORM_TYPE_ID IN (SELECT t.form_type_id FROM t_event_report_focus_type t where status in (1,2)  )
+		AND T1.IS_VALID = '1' AND T2.STATUS = '1'
+		AND T4.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T4.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T4.TYPE_ = '3'
+		<include refid="find_where_report_focus"></include>
+		GROUP BY T1.REPORT_TYPE
+  	</select>
+  	<!-- 统计入格事件主流程待办信息 结束 -->
+  	
+  	<!-- 获取入格事件我的阅办列表 开始 -->
+  	<select id="findCount4IntegrationMsgReading" resultType="java.lang.Integer">
+  		SELECT
+  			COUNT(1)
+  		<include refid="sql4IntegrationMsgReading"></include>
+  	</select>
+  	<select id="findList4IntegrationMsgReading" resultType="java.util.Map">
+  		SELECT T7.MSG_ID      "msgId",
+		       T1.REPORT_ID   "reportId",
+		       T1.REPORT_TYPE "reportType",
+		       T1.REPORT_UUID "reportUUID",
+		       T1.REPORT_CODE "reportCode",
+		       T2.INSTANCE_ID "instanceId",
+		       T7.SENDER_NAME "msgSenderName",
+		       T7.MSG_CONTENT "msgContent",
+		       T7.SEND_TIME   "msgSendTime",
+		       T8.STATUS_     "msgReceiveStatus"
+  		<include refid="sql4IntegrationMsgReading"></include>
+  		ORDER BY T8.STATUS_, T7.MSG_ID DESC
+  	</select>
+  	<sql id="sql4IntegrationMsgReading">
+  		FROM T_EVENT_REPORT_FOCUS         T1,
+  			 ${dbuser.workflow}.WF_PROCESS_INSTANCE T2,
+  			 ${dbuser.workflow}.WF_TASK             T6,
+  			 T_BAS_MSG                    T7,
+  			 T_BAS_MSG_RECEIVER           T8,
+  			 ${dbuser.workflow}.WF_WORKFLOW         T9
+  		WHERE T1.REPORT_ID = T2.FORM_ID
+	   	AND T2.INSTANCE_ID = T6.INSTANCE_ID
+	   	AND T2.WORKFLOW_ID = T9.WORKFLOW_ID
+	   	AND T7.BIZ_ID = T6.TASK_ID
+	   	AND T7.MSG_ID = T8.MSG_ID
+	   	AND T7.IS_DEL = '0'
+	   	AND T1.IS_VALID IN ('1', '2')
+	   	AND T9.WFTYPEID = 'focus_report'
+	   	AND T9.STATUS = '1'
+	   	<choose>
+   			<when test="@Ognl@isNotEmpty(msgModuleCode)">
+   				AND T7.MODULE_CODE = #{msgModuleCode,jdbcType=VARCHAR}
+   			</when>
+   			<when test="@Ognl@isNotEmpty(msgModuleCodeArray)">
+   				AND T7.MODULE_CODE IN
+				<foreach collection="msgModuleCodeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+   			</when>
+   		</choose>
+   		<if test="@Ognl@isNotEmpty(msgKeyWord)">
+   			AND (
+   				T7.SENDER_NAME LIKE '%' || #{msgKeyWord,jdbcType=VARCHAR} || '%'
+   				OR
+   				T7.MSG_CONTENT LIKE '%' || #{msgKeyWord,jdbcType=VARCHAR} || '%'
+   			)
+   		</if>
+   		<if test="@Ognl@isNotEmpty(msgSendDayStart)">
+   			AND T7.SEND_TIME <![CDATA[>=]]> #{msgSendDayStart,jdbcType=TIMESTAMP}
+   		</if>
+   		<if test="@Ognl@isNotEmpty(msgSendDayEnd)">
+   			AND T7.SEND_TIME <![CDATA[<]]> #{msgSendDayEnd,jdbcType=TIMESTAMP} + 1
+   		</if>
+		<if test="msgReceiveUserId != null ">
+			AND T8.RECEIVER_ID = #{msgReceiveUserId,jdbcType=DECIMAL}
+		</if>
+		<if test="msgReceiveOrgId != null ">
+			AND T8.RECEIVE_ORG_ID = #{msgReceiveOrgId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(msgReceiveStatus)">
+				AND T8.STATUS_ = #{msgReceiveStatus,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T8.STATUS_ IN ('0', '1')
+			</otherwise>
+		</choose>
+		<include refid="find_where_report_focus"></include>
+  	</sql>
+  	<!-- 获取入格事件我的阅办列表 结束 -->
+  	
+  	<!-- 重点关注上报查询条件 -->
+  	<sql id="find_where_report_focus">
+  		<if test="reporterId != null ">
+  			AND T1.CREATOR = #{reporterId,jdbcType=DECIMAL}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(regionCode)">
+  			AND T1.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="@Ognl@isNotEmpty(occurred)">
+  			AND T1.OCCURRED LIKE '%' || #{occurred,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="@Ognl@isNotEmpty(keyWord)">
+  			AND (
+  				T1.OCCURRED LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%'
+  				OR
+  				T1.REPORTER_NAME LIKE '%' || #{keyWord,jdbcType=VARCHAR} || '%'
+  			)
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportUUID)">
+  			AND T1.REPORT_UUID = #{reportUUID,jdbcType=VARCHAR}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportCode)">
+  			AND T1.REPORT_CODE = #{reportCode,jdbcType=VARCHAR}
+  		</if>
+  		<if test="@Ognl@isNotEmpty(reportDayStart)">
+   			AND T1.REPORT_TIME <![CDATA[>=]]> #{reportDayStart,jdbcType=TIMESTAMP}
+   		</if>
+   		<!-- 传入空字符串时，会导致时间计算异常，因此需要同时将null和空串排除 -->
+   		<if test="@Ognl@isNotEmpty(reportDayEnd)">
+   			AND T1.REPORT_TIME <![CDATA[<]]> #{reportDayEnd,jdbcType=TIMESTAMP} + 1
+   		</if>
+   		<choose>
+   			<when test="@Ognl@isNotEmpty(reportType)">
+   				AND T1.REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+   			</when>
+   			<when test="@Ognl@isNotEmpty(reportTypeArray)">
+   				AND T1.REPORT_TYPE IN
+  				<foreach collection="reportTypeArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+   			</when>
+   		</choose>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(reportStatus)">
+  				AND T1.REPORT_STATUS = #{reportStatus,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(reportStatusArray)">
+  				AND T1.REPORT_STATUS IN
+  				<foreach collection="reportStatusArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+  			</when>
+  			<when test="@Ognl@isNotEmpty(reportStatusRemoveArray)">
+  				AND T1.REPORT_STATUS NOT IN
+  				<foreach collection="reportStatusRemoveArray" index="index" item="item" open="(" separator="," close=")">
+  					#{item}
+  				</foreach>
+  			</when>
+  		</choose>
+  	</sql>
+		
+</mapper>

@@ -1,0 +1,143 @@
+﻿body{font-size: 12px;color: #5e5e5e; font-family:"宋体","Arial Narrow"; margin:0; padding:0;}
+a{text-decoration: none;color: #5e5e5e;}
+a:hover {text-decoration:underline;color: #5e5e5e;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3, label, em{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom; font-family:Microsoft YaHei,"Arial Narrow";}
+/*针对HTML5的DOCTYPE - Select样式，文本框样式width100%超过父容器*/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.h_20{height:20px; font-size:0; line-height:0; overflow:hidden;}
+.hide{display:none;}
+/*---------------------------------通用表单 begin---------------------------------*/
+.inp1{width:55%; border:1px solid #c7c7c7; height:32px; *height:30px; line-height:32px; *line-height:28px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.inp1:hover{border:1px solid #36c;}
+.sel1{width:55%; border:1px solid #c7c7c7; height:32px; line-height:32px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e; *margin-top:3px;}
+.sel1:hover{border:1px solid #36c;}
+.area1{width:55%; border:1px solid #c7c7c7; height:84px; line-height:26px; font-size:14px; border-radius:3px; padding-left:3px; color:#5e5e5e;}
+.area1:hover{border:1px solid #36c;}
+/*---------------------------------通用表单 end---------------------------------*/
+
+/*---------------------------------字体颜色 begin---------------------------------*/
+.FontRed{color:#e60012;}/*红色*/
+.FontRed a{color:#e60012;}
+.FontOrange{color:#f39800;}/*橙色*/
+.FontOrange a{color:#f39800;}
+.FontCyan{color:#3dc9a0;}/*青色*/
+.FontCyan a{color:#3dc9a0;}
+.FontPurple{color:#b9a3f3;}/*紫色*/
+.FontPurple a{color:#b9a3f3;}
+.FontBlue{color:#79b0f5;}/*蓝色*/
+.FontBlue a{color:#79b0f5;}
+.FontGreen{color:#b3d465;}/*绿色*/
+.FontGreen a{color:#b3d465;}
+.FontYanghong{color:#ec6941;}/*洋红*/
+.FontYanghong a{color:#ec6941;}
+.FontDarkBlue{color:#36c;}/*深蓝*/
+.FontDarkBlue a{color:#36c;}
+/*---------------------------------字体颜色 end---------------------------------*/
+
+/*---------------------------------操作按钮 begin---------------------------------*/
+.tool{height:28px;}
+.NorToolBtn{padding:4px 7px; color:#fff; margin-right:10px; display:block; float:left; line-height:14px;}
+.NorToolBtn img{vertical-align:middle; margin-top:-4px; *margin-top:0px; margin-right:7px;}
+.NorToolBtn:hover{color:#fff; text-decoration:none;}
+.BlueBtn{background:#448aca;}
+.BlueBtn:hover{background:#ff9f00;}
+.GreenBtn{background:#8fc31f;}
+.GreenBtn:hover{background:#ff9f00;}
+.MoreTool{position:absolute; z-index:1; top: 32px; right: 4px; width: 127px;}
+.MoreTool .list{background:#fff; border:1px solid #c5d0dc; width:105px; padding:10px 0 0 10px;}
+.MoreTool .list ul li{float:right; margin-bottom:10px;}
+.BigTool{width:100%; height:45px; background:#fafafa; padding:10px 0;}
+.BtnList{margin:0 auto; height:45px;}
+.BigNorToolBtn{display:inline-block; padding: 0 20px; height:45px; color:#fff; font-size:18px; font-family:Microsoft YaHei; text-align:center; line-height:45px; float: left; margin: 0 10px;}
+.BigNorToolBtn img{vertical-align:middle; margin-top:-4px; *margin-top:0px; margin-right:7px;}
+.BigNorToolBtn:hover{color:#fff; text-decoration:none;}
+/*---------------------------------操作按钮 end---------------------------------*/
+
+/*---------------------------------边框阴影 begin---------------------------------*/
+.LeftShadow{background:url(../images/leftshadow.png) no-repeat left bottom; padding-left:5px;}
+.RightShadow{background:url(../images/rightshadow.png) no-repeat right bottom; padding-right:5px;}
+.BottomShadow{background:url(../images/bottomshadow.png) repeat-x 0 -2px; height:7px; width:100%;}
+/*---------------------------------边框阴影 end---------------------------------*/
+
+/*---------------------------------表单样式 begin---------------------------------*/
+.MC_Top{height:47px; background:#eff2f4; padding:0 10px;}
+.MC_Top ul li{float:left; padding-top:7px; margin-right:20px;}
+.MC_Top .sel1{width:180px;}
+.MC_Top ul li.number{float:right; padding-right:5px; font-size:14px; line-height:30px; margin-right:0;}
+.MC_Top ul li.number span{color:#005eb3;}
+.FormnNotice{height:28px; line-height:28px; color:#9cc6ea; text-align:center;}
+.MC_con{overflow:auto; padding:0 10px;}
+.LabName{float: left;width:70px; font-size:14px; padding:7px 5px 7px 0;}
+.NorForm .title{height:28px; background:#eff2f4; padding:0 10px; font-size:16px; line-height:28px; font-family:Microsoft YaHei; border-left:2px solid #36c;}
+.NorForm td{line-height: 22px;border-bottom:1px dotted #cecece; width:31%; padding-left:3%; padding-bottom:10px; padding-top:10px; vertical-align:top; font-size:14px;}
+.NorForm td.LeftTd{padding-left:0;}
+.NorForm td.RightTd{border-right:none;}
+.necessarily input{border:1px solid #EB0707;}
+.necessarily select{border:1px solid #9cc6ea;}
+.necessarily textarea{border:1px solid #9cc6ea;}
+.Check_Radio{margin-top:7px; float:left;}
+.Check_Radio span{margin-right:10px;}
+.Check_Radio input{margin-right:5px; vertical-align:-2px;}
+
+.addinfo{width:82%; float:left; font-size:14px;}
+.addinfo code{margin-right: 15px;line-height:30px;}
+.addinfo code a{text-decoration:underline;}
+.addinfo code a:hover{text-decoration:none;}
+.addinfo p{float:left; line-height:30px; margin-right: 15px;}
+.addinfo p img{margin-left:5px; cursor:pointer;}
+.addlist{float:left; background:#c5d0dc; font-size:12px;}
+.addlist td.header{background:#f9f9f9; color:#5e5e5e; font-weight:bold;}
+.addlist td{background:#fff; width:auto; text-align:center; border:none 0; padding:10px 0; vertical-align:middle;}
+/*---------------------------------表单样式 end---------------------------------*/
+
+/*---------------------------------列表 begin---------------------------------*/
+.MainContent{padding:10px 10px 0 10px;}
+.ConSearch{height:32px;}
+.AdvanceSearchBtn{text-decoration:underline;}
+.AdvanceSearchBtn:hover{color:#f39800; text-decoration:none;}
+.AdvanceSearch{position:absolute; z-index:1; top: 42px; left: -160px;}
+.AdvanceSearch .list{background:#fff; border:1px solid #c5d0dc;}
+.ConSearch .fl ul li{float:left; height:32px; margin-right:10px; line-height:32px; font-size:14px; position:relative;}
+.ConSearch .btns{width: 160px; float:left; height:32px; line-height:32px; font-size:14px;}
+.ConSearch .btns ul li{float:left;}
+.ConSearch .btns ul li a{margin-right: 9px;}
+.chaxun, .chongzhi{display:block; width: 75px; height:32px; text-align:center; border-radius:3px; line-height:30px; color:#fff; font-family:Microsoft YaHei; font-size:16px;}
+.chaxun img, .chongzhi img{margin-right: 5px; vertical-align:middle; margin-top:-3px; *margin-top:0;}
+.chaxun:hover, .chongzhi:hover{color:#fff; text-decoration:none;}
+.more{width:100px; background:#fff; border:1px solid #d3d3d3; height:130px; position:absolute; z-index:2; top:47px; right:10px;}
+.more ul li{margin-top:10px;}
+.ToolBar{background:#f2f2f2; border-bottom:1px solid #d8d8d8; border-top:1px solid #d8d8d8; height:32px;}
+.ToolBar .fl{line-height:32px; color:#5e5e5e; width: 300px;}
+.ToolBar .fl img{vertical-align:middle; margin-top: -3px; margin-right:5px; margin-left:10px; width:12px; height:12px;}
+.ToolBar .fr{width: 450px;}
+.ToolBar div.tool{position: relative;padding-top:4px;}
+.ToolBar .fr a{float:right;}
+/*---------------------------------列表 end---------------------------------*/
+
+/*---------------------------------选项卡 begin---------------------------------*/
+.ConList .nav{height:36px; background:url(../images/sys_05.png) repeat-x bottom;}
+.ConList .nav ul li{font-size:16px; text-align:center; line-height:34px; height:34px; background:#f9f9f9; padding:0 10px; float:left; margin-right:10px; cursor:pointer; font-family:Microsoft YaHei; border-top:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc;}
+.ConList .nav ul li.current{border-top:2px solid #448aca; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; background:#fff; color:#175fa1; color:#175fa1;}
+.ListShow{border-top:none 0; border-bottom:1px solid #c5d0dc; border-left:1px solid #c5d0dc; border-right:1px solid #c5d0dc; width:auto;}
+/*---------------------------------选项卡 end---------------------------------*/
+
+/*---------------------------------报错 begin---------------------------------*/
+.Error403{width:800px; height:600px; margin:0 auto; background:url(../images/403.png) no-repeat top center;}
+.Error404{width:800px; height:600px; margin:0 auto; background:url(../images/404.png) no-repeat top center;}
+.Error500{width:800px; height:600px; margin:0 auto; background:url(../images/500.png) no-repeat top center;}
+.nodata{width:400px; height:300px; margin:0 auto; background:url(../images/nodata.gif) no-repeat top center;}
+/*---------------------------------报错 end---------------------------------*/
+/*----------------------------8-1窗帘效果div---------------------------------*/
+.blind{width:100%; height:32px; line-height:32px; text-align:center; font-size:12px; border:1px solid #facd89; background:#fffbcc; display:none; text-align:center; color:#A9560C; position:absolute; z-index:1; top:0; left:0;}
+
+/*---------------------------------返回按钮图片路径 begin---------------------------------*/
+.back2{width:18px; height:18px; background:url(../images/back2.png); display:block; float:left; margin:5px 10px 0 0;}
+.back2:hover{background:url(../images/back2_2.png);}
+/*---------------------------------返回按钮图片路径 end---------------------------------*/

@@ -1,0 +1,2075 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.ArcgisDataOfLocalMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+     <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="HANDLE_DATE" jdbcType="TIMESTAMP" property="handleDate" />
+    <result column="URGENCY_DEGREE" jdbcType="VARCHAR" property="urgencyDegree" />
+    <result column="HANDLE_STATUS" jdbcType="TIMESTAMP" property="handleStatus" />
+    <result column="NAMES" jdbcType="VARCHAR" property="names" />
+    <result column="IDS" jdbcType="VARCHAR" property="ids" />
+    <result column="SUB_BUSI_TYPE" jdbcType="VARCHAR" property="subBusiType" />
+	<result column="BIZ_TYPE" jdbcType="VARCHAR" property="bizType" />
+	<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+	<result column="BIZ_ID" jdbcType="VARCHAR" property="bizId" />
+	<result column="STATUS" jdbcType="VARCHAR" property="status" />
+
+</resultMap>
+<resultMap id="arcgisInfoOfHashId" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfHashId" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+     <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="HANDLE_DATE" jdbcType="TIMESTAMP" property="handleDate" />
+    <result column="URGENCY_DEGREE" jdbcType="VARCHAR" property="urgencyDegree" />
+    <result column="HANDLE_STATUS" jdbcType="TIMESTAMP" property="handleStatus" />
+    <result column="NAMES" jdbcType="VARCHAR" property="names" />
+    <result column="IDS" jdbcType="VARCHAR" property="ids" />
+    <result column="SUB_BUSI_TYPE" jdbcType="VARCHAR" property="subBusiType" />
+	<result column="BIZ_TYPE" jdbcType="VARCHAR" property="bizType" />
+	<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+	<result column="BIZ_ID" jdbcType="VARCHAR" property="bizId" />
+	<result column="STATUS" jdbcType="VARCHAR" property="status" />
+
+</resultMap>
+<resultMap id="ArcgisInfoMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfo" >
+	<id column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="WID" jdbcType="DECIMAL" property="wid" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="MAPT" jdbcType="INTEGER" property="mapt" />
+    <result column="HS" jdbcType="VARCHAR" property="hs" />
+    <result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+    <result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+    <result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+    <result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+    <result column="SUB_BUSI_TYPE" jdbcType="VARCHAR" property="subBusiType" />
+    <result column="REMARK" jdbcType="VARCHAR" property="address" />
+    <result column="CHANNEL_ID" jdbcType="VARCHAR" property="channelId" />
+</resultMap>
+	<resultMap id="ArcgisInfoOfPeopleMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPeople" >
+		<id column="ID" jdbcType="DECIMAL" property="id" />
+		<result column="PARTY_ID" jdbcType="DECIMAL" property="partyId" />
+		<result column="CI_RS_ID" jdbcType="DECIMAL" property="ciRsId" />
+		<result column="WID" jdbcType="VARCHAR" property="wid" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+		<result column="X" jdbcType="DECIMAL" property="x" />
+		<result column="Y" jdbcType="DECIMAL" property="y" />
+		<result column="MAPT" jdbcType="INTEGER" property="mapt" />
+		<result column="SUB_BIZ_TYPE" jdbcType="VARCHAR" property="subBizType" />
+	</resultMap>
+	<resultMap id="arcgisBaseInfo" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisBaseInfo" >
+		<id column="ID" jdbcType="DECIMAL" property="id" />
+		<result column="WID" jdbcType="VARCHAR" property="wid" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="X" jdbcType="DECIMAL" property="x" />
+		<result column="Y" jdbcType="DECIMAL" property="y" />
+		<result column="MAPT" jdbcType="INTEGER" property="mapt" />
+		<result column="HS" jdbcType="VARCHAR" property="hs" />
+		<result column="LINE_COLOR" jdbcType="VARCHAR" property="lineColor" />
+		<result column="LINE_WIDTH" jdbcType="INTEGER" property="lineWidth" />
+		<result column="AREA_COLOR" jdbcType="VARCHAR" property="areaColor" />
+		<result column="NAME_COLOR" jdbcType="VARCHAR" property="nameColor" />
+		<result column="HANDLE_DATE" jdbcType="TIMESTAMP" property="handleDate" />
+		<result column="URGENCY_DEGREE" jdbcType="VARCHAR" property="urgencyDegree" />
+		<result column="HANDLE_STATUS" jdbcType="TIMESTAMP" property="handleStatus" />
+		<result column="NAMES" jdbcType="VARCHAR" property="names" />
+		<result column="IDS" jdbcType="VARCHAR" property="ids" />
+		<result column="SUB_BUSI_TYPE" jdbcType="VARCHAR" property="subBusiType" />
+		<result column="BIZ_TYPE" jdbcType="VARCHAR" property="bizType" />
+		<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+		<result column="BIZ_ID" jdbcType="VARCHAR" property="bizId" />
+	</resultMap>
+<resultMap id="ResultMapOfHeat" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisHeatMapInfo" >
+    <result column="X" jdbcType="DECIMAL" property="x" />
+    <result column="Y" jdbcType="DECIMAL" property="y" />
+    <result column="CNT" jdbcType="DECIMAL" property="count" />
+</resultMap>
+
+<!-- "情"模块安全隐患地图信息查询-->
+<select id="getArcgisRiskLocateDataListByIdsOne" resultMap="BaseResultMap">
+	select 
+	  T3.CHECK_ID ID,
+	  T3.CHECK_ID WID,
+	  T.MAPT MAPT,
+	  T3.COR_PLACE_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	  from MAP_WG_JZW_GIS T
+	 left join T_ZZ_PLA_FLOOR_PLACE T1 ON T.WID = T1.BUILDING_ID AND T1.PLA_FLOOR_TYPE = '03'
+	 LEFT JOIN T_ZZ_COR_BASE_INFO T2 ON T2.CBI_ID = T1.PLA_ID AND T2.STATUS = '001'
+	 LEFT JOIN T_ZZ_NEW_SAFETY_CHECK_INFO T3 ON T2.CBI_ID = T3.CBI_ID AND T3.STATUS = '001' AND T3.SITE_TYPE = '1'
+	 WHERE T3.CHECK_ID IN (${ids1})
+	 AND T.MAPT = #{mapt, jdbcType=DECIMAL}
+	 AND T.STATUS = '001'
+	 order by t.cen_lon
+</select>
+<select id="getArcgisRiskLocateDataListByIdsTwo" resultMap="BaseResultMap">
+	  	select 
+	  T3.CHECK_ID ID,
+	  T3.CHECK_ID WID,
+	  T.MAPT MAPT,
+	  T3.COR_PLACE_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	   from MAP_WG_JZW_GIS T
+	  left join T_ZZ_PLA_INFO T1 ON T.WID = T1.BUILDING_ID AND T1.STATUS = '001'
+	  LEFT JOIN T_ZZ_NEW_SAFETY_CHECK_INFO T3 ON T1.PLA_ID = T3.CBI_ID AND T3.STATUS = '001' AND T3.SITE_TYPE = '2'
+	  WHERE T3.CHECK_ID IN (${ids2})
+	  AND T.MAPT = #{mapt, jdbcType=DECIMAL} 
+	  AND T.STATUS = '001'
+	  order by t.cen_lon
+</select>
+<select id="getArcgisRiskLocateDataListByIdsThree" resultMap="BaseResultMap">
+	select 
+	  T3.CHECK_ID ID,
+	  T3.CHECK_ID WID,
+	  T.MAPT MAPT,
+	  T3.COR_PLACE_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	   from MAP_WG_JZW_GIS T
+	  left join T_DC_AREA_BUILDING_INFO T1 ON T.WID = T1.BUILDING_ID AND t1.status='001'
+	  LEFT JOIN T_DC_AREA_ROOM_INFO T2 ON T2.Building_Id = t1.building_id  AND T2.Status = '001'
+	  LEFT JOIN T_DC_AREA_ROOM_RENT T4 ON T2.ROOM_ID = T4.ROOM_ID AND T4.STATUS = '001'
+	  LEFT JOIN T_ZZ_NEW_SAFETY_CHECK_INFO T3 ON T4.RENT_ID = T3.CBI_ID AND T3.STATUS = '001'
+	  WHERE T3.CHECK_ID IN (${ids3})
+	  AND T.MAPT = #{mapt, jdbcType=DECIMAL} 
+	  AND T.STATUS = '001'
+	  order by t.cen_lon
+</select>
+<select id="getArcgisPopLocateDataListByUserIds" resultMap="ArcgisInfoOfPeopleMap">
+  SELECT
+	T.ID ID,
+	T1.PARTY_ID,
+	T1.CI_RS_ID,
+	t1.PARTY_ID || '-' || T1.CI_RS_ID || '-' || T1.BUILDING_ID WID,
+    t1.i_residence_addr ADDRESS,
+    T1.PARTY_NAME NAME,
+    T.CEN_LON X,
+    T.CEN_LAT Y,
+    T.MAPT
+  FROM MAP_WG_JZW_GIS T,
+    (
+      SELECT DISTINCT RS.CI_RS_ID, B.BUILDING_ID, RS.party_id, RS.i_residence_addr, I.PARTY_NAME
+         FROM T_DC_CI_RS RS
+         INNER JOIN T_DC_PARTY_INDIVIDUAL I
+           ON RS.PARTY_ID = I.PARTY_ID
+          AND I.STATUS = '001'
+          AND I.DATA_STATUS = '001'
+         INNER JOIN  T_DC_AREA_BUILDING_INFO  B
+           ON RS.I_RESIDENCE_ADDR = B.BUILDING_ADDRESS
+          AND B.STATUS = '001'
+        WHERE RS.STATUS = '001'
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND RS.ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+		 AND RS.PARTY_ID IN (${userIds})
+        UNION
+        SELECT DISTINCT RS.CI_RS_ID, B.BUILDING_ID, RS.party_id, RS.i_residence_addr, I.PARTY_NAME
+         FROM T_DC_CI_RS RS
+         INNER JOIN T_DC_PARTY_INDIVIDUAL I
+           ON RS.PARTY_ID = I.PARTY_ID
+          AND I.STATUS = '001'
+          AND I.DATA_STATUS = '001'
+         INNER JOIN T_DC_AREA_ROOM_INFO R
+           ON RS.I_RESIDENCE_ADDR = R.ROOM_ADDRESS
+          AND R.STATUS = '001'
+         INNER JOIN  T_DC_AREA_BUILDING_INFO  B
+           ON R.BUILDING_ID = B.BUILDING_ID
+          AND B.STATUS = '001'
+        WHERE RS.STATUS = '001'
+        <if test="infoOrgCode != null and infoOrgCode != ''">
+			AND RS.ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+        AND RS.PARTY_ID IN (${userIds})
+		UNION
+		SELECT DISTINCT RS.CI_RS_ID,
+						B.BUILDING_ID,
+						RS.party_id,
+						RS.i_residence_addr,
+						I.PARTY_NAME
+		  FROM T_DC_CI_RS_ROOM RM
+		 INNER JOIN T_DC_CI_RS RS
+			ON RM.CI_RS_ID = RS.CI_RS_ID
+		 INNER JOIN T_DC_PARTY_INDIVIDUAL I
+			ON RS.PARTY_ID = I.PARTY_ID
+		   AND I.STATUS = '001'
+		   AND I.DATA_STATUS = '001'
+		 INNER JOIN T_DC_AREA_BUILDING_INFO B
+			ON RM.BUILDING_ID = B.BUILDING_ID
+		   AND B.STATUS = '001'
+		 WHERE RS.STATUS = '001'
+		   AND RM.STATUS = '001'
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND RS.ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+		   AND RS.PARTY_ID IN (${userIds})
+    ) T1
+  WHERE 1=1
+ AND T.MAPT=#{mapt,jdbcType=DECIMAL}
+  AND T1.BUILDING_ID = T.WID
+  AND T.STATUS = '001'
+	AND T.CEN_LON IS NOT NULL
+	AND T.CEN_LAT IS NOT NULL
+  ORDER BY T.CEN_LON
+</select>
+<select id="getBuildOfPopByUserId" resultType="java.util.Map">
+SELECT DISTINCT B.BUILDING_ID,B.BUILDING_NAME, B.BUILDING_ADDRESS
+  FROM T_DC_CI_RS RS
+  INNER JOIN  T_DC_AREA_BUILDING_INFO  B
+  ON RS.I_RESIDENCE_ADDR = B.BUILDING_ADDRESS
+  AND B.STATUS = '001'
+  WHERE RS.STATUS = '001'
+  <if test="userId != null and userId != ''">
+	  AND  RS.CI_RS_ID = #{userId, jdbcType=DECIMAL}
+  </if>
+  UNION
+  SELECT DISTINCT B.BUILDING_ID,B.BUILDING_NAME, B.BUILDING_ADDRESS
+  FROM T_DC_CI_RS RS
+  INNER JOIN T_DC_AREA_ROOM_INFO R
+  ON RS.I_RESIDENCE_ADDR = R.ROOM_ADDRESS
+  AND R.STATUS = '001'
+  INNER JOIN  T_DC_AREA_BUILDING_INFO  B
+  ON R.BUILDING_ID = B.BUILDING_ID
+  AND B.STATUS = '001'
+  WHERE RS.STATUS = '001'
+	<if test="userId != null and userId != ''">
+		AND  RS.CI_RS_ID = #{userId, jdbcType=DECIMAL}
+	</if>
+</select>
+<select id="getArcgisSafetyPersonManageLocateDataListByIdsOne" resultMap="BaseResultMap">
+	select 
+	  T3.CORP_STAFF_ID ID,
+	  T3.CORP_STAFF_ID WID,
+	  T.MAPT MAPT,
+	  T3.I_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	  from MAP_WG_JZW_GIS T
+	 left join T_ZZ_PLA_FLOOR_PLACE T1 ON T.WID = T1.BUILDING_ID AND T1.PLA_FLOOR_TYPE = '03'
+	 LEFT JOIN T_ZZ_COR_BASE_INFO T2 ON T2.CBI_ID = T1.PLA_ID AND T2.STATUS = '001'
+	 LEFT JOIN T_ZZ_NEW_SAFETY_PERSON_MANAGE T3 ON T2.CBI_ID = T3.CBI_ID AND T3.STATUS = '001' AND T3.SITE_TYPE = '1'
+	 WHERE T3.CORP_STAFF_ID IN (${ids1})
+	 AND T.MAPT = #{mapt, jdbcType=DECIMAL}
+	 AND T.STATUS = '001'
+	 order by t.cen_lon
+</select>
+
+<select id="findBuildOfPopByBuildingId" resultType="java.util.Map">
+   SELECT B.BUILDING_ID, B.BUILDING_NAME, B.BUILDING_ADDRESS
+	 FROM T_DC_AREA_BUILDING_INFO B
+	WHERE B.BUILDING_ID = #{buildingId, jdbcType=DECIMAL}
+  	 AND B.STATUS = '001'
+</select>
+
+<select id="getArcgisSafetyPersonManageLocateDataListByIdsTwo" resultMap="BaseResultMap">
+	  	select 
+	  T3.CORP_STAFF_ID ID,
+	  T3.CORP_STAFF_ID WID,
+	  T.MAPT MAPT,
+	  T3.I_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	   from MAP_WG_JZW_GIS T
+	  left join T_ZZ_PLA_INFO T1 ON T.WID = T1.BUILDING_ID AND T1.STATUS = '001'
+	  LEFT JOIN T_ZZ_NEW_SAFETY_PERSON_MANAGE T3 ON T1.PLA_ID = T3.CBI_ID AND T3.STATUS = '001' AND T3.SITE_TYPE = '2'
+	  WHERE T3.CORP_STAFF_ID IN (${ids2})
+	  AND T.MAPT = #{mapt, jdbcType=DECIMAL} 
+	  AND T.STATUS = '001'
+	  order by t.cen_lon
+</select>
+<select id="getArcgisPoliceLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.INDUSTRY_NAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_MAJOR_INDUSTRY t1
+	LEFT JOIN T_ZY_RES_MARKER t 
+	on t1.INDUSTRY_ID=t.RESOURCES_ID
+	where 
+		t.RESOURCES_ID in (${ids}) 
+		AND t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		order  by t.x
+</select>
+<select id="getArcgisSafetyPersonManageLocateDataListByIdsThree" resultMap="BaseResultMap">
+	select 
+	  T3.CORP_STAFF_ID ID,
+	  T3.CORP_STAFF_ID WID,
+	  T.MAPT MAPT,
+	  T3.I_NAME NAME,
+	  T.CEN_LON X,
+	  T.CEN_LAT Y
+	   from MAP_WG_JZW_GIS T
+	  left join T_DC_AREA_BUILDING_INFO T1 ON T.WID = T1.BUILDING_ID AND t1.status='001'
+	  LEFT JOIN T_DC_AREA_ROOM_INFO T2 ON T2.Building_Id = t1.building_id  AND T2.Status = '001'
+	  LEFT JOIN T_DC_AREA_ROOM_RENT T4 ON T2.ROOM_ID = T4.ROOM_ID AND T4.STATUS = '001'
+	  LEFT JOIN T_ZZ_NEW_SAFETY_PERSON_MANAGE T3 ON T4.RENT_ID = T3.CBI_ID AND T3.STATUS = '001'
+	  WHERE T3.CORP_STAFF_ID IN (${ids3})
+	  AND T.MAPT = #{mapt, jdbcType=DECIMAL} 
+	  AND T.STATUS = '001'
+	  order by t.cen_lon
+</select>
+<!-- "情"模块全球眼信息查询-->
+<select id="getArcgisGlobalEyesLocateDataListByIds" resultMap="ArcgisInfoMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.PLATFORM_NAME name,
+		decode(t1.company_type,'14',t1.company_type||'-'|| NVL(t1.rtsp,0),t1.company_type)   SUB_BUSI_TYPE,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt,
+		t1.CHANNEL_ID
+	from T_ZY_RES_MARKER t , cms.ci_monitor t1 
+	where 
+		t.RESOURCES_ID = t1.MONITOR_ID
+		<if test="ids != null and ids != '' ">
+			and t.RESOURCES_ID in (${ids})
+		</if>
+		<if test="orgCode != null and orgCode != '' ">
+			AND t1.ORG_CODE like #{orgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		and
+		t.MAP_TYPE =#{mapt,jdbcType=DECIMAL}
+		AND t.MARKER_TYPE = '02020501'
+		order by t.x
+</select>
+	<select id="getGlobalListByDeviceNums" resultType="java.util.Map">
+		select *
+		from cms.ci_monitor t1
+		where t1.CHANNEL_NAME in (${deviceNums})
+	</select>
+	<!-- 福富全球眼信息查询，根据设备号-->
+	<select id="getArcgisGlobalEyesLocateDataListByDeviceNums" resultMap="ArcgisInfoMap">
+		select
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.PLATFORM_NAME name,
+		t1.CHANNEL_NAME elementsCollectionStr,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+		from T_ZY_RES_MARKER t , cms.ci_monitor t1
+		where
+		t.RESOURCES_ID = t1.MONITOR_ID
+		and
+		T1.CHANNEL_NAME in (${deviceNums})
+		and
+		t.MAP_TYPE =#{mapt,jdbcType=DECIMAL}
+		AND t.MARKER_TYPE = '02020501'
+		order by t.x
+	</select>
+	
+	<!-- 污染检测点信息查询-->
+    <select id="getArcgisGlobalEyesLocateDataListBypollution" resultMap="ArcgisInfoMap">
+        select
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t.X x,
+		t.Y y,
+		t1.res_name name,
+		t1.remark remark
+		from T_ZY_RES_MARKER t , t_zy_res_info t1
+		where
+		t.RESOURCES_ID = t1.RES_ID
+		and  t.MAP_TYPE =#{mapt,jdbcType=DECIMAL}
+		AND t.MARKER_TYPE = #{typeCode}
+		order by t.x
+	</select>
+<!-- 2017-12-14 改造：不在根据IMSI号去查询，而是根据User_id，定位信息是最后一个点，不考虑时间-->
+<select id="getArcgisGridAdminLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.GRID_ADMIN_ID id,
+		t.GRID_ADMIN_ID wid,
+		t1.LONGITUDE x,
+		t1.DIMENSIONS y,
+		t1.LOCATE_TIME HANDLE_DATE
+	from T_DC_GRID_ADMIN t , (SELECT T4.*
+                FROM BUS_LAST_LOCATE T4 INNER JOIN (SELECT MAX(LOCATE_ID) AS LOCATE_ID
+                                                           FROM BUS_LAST_LOCATE T2
+                                                          GROUP BY USER_ID) T3
+                  ON T4.LOCATE_ID = T3.LOCATE_ID) t1
+	where 
+		1=1
+		and t.user_id = t1.user_id
+		and t.GRID_ADMIN_ID in (${ids})
+		and t1.mapt =  #{mapt,jdbcType=DECIMAL}
+		order by t1.LONGITUDE
+</select>
+
+	<!-- and t1.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)不考虑时间,只取最后一个点 -->
+<select id="getArcgisGridAdminLocateDataListByIdsUserName" resultMap="BaseResultMap">
+	select
+	t.GRID_ADMIN_ID id,
+	t.GRID_ADMIN_ID wid,
+	t1.LONGITUDE x,
+	t1.DIMENSIONS y,
+	t1.LOCATE_TIME HANDLE_DATE
+	from T_DC_GRID_ADMIN t , BUS_LAST_LOCATE t1, t_dc_party_user_certify T2
+	where
+	T1.USER_NAME = T2.Regis_Value
+	and T2.user_id = T.user_id
+	and t.GRID_ADMIN_ID in (${ids})
+	and t1.mapt =  #{mapt,jdbcType=DECIMAL}
+	order by t1.LONGITUDE
+</select>
+
+<!-- "物"模块渔船定位查询 -->
+<select id="getArcgisBoatLocateDataListByIds" resultMap="ArcgisInfoMap">
+	SELECT 1 id, 1 wid, '基站测试设备1基站测试设备1' name, TZ.LNG x, TZ.LAT y
+	FROM T_ZZ_DEVICE_LAST_LOCATE_INFO TZ
+	WHERE TZ.STATUS_ = '1' 
+	AND	TZ.LOCATE_TERMINAL in (${ids})
+	ORDER BY TZ.LNG
+</select>
+
+<!-- "情"模块护路护线队员信息查询and t1.mapt =  #{mapt,jdbcType=DECIMAL}-->
+<select id="getArcgisCareRoadMemberLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT
+		T1.MEMBER_ID wid, 
+		T4.IMSI id,
+		T4.LONGITUDE x, 
+		T4.DIMENSIONS y,
+		t2.party_name name
+	  FROM T_ZZ_TEAM_MEMBERS T1
+	  LEFT JOIN T_DC_USER_ENTITY T2 ON T1.USER_ID = T2.USER_ID
+	  LEFT JOIN T_DC_PARTY_USER_CERTIFY T3 ON T2.PARTY_ID = T3.PARTY_ID
+	  LEFT JOIN BUS_LAST_LOCATE T4 ON T3.IMSI = T4.IMSI
+	  WHERE T4.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+	  AND T1.MEMBER_ID IN (${ids})
+	  AND T4.mapt =  #{mapt,jdbcType=DECIMAL}
+	  ORDER BY T4.LONGITUDE
+</select>
+<!-- "地"模块信息查询-->
+<select id="getArcgisBuildingLocateDataListByIds" resultMap="BaseResultMap">
+    select 
+    	 T1.WID ID,
+    	 T1.WID wid, 
+    	 T1.MAPT mapt ,
+    	 T2.Building_Name name ,
+    	 T1.HS hs ,
+    	 T1.CEN_LON x, 
+    	 T1.CEN_LAT y, 
+    	 T1.MAPT
+	from MAP_WG_JZW_GIS T1
+	join T_DC_AREA_BUILDING_INFO T2 on T2.Building_Id=T1.WID
+	where T1.WID in (${buildingIds})
+   		and T1.Mapt=#{mapt,jdbcType=DECIMAL} 
+   		and t1.status='001'
+   		and t2.status = '001'
+   		order by t1.cen_lon
+</select>
+<select id="getBuildingLocateDataList" resultMap="BaseResultMap">
+    select T1.WID           ID,
+	       T1.WID           wid,
+	       T1.MAPT          mapt,
+	       T2.Building_Name name,
+	       T1.HS            hs,
+	       T1.CEN_LON       x,
+	       T1.CEN_LAT       y,
+	       T1.MAPT
+	  from MAP_WG_JZW_GIS T1
+	  join T_DC_AREA_BUILDING_INFO T2
+	    on T2.Building_Id = T1.WID
+	  LEFT JOIN T_DC_GRID G
+	    ON T2.GRID_ID = G.GRID_ID
+	 where T1.Mapt = #{mapt,jdbcType=DECIMAL}
+	   and t1.status = '001'
+	   and t2.status = '001'
+	   AND G.STATUS = '001'
+	   AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+	 order by t1.cen_lon
+</select>
+<!-- "地"模块便民服务网点信息查询-->
+<select id="getArcgisDataOfServiceOutletsByIds" resultMap="BaseResultMap">
+	SELECT T.SO_ID     id,
+       T.SO_ID         wid,
+       T.NAME_         name,
+       tt.X            x,
+       tt.Y            y,
+       tt.MAP_TYPE     mapt
+  FROM T_ZZ_OBJ_SERVICE_OUTLETS T, T_ZY_RES_MARKER TT
+ WHERE T.RESOURCES_ID = TT.RESOURCES_ID
+	   AND T.SO_ID IN (${ids})
+	   AND TT.MAP_TYPE = #{mapt, jdbcType=DECIMAL}
+	   order by tt.x
+</select>
+<!-- 重点场所信息查询-->
+<select id="getKeyPlaceLocateDataListByIds" resultMap="BaseResultMap">
+	select t1.PLA_ID ID,
+       	   t1.PLA_ID wid, 
+       	   t1.pla_name name,
+           t2.map_type mapt ,
+           t2.hs hs ,
+           t2.x x, 
+           t2.y y,
+		   'keyPlaceIcon' || t1.Pla_Type SUB_BUSI_TYPE
+  from t_zz_pla_info t1,T_ZY_RES_MARKER t2
+  where t1.status='001'
+        and t1.pla_id=t2.resources_id
+        and t1.PLA_ID in (${keyPlaceIds})  
+        and t2.map_type = #{mapt,jdbcType=INTEGER}
+        and t2.marker_type = #{markerType,jdbcType=VARCHAR}
+  ORDER BY t2.x
+</select>
+<!-- 重点场所信息查询-->
+<select id="getArcgisKeyPlaceLocateDataListByIds" resultMap="BaseResultMap">
+	select t1.PLA_ID ID,
+		   t1.PLA_ID wid, 
+		   t1.pla_name name,
+    	   t2.MAPT mapt ,
+    	   t2.HS hs ,
+    	   t2.CEN_LON x, 
+    	   t2.CEN_LAT y, 
+    	   t2.MAPT,
+		   'keyPlaceIcon' || t1.Pla_Type SUB_BUSI_TYPE
+	from t_zz_pla_info t1,MAP_WG_JZW_GIS t2
+	where t1.status='001'
+	      and t1.building_id is not null
+	      and t1.building_id=t2.WID
+	      and t2.status='001'
+	      and t1.PLA_ID in (${keyPlaceIds})	
+	      and t2.MAPT = #{mapt,jdbcType=INTEGER}
+	ORDER BY t2.cen_lon
+</select>
+
+	<!-- 重点场所信息查询-->
+	<select id="getArcgisKeyPlaceLocateDataListByIdsYD" resultMap="BaseResultMap">
+	select t1.PLA_ID ID,
+		   t1.PLA_ID wid,
+		   t1.pla_name name,
+    	   t2.MAPT mapt ,
+    	   t2.HS hs ,
+    	   t2.CEN_LON x,
+    	   t2.CEN_LAT y,
+    	   t2.MAPT,
+		   t1.NINE_SMALL_TYPE SUB_BUSI_TYPE
+	from t_zz_pla_info t1,MAP_WG_JZW_GIS t2
+	where t1.status='001'
+	      and t1.building_id is not null
+	      and t1.building_id=t2.WID
+	      and t2.status='001'
+	      and t1.PLA_ID in (${keyPlaceIds})
+	      and t2.MAPT = #{mapt,jdbcType=INTEGER}
+	ORDER BY t2.cen_lon
+</select>
+
+<select id="getArcgisEventLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID wid,
+		t1.Event_Name name,
+		t.X x,
+		t1.status,
+		t1.handle_date_flag HANDLE_STATUS,
+		t1.URGENCY_DEGREE,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_EVENT t1 
+	where 
+		t.RESOURCES_ID = t1.EVENT_ID
+		and t.RESOURCES_ID in (${ids})
+		and t.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		and t.marker_type = '0301'
+		
+</select>
+<select id="getArcgisEventDisposalLocateDataListByIdsWithEvent" resultMap="BaseResultMap"><!-- 提供旧地图定位数据 -->
+	select 
+		t.RESOURCES_ID wid,
+		t1.Event_Name name,
+		t.X x,
+		t.Y y,
+		t1.URGENCY_DEGREE,
+		t1.HANDLE_DATE,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_EVENT t1 
+	where 
+		t.RESOURCES_ID = t1.EVENT_ID
+		and t.RESOURCES_ID in (${ids})
+		and t.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		and t.marker_type = '0301'
+		order  by t.x
+</select>
+<select id="getArcgisEventDisposalLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID wid,
+		t1.Event_Name name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_EVENT t1 
+	where 
+		t.RESOURCES_ID = t1.EVENT_ID
+		and t.RESOURCES_ID in (${ids})
+		and t.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		and t.marker_type = '0301'
+		order  by t.x
+</select>
+<!-- 事件信息查询-->
+<select id="getArcgisImportantEventDisposalLocateDataListByIds" resultMap="BaseResultMap">
+select * from(
+SELECT 
+   T.EVENT_ID ID,
+       T.EVENT_ID GID,
+       T.EVENT_ID WID,
+       to_number(DECODE(T1.X,NULL,DECODE(T3.CEN_LON,NULL,T.X,T3.CEN_LON),'0.0',DECODE(T3.CEN_LON,NULL,T.X,T3.CEN_LON),T1.X),'999.9999999999999999') x,
+       to_number(DECODE(T1.Y,NULL,DECODE(T3.CEN_LAT,NULL,T.Y,T3.CEN_LAT),'0.0',DECODE(T3.CEN_LAT,NULL,T.Y,T3.CEN_LAT),T1.Y),'999.9999999999999999') y,
+       DECODE(T1.X,NULL,DECODE(T3.CEN_LAT,NULL,NULL,T3.MAPT),'0.0',DECODE(T3.CEN_LAT,NULL,NULL,T3.MAPT),T1.MAP_TYPE) MAPT,
+       T.URGENCY_DEGREE,
+       T2.column_value_remark C,
+       DECODE(T1.X,NULL,T.X,T1.X) || ',' || DECODE(T1.Y,NULL,T.Y,T1.Y) HS,
+       ROUND(TO_NUMBER(T.HANDLE_DATE - DECODE(T.CLOSED_DATE,NULL,SYSDATE,T.CLOSED_DATE))) LEG_DATE,
+       T.Content_ NAME,
+       T.Type_ PATH
+FROM T_SJ_EVENT_DISPOSAL T
+LEFT JOIN T_ZY_RES_MARKER T1 ON T.EVENT_ID = T1.RESOURCES_ID AND T1.MARKER_TYPE='0301' AND T1.MAP_TYPE = #{mapt,jdbcType=VARCHAR}
+LEFT JOIN t_dc_data_dictionary_info T2 ON T2.COLUMN_VALUE = T.TYPE_ AND LOWER(T2.TABLE_ID) = 't_sj_event_disposal' AND LOWER(T2.COLUMN_ID)='small_type'
+LEFT JOIN MAP_WG_JZW_GIS T3 ON T.Building_Id = T3.WID AND T3.MAPT = #{mapt,jdbcType=VARCHAR}
+WHERE 1=1
+and t3.status='001'
+AND T.EVENT_ID IN (${ids})) a
+where 1=1 and (a.x<![CDATA[>]]> 0 or a.x<![CDATA[<]]> 0) and (a.y<![CDATA[>]]> 0 or a.y<![CDATA[<]]> 0)
+order  by a.x
+</select>
+<!-- "物"模块信息查询-->
+<select id="getArcgisResourceLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.RES_NAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_ZY_RES_INFO t1 
+	where 
+		t.RESOURCES_ID = t1.RES_ID
+			and
+		t.RESOURCES_ID in (${ids}) 
+			and
+		t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		AND T1.STATUS = '001'
+		order  by t.x
+</select>
+
+	<select id="getBuildLocateDataListByResIds" resultMap="BaseResultMap">
+		SELECT T3.RES_ID ID,
+			   T3.RES_ID WID,
+			   T3.RES_NAME NAME,
+			   T1.CEN_LON X,
+			   T1.CEN_LAT Y,
+			   T1.MAPT MAPT
+		FROM MAP_WG_JZW_GIS T1, T_DC_AREA_BUILDING_INFO T2, T_ZY_RES_INFO T3
+		WHERE T1.WID = T2.BUILDING_ID
+		AND T2.BUILDING_ID = T3.BUILDING_ID
+		AND T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.STATUS = '001'
+		AND T3.RES_ID IN (${ids})
+		AND T1.MAPT =#{mapt,jdbcType=INTEGER}
+		ORDER BY T1.CEN_LON
+	</select>
+<!-- 出租屋模块信息查询-->
+<select id="getArcgisRentRoomLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t1.RENT_ID id, 
+		t1.RENT_ID wid,
+		t4.CEN_LON x, 
+		t4.CEN_LAT y, 
+		t4.MAPT mapt, 
+		t4.HS hs,  
+   		t2.ROOM_NAME name,
+		t4.LINE_COLOR lineColor,
+        t4.LINE_WIDTH lineWidth,
+        t4.Area_Color areaColor,
+        t4.NAME_COLOR nameColor
+	from T_DC_AREA_ROOM_RENT t1 
+   		left outer join T_DC_AREA_ROOM_INFO t2 ON t1.ROOM_ID=t2.ROOM_ID
+   		left outer join T_DC_AREA_BUILDING_INFO t3 ON t2.BUILDING_ID=t3.BUILDING_ID
+   		left outer join MAP_WG_JZW_GIS t4 ON t3.BUILDING_ID=t4.WID
+    where 
+    	t1.RENT_ID in (${ids})
+    	  and 
+    	t4.mapt=#{mapt,jdbcType=INTEGER}
+    	and t4.status='001'
+    	order by t4.CEN_LON
+</select>
+<!-- 出租屋模块信息查询,海沧是通过手动标注不是关联楼宇-->
+<select id="getArcgisRentRoomLocateDataListByIdsHC" resultMap="BaseResultMap">
+	select T1.RENT_ID id,
+       T1.RENT_ID wid,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y hs,
+       t2.ROOM_NAME name,
+       t.map_type mapt
+  from T_ZY_RES_MARKER T
+  left join T_DC_AREA_ROOM_RENT T1 ON T1.RENT_ID = T.RESOURCES_ID
+ left outer join T_DC_AREA_ROOM_INFO t2 ON t1.ROOM_ID=t2.ROOM_ID
+       WHERE 
+        T1.RENT_ID IN (${ids})
+       AND
+	    T.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+	    AND t.MARKER_TYPE = #{markType,jdbcType=VARCHAR}
+	    order  by t.x
+</select>
+<select id="getArcgisCorLocateDataListByIds" resultMap="BaseResultMap">
+  select T2.building_id id,
+       t.CBI_ID wid,
+       t.cor_name name,
+       T3.CEN_LON x,
+       T3.CEN_LAT y,
+       T3.HS hs,
+       T3.LINE_COLOR lineColor,
+       T3.LINE_WIDTH lineWidth,
+       T3.Area_Color areaColor,
+       T3.NAME_COLOR nameColor
+  from T_ZZ_COR_BASE_INFO t
+  left join T_DC_AREA_BUILDING_INFO T2 on t.CORP_BUILDING_ID = t2.building_id
+  left join MAP_WG_JZW_GIS T3 on T2.Building_Id = T3.WID
+ where t.cbi_id in (${ids})
+   and t2.status = '001'
+   and T3.Mapt=#{mapt,jdbcType=DECIMAL}
+   and t3.status = '001'
+   order by t3.CEN_LON
+</select>
+	<!-- 党组织
+	select t.building_id id,
+       t.Party_Group_Id wid,
+       t.party_group_name name,
+       T3.CEN_LON x,
+       T3.CEN_LAT y,
+       T3.HS hs,
+       T3.LINE_COLOR lineColor,
+       T3.LINE_WIDTH lineWidth,
+       T3.Area_Color areaColor,
+       T3.NAME_COLOR nameColor
+  from T_DC_PARTY_GROUP t
+  left join T_DC_AREA_BUILDING_INFO T2 on t.building_id = t2.building_id
+  left join MAP_WG_JZW_GIS T3 on T2.Building_Id = T3.WID
+where t.Party_Group_Id in (${ids})
+   and T3.Mapt=#{mapt,jdbcType=DECIMAL}
+   and t3.status = '001'
+   order by T3.CEN_LON-->
+<select id="getArcgisPartyGroupLocateDataListByIds" resultMap="BaseResultMap">
+
+	select
+       t.Party_Group_Id wid,
+       t.party_group_name name,
+      t2.map_type mapt ,
+         t2.hs hs ,
+         t2.x x,
+         t2.y y
+  from T_DC_PARTY_GROUP t, T_ZY_RES_MARKER t2
+ where t.Party_Group_Id in (${ids})
+       and t.Party_Group_Id=t2.resources_id
+   and T2.MAP_TYPE= #{mapt,jdbcType=DECIMAL}
+   and t.status = '001'
+   and t2.marker_type = #{markerType,jdbcType=VARCHAR}
+   order by t2.x
+</select>
+<select id="getCorLocateDataListByIds" resultMap="BaseResultMap">
+select 
+       t.CBI_ID wid,
+       t.cor_name name,
+      t2.map_type mapt ,
+         t2.hs hs ,
+         t2.x x, 
+         t2.y y
+  from T_ZZ_COR_BASE_INFO t, T_ZY_RES_MARKER t2
+ where t.cbi_id in (${ids})
+       and t.CBI_ID=t2.resources_id
+   and T2.MAP_TYPE=#{mapt,jdbcType=DECIMAL}
+   and t.status = '001'
+   and t2.marker_type = #{markerType,jdbcType=VARCHAR}
+   order by t2.x
+</select>
+
+<select id="getArcgisCorEnvNPLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT   T.PK_ID WID,t.COM_NAME NAME,T2.X X,T2.Y Y ,
+	t.STANDARD_INFO status --达标情况
+         FROM T_ZZ_COR_ENV_INFO t join T_ZY_RES_MARKER T2 ON T2.RESOURCES_ID=T.PK_ID 
+    where t.pk_id in (${ids}) and t2.MAP_TYPE=#{mapt,jdbcType=DECIMAL} AND T2.MARKER_TYPE=#{markerType,jdbcType=VARCHAR} 
+</select>
+<select id="getCorEnvLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT
+       T.ENV_ID WID,
+       C.COR_NAME NAME,
+      T2.MAP_TYPE MAPT ,
+         T2.HS HS ,
+         T2.X X,
+         T2.Y Y
+  FROM T_ZZ_COR_BASE_INFO C, T_ZZ_COR_ENV T, T_ZY_RES_MARKER T2
+ WHERE T.ENV_ID IN (${ids})
+   AND C.CBI_ID = T.CORP_ID
+   AND T.ENV_ID=T2.RESOURCES_ID
+   AND T2.MAP_TYPE=#{mapt,jdbcType=DECIMAL}
+   AND T.STATUS = '001'
+   AND C.STATUS = '001'
+   AND T2.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+ 
+</select>
+
+<select id="getArcgisSocietyOrgLocateDataListByIds" resultMap="BaseResultMap">
+   select T1.ORG_ID id,
+       T1.ORG_ID wid,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y hs,
+       T1.NAME_ name
+  from T_ZY_RES_MARKER T
+  left join T_DC_SOCIETY_ORG_INFO T1 ON T1.ORG_ID = T.RESOURCES_ID
+       WHERE 
+        T1.ORG_ID IN (${ids})
+       AND
+	    T.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+	    AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	    order  by t.x
+</select>
+	<!-- 宜居罗坊 -->
+	<select id="getArcgisLivableLocateDataListByIds" resultMap="BaseResultMap">
+		select T1.id id,
+		T1.id wid,
+		T.X x,
+		T.Y y,
+		'1 ' || T.X || ',' || T.Y hs,
+		T1.name name
+		from T_ZY_RES_MARKER T
+		left join t_zz_livable_lf T1 ON T1.id = T.RESOURCES_ID
+		WHERE
+		T1.id IN (${ids})
+		AND
+		T.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		order  by t.x
+	</select>
+
+<!-- 寄递物流 -->
+<select id="getArcgisLogisticsSafetyLocateDataListByIds" resultMap="BaseResultMap">
+   select T1.LS_ID id,
+       T1.LS_ID wid,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y hs,
+       T1.CORP_NAME name
+  from T_ZY_RES_MARKER T
+  left join T_ZZ_LOGISTICS_SAFETY T1 ON T1.LS_ID = T.RESOURCES_ID
+       WHERE 
+        T1.LS_ID IN (${ids})
+       AND
+	    T.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+	    and T.MARKER_TYPE = '2203'
+	    order  by t.x
+</select>
+<select id="getArcgisDisputeLocateDataListByIds" resultMap="BaseResultMap">
+   select T1.MEDIATION_ID ID,
+       T1.MEDIATION_ID WID,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y HS,
+       T1.DISPUTE_EVENT_NAME NAME
+  from T_ZY_RES_MARKER T
+  left join t_zz_dispute_mediation T1
+    ON T1.MEDIATION_ID = T.RESOURCES_ID
+ WHERE T.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+   AND T1.Status = '1'
+   AND T.MARKER_TYPE = 'DISPUTE'
+   AND T1.MEDIATION_ID IN (${ids})
+ order by t.x
+</select>  
+<select id="getArcgisCasesLocateDataListByIds" resultMap="BaseResultMap">
+select T1.CC_ID ID,
+       T1.CC_ID WID,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y HS,
+        T1.CONTENT_ NAME
+  from T_ZY_RES_MARKER T
+  left join T_ZZ_CASES T1 ON T1.CC_ID = T.RESOURCES_ID
+                        AND T.MARKER_TYPE = '010302'
+  left join T_DC_DATA_DICTIONARY_INFO T2 on T1.TYPE_ = T2.COLUMN_VALUE
+                                        and T2.table_id = 'T_ZZ_CASES'
+                                        and T2.column_id = 'TYPE_'
+ WHERE T.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+   AND T1.IS_DEL = '1'
+   AND T1.CC_ID IN (${ids}) 
+   order  by t.x 
+</select>  
+<select id="getArcgisDangousLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T.RESOURCES_ID  ID,
+       T.RESOURCES_ID  WID,
+       T1.CHECK_DETAIL NAME,
+       T.X             X,
+       T.Y             Y,
+       T.MAP_TYPE      MAPT
+  FROM T_ZY_RES_MARKER T
+  LEFT JOIN T_ZZ_SAFE_CHECK_DETAIL T1 ON T.RESOURCES_ID =
+                                         T1.SAFE_CHECK_DETAIL_ID
+  LEFT JOIN T_ZZ_SAFETY_CHECK_INFO T2 ON T1.SAFE_CHECK_ID =
+                                         T2.SAFE_CHECK_ID
+/* LEFT JOIN T_ZZ_PLA_INFO P ON D.PLACE_ID = P.PLA_ID */
+ WHERE T1.SAFE_CHECK_DETAIL_ID IN (${ids}) AND T.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+</select> 
+<select id="getArcgisNewGroupLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.COR_NAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_ZZ_COR_BASE_INFO t1 
+	where 
+		t.RESOURCES_ID = t1.CBI_ID
+			and
+		t.RESOURCES_ID in (${ids}) 
+			and
+		t.MARKER_TYPE = ${type}
+			and
+		t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		order  by t.x
+</select> 
+<select id="getArcgisLandscapeLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.NAME_ name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_ZZ_LANDSCAPE_MANAGE t1 
+	where 
+		t.RESOURCES_ID = t1.GARDEN_ID
+			and
+		t.RESOURCES_ID in (${ids}) 
+			and
+		t.MARKER_TYPE = #{type,jdbcType=VARCHAR}
+			and
+		t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		order  by t.x
+</select> 
+<select id="getArcgisNewSocietyLocateDataListByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.NAME_ name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_DC_SOCIETY_ORG_INFO t1 
+	where 
+		t.RESOURCES_ID = t1.ORG_ID
+			and
+		t.RESOURCES_ID in (${ids}) 
+			and
+		t.MARKER_TYPE = ${type}
+			and
+		t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		order  by t.x
+</select> 
+<select id="getArcgisSegmentGridDataListByIds" resultMap="BaseResultMap">
+	select T1.WID ID,
+       T1.WID,
+       T1.CEN_LON x,
+       T1.CEN_LAT y,
+       T1.MAPT,
+       T1.HS hs,
+       T2.segment_grid_name name
+  from MAP_SEGMENT_GRID_GIS T1
+  left join T_DC_SEGMENT_GRID T2 on T1.wid = T2.segment_grid_id
+ where T1.Mapt = #{mapt, jdbcType=DECIMAL}
+ 	and T1.STATUS='001'
+   and T2.segment_grid_id in (${ids})
+</select> 
+<select id="getArcgisSegmentGridDataListByParentGridId" resultMap="BaseResultMap">
+	select T1.WID id,
+       T1.WID wid,
+       T1.CEN_LON x,
+       T1.CEN_LAT y,
+       T1.MAPT mapt,
+       T1.HS hs,
+       T2.segment_grid_name name
+  from MAP_SEGMENT_GRID_GIS T1
+  left join T_DC_SEGMENT_GRID T2 on T1.wid = T2.segment_grid_id
+  
+ where T1.Mapt = #{mapt, jdbcType=DECIMAL}
+   and T2.segment_grid_type='03' 
+   and T2.parent_grid_id=${parentGridId}
+</select> 
+
+<!-- 2015-01-20 liushi add 根据id查询本身的地图数据信息  -->
+<select id="getArcgisDataOfResourcesSelfById" resultMap="BaseResultMap">
+	select T1.WID id,
+       T1.WID wid,
+       T1.CEN_LON x,
+       T1.CEN_LAT y,
+       T1.MAPT mapt,
+       T1.HS hs,
+       T1.LINE_COLOR lineColor,
+       T1.LINE_WIDTH lineWidth,
+       T1.NAME_COLOR nameColor,
+       T2.Lot_Name name
+  from MAP_DATA_RESOURCES T1
+  left join T_ZZ_CARE_ROAD T2 on T1.wid = T2.Lot_Id
+ where T1.Mapt = #{mapt, jdbcType=DECIMAL}
+   and T1.Status = '001'
+   and T1.MARKER_TYPE = #{targetType,jdbcType=VARCHAR}
+   AND T2.LOT_ID =  #{wid, jdbcType=DECIMAL}
+   AND T2.STATUS = '1'
+</select> 
+<!-- 2015-01-20 liushi add 根据id查询资源对象本身同级的其他资源地图数据 -->
+<select id="getArcgisDataOfResourcesSamelevelById" resultMap="BaseResultMap">
+	select T1.WID id,
+       T1.WID wid,
+       T1.CEN_LON x,
+       T1.CEN_LAT y,
+       T1.MAPT mapt,
+       T1.HS hs,
+       T1.LINE_COLOR lineColor,
+       T1.LINE_WIDTH lineWidth,
+       T1.NAME_COLOR nameColor,
+       T2.Lot_Name name
+  from MAP_DATA_RESOURCES T1
+  left join T_ZZ_CARE_ROAD T2 on T1.wid = T2.Lot_Id
+  INNER JOIN T_DC_GRID T3 ON T2.GRID_ID = T3.GRID_ID AND T3.STATUS = '001'
+ where T1.Mapt = #{mapt, jdbcType=DECIMAL}
+   and T1.Status = '001'
+   and T1.MARKER_TYPE = #{targetType,jdbcType=VARCHAR}
+   AND T2.STATUS = '1'
+   AND T2.LOT_ID != #{wid, jdbcType=DECIMAL}
+   AND T3.PARENT_GRID_ID = (
+   	SELECT B.PARENT_GRID_ID
+   	FROM T_ZZ_CARE_ROAD A,T_DC_GRID B
+	WHERE A.LOT_ID =#{wid, jdbcType=DECIMAL}
+	AND A.GRID_ID = B.GRID_ID
+       AND B.STATUS = '001'
+	AND A.STATUS='1')
+</select> 
+<!-- 2015-01-20 liushi add 根据id查询资源对象父级节点（网格）地图数据 -->
+<select id="getArcgisDataOfResourcesParentById" resultMap="BaseResultMap">
+select 
+    t.id,
+    t.wid,
+    t1.grid_name name,
+    t.cen_lon x,
+    t.cen_lat y,
+    t.mapt,
+    t.hs,
+    t.line_color lineColor,
+    t.line_width lineWidth,
+    t.name_color nameColor
+  from map_bus_grid_gis t 
+  left join t_dc_grid t1 on t.wid = t1.grid_id and t1.status = '001'
+  where 1=1
+    and t.mapt=#{mapt,jdbcType=INTEGER}
+    and t.status='001'
+    and t1.grid_id in (SELECT GRID_ID FROM T_ZZ_CARE_ROAD A WHERE A.LOT_ID =#{wid, jdbcType=DECIMAL}  AND A.STATUS='1')
+    order by t1.grid_code 
+</select> 
+
+<!-- "物(新消防栓、自然水厂、天然水源)"模块信息查询-->
+<select id="getArcgisNewResourceLocateDataListByIds" resultMap="BaseResultMap">
+select * from (
+	select 
+    t.marker_id id,
+    t.RESOURCES_ID wid,
+    t1.name_ name,
+    t.X x,
+    t.Y y,
+    t.MAP_TYPE mapt
+  from T_ZY_RES_MARKER t , T_FIRE_RES t1 
+  where 
+    t.RESOURCES_ID = T1.FIRE_RES_ID
+      and
+    t.RESOURCES_ID in (${ids}) 
+      and
+    t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+  <if test="resTypeCode != null and resTypeCode != ''">
+  	
+  
+    AND 
+    T.MARKER_TYPE in (${resTypeCode})
+    <if test="resTypeCode != '0603' and resTypeCode != '0604'">
+    
+	  UNION ALL
+	  
+		select 
+		    t3.id id,
+		    t1.fire_res_id wid,
+		    t1.name_ name,
+		    to_char(t3.CEN_LON) x,
+		    to_char(t3.CEN_LAT) y,
+		   to_char(t3.MAPT) mapt
+		 from T_FIRE_RES t1 left join T_DC_AREA_BUILDING_INFO T2 on t1.building_id = t2.building_id  and t1.catalog_ = 1
+		      left join MAP_WG_JZW_GIS T3 on T2.Building_Id = T3.WID
+		  where 
+		   t3.WID in (
+		       select t5.building_id
+		       from T_FIRE_RES t4 left join T_DC_AREA_BUILDING_INFO T5 
+		            on t4.building_id = t5.building_id and t4.catalog_ = 1
+		       where  t4.fire_res_id in (${ids})
+		   ) 
+		   and 
+		   t3.MAPT=#{mapt,jdbcType=INTEGER}
+		    and t1.status = '001' and t2.status = '001' 
+		    and t3.status = '001' and t1.fire_res_id in (${ids})
+	    </if>
+  </if>
+  ) a order by a.x
+</select>
+
+<!-- 消防队-->
+<select id="getArcgisFireTeamLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T1.NAME,
+	       T3.X,
+	       T3.Y,
+	       T3.MAP_TYPE     MAPT
+	  FROM T_FIRE_TEAM T1
+	  LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+	 WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T1.FIRE_TEAM_ID IN (${ids})
+	   order  by t3.x
+</select>
+
+<!-- 晋江消防队（形式分类1.现役消防队2.义务消防队 3.志愿消防队）-->
+<select id="getArcgisFireTeamNewLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T1.NAME,
+	       T3.X,
+	       T3.Y,
+	       T3.MAP_TYPE     MAPT
+	  FROM T_FIRE_TEAM_NEW T1
+	  LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+	 WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T1.FIRE_TEAM_ID IN (${ids})
+	   order by t3.x
+</select>
+
+	<!-- "两站"模块信息查询-->
+	<select id="getArcgisTwoStationLocateDataListByIds" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+		SELECT T3.MARKER_ID    ID,
+		T3.RESOURCES_ID WID,
+		T1.STATION_NAME NAME,
+		T3.X,
+		T3.Y,
+		T3.MAP_TYPE     MAPT
+		FROM ${dbuser.lzly}.T_LZLY_TWO_STATION T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.TS_ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+		AND T1.TS_ID IN (${ids})
+	</select>
+	
+	
+	<!-- "宣传阵地"模块信息查询-->
+	<select id="getArcgisPropagandaPositionLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT T3.MARKER_ID    ID,
+		T3.RESOURCES_ID WID,
+		T1.NAME NAME,
+		T3.X,
+		T3.Y,
+		T3.MAP_TYPE     MAPT
+		FROM ${dbuser.lzly}.T_LZ_PROPAGANDA_POSITION T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.PP_ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+		AND T1.PP_ID IN (${ids})
+	</select>
+	
+	
+	<select id="getTrafficAccidentHeatMapStat" resultMap="ResultMapOfHeat">
+		WITH TEMP1 AS
+     (SELECT DISTINCT M.RESOURCES_ID ID,
+                      M.RESOURCES_ID WID,
+                      M.X            X,
+                      M.Y            Y,
+                      M.MAP_TYPE     MAPT
+        FROM (SELECT A.ta_Id,A.INFO_ORG_CODE
+                FROM ${dbuser.lzly}.t_Lz_Traf_Acci A
+              ) T
+       INNER JOIN T_ZY_RES_MARKER M
+          ON T.ta_Id = M.RESOURCES_ID
+       WHERE M.MARKER_TYPE = 'TRAFFIC_ACCIDENT'
+       <if test="mapt != null and mapt != ''">
+       	   AND M.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+       </if>
+       <if test="infoOrgCode != null and infoOrgCode != ''">
+       	   AND T.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+       </if>
+           and INSTR(m.X, 'E') = 0)
+		 SELECT to_number(substr(R.X, 0, INSTR(R.X, '.') + 6)) X,
+           to_number(substr(R.Y, 0, INSTR(R.Y, '.') + 6)) Y,
+           COUNT(0) CNT
+	      FROM TEMP1 R
+	     GROUP BY substr(R.X, 0, INSTR(R.X, '.') + 6),
+              substr(R.Y, 0, INSTR(R.Y, '.') + 6)
+	</select>
+	
+	<!-- 重点企事业单位模块信息查询-->
+	<select id="getArcgisImportantUnitLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT T3.MARKER_ID    ID,
+	    T3.RESOURCES_ID WID,
+	    T1.Iu_Name NAME,
+	    T3.X,
+	    T3.Y,
+	    T3.MAP_TYPE     MAPT
+	    FROM ${dbuser.lzly}.T_LZ_IMPO_UNIT T1
+	    LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.Iu_Id = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		AND T1.IS_VALID='1'
+		AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+		AND T1.Iu_Id IN (${ids})
+	</select>
+
+<!-- "校园周边"模块信息查询-->
+<select id="getArcgisCampusLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T1.PLA_NAME NAME,
+	       T3.X,
+	       T3.Y,
+	       T3.MAP_TYPE     MAPT
+	  FROM t_zz_pla_info T1
+	  LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.PLA_ID = T3.RESOURCES_ID
+	 WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T1.PLA_ID IN (${ids})
+	   order  by t3.x
+</select>
+
+<select id="getArcgisActivityLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T1.ACTIVITY_NAME NAME,
+	       T3.X,
+	       T3.Y,
+	       T3.MAP_TYPE     MAPT
+	  FROM T_ZZ_ACTIVITY T1
+	  LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.ACTIVITY_ID = T3.RESOURCES_ID
+	 WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T1.ACTIVITY_ID IN (${ids})
+	   order  by t3.x
+</select>
+
+<!-- 重点单位 -->
+<select id="getArcgisImportUnitLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T1.IMPORT_UNIT_ID  	ID,
+       T1.IMPORT_UNIT_ID  		WID,
+       T1.ENTERPRISE_NAME		NAME,
+       T3.CEN_LON         		X,
+       T3.CEN_LAT         		Y,
+       T3.MAPT
+  	FROM T_ZZ_IMPORT_UNIT    T1,
+       T_DC_AREA_BUILDING_INFO T2,
+       MAP_WG_JZW_GIS          T3
+ 	WHERE T1.BUILDING_ID = T2.BUILDING_ID
+	   AND T2.BUILDING_ID = T3.WID
+	   AND T1.STATUS = '1'
+	   AND T2.STATUS = '001'
+	   AND T3.STATUS = '001'
+	   AND T1.IMPORT_UNIT_ID IN (${ids}) 
+	   AND T3.MAPT = #{mapt,jdbcType=INTEGER}
+	   order by t3.cen_lon
+</select>
+
+<!-- 门店 -->
+<select id="getArcgisStoreLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T1.Store_Id  	ID,
+       T1.Store_Id  		WID,
+       T1.STORE_NAME		NAME,
+       T3.CEN_LON         		X,
+       T3.CEN_LAT         		Y,
+       T3.MAPT
+  	FROM T_ZZ_PLA_STORE    T1,
+       T_DC_AREA_BUILDING_INFO T2,
+       MAP_WG_JZW_GIS          T3
+ 	WHERE T1.BUILDING_ID = T2.BUILDING_ID
+	   AND T2.BUILDING_ID = T3.WID
+	   AND T1.IS_DEL = '1'
+	   AND T2.STATUS = '001'
+	   AND T3.STATUS = '001'
+	   AND T1.Store_Id IN (${ids}) 
+	   AND T3.MAPT = #{mapt,jdbcType=INTEGER}
+	   order by t3.cen_lon
+</select>
+
+<!-- "安监队伍"模块信息查询-->
+<select id="getArcgisControlsafetyRanksLocateDataListByIds" resultMap="arcgisInfoOfHashId">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T1.NAME NAME,
+	       T3.X,
+	       T3.Y,
+	       T3.MAP_TYPE MAPT
+	  FROM T_ZZ_PRVETION_TEAM T1
+	  LEFT JOIN T_ZY_RES_MARKER T3
+	    ON T1.TEAM_ID = T3.RESOURCES_ID
+	 WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T1.TEAM_ID IN (${ids})
+</select>
+<!-- "两车管理信息查询-->
+<select id="getArcgisParkingManageLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T.RESOURCES_ID ID,
+	       TT.PM_ID 	  WID,
+	       TT.ON_ROAD     NAME,
+	       T.X            X,
+	       T.Y            Y,
+	       T.MAP_TYPE     MAPT
+	  FROM T_ZY_RES_MARKER T, T_ZZ_PARKING_MANAGE TT
+	 WHERE T.RESOURCES_ID = TT.RESOURCES_ID
+	   AND TT.PM_ID IN (${ids})
+	   AND T.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	 ORDER BY T.X
+</select>
+
+<!-- "获取违法建设定位信息-->
+<select id="getArcgisCtIllegalLocateDataListByIds" resultMap="BaseResultMap">
+  select T1.ILLEGAL_CONSTRUCTION_ID ID,
+       T1.ILLEGAL_CONSTRUCTION_ID WID,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y HS,
+        T1.OWNER NAME
+  from T_ZY_RES_MARKER T
+  left join T_ZZ_CT_ILLEGAL_CONSTRUCTION T1 ON T1.ILLEGAL_CONSTRUCTION_ID = T.RESOURCES_ID
+                        AND T.MARKER_TYPE = '01B557'
+ WHERE T.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+   AND T1.Is_Del = '1'
+   AND T1.ILLEGAL_CONSTRUCTION_ID IN (${ids}) 
+   order  by t.x 
+</select>  
+<!-- "获取九小场所定位信息-->
+<select id="getArcgisZzSmallPlaceLocateDataList" resultMap="BaseResultMap">
+    select T1.Place_Id ID,
+       T1.Place_Id WID,
+       T.X x,
+       T.Y y,
+       '1 ' || T.X || ',' || T.Y HS,
+        T1.Place_Name NAME
+  from T_ZY_RES_MARKER T
+  left join T_ZZ_SMALL_PLACES T1 ON T1.Place_Id= T.RESOURCES_ID AND T.MARKER_TYPE = '2202'
+ WHERE T.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+   AND T1.Status = '1'
+   AND T1.Place_Id IN (${ids}) 
+   order  by t.x 
+</select>
+
+<select id="getColorList" resultType="java.util.Map">
+	select 
+		T.TC_ID,
+		T.COLOR_VAL,
+		T.MIN_VALUE,
+		T.MAX_VALUE,
+		T.COLOR_NUM
+	from T_ZZ_THRESHOLD_COLOR_CFG T
+	WHERE T.CLASS_ = #{modularCode,jdbcType=VARCHAR}
+		AND T.STATUS_ = '1'
+		ORDER BY T.MIN_VALUE
+</select>
+<select id="getArcgisDataOfBuildBinding" resultMap="BaseResultMap">
+    select 
+       	   T.FOREIGN_AID_ID ID,
+	       T.FOREIGN_AID_ID WID,
+	       T.NAMES     NAME,
+	       T.X            X,
+	       T.Y            Y,
+	       T.HS            HS,
+	       5     MAPT,
+	       '#ff0000' LINE_COLOR,
+	       '#ff0000' NAME_COLOR,
+	       '#ff0000' AREA_COLOR,
+	       1 LINE_WIDTH,
+	       T.IDS,
+	       T.NAMES
+  from MAP_JZW_GIS_FOREIGNAID T
+  where 1=1
+  <if test="id != null">
+  	and T.FOREIGN_AID_ID = #{id,jdbcType=DECIMAL}
+  </if>
+</select>
+<update id="updateArcgisDataOfBuildBinding">
+	UPDATE MAP_JZW_GIS_FOREIGNAID T 
+	<set>
+		T.NAMES = #{names,jdbcType=VARCHAR},
+		T.IDS = #{ids,jdbcType=VARCHAR}
+	</set>
+	WHERE T.FOREIGN_AID_ID = #{id,jdbcType=DECIMAL}
+</update>
+
+<!-- 精准扶贫定位信息 -->
+<select id="getArcgisLocateDataListOfPrecisionPovertyByIds" resultMap="BaseResultMap">
+	SELECT T3.MARKER_ID    ID,
+	       T3.RESOURCES_ID WID,
+	       T3.TITLE_ NAME,
+	       T3.X X,
+    	   T3.Y Y,
+	       T3.MAP_TYPE     MAPT
+	  FROM  T_ZY_RES_MARKER T3
+	 WHERE T3.MARKER_TYPE = #{markerType, jdbcType=VARCHAR}
+	   AND T3.MAP_TYPE = #{mapt, jdbcType=INTEGER}
+	   AND T3.RESOURCES_ID IN (${resourcesIds})
+	   ORDER  BY T3.X
+</select>
+<!-- 取市政道路标注点信息 -->
+<select id="findRoadMarkersByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t1.ROAD_NAME name,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from T_ZY_RES_MARKER t , T_ZY_ROAD_MANAGEMENT t1 
+	where 
+		t.RESOURCES_ID = t1.road_res_id
+			and
+		t.RESOURCES_ID in (${ids}) 
+			and
+		t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		order  by t.x
+</select>
+<select id="getArcgisPopLocateDataListByMemberId" resultMap="BaseResultMap">
+	select t.MEMBER_ID id,
+	       t.MEMBER_ID wid,
+	       t.NAME,
+	       m.cen_lon   x,
+	       m.cen_lat   y,
+	       m.mapt
+	  from t_zy_member t
+	 inner join t_dc_grid g
+	    on t.grid_id = g.grid_id
+	 inner join map_bus_grid_gis m
+	    on g.grid_id = m.wid
+	   and m.status = '001'
+	 where t.status = '1'
+	   and g.status = '001'
+	   and m.mapt = #{mapt,jdbcType=INTEGER}
+	   and t.member_id in (${memberId})
+</select>
+<!-- 各视联网信息中心获取定位信息 -->
+<select id="getArcgisNicLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT 
+		T.RESOURCES_ID WID,
+       	T1.NAME,
+       	T.X            X,
+       	T.Y            Y,
+       	T.MAP_TYPE     MAPT
+    FROM T_ZY_RES_MARKER T, T_ZZ_NIC T1
+ 	WHERE T.RESOURCES_ID = T1.NIC_ID
+   		AND T1.STATUS = '1'
+  		AND T.RESOURCES_ID IN (${nicIds})
+   		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+   		AND T.MARKER_TYPE = '0903'
+ 	ORDER BY T.X
+</select>
+<!-- 海康设备获取定位信息 -->
+<select id="getArcgisEqpLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T.RESOURCES_ID WID, T1.EQP_NAME NAME, T.X X, T.Y Y, T.MAP_TYPE MAPT
+	  FROM T_ZY_RES_MARKER T, T_EQU T1
+	 WHERE T.RESOURCES_ID = T1.EQP_ID 
+	 	AND T1.STATUS = '1'
+  		AND T.RESOURCES_ID IN (${eqpIds})
+   		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+   		AND T.MARKER_TYPE = 'DOORSYS_EQP'
+ 	 ORDER BY T.X
+</select>
+<!-- 海康 布控设备获取定位信息 -->
+<select id="getIdssControlEqpLocateDataListByIds" resultMap="BaseResultMap">
+	SELECT T3.RECORD_ID WID, T1.EQP_NAME NAME, T.X X, T.Y Y, T.MAP_TYPE MAPT
+	  FROM T_ZY_RES_MARKER T
+	  INNER JOIN T_EQU T1
+	  	ON T.RESOURCES_ID = T1.EQP_ID
+	  LEFT JOIN T_IDSS_CONTROL_TARGET_RECORD T3
+	  	ON T1.EQP_ID = T3.EVENT_DEVOICE_ID AND T3.STATUS = '001'
+	 WHERE T1.STATUS = '1'
+  		AND T.RESOURCES_ID IN (${eqpIds})
+   		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+   		AND T.MARKER_TYPE = 'DOORSYS_EQP'
+   		<if test="controlTargetId != null ">
+   			AND T3.CONTROL_TARGET_ID = #{controlTargetId,jdbcType=DECIMAL}
+   		</if>
+ 	 ORDER BY T3.EVENT_TIME DESC
+</select>
+
+	<select id="getArcgisEqpLocateDataList" parameterType="java.util.HashMap" resultMap="BaseResultMap" databaseId="dm">
+		SELECT
+		T.RESOURCES_ID WID,
+		T1.EQP_NAME NAME,
+		T.X            X,
+		T.Y            Y,
+		T.MAP_TYPE     MAPT
+		FROM T_ZY_RES_MARKER T, T_EQU T1
+		WHERE T.RESOURCES_ID = T1.EQP_ID
+		AND T1.STATUS = '1'
+		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		AND T.MARKER_TYPE = 'DOORSYS_EQP'
+		<if test="eqpType != null and eqpType != ''">
+			AND T1.EQP_TYPE = #{eqpType,jdbcType=VARCHAR}
+		</if>
+		<if test="relate != null and relate != ''">
+			AND DMGEO.ST_WITHIN(
+			DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${relate},',') ||'))', 4326),
+			T.SDO
+			) = '1'
+		</if>
+		ORDER BY T.X
+	</select>
+<select id="getArcgisEqpLocateDataList" parameterType="java.util.HashMap" resultMap="BaseResultMap" databaseId="oracle">
+	SELECT 
+		T.RESOURCES_ID WID,
+       	T1.EQP_NAME NAME,
+       	T.X            X,
+       	T.Y            Y,
+       	T.MAP_TYPE     MAPT
+    FROM T_ZY_RES_MARKER T, T_EQU T1
+ 	WHERE T.RESOURCES_ID = T1.EQP_ID
+   		AND T1.STATUS = '1'
+   		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+   		AND T.MARKER_TYPE = 'DOORSYS_EQP'
+   		<if test="eqpType != null and eqpType != ''">
+   			AND T1.EQP_TYPE = #{eqpType,jdbcType=VARCHAR}
+   		</if>
+   		<if test="relate != null and relate != ''">
+   			AND SDO_RELATE(T.SDO,
+                  MDSYS.SDO_GEOMETRY(2003,
+                                     8192,
+                                     NULL,
+                                     MDSYS.SDO_ELEM_INFO_ARRAY(1, 2003, 1),
+                                     MDSYS.SDO_ORDINATE_ARRAY(${relate})),
+                  'MASK=ANYINTERACT') = 'TRUE'
+   		</if>
+ 	ORDER BY T.X
+</select>
+
+<select id="getUrbanObjGisLocateDataList" resultMap="ArcgisInfoMap">
+	select R.RESOURCES_ID ID,
+	       R.RESOURCES_ID WID,
+	       T.NAME,
+	       R.X,
+	       R.Y,
+	       R.MAP_TYPE     mapt
+	  from T_URBAN_OBJ T
+	  left join T_DC_GRID G
+	    on T.GRID_ID = G.GRID_ID
+	  LEFT JOIN T_ZY_RES_MARKER R
+	    ON T.OBJ_ID = R.RESOURCES_ID
+	   AND R.MARKER_TYPE = '020130'
+	 where T.STATUS = '1'
+	   AND G.STATUS = '001'
+	   AND T.CLASS_CODE = #{objCode,jdbcType=VARCHAR}
+	   AND R.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+	   AND R.X IS NOT NULL
+	   AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+</select>
+
+<select id="getArcgisInfoList" resultMap="ArcgisInfoMap">
+	SELECT R.RESOURCES_ID ID, R.RESOURCES_ID WID, R.X, R.Y, R.MAP_TYPE mapt
+	  FROM T_ZY_RES_MARKER R
+	 WHERE R.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+	   AND R.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+	   AND R.X IS NOT NULL
+	   AND R.RESOURCES_ID IN (${idStr})
+</select>
+<!-- T_ZZ_BIZ_LOCATE_INFO -->
+<select id="getBizLocateInfoList" resultMap="ArcgisInfoMap">
+	SELECT T.LNG X, T.LAT Y FROM T_ZZ_BIZ_LOCATE_INFO T
+	WHERE T.STATUS_ = '1' 
+	<if test="bizType != null and bizType != ''">
+		AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+	</if>
+</select>
+
+	<!-- 获取信访责任人定位信息 -->
+	<select id="getArcgisPetitionLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+			T1.MEMBER_ID wid,
+			T4.IMSI id,
+			T4.LONGITUDE x,
+			T4.DIMENSIONS y,
+			t2.party_name name
+		  FROM T_ZZ_TEAM_MEMBERS T1
+		  LEFT JOIN T_DC_USER_ENTITY T2 ON T1.USER_ID = T2.USER_ID
+		  LEFT JOIN T_DC_PARTY_USER_CERTIFY T3 ON T2.PARTY_ID = T3.PARTY_ID
+		  LEFT JOIN BUS_LAST_LOCATE T4 ON T3.IMSI = T4.IMSI
+		  WHERE T4.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		  AND T1.MEMBER_ID IN (${ids})
+		AND T4.mapt =  #{mapt,jdbcType=DECIMAL}
+		ORDER BY T4.LONGITUDE
+	</select>
+	<!-- 获取两站两员定位信息 -->
+	<select id="getArcgisTwoMemberLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+		T1.TM_ID wid,
+		T4.IMSI id,
+		T4.LONGITUDE x,
+		T4.DIMENSIONS y,
+		t2.party_name name
+		FROM t_lzly_two_member T1
+		LEFT JOIN T_DC_USER_ENTITY T2 ON T1.USER_ID = T2.USER_ID
+		LEFT JOIN T_DC_PARTY_USER_CERTIFY T3 ON T2.PARTY_ID = T3.PARTY_ID
+		LEFT JOIN BUS_LAST_LOCATE T4 ON T3.IMSI = T4.IMSI
+		WHERE T4.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		AND T1.TM_ID IN (${ids})
+		AND T4.mapt =  #{mapt,jdbcType=DECIMAL}
+		ORDER BY T4.LONGITUDE
+	</select>
+
+	<select id="getArcgisKeyVehiclesLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+		T.RESOURCES_ID WID,
+		T.TITLE_ NAME,
+		T.X            X,
+		T.Y            Y,
+		T.MAP_TYPE     MAPT,
+		T1.BIZ_TYPE 	   BIZ_TYPE
+		FROM T_ZY_RES_MARKER T, ${dbuser.lzly}.T_LZ_KEY_VEHICLES T1
+		WHERE T.RESOURCES_ID = T1.KV_ID
+		AND T1.STATUS_ = '001'
+		AND T.RESOURCES_ID IN (${ids})
+		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		AND T.MARKER_TYPE IN ('VEHICLE', 'UNLICENSED_MOTOR_VEHICLE', 'NONMOTOR_VEHICLE')
+		ORDER BY T.X
+	</select>
+	
+	<select id="getArcgisPartyMemberDataList" resultMap="ArcgisInfoMap">
+		SELECT M.RESOURCES_ID WID, U.I_NAME NAME, M.X X, M.Y Y, M.MAP_TYPE MAPT
+		  FROM T_DC_GRID G
+		  LEFT JOIN T_DC_CI_RS_PARTY U
+		    ON G.INFO_ORG_CODE = U.ORG_CODE
+		   AND U.PARTY_TYPE = 'dangjian'
+		  LEFT JOIN T_ZY_RES_MARKER M
+		    ON U.CI_PARTY_ID = M.RESOURCES_ID
+		   AND M.MARKER_TYPE IN ('RS_PARTY')
+		 WHERE U.STATUS = '001'
+		   AND M.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		   and G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		   AND G.STATUS = '001'
+	</select>
+	
+	<select id="getArcgisRectifyDataList" resultMap="ArcgisInfoMap">
+		select t.id,
+		       t1.ci_rs_id wid,
+		       t1.i_name   name,
+		       t.cen_lon   x,
+		       t.cen_lat   y,
+		       t.mapt
+		  from map_wg_jzw_gis t,
+		       (select distinct R.ci_rs_id, t2.i_name, B.building_id
+		          from T_ZZ_CORRECTIONAL_RECORD T1
+		          LEFT OUTER JOIN T_DC_CI_RS_TOP T2
+		            ON T1.CI_RS_ID = T2.CI_RS_ID
+		          LEFT JOIN T_DC_GRID G
+		            ON T1.GRID_ID = G.GRID_ID
+		          LEFT JOIN T_DC_CI_RS_ROOM R
+		            ON T2.ci_rs_id = R.ci_rs_id
+		          LEFT JOIN t_dc_area_building_info B
+		            ON R.BUILDING_ID = B.BUILDING_ID
+		         where T1.STATUS = '001'
+		           AND T2.STATUS = '1'
+		           AND G.STATUS = '001'
+		           AND R.STATUS = '001'
+		           AND B.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%') t1
+		 where 1 = 1
+		   and t.mapt = #{mapt,jdbcType=INTEGER}
+		   and t1.building_id = t.wid
+		   and t.status = '001'
+	</select>
+	
+	<select id="getArcgisCorDataList" resultMap="ArcgisInfoMap">
+		SELECT M.RESOURCES_ID WID, T.COR_NAME NAME, M.X X, M.Y Y, M.MAP_TYPE MAPT
+		  FROM T_DC_GRID G
+		  LEFT JOIN T_ZZ_COR_BASE_INFO T
+		    ON G.GRID_ID = T.GRID_ID
+		   AND T.STATUS = '001'
+		  LEFT JOIN T_ZY_RES_MARKER M
+		    ON T.CBI_ID = M.RESOURCES_ID
+		   AND M.MARKER_TYPE IN ('CORBASE')
+		 WHERE M.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		   and G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		   AND G.STATUS = '001'
+	</select>
+	
+	<!-- 两站两员隐患路口、隐患路段获取定位信息 -->
+	<select id="getArcgisDangerRoadLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT 
+			T.RESOURCES_ID WID,
+	       	T1.DR_NAME NAME,
+	       	T.X            X,
+	       	T.Y            Y,
+	       	T.MAP_TYPE     MAPT
+	    FROM T_ZY_RES_MARKER T, ${dbuser.lzly}.T_LZ_DANG_ROAD T1
+	 	WHERE T.RESOURCES_ID = T1.DR_ID
+	   		AND T1.IS_VALID = '1'
+	  		AND T.RESOURCES_ID IN (${drIds})
+	   		AND T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+	   		AND T.MARKER_TYPE = 'HIDDEN_DANGER_ROAD'
+	 	ORDER BY T.X
+	</select>
+
+	<select id="statOfZdPeopleZhouBianLocateData" resultMap="BaseResultMap">
+		SELECT DISTINCT
+		A.CI_RS_ID WID,
+		A.I_NAME NAME,
+		A3.X X,
+		A3.Y Y,
+		A3.MAPT    MAPT
+		FROM T_DC_CI_RS_TOP A,
+		T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID,
+			T1.CEN_LON X,
+			T1.CEN_LAT Y,
+			T1.MAPT,
+			ROUND(SDO_GEOM.SDO_DISTANCE(T1.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005),
+			0) DISTANCE
+			FROM T_DC_AREA_BUILDING_INFO T, MAP_WG_JZW_GIS T1
+			WHERE T.BUILDING_ID = T1.WID
+				AND T.STATUS = '001'
+				AND T1.STATUS = '001'
+				AND T1.MAPT = #{mapType}
+				AND SDO_WITHIN_DISTANCE(T1.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'DISTANCE=${distance}') = 'TRUE') A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS = '1'
+		AND (A2.STATUS = '001' OR A2.STATUS = '1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' ">
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''">
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+	</select><!-- 吸毒人员、矫正人员、刑释解教、上访（江西的个性化上访页面）、邪教、重精神病、危险品从业人员数量-->
+	
+	<select id="getNewPartyGroupXYList" resultMap="ArcgisInfoMap">
+		select t.Party_Group_Id   wid,
+		       t.party_group_name name,
+		       t2.map_type        mapt,
+		       t2.hs              hs,
+		       t2.x               x,
+		       t2.y               y
+		  from T_DC_PARTY_GROUP t
+		  left join t_dc_grid g
+		    on t.org_code = g.info_org_code
+		  left join T_ZY_RES_MARKER t2
+		    on t.Party_Group_Id = t2.resources_id
+		 where T2.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+		   and t2.marker_type = #{markerType,jdbcType=VARCHAR}
+		   and t.status = '001'
+		   and g.status = '001'
+		   and g.info_org_code like #{infoOrgCode,jdbcType=VARCHAR} || '%'
+	</select>
+	
+	<select id="getNewPartyGroupXYById" resultMap="ArcgisInfoMap">
+		select t.Party_Group_Id   wid,
+		       t.party_group_name name,
+		       t2.map_type        mapt,
+		       t2.hs              hs,
+		       t2.x               x,
+		       t2.y               y
+		  from T_DC_PARTY_GROUP t
+		  left join T_ZY_RES_MARKER t2
+		    on t.Party_Group_Id = t2.resources_id
+		 where T2.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+		   and t2.marker_type = #{markerType,jdbcType=VARCHAR}
+		   and t.status = '001'
+		   and t.Party_Group_Id in (${ids})
+	</select>
+
+	<select id="getArcgisGanSuDrugLocateDataListByUserIds" resultMap="ArcgisInfoMap">
+		select
+		t.id,
+		t1.ci_rs_id wid,
+		t1.i_name name,
+		t.cen_lon x,
+		t.cen_lat y,
+		t.mapt,
+    	t1.d_Type SUB_BUSI_TYPE
+		from map_wg_jzw_gis t,
+		(
+			select distinct tt1.ci_rs_id, tt1.i_name, tt2.building_id, tt4.d_Type
+			from T_DC_CI_RS_ROOM tt2
+			left join t_dc_area_building_info tt3 on tt2.building_id = tt3.building_id
+			join T_DC_CI_RS_TOP tt1 on  tt1.ci_rs_id = tt2.ci_rs_id
+			LEFT OUTER JOIN T_ZZ_DRUG_RECORD tt4 ON tt4.CI_RS_ID=tt1.CI_RS_ID
+			where tt2.STATUS='001' and tt3.status = '001' and tt4.status = '001' and tt1.ci_rs_id in (${userIds})
+		) t1
+		where 1=1
+		and t.mapt=#{mapt,jdbcType=INTEGER}
+		and t1.building_id = t.wid
+		and t.status = '001'
+		order by t.cen_lon
+	</select>
+	
+	<select id="getArcgisCampsDataList" resultMap="ArcgisInfoMap">
+		select t.id,
+		       t1.ci_rs_id wid,
+		       t1.i_name   name,
+		       t.cen_lon   x,
+		       t.cen_lat   y,
+		       t.mapt
+		  from map_wg_jzw_gis t,
+		       (select distinct R.ci_rs_id, t2.i_name, B.building_id
+		          from T_ZZ_RELEASED_RECORD T1
+		          LEFT OUTER JOIN T_DC_CI_RS_TOP T2
+		            ON T1.CI_RS_ID = T2.CI_RS_ID
+		          LEFT JOIN T_DC_GRID G
+		            ON T1.GRID_ID = G.GRID_ID
+		          LEFT JOIN T_DC_CI_RS_ROOM R
+		            ON T2.ci_rs_id = R.ci_rs_id
+		          LEFT JOIN t_dc_area_building_info B
+		            ON R.BUILDING_ID = B.BUILDING_ID
+		         where T1.STATUS = '001'
+		           AND T2.STATUS = '1'
+		           AND G.STATUS = '001'
+		           AND R.STATUS = '001'
+		           AND B.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%') t1
+		 where 1 = 1
+		   and t.mapt = #{mapt,jdbcType=INTEGER}
+		   and t1.building_id = t.wid
+		   and t.status = '001'
+	</select>
+	
+	<select id="getArcgisJiangxiPetitionDataList" resultMap="ArcgisInfoMap">
+		select t.id,
+		       t1.ci_rs_id wid,
+		       t1.i_name   name,
+		       t.cen_lon   x,
+		       t.cen_lat   y,
+		       t.mapt
+		  from map_wg_jzw_gis t,
+		       (select distinct R.ci_rs_id, t2.i_name, B.building_id
+		          from T_ZZ_PETITIONERS T1
+		          LEFT OUTER JOIN T_DC_CI_RS_TOP T2
+		            ON T1.CI_RS_ID = T2.CI_RS_ID
+		          LEFT JOIN T_DC_CI_RS_ROOM R
+		            ON T2.ci_rs_id = R.ci_rs_id
+		          LEFT JOIN t_dc_area_building_info B
+		            ON R.BUILDING_ID = B.BUILDING_ID
+		         where T1.STATUS = '1'
+		           AND T2.STATUS = '1'
+		           AND R.STATUS = '001'
+		           AND B.STATUS = '001'
+		           AND T1.REGION_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%') t1
+		 where 1 = 1
+		   and t.mapt = #{mapt,jdbcType=INTEGER}
+		   and t1.building_id = t.wid
+		   and t.status = '001'
+	</select>
+
+	<select id="getArcgisTrademarkLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+			T.RESOURCES_ID id,
+			T.RESOURCES_ID wid,
+			T.X x,
+			T.Y y,
+			T.MAP_TYPE mapt,
+			T.MARKER_TYPE markType,
+			T1.UNIT_NAME name
+		FROM
+			T_ZY_RES_MARKER T
+		LEFT JOIN ${dbuser.zhsq_szzg}.ZG_WELL_KNOWN_TRADEMARK T1
+		ON T1.TRADEMARK_ID = T.RESOURCES_ID
+		WHERE
+			T.RESOURCES_ID IN (${ids})
+		    AND
+		    T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		    AND
+		    T.MARKER_TYPE = #{markType,jdbcType=VARCHAR}
+		ORDER BY T.x
+	</select>
+	<!--守重企业-->
+	<select id="getArcgisEnterpriseLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+		T.RESOURCES_ID id,
+		T.RESOURCES_ID wid,
+		T.X x,
+		T.Y y,
+		T.MAP_TYPE mapt,
+		T.MARKER_TYPE markType,
+		T1.ENTERPRISE_NAME name
+		FROM
+		T_ZY_RES_MARKER T
+		LEFT JOIN ${dbuser.zhsq_szzg}.ZG_FAITHFUL_ENTERPRISE T1
+		ON T1.ENTERPRISE_ID = T.RESOURCES_ID
+		WHERE
+		T.RESOURCES_ID IN (${ids})
+		AND
+		T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		AND
+		T.MARKER_TYPE = #{markType,jdbcType=VARCHAR}
+		ORDER BY T.x
+	</select>
+
+	<select id="getArcgisFaithfulEnterpriseLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+		T.RESOURCES_ID id,
+		T.RESOURCES_ID wid,
+		T.X x,
+		T.Y y,
+		T.MAP_TYPE mapt
+		FROM
+		T_ZY_RES_MARKER T
+		WHERE
+		T.RESOURCES_ID IN (${ids})
+		AND
+		T.MAP_TYPE = #{mapt,jdbcType=INTEGER}
+		ORDER BY T.x
+	</select>
+
+	<select id="getArcgisLawEnforceOfficLocateDataListByIds" resultMap="BaseResultMap">
+		SELECT
+			T.USER_ID ID,
+			T.USER_ID WID,
+			T1.LONGITUDE X,
+			T1.DIMENSIONS Y,
+			T1.LOCATE_TIME HANDLE_DATE
+		FROM (SELECT DISTINCT  T0.USER_ID,T0.SOCIAL_ORG_ID
+				FROM T_DC_PRIVILEGE_EXAMPLE T0
+				WHERE t0.USER_ID IN (${ids})
+				AND t0.SOCIAL_ORG_ID = #{socialOrgId,jdbcType=DECIMAL}) T ,
+			 (SELECT T4.*
+					FROM BUS_LAST_LOCATE T4 INNER JOIN (SELECT MAX(LOCATE_ID) AS LOCATE_ID
+															   FROM BUS_LAST_LOCATE T2
+															  GROUP BY USER_ID) T3
+					  ON T4.LOCATE_ID = T3.LOCATE_ID) T1
+		WHERE
+			1=1
+			AND T.USER_ID = T1.USER_ID
+			AND T1.MAPT = #{mapt,jdbcType=DECIMAL}
+			ORDER BY T1.LONGITUDE
+	</select>
+
+	<select id="getArcgisGlobalEyesDataList" resultMap="BaseResultMap">
+
+
+	SELECT T.RESOURCES_ID ID,
+		T.RESOURCES_ID WID,
+		T1.PLATFORM_NAME NAME,
+		T1.COMPANY_TYPE SUB_BUSI_TYPE,
+		T.X X,
+		T.Y Y,
+		T.MAP_TYPE MAPT
+	FROM T_ZY_RES_MARKER T , CMS.CI_MONITOR T1
+	WHERE T.RESOURCES_ID = T1.MONITOR_ID
+		AND T1.ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		AND t.MAP_TYPE = #{mapt,jdbcType=DECIMAL}
+		AND t.MARKER_TYPE = '02020501'
+		ORDER BY T.X
+	</select>
+
+
+
+	<select id="getArcgisLegalPersonLocateDataListByIds" resultMap="arcgisBaseInfo">
+		SELECT T.ID ID,
+			   T1.LEGAL_ID BIZ_ID,
+			   T1.LEGAL_ID || '-' || T1.BUILDING_ID WID,
+			   T1.LEGAL_NAME NAME,
+			   T1.ADDRESS,
+			   T.CEN_LON X,
+			   T.CEN_LAT Y,
+			   T.MAPT
+		FROM MAP_WG_JZW_GIS T,
+			 (
+			   SELECT DISTINCT L1.LEGAL_ID,L1.LEGAL_NAME, B1.BUILDING_ID, L1.REG_ADDR ADDRESS
+				 FROM T_LEGAL_INFO L1
+				 INNER JOIN  T_DC_AREA_BUILDING_INFO B1 ON L1.BUILDING_ID = B1.BUILDING_ID
+				  AND B1.STATUS = '001'
+				WHERE L1.STATUS = '001'
+					  AND L1.LEGAL_ID IN (${legalIds})
+				UNION
+			   SELECT DISTINCT P1.PLA_ID LEGAL_ID, L2.LEGAL_NAME, B2.BUILDING_ID, P1.ADDRESS
+				 FROM T_LEGAL_INFO L2
+				 INNER JOIN T_ZZ_PLA_FLOOR_PLACE P1 ON P1.PLA_ID = L2.LEGAL_ID
+				 INNER JOIN  T_DC_AREA_BUILDING_INFO  B2 ON P1.BUILDING_ID = B2.BUILDING_ID
+				  AND B2.STATUS = '001'
+				WHERE L2.STATUS = '001'
+					  AND P1.STATUS = '001'
+					  AND P1.PLA_ID IN (${legalIds})
+		 ) T1
+		 WHERE 1=1
+			   AND T.MAPT=#{mapt,jdbcType=DECIMAL}
+			   AND T1.BUILDING_ID = T.WID
+			   AND T.STATUS = '001'
+			   ORDER BY T.CEN_LON
+	</select>
+
+
+
+	<select id="getArcgisLocateDataListOfPcManageByIds" resultMap="BaseResultMap">
+	select 
+		t.RESOURCES_ID id,
+		t.RESOURCES_ID wid,
+		t.X x,
+		t.Y y,
+		t.MAP_TYPE mapt
+	from  T_ZY_RES_MARKER t 
+	where 
+		t.RESOURCES_ID in (${resourcesIds}) 
+		AND t.MAP_TYPE=#{mapt,jdbcType=INTEGER}
+		AND t.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		order  by t.x
+</select>
+	
+</mapper>

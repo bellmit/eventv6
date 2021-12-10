@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eliminatelettertho.EliminateLetterThoReChgMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        <id column="CHG_ID" property="chgId" jdbcType="DECIMAL"/> <!--主键-->
+        <result column="CHG_UUID" property="chgUuid" jdbcType="VARCHAR"/> <!--逻辑主键-->
+        <result column="THO_ID" property="thoId" jdbcType="DECIMAL"/> <!--主表主键-->
+        <result column="RE_DEPART_CODE_SUB" property="reDepartCodeSub" jdbcType="VARCHAR"/> <!--接收单位组织截取值-->
+        <result column="RE_DEPART_CODE" property="reDepartCode" jdbcType="VARCHAR"/> <!--接收单位编码-->
+        <result column="RE_DEPART_NAME_DET" property="reDepartNameDet" jdbcType="VARCHAR"/> <!--具体接收单位名称-->
+        <result column="RE_USER_ID" property="reUserId" jdbcType="DECIMAL"/> <!--接收人员ID-->
+        <result column="RE_USER_NAME" property="reUserName" jdbcType="VARCHAR"/> <!--接收人员名称-->
+        <result column="RE_USER" property="reUser" jdbcType="VARCHAR"/> <!--接收人员JSON数据-->
+        <result column="RE_DATE" property="reDate" jdbcType="VARCHAR"/> <!--接收时间-->
+        <result column="RE_TYPE" property="reType" jdbcType="VARCHAR"/> <!--回复情况-->
+        <result column="RE_DETAIL" property="reDetail" jdbcType="VARCHAR"/> <!--回复详情-->
+        <result column="RE_DISSENT_AGREE" property="reDissentAgree" jdbcType="VARCHAR"/> <!--接收单位提出异议-->
+        <result column="RE_DISSENT_DETAIL" property="reDissentDetail" jdbcType="VARCHAR"/> <!--接收单位异议详情-->
+        <result column="DISSENT_AGREE" property="dissentAgree" jdbcType="VARCHAR"/> <!--是否同意异议-->
+        <result column="DISSENT_DETAIL" property="dissentDetail" jdbcType="VARCHAR"/> <!--异议详情-->
+        <result column="CHG_TYPE" property="chgType" jdbcType="VARCHAR"/> <!--整改情况-->
+        <result column="CHG_DETAIL" property="chgDetail" jdbcType="VARCHAR"/> <!--整改详情-->
+        <result column="INDUS_CHG_AGREE" property="indusChgAgree" jdbcType="VARCHAR"/> <!--是否开展行业治理-->
+        <result column="INDUS_CHG_DETAIL" property="indusChgDetail" jdbcType="VARCHAR"/> <!--行业治理情况详情-->
+        <result column="LONG_ACTION_AGREE" property="longActionAgree" jdbcType="VARCHAR"/> <!--是否建立长效机制-->
+        <result column="LONG_ACTION_DETAIL" property="longActionDetail" jdbcType="VARCHAR"/> <!--长效机制详情-->
+        <result column="OTH_CLOB" property="othClob" jdbcType="VARCHAR"/> <!--其他情况说明-->
+        <result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR"/> <!--地域编码-->
+        <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR"/> <!--组织编码-->
+        <result column="CREATOR" property="creator" jdbcType="DECIMAL"/> <!--创建人-->
+        <result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR"/> <!--创建时间-->
+        <result column="UPDATOR" property="updator" jdbcType="DECIMAL"/> <!--修改人-->
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR"/> <!--修改时间-->
+        <result column="IS_VALID" property="isValid" jdbcType="VARCHAR"/> <!--有效状态-->
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/> <!--备注-->
+    </resultMap>
+
+    <select id="searchRegion" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT T.PROVINCE_,T.CITY_,T.COUNTY_ FROM T_DC_REGION_LEVEL T WHERE T.INFO_ORG_CODE = #{regionCOde}
+    </select>
+
+    <select id="searchByThoId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        T.CHG_ID,
+        T.CHG_UUID,
+        T.THO_ID,
+        T.RE_DEPART_CODE_SUB,
+        T.RE_DEPART_CODE,
+        T.RE_DEPART_NAME_DET,
+        T.RE_USER_ID,
+        T.RE_USER_NAME,
+        T.RE_USER,
+        T.RE_DATE,
+        T.RE_TYPE,
+        T.RE_DETAIL,
+        T.RE_DISSENT_AGREE,
+        T.RE_DISSENT_DETAIL,
+        T.DISSENT_AGREE,
+        T.DISSENT_DETAIL,
+        T.CHG_TYPE,
+        T.CHG_DETAIL,
+        T.INDUS_CHG_AGREE,
+        T.INDUS_CHG_DETAIL,
+        T.LONG_ACTION_AGREE,
+        T.LONG_ACTION_DETAIL,
+        T.OTH_CLOB,
+        T.REGION_CODE,
+        T.ORG_CODE,
+        T.REMARK
+        FROM T_ELIMINATE_LETTER_THO_RE_CHG T
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+        AND T.IS_VALID = '1'
+    </select>
+
+    <!-- 列表（总数） -->
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM T_ELIMINATE_LETTER_THO_RE_CHG T
+        <include refid="find_where"/>
+    </select>
+
+    <!-- 列表（分页） -->
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT
+        T.CHG_ID,
+        T.CHG_UUID,
+        T.THO_ID,
+        T.RE_DEPART_CODE_SUB,
+        T.RE_DEPART_CODE,
+        T.RE_DEPART_NAME_DET,
+        T.RE_USER_ID,
+        T.RE_USER_NAME,
+        T.RE_USER,
+        T.RE_DATE,
+        T.RE_TYPE,
+        T.RE_DETAIL,
+        T.RE_DISSENT_AGREE,
+        T.RE_DISSENT_DETAIL,
+        T.DISSENT_AGREE,
+        T.DISSENT_DETAIL,
+        T.CHG_TYPE,
+        T.CHG_DETAIL,
+        T.INDUS_CHG_AGREE,
+        T.INDUS_CHG_DETAIL,
+        T.LONG_ACTION_AGREE,
+        T.LONG_ACTION_DETAIL,
+        T.OTH_CLOB,
+        T.REGION_CODE,
+        T.ORG_CODE,
+        T.CREATOR,
+        T.CREATE_TIME,
+        T.UPDATOR,
+        T.UPDATE_TIME,
+        T.IS_VALID,
+        T.REMARK
+        FROM
+        T_ELIMINATE_LETTER_THO_RE_CHG T
+        <include refid="find_where"/>
+        ORDER BY
+        T.CHG_ID DESC
+    </select>
+
+    <!-- 列表（条件） -->
+    <sql id="find_where">
+        <where>
+            AND T.IS_VALID = '1'
+        </where>
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        <selectKey keyProperty="chgId" resultType="long" order="BEFORE">
+            SELECT SEQ_E_LETTER_THO_RE_CHG.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        (
+        CHG_ID,
+        CHG_UUID,
+        THO_ID,
+        RE_DEPART_CODE_SUB,
+        RE_DEPART_CODE,
+        RE_DEPART_NAME_DET,
+        RE_USER_ID,
+        RE_USER_NAME,
+        RE_USER,
+        RE_DATE,
+        RE_TYPE,
+        RE_DETAIL,
+        RE_DISSENT_AGREE,
+        RE_DISSENT_DETAIL,
+        DISSENT_AGREE,
+        DISSENT_DETAIL,
+        CHG_TYPE,
+        CHG_DETAIL,
+        INDUS_CHG_AGREE,
+        INDUS_CHG_DETAIL,
+        LONG_ACTION_AGREE,
+        LONG_ACTION_DETAIL,
+        OTH_CLOB,
+        REGION_CODE,
+        ORG_CODE,
+        CREATOR,
+        CREATE_TIME,
+        UPDATOR,
+        UPDATE_TIME,
+        IS_VALID,
+        REMARK
+        ) VALUES (
+        #{chgId,jdbcType=DECIMAL},
+        #{chgUuid,jdbcType=VARCHAR},
+        #{thoId,jdbcType=DECIMAL},
+        #{reDepartCodeSub,jdbcType=VARCHAR},
+        #{reDepartCode,jdbcType=VARCHAR},
+        #{reDepartNameDet,jdbcType=VARCHAR},
+        #{reUserId,jdbcType=DECIMAL},
+        #{reUserName,jdbcType=VARCHAR},
+        #{reUser,jdbcType=VARCHAR},
+        #{reDate,jdbcType=VARCHAR},
+        #{reType,jdbcType=VARCHAR},
+        #{reDetail,jdbcType=VARCHAR},
+        #{reDissentAgree,jdbcType=VARCHAR},
+        #{reDissentDetail,jdbcType=VARCHAR},
+        #{dissentAgree,jdbcType=VARCHAR},
+        #{dissentDetail,jdbcType=VARCHAR},
+        #{chgType,jdbcType=VARCHAR},
+        #{chgDetail,jdbcType=VARCHAR},
+        #{indusChgAgree,jdbcType=VARCHAR},
+        #{indusChgDetail,jdbcType=VARCHAR},
+        #{longActionAgree,jdbcType=VARCHAR},
+        #{longActionDetail,jdbcType=VARCHAR},
+        #{othClob,jdbcType=VARCHAR},
+        #{regionCode,jdbcType=VARCHAR},
+        #{orgCode,jdbcType=VARCHAR},
+        #{creator,jdbcType=DECIMAL},
+        sysdate,
+        #{updator,jdbcType=DECIMAL},
+        sysdate,
+        '1',
+        #{remark,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        UPDATE
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        <set>
+            <if test="reDepartCodeSub != null " >
+                RE_DEPART_CODE_SUB=#{reDepartCodeSub,jdbcType=VARCHAR},
+            </if>
+            <if test="reDepartCode != null ">
+                RE_DEPART_CODE=#{reDepartCode,jdbcType=VARCHAR},
+            </if>
+            <if test="reDepartNameDet != null ">
+                RE_DEPART_NAME_DET=#{reDepartNameDet,jdbcType=VARCHAR},
+            </if>
+            <if test="reUserId != null ">
+                RE_USER_ID=#{reUserId,jdbcType=DECIMAL},
+            </if>
+            <if test="reUserName != null ">
+                RE_USER_NAME=#{reUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="reUser != null ">
+                RE_USER=#{reUser,jdbcType=VARCHAR},
+            </if>
+            <if test="reDate != null ">
+                RE_DATE=#{reDate,jdbcType=VARCHAR},
+            </if>
+            <if test="reType != null ">
+                RE_TYPE=#{reType,jdbcType=VARCHAR},
+            </if>
+            <if test="reDetail != null ">
+                RE_DETAIL=#{reDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="reDissentAgree != null ">
+                RE_DISSENT_AGREE=#{reDissentAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="reDissentDetail != null ">
+                RE_DISSENT_DETAIL=#{reDissentDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="dissentAgree != null ">
+                DISSENT_AGREE=#{dissentAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="dissentDetail != null ">
+                DISSENT_DETAIL=#{dissentDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="chgType != null ">
+                CHG_TYPE=#{chgType,jdbcType=VARCHAR},
+            </if>
+            <if test="chgDetail != null ">
+                CHG_DETAIL=#{chgDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="indusChgAgree != null ">
+                INDUS_CHG_AGREE=#{indusChgAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="indusChgDetail != null ">
+                INDUS_CHG_DETAIL=#{indusChgDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="longActionAgree != null ">
+                LONG_ACTION_AGREE=#{longActionAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="longActionDetail != null ">
+                LONG_ACTION_DETAIL=#{longActionDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="othClob != null ">
+                OTH_CLOB=#{othClob,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null ">
+                REGION_CODE=#{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgCode != null ">
+                ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null ">
+                UPDATOR=#{updator,jdbcType=DECIMAL},
+            </if>
+            <if test="isValid != null ">
+                IS_VALID=#{isValid,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null ">
+                REMARK=#{remark,jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE
+        CHG_ID= #{chgId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 详情 -->
+    <select id="searchById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+			T.CHG_ID,
+			T.CHG_UUID,
+			T.THO_ID,
+			T.RE_DEPART_CODE_SUB,
+			T.RE_DEPART_CODE,
+			T.RE_DEPART_NAME_DET,
+			T.RE_USER_ID,
+			T.RE_USER_NAME,
+			T.RE_USER,
+			T.RE_DATE,
+			T.RE_TYPE,
+			T.RE_DETAIL,
+			T.RE_DISSENT_AGREE,
+			T.RE_DISSENT_DETAIL,
+			T.DISSENT_AGREE,
+			T.DISSENT_DETAIL,
+			T.CHG_TYPE,
+			T.CHG_DETAIL,
+			T.INDUS_CHG_AGREE,
+			T.INDUS_CHG_DETAIL,
+			T.LONG_ACTION_AGREE,
+			T.LONG_ACTION_DETAIL,
+			T.OTH_CLOB,
+			T.REGION_CODE,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ELIMINATE_LETTER_THO_RE_CHG T
+		WHERE
+			CHG_ID= #{chgId,jdbcType=DECIMAL} 
+	</select>
+
+    <!-- 修改 制发单位反馈 -->
+    <update id="updateIssuingUnitFeedbackByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        UPDATE
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        SET
+            DISSENT_AGREE=#{dissentAgree,jdbcType=VARCHAR},
+            DISSENT_DETAIL=#{dissentDetail,jdbcType=VARCHAR},
+            UPDATOR=#{updator,jdbcType=DECIMAL},
+            UPDATE_TIME = sysdate
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 修改 行业部门反馈 -->
+    <update id="updateIndustrySectorfeedbackByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        UPDATE
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        SET
+            RE_DATE=#{reDate,jdbcType=VARCHAR},
+            RE_TYPE=#{reType,jdbcType=VARCHAR},
+            RE_DETAIL=#{reDetail,jdbcType=VARCHAR},
+            RE_DISSENT_AGREE=#{reDissentAgree,jdbcType=VARCHAR},
+			RE_DISSENT_DETAIL=#{reDissentDetail,jdbcType=VARCHAR},
+            CHG_TYPE=#{chgType,jdbcType=VARCHAR},
+            CHG_DETAIL=#{chgDetail,jdbcType=VARCHAR},
+            INDUS_CHG_AGREE=#{indusChgAgree,jdbcType=VARCHAR},
+            INDUS_CHG_DETAIL=#{indusChgDetail,jdbcType=VARCHAR},
+            LONG_ACTION_AGREE=#{longActionAgree,jdbcType=VARCHAR},
+            LONG_ACTION_DETAIL=#{longActionDetail,jdbcType=VARCHAR},
+            OTH_CLOB=#{othClob,jdbcType=VARCHAR},
+            UPDATOR=#{updator,jdbcType=DECIMAL},
+            REMARK=#{remark,jdbcType=VARCHAR},
+            UPDATE_TIME = sysdate
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateBlankByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        UPDATE
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        SET
+            RE_DEPART_CODE_SUB=#{reDepartCodeSub,jdbcType=VARCHAR},
+            RE_DEPART_CODE=#{reDepartCode,jdbcType=VARCHAR},
+            RE_DEPART_NAME_DET=#{reDepartNameDet,jdbcType=VARCHAR},
+            RE_USER_ID=#{reUserId,jdbcType=DECIMAL},
+            RE_USER_NAME=#{reUserName,jdbcType=VARCHAR},
+            RE_USER=#{reUser,jdbcType=VARCHAR},
+            RE_DATE=#{reDate,jdbcType=VARCHAR},
+            RE_TYPE=#{reType,jdbcType=VARCHAR},
+            RE_DETAIL=#{reDetail,jdbcType=VARCHAR},
+            RE_DISSENT_AGREE=#{reDissentAgree,jdbcType=VARCHAR},
+			RE_DISSENT_DETAIL=#{reDissentDetail,jdbcType=VARCHAR},
+            DISSENT_AGREE=#{dissentAgree,jdbcType=VARCHAR},
+            DISSENT_DETAIL=#{dissentDetail,jdbcType=VARCHAR},
+            CHG_TYPE=#{chgType,jdbcType=VARCHAR},
+            CHG_DETAIL=#{chgDetail,jdbcType=VARCHAR},
+            INDUS_CHG_AGREE=#{indusChgAgree,jdbcType=VARCHAR},
+            INDUS_CHG_DETAIL=#{indusChgDetail,jdbcType=VARCHAR},
+            LONG_ACTION_AGREE=#{longActionAgree,jdbcType=VARCHAR},
+            LONG_ACTION_DETAIL=#{longActionDetail,jdbcType=VARCHAR},
+            OTH_CLOB=#{othClob,jdbcType=VARCHAR},
+            REGION_CODE=#{regionCode,jdbcType=VARCHAR},
+            ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+            UPDATOR=#{updator,jdbcType=DECIMAL},
+            REMARK=#{remark,jdbcType=VARCHAR},
+            UPDATE_TIME = sysdate
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 修改 -->
+    <update id="updateByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+        UPDATE
+        T_ELIMINATE_LETTER_THO_RE_CHG
+        <set>
+            <if test="reDepartCodeSub != null " >
+                RE_DEPART_CODE_SUB=#{reDepartCodeSub,jdbcType=VARCHAR},
+            </if>
+            <if test="reDepartCode != null ">
+                RE_DEPART_CODE=#{reDepartCode,jdbcType=VARCHAR},
+            </if>
+            <if test="reDepartNameDet != null ">
+                RE_DEPART_NAME_DET=#{reDepartNameDet,jdbcType=VARCHAR},
+            </if>
+            <if test="reUserId != null ">
+                RE_USER_ID=#{reUserId,jdbcType=DECIMAL},
+            </if>
+            <if test="reUserName != null ">
+                RE_USER_NAME=#{reUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="reUser != null ">
+                RE_USER=#{reUser,jdbcType=VARCHAR},
+            </if>
+            <if test="reDate != null ">
+                RE_DATE=#{reDate,jdbcType=VARCHAR},
+            </if>
+            <if test="reType != null ">
+                RE_TYPE=#{reType,jdbcType=VARCHAR},
+            </if>
+            <if test="reDetail != null ">
+                RE_DETAIL=#{reDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="reDissentAgree != null ">
+                RE_DISSENT_AGREE=#{reDissentAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="reDissentDetail != null ">
+                RE_DISSENT_DETAIL=#{reDissentDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="dissentAgree != null ">
+                DISSENT_AGREE=#{dissentAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="dissentDetail != null ">
+                DISSENT_DETAIL=#{dissentDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="chgType != null ">
+                CHG_TYPE=#{chgType,jdbcType=VARCHAR},
+            </if>
+            <if test="chgDetail != null ">
+                CHG_DETAIL=#{chgDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="indusChgAgree != null ">
+                INDUS_CHG_AGREE=#{indusChgAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="indusChgDetail != null ">
+                INDUS_CHG_DETAIL=#{indusChgDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="longActionAgree != null ">
+                LONG_ACTION_AGREE=#{longActionAgree,jdbcType=VARCHAR},
+            </if>
+            <if test="longActionDetail != null ">
+                LONG_ACTION_DETAIL=#{longActionDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="othClob != null ">
+                OTH_CLOB=#{othClob,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null ">
+                REGION_CODE=#{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgCode != null ">
+                ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null ">
+                UPDATOR=#{updator,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null ">
+                REMARK=#{remark,jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+		UPDATE
+			T_ELIMINATE_LETTER_THO_RE_CHG
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+        CHG_ID= #{chgId,jdbcType=DECIMAL}
+	</delete>
+
+    <!-- 删除 -->
+    <delete id="deleteByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterThoReChg">
+		UPDATE
+			T_ELIMINATE_LETTER_THO_RE_CHG
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+        THO_ID= #{thoId,jdbcType=DECIMAL}
+	</delete>
+
+</mapper>

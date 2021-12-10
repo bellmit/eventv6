@@ -1,0 +1,3424 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.zhoubian.ZhouBianStatMapper" >
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.arcgis.ArcgisInfoOfPublic" >
+		<id column="ID" jdbcType="DECIMAL" property="id" />
+		<result column="WID" jdbcType="DECIMAL" property="wid" />
+		<result column="NAME" jdbcType="VARCHAR" property="name" />
+		<result column="X" jdbcType="DECIMAL" property="x" />
+		<result column="Y" jdbcType="DECIMAL" property="y" />
+		<result column="MARKER_TYPE" jdbcType="DECIMAL" property="markerType" />
+		<result column="MAP_TYPE" jdbcType="INTEGER" property="mapt" />
+		<result column="DISTANCE" jdbcType="INTEGER" property="distance" />
+	</resultMap>
+
+	<select id="statOfFireTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM V_FIRE_TEAM T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-18 yangcq add 获取周边消防队数量 -->
+	<select id="statOfFireTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM V_FIRE_TEAM T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfFireTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,
+		ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM V_FIRE_TEAM T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-03-18 yangcq add 分页获取周边消防队地图数据信息 -->
+	<select id="statOfFireTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM V_FIRE_TEAM T1
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ID = T3.RESOURCES_ID
+		WHERE T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		ORDER BY DISTANCE
+	</select>
+
+	<select id="statOfResZhouBianListByIds" parameterType="java.util.Map"  resultMap="BaseResultMap" databaseId="dm">
+	select
+	t.marker_id,
+	t.marker_type,
+	t.map_type ,
+	t.resources_id wid,
+	t.x,
+	t.y,
+	ROUND(DMGEO.ST_DISTANCE(
+			t.SDO,
+                  DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+	) DISTANCE
+	from t_zy_res_marker t
+	where t.marker_type=#{markerType, jdbcType=VARCHAR}
+	and t.map_type=#{mapType, jdbcType=DECIMAL}
+	AND t.resources_id in (${ids})
+	order by Distance
+</select>
+
+	<!-- 2015-03-13 liushi add 根据ids获取资源地图数据信息 -->
+	<select id="statOfResZhouBianListByIds" parameterType="java.util.Map"  resultMap="BaseResultMap" databaseId="oracle">
+	select
+	t.marker_id,
+	t.marker_type,
+	t.map_type ,
+	t.resources_id wid,
+	t.x,
+	t.y,
+	ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+	                            MDSYS.SDO_GEOMETRY(2001,
+	                                               8192,
+	                                               MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+	                                               NULL,
+	                                               NULL),
+	                           	0.005),
+	             0) Distance
+	from t_zy_res_marker t
+	where t.marker_type=#{markerType, jdbcType=VARCHAR}
+	and t.map_type=#{mapType, jdbcType=DECIMAL}
+	AND t.resources_id in (${ids})
+	order by Distance
+</select>
+
+	<select id="statOfCorBaseZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		select count(0)
+		from V_AREA_CORP t
+		left join (SELECT DISTINCT B.BUILDING_ID, B.BUILDING_NAME, B.BUILDING_ADDRESS
+		FROM T_DC_AREA_BUILDING_INFO B, MAP_WG_JZW_GIS M
+		WHERE B.BUILDING_ID = M.WID
+		AND B.STATUS = '001'
+		AND M.STATUS = '001'
+		AND M.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		M.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}) A3
+		on t.CORP_BUILDING_ID = A3.BUILDING_ID
+		where t.status = '001'
+		AND A3.BUILDING_ID IS NOT NULL
+		<if test="name != null and name != ''">
+			AND T.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND A3.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null " >
+			AND T.INFO_ORG_CODE LIKE #{infoOrgCode} || '%'
+		</if>
+	</select>
+
+	<!-- 2015-12-03 yangcq add 获取周边企业数量 -->
+	<select id="statOfCorBaseZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		select count(0)
+		from V_AREA_CORP t
+		left join (SELECT DISTINCT B.BUILDING_ID, B.BUILDING_NAME, B.BUILDING_ADDRESS
+		FROM T_DC_AREA_BUILDING_INFO B, MAP_WG_JZW_GIS M
+		WHERE B.BUILDING_ID = M.WID
+		AND B.STATUS = '001'
+		AND M.STATUS = '001'
+		AND M.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(M.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE') A3
+		on t.CORP_BUILDING_ID = A3.BUILDING_ID
+		where t.status = '001'
+		AND A3.BUILDING_ID IS NOT NULL
+		<if test="name != null and name != ''">
+			AND T.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND A3.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null " >
+			AND T.INFO_ORG_CODE LIKE #{infoOrgCode} || '%'
+		</if>
+	</select>
+
+	<select id="statOfCorBaseZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		select T.*, A3.BUILDING_ID, A3.BUILDING_NAME, A3.BUILDING_ADDRESS
+		from V_AREA_CORP t
+		left join (SELECT DISTINCT B.BUILDING_ID, B.BUILDING_NAME, B.BUILDING_ADDRESS
+		FROM T_DC_AREA_BUILDING_INFO B, MAP_WG_JZW_GIS M
+		WHERE B.BUILDING_ID = M.WID
+		AND B.STATUS = '001'
+		AND M.STATUS = '001'
+		AND M.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		M.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}) A3
+		on t.CORP_BUILDING_ID = A3.BUILDING_ID
+		where t.status = '001'
+		AND A3.BUILDING_ID IS NOT NULL
+		<if test="name != null and name != ''">
+			AND T.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND A3.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null " >
+			AND T.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+	</select>
+
+	<!-- 2015-12-03 yangcq add 获取周边企业列表 -->
+	<select id="statOfCorBaseZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		select T.*, A3.BUILDING_ID, A3.BUILDING_NAME, A3.BUILDING_ADDRESS
+		from V_AREA_CORP t
+		left join (SELECT DISTINCT B.BUILDING_ID, B.BUILDING_NAME, B.BUILDING_ADDRESS
+		FROM T_DC_AREA_BUILDING_INFO B, MAP_WG_JZW_GIS M
+		WHERE B.BUILDING_ID = M.WID
+		AND B.STATUS = '001'
+		AND M.STATUS = '001'
+		AND M.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(M.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE') A3
+		on t.CORP_BUILDING_ID = A3.BUILDING_ID
+		where t.status = '001'
+		AND A3.BUILDING_ID IS NOT NULL
+		<if test="name != null and name != ''">
+			AND T.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND A3.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null " >
+			AND T.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+	</select>
+
+	<select id="statOfKeyPlacesZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM V_AREA_PLACE T1
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T4
+		ON T1.BUILDING_ID = T4.BUILDING_ID
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T4.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T4.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.PLA_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T5.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-17 yangcq add 获取周边重点场所数量 -->
+	<select id="statOfKeyPlacesZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM V_AREA_PLACE T1
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T4
+		ON T1.BUILDING_ID = T4.BUILDING_ID
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T4.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T4.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.PLA_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T5.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfKeyPlacesZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T4.BUILDING_NAME,
+		T5.SDO.SDO_POINT.X X,
+		T5.SDO.SDO_POINT.Y Y,
+		T5.MAPT MAP_TYPE
+		FROM V_AREA_PLACE T1
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T4
+		ON T1.BUILDING_ID = T4.BUILDING_ID
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T4.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T4.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.PLA_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T5.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-17 yangcq add 获取周边重点场所列表数据 -->
+	<select id="statOfKeyPlacesZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T4.BUILDING_NAME,
+		T5.SDO.SDO_POINT.X X,
+		T5.SDO.SDO_POINT.Y Y,
+		T5.MAPT MAP_TYPE
+		FROM V_AREA_PLACE T1
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T4
+		ON T1.BUILDING_ID = T4.BUILDING_ID
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T4.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T4.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.PLA_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T5.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfBuildingZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM V_AREA_BUILDING T1
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T1.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.BUILDING_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T5.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-12-07 zhongshm add 获取周边楼栋数量 -->
+	<select id="statOfBuildingZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM V_AREA_BUILDING T1
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T1.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.BUILDING_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T5.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfBuildingZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*,
+		T5.SDO.SDO_POINT.X X,
+		T5.SDO.SDO_POINT.Y Y,
+		T5.MAPT MAP_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T5.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM V_AREA_BUILDING T1
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T1.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.BUILDING_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T5.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-12-07 zhongshm add 获取周边楼栋列表数据 -->
+	<select id="statOfBuildingZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*,
+		T5.SDO.SDO_POINT.X X,
+		T5.SDO.SDO_POINT.Y Y,
+		T5.MAPT MAP_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T5.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM V_AREA_BUILDING T1
+		LEFT OUTER JOIN MAP_WG_JZW_GIS T5
+		ON T1.BUILDING_ID = T5.WID
+		WHERE T1.STATUS = '001'
+		AND T5.STATUS = '001'
+		<if test="name != null and name != ''">
+			AND T1.BUILDING_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.BUILDING_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T5.MAPT = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T5.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		ORDER BY DISTANCE
+	</select>
+
+	<select id="statJYGridAdminZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		select
+		count(*)
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+		on ut.regis_value = t.user_name
+		left join t_dc_party_individual p
+		on UT.PARTY_ID = P.PARTY_ID
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+			</otherwise>
+		</choose>
+		<if test="name != null and name !='' ">
+			AND p.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+
+	</select>
+
+	<!-- 2017年9月1日 zhongshm add 江阴 独立 网格员周边资源统计 -->
+	<select id="statJYGridAdminZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		select
+		count(*)
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+			on ut.regis_value = t.user_name
+		left join T_DC_USER_ENTITY p
+			on UT.user_id = P.user_id
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(t.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'distance=${distance}') = 'TRUE'
+			</otherwise>
+		</choose>
+		<if test="name != null and name !='' ">
+			AND p.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+
+	</select>
+
+
+	<select id="statJYGridAdminZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		select * from (
+		select
+		UT.REGIS_VALUE,
+		T1.DUTY,
+		T1.GRID_ADMIN_ID,
+		T1.USER_ID,t.LONGITUDE ,t.DIMENSIONS,
+		T2.GRID_NAME,
+		T1.PARTY_NAME2 PARTY_NAME,
+		T1.MOBILE_TELEPHONE
+		<if test="hs == null or hs == '' ">
+			,ROUND(DMGEO.ST_DISTANCE(t.SDO,
+			DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+			) DISTANCE
+		</if>
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+		on ut.regis_value = t.user_name
+		left join t_dc_party_individual p
+		on uT.PARTY_ID = P.PARTY_ID
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+			</otherwise>
+		</choose>
+
+		<if test="name != null and name !='' ">
+			AND P.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="hs == null or hs == '' ">
+			order by distance
+		</if>
+		) a
+		<if test="hs == null or hs == '' ">
+			where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+		</if>
+	</select>
+
+	<!-- 2017年9月1日 zhongshm add 江阴 独立 网格员周边资源统计 -->
+	<select id="statJYGridAdminZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		select * from (
+		select
+		UT.REGIS_VALUE,
+		T1.DUTY,
+		T1.GRID_ADMIN_ID,
+		T1.USER_ID,t.LONGITUDE ,t.DIMENSIONS,t.HEIGHT,
+		T2.GRID_NAME,
+		T1.PHOTO,
+		T1.PARTY_NAME2,
+		p.Party_Name,
+		(case when T.LOCATE_TIME IS NULL OR ceil(((SYSDATE - T.LOCATE_TIME)) * 24 * 60) > 30 then 0 else 1 end) IS_ONLINE,
+		T1.MOBILE_TELEPHONE
+		<if test="hs == null or hs == '' ">
+			,ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005),
+			0) distance
+		</if>
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+			on ut.regis_value = t.user_name
+		left join T_DC_USER_ENTITY p
+			on uT.USER_ID = P.USER_ID
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(t.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'distance=${distance}') = 'TRUE'
+			</otherwise>
+		</choose>
+
+		<if test="name != null and name !='' ">
+			AND P.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="hs == null or hs == '' ">
+			order by distance
+		</if>
+		) a
+		<if test="hs == null or hs == '' ">
+			where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+		</if>
+	</select>
+
+
+	<select id="statJYGridAdminZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		select * from (
+		select
+		UT.REGIS_VALUE,
+		T1.DUTY,
+		T1.GRID_ADMIN_ID,
+		T1.USER_ID,t.LONGITUDE ,t.DIMENSIONS,
+		T2.GRID_NAME,
+		T1.PARTY_NAME2 PARTY_NAME,
+		T1.MOBILE_TELEPHONE
+		<if test="hs == null or hs == '' ">
+			,ROUND(DMGEO.ST_DISTANCE(t.SDO,
+			DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+			) DISTANCE
+		</if>
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+		on ut.regis_value = t.user_name
+		left join t_dc_party_individual p
+		on uT.PARTY_ID = P.PARTY_ID
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+			</otherwise>
+		</choose>
+
+		<if test="name != null and name !='' ">
+			AND P.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="hs == null or hs == '' ">
+			order by distance
+		</if>
+		) a
+		<if test="hs == null or hs == '' ">
+			where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+		</if>
+	</select>
+
+	<!-- 2017年9月1日 zhongshm add 江阴 独立 网格员周边资源统计 -->
+	<select id="statJYGridAdminZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		select * from (
+		select
+		UT.REGIS_VALUE,
+		T1.DUTY,
+		T1.GRID_ADMIN_ID,
+		T1.USER_ID,t.LONGITUDE ,t.DIMENSIONS,t.HEIGHT,
+		T2.GRID_NAME,
+		T1.PHOTO,
+		T1.PARTY_NAME2,
+		p.Party_Name,
+		(case when T.LOCATE_TIME IS NULL OR ceil(((SYSDATE - T.LOCATE_TIME)) * 24 * 60) > 30 then 0 else 1 end) IS_ONLINE,
+		T1.MOBILE_TELEPHONE
+		<if test="hs == null or hs == '' ">
+			,ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005),
+			0) distance
+		</if>
+		from bus_last_locate t
+		left join T_DC_PARTY_USER_CERTIFY ut
+			on ut.regis_value = t.user_name
+		left join T_DC_USER_ENTITY p
+			on uT.user_id = P.user_id
+		left join t_dc_grid_admin t1
+		on ut.user_id = t1.user_id
+		left join T_DC_GRID T2
+		on T1.GRID_ID = T2.GRID_ID
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(1/2)
+		and t1.status = '001'
+		and ut.status = '001'
+		and t2.status = '001'
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(t.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'distance=${distance}') = 'TRUE'
+			</otherwise>
+		</choose>
+
+		<if test="name != null and name !='' ">
+			AND P.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="hs == null or hs == '' ">
+			order by distance
+		</if>
+		) a
+		<if test="hs == null or hs == '' ">
+			where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+		</if>
+	</select>
+
+
+
+	<select id="statOfGridAdminZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		select
+		count(*)
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t1.status = '001'
+		and t2.status = '001'
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+
+	<!-- 2015-03-12 liushi add 网格员周边资源统计 -->
+	<select id="statOfGridAdminZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		select
+		count(*)
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t1.status = '001'
+		and t2.status = '001'
+		AND SDO_WITHIN_DISTANCE(t.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+
+	<!-- 2015-03-13 liushi add 分页获取周边网格员列表信息 -->
+	<select id="statOfGridAdminZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		select * from (
+		select
+		t1.duty,
+		t1.grid_admin_id,
+		t1.user_id,
+		t2.grid_name,
+		UT.PARTY_NAME,
+		t1.mobile_telephone,
+		<if test="isShowPosition != null and isShowPosition == '1'.toString() ">
+			t.LONGITUDE "X",
+			t.DIMENSIONS "Y",
+			t.locate_time,
+		</if>
+		ROUND(DMGEO.ST_DISTANCE(t.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) distance
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on  t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t1.status = '001'
+		and t2.status = '001'
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		order by distance
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+	<!-- 2015-03-13 liushi add 分页获取周边网格员列表信息 -->
+	<select id="statOfGridAdminZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		select * from (
+		select
+		t1.duty,
+		t1.grid_admin_id,
+		t1.user_id,
+		t2.grid_name,
+		UT.PARTY_NAME,
+		t1.mobile_telephone,
+		<if test="isShowPosition != null and isShowPosition == '1'.toString() ">
+			t.LONGITUDE "X",
+			t.DIMENSIONS "Y",
+			t.locate_time,
+		</if>
+		ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005),
+		0) distance
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on  t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		and t1.status = '001'
+		and t2.status = '001'
+		AND SDO_WITHIN_DISTANCE(t.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		order by distance
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+
+	<!-- 2015-03-13 liushi add 分页获取周边网格员列表信息 -->
+	<select id="statOfGridAdminZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		select * from (
+		select
+		t1.duty,
+		t1.grid_admin_id,
+		t1.user_id,
+		t2.grid_name,
+		UT.PARTY_NAME,
+		t1.mobile_telephone,
+		<if test="isShowPosition != null and isShowPosition == '1'.toString() ">
+			t.LONGITUDE "X",
+			t.DIMENSIONS "Y",
+			t.locate_time,
+		</if>
+		ROUND(DMGEO.ST_DISTANCE(t.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on  t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		<choose>
+			<when test="period != null and period !=''">
+				and t.LOCATE_TIME <![CDATA[>]]> TO_DATE(#{period,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+		and t1.status = '001'
+		and t2.status = '001'
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		order by distance
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+	<!-- 2015-03-13 liushi add 分页获取周边网格员列表信息 -->
+	<select id="statOfGridAdminZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		select * from (
+		select
+		t1.duty,
+		t1.grid_admin_id,
+		t1.user_id,
+		t2.grid_name,
+		UT.PARTY_NAME,
+		t1.mobile_telephone,
+		<if test="isShowPosition != null and isShowPosition == '1'.toString() ">
+			t.LONGITUDE "X",
+			t.DIMENSIONS "Y",
+			t.locate_time,
+		</if>
+		ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005),
+		0) distance
+		from bus_last_locate t
+		left join t_dc_grid_admin t1 on  t.user_id = t1.user_id
+		left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+  from T_DC_PARTY_USER_CERTIFY T4, t_dc_user_entity T5
+ where T4.user_ID = T5.user_ID and t4.status='001' and t5.status='001' ) UT on T1.User_Id=UT.User_Id
+		where t.mapt = #{mapType, jdbcType=DECIMAL}
+		<choose>
+			<when test="period != null and period !=''">
+				and t.LOCATE_TIME <![CDATA[>]]> TO_DATE(#{period,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+		and t1.status = '001'
+		and t2.status = '001'
+		AND SDO_WITHIN_DISTANCE(t.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+		<if test="name != null and name !='' ">
+			AND UT.PARTY_NAME like '%'||#{name,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="duty!=null and duty !='' ">
+			AND T1.DUTY in (${duty})
+		</if>
+		<if test="infoOrgCode!=null and infoOrgCode !='' ">
+			and t2.info_org_code like #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+		order by distance
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+
+	<select id="statOfGlobalEyesZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.GLOBAL_TYPE = '001'
+		AND T.MARKER_TYPE = '02020501'
+		<if test="name != null and name != ''">
+			AND C.PLATFORM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 2015-03-19 huangmw add 获取周边全球眼数量 -->
+	<select id="statOfGlobalEyesZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.GLOBAL_TYPE = '001'
+		AND T.MARKER_TYPE = '02020501'
+		<if test="name != null and name != ''">
+			AND C.PLATFORM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(T.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'DISTANCE=${distance}') = 'TRUE'
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="statOfGlobalEyesZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		SELECT C.*, T.MAP_TYPE, T.X, T.Y, T.Z, G.GRID_NAME,g.grid_path 
+		<if test="hs == null or hs == '' ">
+			,ROUND(DMGEO.ST_DISTANCE(T.SDO,
+			DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+			) DISTANCE
+		</if>
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T ,T_DC_GRID G
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.ORG_CODE = G.INFO_ORG_CODE
+		AND C.GLOBAL_TYPE = '001'
+		AND G.STATUS = '001'
+		AND T.MARKER_TYPE = '02020501'
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<if test="name != null and name != ''">
+			AND C.PLATFORM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+				order by DISTANCE
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 2015-03-19 huangmw add 获取周边全球眼列表 -->
+	<select id="statOfGlobalEyesZhouBianListPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		SELECT C.*, T.MAP_TYPE, T.X, T.Y, T.Z, G.GRID_NAME,g.grid_path 
+		<if test="hs == null or hs == '' ">
+			,ROUND(SDO_GEOM.SDO_DISTANCE(T.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005), 0) DISTANCE
+		</if>
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T ,T_DC_GRID G
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.ORG_CODE = G.INFO_ORG_CODE
+		AND C.GLOBAL_TYPE = '001'
+		AND G.STATUS = '001'
+		AND T.MARKER_TYPE = '02020501'
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<if test="name != null and name != ''">
+			AND C.PLATFORM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(T.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'DISTANCE=${distance}') = 'TRUE'
+				<choose>
+					<when test="orderBy !=null and orderBy != '' and orderBy == 'updateTime' ">
+						order by C.UPDATEDT DESC
+					</when>
+					<otherwise>
+						order by DISTANCE
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="statOfGlobalEyesZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		SELECT C.*, T.MAP_TYPE, T.X, T.Y, T.Z, G.GRID_NAME,g.grid_path 
+		<if test="hs == null or hs == '' ">
+			,ROUND(DMGEO.ST_DISTANCE(T.SDO,
+			DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+			) DISTANCE
+		</if>
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T ,T_DC_GRID G
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.ORG_CODE = G.INFO_ORG_CODE
+		AND C.GLOBAL_TYPE = '001'
+		AND G.STATUS = '001'
+		AND T.MARKER_TYPE = '02020501'
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<if test="eyesTypes != null and eyesTypes != ''">
+			AND C.EYES_TYPE IN
+			<foreach item="item" index="index" collection="eyesTypes"  open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="companyType  != null ">
+			AND c.company_type=#{companyType, jdbcType=DECIMAL}
+		</if>
+		<if test="platformName != null and platformName != '' ">
+			AND INSTR(C.PLATFORM_NAME,#{platformName, jdbcType=VARCHAR}) > 0
+		</if>
+		<if test="name != null and name != ''">
+			AND INSTR(C.PLATFORM_NAME,#{platformName, jdbcType=VARCHAR}) > 0
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND DMGEO.ST_WITHIN(
+				DMGEO.ST_POINTFROMTEXT('polygon (('|| split_string(${hs},',') ||'))', 4326),
+				T.SDO
+				) = '1'
+			</when>
+			<otherwise>
+				AND ROUND(DMGEO.ST_DISTANCE(
+				T.SDO,
+				DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+				order by DISTANCE
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 2015-03-19 huangmw add 获取周边全球眼列表 -->
+	<select id="statOfGlobalEyesZhouBianListWithoutPage" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		SELECT C.*, T.MAP_TYPE, T.X, T.Y, T.Z, G.GRID_NAME,g.grid_path 
+		<if test="hs == null or hs == '' ">
+			,ROUND(SDO_GEOM.SDO_DISTANCE(T.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005), 0) DISTANCE
+		</if>
+		FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T ,T_DC_GRID G
+		WHERE C.MONITOR_ID = T.RESOURCES_ID
+		AND C.ORG_CODE = G.INFO_ORG_CODE
+		AND C.GLOBAL_TYPE = '001'
+		AND G.STATUS = '001'
+		AND T.MARKER_TYPE = '02020501'
+		AND T.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		<if test="eyesTypes != null and eyesTypes != ''">
+			AND C.EYES_TYPE IN
+			<foreach item="item" index="index" collection="eyesTypes"  open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="companyType  != null ">
+			AND c.company_type=#{companyType, jdbcType=DECIMAL}
+		</if>
+		<if test="platformName != null and platformName != '' ">
+			AND INSTR(C.PLATFORM_NAME,#{platformName, jdbcType=VARCHAR}) > 0
+		</if>
+		<if test="name != null and name != ''">
+			AND INSTR(C.PLATFORM_NAME,#{platformName, jdbcType=VARCHAR}) > 0
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND C.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="hs != null and hs != '' ">
+				AND SDO_RELATE(T.SDO,MDSYS.SDO_GEOMETRY(2003,8192,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 1003, 1),MDSYS.SDO_ORDINATE_ARRAY(${hs})),'MASK=ANYINTERACT') = 'TRUE'
+			</when>
+			<otherwise>
+				AND SDO_WITHIN_DISTANCE(T.SDO,
+				MDSYS.SDO_GEOMETRY(2001,
+				8192,
+				MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+				NULL,
+				NULL),
+				'DISTANCE=${distance}') = 'TRUE'
+				<choose>
+					<when test="orderBy !=null and orderBy != '' and orderBy == 'updateTime' ">
+						order by C.UPDATEDT DESC
+					</when>
+					<otherwise>
+						order by DISTANCE
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="statOfPeopleZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		select count(0)
+		from t_dc_ci_Rs_room         t1,
+		t_dc_ci_rs_top          t2,
+		t_dc_area_building_info t3,
+		map_wg_jzw_gis          t4
+		where t1.ci_rs_id = t2.ci_rs_id
+		and t1.building_id = t3.building_id
+		and t1.building_id = t4.wid
+		<if test="type != null and type != '' and type == 'OldPeople'">
+			and floor(months_between(sysdate,t2.i_birthday)/12) <![CDATA[>=]]> 60
+		</if>
+		<if test="type != null and type != '' and type == 'Chileren'">
+			and floor(months_between(sysdate,t2.i_birthday)/12) <![CDATA[<]]> 14
+		</if>
+		<if test="type != null and type != '' and type == 'Permanent'">
+			and t2.i_type = '001'
+		</if>
+		<if test="type != null and type != '' and type == 'Floating'">
+			and t2.i_type = '002'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND t2.ORG_CODE LIKE   #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		and t3.status = '001'
+		and t4.mapt = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T4.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+
+	</select>
+
+	<select id="statOfPeopleZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		select count(0)
+		from t_dc_ci_Rs_room         t1,
+		t_dc_ci_rs_top          t2,
+		t_dc_area_building_info t3,
+		map_wg_jzw_gis          t4
+		where t1.ci_rs_id = t2.ci_rs_id
+		and t1.building_id = t3.building_id
+		and t1.building_id = t4.wid
+		<if test="type != null and type != '' and type == 'OldPeople'">
+			and floor(months_between(sysdate,t2.i_birthday)/12) <![CDATA[>=]]> 60
+		</if>
+		<if test="type != null and type != '' and type == 'Chileren'">
+			and floor(months_between(sysdate,t2.i_birthday)/12) <![CDATA[<]]> 14
+		</if>
+		<if test="type != null and type != '' and type == 'Permanent'">
+			and t2.i_type = '001'
+		</if>
+		<if test="type != null and type != '' and type == 'Floating'">
+			and t2.i_type = '002'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND t2.ORG_CODE LIKE  #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		and t3.status = '001'
+		and t4.mapt = #{mapType, jdbcType=DECIMAL}
+		and SDO_WITHIN_DISTANCE(t4.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'distance=${distance}') = 'TRUE'
+
+	</select>
+
+	<select id="statOfOrgTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*,
+		T3.SDO.SDO_POINT.X X,
+		T3.SDO.SDO_POINT.Y Y,
+		T3.MAP_TYPE MAP_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '0'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-19 zhongshm add 获取周边机构队伍数量（需要修改） -->
+	<select id="statOfOrgTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*,
+		T3.SDO.SDO_POINT.X X,
+		T3.SDO.SDO_POINT.Y Y,
+		T3.MAP_TYPE MAP_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '0'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfPrvetionTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*,
+		T3.SDO.SDO_POINT.X X,
+		T3.SDO.SDO_POINT.Y Y,
+		T3.MAP_TYPE MAP_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '1'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-19 zhongshm add 获取周边机构队伍数量（需要修改） -->
+	<select id="statOfPrvetionTeamZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*,
+		T3.SDO.SDO_POINT.X X,
+		T3.SDO.SDO_POINT.Y Y,
+		T3.MAP_TYPE MAP_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '1'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfOrgTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '0'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-19 zhongshm add 获取周边机构队伍数量（需要修改） -->
+	<select id="statOfOrgTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '0'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfPrvetionTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '1'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-19 zhongshm add 获取周边数量（需要修改） -->
+	<select id="statOfPrvetionTeamZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM t_zz_prvetion_team T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.Region_Code = T2.Info_Org_Code AND T1.BIZ_TYPE = '1'
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.Team_Id = T3.RESOURCES_ID
+		WHERE T1.STATUS = '1'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.name LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.CONTENT_ LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="getZKSListboxChoseByOrgCode" resultType="java.lang.Integer" databaseId="dm">
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT A.CI_RS_ID FROM T_DC_CI_RS_TOP A,T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T1.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.RU_STATUS = '002'
+			AND A.I_TYPE = '001'
+			<![CDATA[
+			AND A.i_birthday between
+		       TRUNC(ADD_MONTHS(SYSDATE,
+		                        - ((case
+		                            when A.i_gender = 'M' then
+		                             60
+		                            when A.i_gender = 'F' then
+		                             50
+		                          end) * 12)))+1 and
+		       TRUNC(ADD_MONTHS(SYSDATE, - (16 * 12)))
+			]]>
+			AND A.I_HOUSE_RESIDE in ('人户一致','户在人不在')
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		)
+	</select>
+
+	<select id="getZKSListboxChoseByOrgCode" resultType="java.lang.Integer" databaseId="oracle">
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT A.CI_RS_ID FROM T_DC_CI_RS_TOP A,T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND SDO_WITHIN_DISTANCE(T1.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.RU_STATUS = '002'
+			AND A.I_TYPE = '001'
+			<![CDATA[
+			AND A.i_birthday between
+		       TRUNC(ADD_MONTHS(SYSDATE,
+		                        - ((case
+		                            when A.i_gender = 'M' then
+		                             60
+		                            when A.i_gender = 'F' then
+		                             50
+		                          end) * 12)))+1 and
+		       TRUNC(ADD_MONTHS(SYSDATE, - (16 * 12)))
+			]]>
+			AND A.I_HOUSE_RESIDE in ('人户一致','户在人不在')
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		)
+	</select>
+
+	<select id="getZKSListboxChoseByOrgCodePageList" resultType="java.util.HashMap" databaseId="dm">
+		SELECT * FROM T_DC_CI_RS_TOP WHERE CI_RS_ID IN(
+		SELECT *
+		FROM (SELECT DISTINCT A.CI_RS_ID
+		FROM T_DC_CI_RS_TOP A,
+		T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T1.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+		)
+	</select>
+
+	<select id="getZKSListboxChoseByOrgCodePageList" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT * FROM T_DC_CI_RS_TOP WHERE CI_RS_ID IN(
+		SELECT *
+		FROM (SELECT DISTINCT A.CI_RS_ID
+		FROM T_DC_CI_RS_TOP A,
+		T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND SDO_WITHIN_DISTANCE(T1.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+		)
+	</select>
+
+	<select id="statOfWaterSourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+SELECT SUM((SELECT COUNT(0)
+              FROM V_RES_WATER T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND ROUND(DMGEO.ST_DISTANCE(
+					T3.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+				)) FROM DUAL
+</select>
+
+	<!-- 获取天然水源数量 -->
+	<select id="statOfWaterSourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+SELECT SUM((SELECT COUNT(0)
+              FROM V_RES_WATER T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                       MDSYS.SDO_GEOMETRY(2001,
+                                                          8192,
+                                                          MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                          NULL,
+                                                          NULL),
+                                       'DISTANCE=${distance}') = 'TRUE')) FROM DUAL
+</select>
+
+	<select id="statOfWaterSourceZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+SELECT T1.ID FIRE_RES_ID,
+       T1.NAME NAME_,
+       T1.CATALOG CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDRESS ADDR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.PHOTO_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID
+  FROM V_RES_WATER T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND ROUND(DMGEO.ST_DISTANCE(
+					T3.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+
+  </select>
+
+	<select id="statOfWaterSourceZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+SELECT T1.ID FIRE_RES_ID,
+       T1.NAME NAME_,
+       T1.CATALOG CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDRESS ADDR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.PHOTO_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID
+  FROM V_RES_WATER T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                       MDSYS.SDO_GEOMETRY(2001,
+                                                          8192,
+                                                          MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                          NULL,
+                                                          NULL),
+                                       'DISTANCE=${distance}') = 'TRUE'
+
+  </select>
+
+	<select id="statOfWaterFactoryZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+SELECT SUM((SELECT COUNT(0)
+              FROM V_RES_WATER_FACTORY T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND ROUND(DMGEO.ST_DISTANCE(
+					T3.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance})) FROM DUAL
+</select>
+
+	<!-- 获取自来水公司数量 -->
+	<select id="statOfWaterFactoryZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+SELECT SUM((SELECT COUNT(0)
+              FROM V_RES_WATER_FACTORY T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                       MDSYS.SDO_GEOMETRY(2001,
+                                                          8192,
+                                                          MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                          NULL,
+                                                          NULL),
+                                       'DISTANCE=${distance}') = 'TRUE')) FROM DUAL
+</select>
+
+	<select id="statOfWaterFactoryZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+SELECT T1.ID FIRE_RES_ID,
+       T1.NAME NAME_,
+       T1.CATALOG CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDRESS ADDR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.PHOTO_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID
+  FROM V_RES_WATER_FACTORY T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND ROUND(DMGEO.ST_DISTANCE(
+					T3.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}
+
+  </select>
+
+	<select id="statOfWaterFactoryZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+SELECT T1.ID FIRE_RES_ID,
+       T1.NAME NAME_,
+       T1.CATALOG CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDRESS ADDR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.PHOTO_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID
+  FROM V_RES_WATER_FACTORY T1
+              LEFT JOIN T_ZY_RES_MARKER T3
+                ON T1.ID = T3.RESOURCES_ID
+             WHERE  T3.MARKER_TYPE IN (${markerType})
+               AND T1.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType = VARCHAR} || '%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType = DECIMAL}
+               AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                       MDSYS.SDO_GEOMETRY(2001,
+                                                          8192,
+                                                          MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                          NULL,
+                                                          NULL),
+                                       'DISTANCE=${distance}') = 'TRUE'
+
+  </select>
+
+	<select id="statOfNewResourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+SELECT SUM((SELECT COUNT(0)
+              FROM T_FIRE_RES T1
+              LEFT OUTER JOIN T_DC_GRID T2 ON T1.GRID_ID = T2.GRID_ID
+              LEFT JOIN T_ZY_RES_MARKER T3 ON T1.FIRE_RES_ID =
+                                              T3.RESOURCES_ID
+             WHERE T1.STATUS = '001'
+               AND T2.STATUS = '001'
+               AND T3.MARKER_TYPE IN (${markerType})
+               AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+               AND ROUND(DMGEO.ST_DISTANCE(
+					T3.SDO,
+					DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+				) <![CDATA[<=]]> ${distance}))
+
+           + (SELECT COUNT(0)
+                FROM T_FIRE_RES T1
+                LEFT JOIN T_DC_AREA_BUILDING_INFO T2 ON T1.BUILDING_ID =
+                                                        T2.BUILDING_ID
+                                                    AND T1.CATALOG_ = 1
+                LEFT JOIN MAP_WG_JZW_GIS T3 ON T2.BUILDING_ID = T3.WID
+               WHERE T3.WID IN
+                     (SELECT T5.BUILDING_ID
+                        FROM T_FIRE_RES T4
+                        LEFT JOIN T_DC_AREA_BUILDING_INFO T5 ON T4.BUILDING_ID =
+                                                                T5.BUILDING_ID
+                                                            AND T4.CATALOG_ = 1)
+                 AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+                 AND T1.STATUS = '001'
+                 AND T2.STATUS = '001'
+                 AND T3.STATUS = '001'
+                 AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+                 AND ROUND(DMGEO.ST_DISTANCE(
+						T3.SDO,
+						DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+					) <![CDATA[<=]]> ${distance}))
+  FROM DUAL
+
+</select><!-- 新消防栓数量表 -->
+
+	<!-- 2015-03-19 sulch add 获取周边消防栓、自来水公司、天然水源数量（需要修改） -->
+	<select id="statOfNewResourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+SELECT SUM((SELECT COUNT(0)
+              FROM T_FIRE_RES T1
+              LEFT OUTER JOIN T_DC_GRID T2 ON T1.GRID_ID = T2.GRID_ID
+              LEFT JOIN T_ZY_RES_MARKER T3 ON T1.FIRE_RES_ID =
+                                              T3.RESOURCES_ID
+             WHERE T1.STATUS = '001'
+               AND T2.STATUS = '001'
+               AND T3.MARKER_TYPE IN (${markerType})
+               AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+               AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+               AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                       MDSYS.SDO_GEOMETRY(2001,
+                                                          8192,
+                                                          MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                          NULL,
+                                                          NULL),
+                                       'DISTANCE=${distance}') = 'TRUE')
+
+           + (SELECT COUNT(0)
+                FROM T_FIRE_RES T1
+                LEFT JOIN T_DC_AREA_BUILDING_INFO T2 ON T1.BUILDING_ID =
+                                                        T2.BUILDING_ID
+                                                    AND T1.CATALOG_ = 1
+                LEFT JOIN MAP_WG_JZW_GIS T3 ON T2.BUILDING_ID = T3.WID
+               WHERE T3.WID IN
+                     (SELECT T5.BUILDING_ID
+                        FROM T_FIRE_RES T4
+                        LEFT JOIN T_DC_AREA_BUILDING_INFO T5 ON T4.BUILDING_ID =
+                                                                T5.BUILDING_ID
+                                                            AND T4.CATALOG_ = 1)
+                 AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+                 AND T1.STATUS = '001'
+                 AND T2.STATUS = '001'
+                 AND T3.STATUS = '001'
+                 AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+                 AND SDO_WITHIN_DISTANCE(T3.SDO,
+                                         MDSYS.SDO_GEOMETRY(2001,
+                                                            8192,
+                                                            MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                            NULL,
+                                                            NULL),
+                                         'DISTANCE=${distance}') = 'TRUE'))
+  FROM DUAL
+
+</select><!-- 新消防栓数量表 -->
+
+	<select id="statOfNewResourceZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+SELECT T1.FIRE_RES_ID,
+       T1.NAME_,
+       T1.CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDR_,
+       T1.FLOOR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.BUILDING_ID,
+       T1.FIRE_TYPE,
+       T1.PIPE_TYPE,
+       T1.CALIBER,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.OVERVIEW_,
+       T1.PHOTO_PATH,
+       T1.TDC_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.STATUS
+  FROM T_FIRE_RES T1
+  LEFT JOIN T_DC_GRID T2 ON T1.GRID_ID = T2.GRID_ID
+  LEFT JOIN T_ZY_RES_MARKER TLL ON T1.FIRE_RES_ID = TLL.RESOURCES_ID
+                               AND TLL.MARKER_TYPE IN (${markerType})
+ WHERE 1 = 1
+   AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+   AND T1.STATUS = '001'
+   AND T2.STATUS = '001'
+   AND TLL.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+   AND T1.GRID_ID IN
+       (SELECT G.GRID_ID
+          FROM T_DC_GRID G
+         WHERE G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+           AND ROUND(DMGEO.ST_DISTANCE(
+						TLL.SDO,
+						DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+					) <![CDATA[<=]]> ${distance})
+UNION ALL
+SELECT T1.FIRE_RES_ID,
+       T1.NAME_,
+       T1.CATALOG_,
+       T1.MANAGE_LEVEL,
+       T2.BUILDING_NAME,
+       T1.FLOOR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.BUILDING_ID,
+       T1.FIRE_TYPE,
+       T1.PIPE_TYPE,
+       T1.CALIBER,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.OVERVIEW_,
+       T1.PHOTO_PATH,
+       T1.TDC_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.STATUS
+  FROM T_FIRE_RES T1
+  LEFT JOIN T_DC_AREA_BUILDING_INFO T2 ON T1.BUILDING_ID = T2.BUILDING_ID
+                                      AND T1.CATALOG_ = 1
+  LEFT JOIN MAP_WG_JZW_GIS T3 ON T2.BUILDING_ID = T3.WID
+ WHERE T3.WID IN
+       (SELECT T5.BUILDING_ID
+          FROM T_FIRE_RES T4
+          LEFT JOIN T_DC_AREA_BUILDING_INFO T5 ON T4.BUILDING_ID =
+                                                  T5.BUILDING_ID
+                                              AND T4.CATALOG_ = 1)
+   AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+   AND T1.STATUS = '001'
+   AND T2.STATUS = '001'
+   AND T3.STATUS = '001'
+   AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+   AND ROUND(DMGEO.ST_DISTANCE(
+						T3.SDO,
+						DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+					) <![CDATA[<=]]> ${distance}
+</select><!-- 新消防栓列表 -->
+
+	<!-- 2015-03-19 sulch add 获取周边消防栓、自来水公司、天然水源列表数据(需要修改) -->
+	<select id="statOfNewResourceZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+SELECT T1.FIRE_RES_ID,
+       T1.NAME_,
+       T1.CATALOG_,
+       T1.MANAGE_LEVEL,
+       T1.ADDR_,
+       T1.FLOOR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.BUILDING_ID,
+       T1.FIRE_TYPE,
+       T1.PIPE_TYPE,
+       T1.CALIBER,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.OVERVIEW_,
+       T1.PHOTO_PATH,
+       T1.TDC_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.STATUS
+  FROM T_FIRE_RES T1
+  LEFT JOIN T_DC_GRID T2 ON T1.GRID_ID = T2.GRID_ID
+  LEFT JOIN T_ZY_RES_MARKER TLL ON T1.FIRE_RES_ID = TLL.RESOURCES_ID
+                               AND TLL.MARKER_TYPE IN (${markerType})
+ WHERE 1 = 1
+   AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+   AND T1.STATUS = '001'
+   AND T2.STATUS = '001'
+   AND TLL.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+   AND T1.GRID_ID IN
+       (SELECT G.GRID_ID
+          FROM T_DC_GRID G
+         WHERE G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+           AND SDO_WITHIN_DISTANCE(TLL.SDO,
+                                   MDSYS.SDO_GEOMETRY(2001,
+                                                      8192,
+                                                      MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                                      NULL,
+                                                      NULL),
+                                   'DISTANCE=${distance}') = 'TRUE')
+UNION ALL
+SELECT T1.FIRE_RES_ID,
+       T1.NAME_,
+       T1.CATALOG_,
+       T1.MANAGE_LEVEL,
+       T2.BUILDING_NAME,
+       T1.FLOOR_,
+       T1.GRID_ID,
+       T1.INFO_ORG_CODE,
+       T1.BUILDING_ID,
+       T1.FIRE_TYPE,
+       T1.PIPE_TYPE,
+       T1.CALIBER,
+       T1.OPERATE_STATUS,
+       T1.OPERATE_INSTR,
+       T1.OVERVIEW_,
+       T1.PHOTO_PATH,
+       T1.TDC_PATH,
+       T1.CREATE_TIME,
+       T1.CREATE_USER_ID,
+       T1.UPDATE_TIME,
+       T1.UPDATE_USER_ID,
+       T1.STATUS
+  FROM T_FIRE_RES T1
+  LEFT JOIN T_DC_AREA_BUILDING_INFO T2 ON T1.BUILDING_ID = T2.BUILDING_ID
+                                      AND T1.CATALOG_ = 1
+  LEFT JOIN MAP_WG_JZW_GIS T3 ON T2.BUILDING_ID = T3.WID
+ WHERE T3.WID IN
+       (SELECT T5.BUILDING_ID
+          FROM T_FIRE_RES T4
+          LEFT JOIN T_DC_AREA_BUILDING_INFO T5 ON T4.BUILDING_ID =
+                                                  T5.BUILDING_ID
+                                              AND T4.CATALOG_ = 1)
+   AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+   AND T1.STATUS = '001'
+   AND T2.STATUS = '001'
+   AND T3.STATUS = '001'
+   AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+   AND SDO_WITHIN_DISTANCE(T3.SDO,
+                           MDSYS.SDO_GEOMETRY(2001,
+                                              8192,
+                                              MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+                                              NULL,
+                                              NULL),
+                           'DISTANCE=${distance}') = 'TRUE'
+</select><!-- 新消防栓列表 -->
+
+	<select id="statOfResourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_ZY_RES_INFO T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.RES_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.RES_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select><!-- 消防栓、井盖、路灯、供水、供热、燃气 数量 -->
+
+	<select id="statOfResourceZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_ZY_RES_INFO T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.RES_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.RES_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select><!-- 消防栓、井盖、路灯、供水、供热、燃气 数量 -->
+
+	<select id="statOfResourceZhouBianCountPageList" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*,T2.GRID_NAME,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_ZY_RES_INFO T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.RES_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.RES_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		ORDER BY DISTANCE
+	</select><!-- 消防栓、井盖、路灯、供水、供热、燃气  列表-->
+
+	<select id="statOfResourceZhouBianCountPageList" parameterType="java.util.Map"  resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*,T2.GRID_NAME,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_ZY_RES_INFO T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.RES_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.RES_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		ORDER BY DISTANCE
+	</select><!-- 消防栓、井盖、路灯、供水、供热、燃气  列表-->
+
+	<select id="statOfCampusZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_ZZ_PLA_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.PLA_ID = T3.RESOURCES_ID
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T4 ON T1.ROOM_ID=T4.ROOM_ID
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T5 ON T1.BUILDING_ID = T5.BUILDING_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T4.Room_Address LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select>
+
+	<!-- 2015-03-21 sulch add 获取校园周边数量（需要修改） -->
+	<select id="statOfCampusZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_ZZ_PLA_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.PLA_ID = T3.RESOURCES_ID
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T4 ON T1.ROOM_ID=T4.ROOM_ID
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T5 ON T1.BUILDING_ID = T5.BUILDING_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T4.Room_Address LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select>
+
+	<select id="statOfCampusZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT * FROM(
+		SELECT T1.*, T2.GRID_NAME, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_ZZ_PLA_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.PLA_ID = T3.RESOURCES_ID
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T4 ON T1.ROOM_ID=T4.ROOM_ID
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T5 ON T1.BUILDING_ID = T5.BUILDING_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T4.Room_Address LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		ORDER BY DISTANCE
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+	<!-- 2015-03-21 sulch add 获取周边校园周边列表数据(需要修改) -->
+	<select id="statOfCampusZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT * FROM(
+		SELECT T1.*, T2.GRID_NAME, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_ZZ_PLA_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.PLA_ID = T3.RESOURCES_ID
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T4 ON T1.ROOM_ID=T4.ROOM_ID
+		LEFT OUTER JOIN T_DC_AREA_BUILDING_INFO T5 ON T1.BUILDING_ID = T5.BUILDING_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE IN (${markerType})
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.PLA_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T4.Room_Address LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		ORDER BY DISTANCE
+		) a where a.distance <![CDATA[<=]]> #{distance,jdbcType=DECIMAL}
+	</select>
+
+	<select id="statOfImportUnitZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(DISTINCT T1.IMPORT_UNIT_ID)
+		FROM T_ZZ_IMPORT_UNIT T1
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T2
+		ON T1.BUILDING_ID = T2.BUILDING_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T3
+		ON T2.BUILDING_ID = T3.WID
+		AND T3.STATUS = '001'
+		LEFT JOIN T_DC_GRID T4
+		ON T2.GRID_ID = T4.GRID_ID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T5
+		ON T4.INFO_ORG_CODE = T5.ORG_CODE
+		AND T5.STATUS = '001'
+		WHERE T1.STATUS = '1'
+		<include refid="importUintWhere_dm"/>
+	</select>
+
+	<!-- 统计重点单位总数 -->
+	<select id="statOfImportUnitZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(DISTINCT T1.IMPORT_UNIT_ID)
+		FROM T_ZZ_IMPORT_UNIT T1
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T2
+		ON T1.BUILDING_ID = T2.BUILDING_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T3
+		ON T2.BUILDING_ID = T3.WID
+		AND T3.STATUS = '001'
+		LEFT JOIN T_DC_GRID T4
+		ON T2.GRID_ID = T4.GRID_ID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T5
+		ON T4.INFO_ORG_CODE = T5.ORG_CODE
+		AND T5.STATUS = '001'
+		WHERE T1.STATUS = '1'
+		<include refid="importUintWhere"/>
+	</select>
+
+	<select id="statOfImportUnitZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT DISTINCT T1.*
+		<if test="x!=null and x!='' and y!=null and y!='' ">
+			,ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+			DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+			) DISTANCE
+		</if>
+		FROM T_ZZ_IMPORT_UNIT T1
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T2
+		ON T1.BUILDING_ID = T2.BUILDING_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T3
+		ON T2.BUILDING_ID = T3.WID
+		AND T3.STATUS = '001'
+		LEFT JOIN T_DC_GRID T4
+		ON T2.GRID_ID = T4.GRID_ID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T5
+		ON T4.INFO_ORG_CODE = T5.ORG_CODE
+		AND T5.STATUS = '001'
+		WHERE T1.STATUS = '1'
+		<include refid="importUintWhere_dm"/>
+		ORDER BY T1.IMPORT_UNIT_ID DESC
+	</select>
+
+	<!-- 获取重点单位列表 -->
+	<select id="statOfImportUnitZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT DISTINCT T1.*
+		<if test="x!=null and x!='' and y!=null and y!='' ">
+			,ROUND(SDO_GEOM.SDO_DISTANCE(T3.sdo,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			0.005),
+			0) DISTANCE
+		</if>
+		FROM T_ZZ_IMPORT_UNIT T1
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T2
+		ON T1.BUILDING_ID = T2.BUILDING_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T3
+		ON T2.BUILDING_ID = T3.WID
+		AND T3.STATUS = '001'
+		LEFT JOIN T_DC_GRID T4
+		ON T2.GRID_ID = T4.GRID_ID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T5
+		ON T4.INFO_ORG_CODE = T5.ORG_CODE
+		AND T5.STATUS = '001'
+		WHERE T1.STATUS = '1'
+		<include refid="importUintWhere"/>
+		ORDER BY T1.IMPORT_UNIT_ID DESC
+	</select>
+
+	<!-- 重点单位查询条件  -->
+	<sql id="importUintWhere">
+		<if test="mapType != null and mapType != '' ">
+			AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="name != null and name != '' ">
+			AND T1.ENTERPRISE_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != '' ">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="type != null and type != '' ">
+			AND T1.TYPE IN (${type})
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND T5.ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND SDO_WITHIN_DISTANCE(T3.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			'DISTANCE=${distance}') = 'TRUE'
+		</if>
+	</sql>
+
+	<sql id="importUintWhere_dm">
+		<if test="mapType != null and mapType != '' ">
+			AND T3.MAPT = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="name != null and name != '' ">
+			AND T1.ENTERPRISE_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != '' ">
+			AND T1.ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="type != null and type != '' ">
+			AND T1.TYPE IN (${type})
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND T5.ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND ROUND(DMGEO.ST_DISTANCE(
+			T3.SDO,
+			DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+			) <![CDATA[<=]]> ${distance}
+		</if>
+	</sql>
+
+	<select id="statOfRentRoomsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_DC_AREA_ROOM_RENT T1
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T2
+		ON T1.ROOM_ID = T2.ROOM_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T3
+		ON T2.BUILDING_ID = T3.BUILDING_ID
+		AND T3.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T4
+		ON T3.BUILDING_ID = T4.WID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_GRID T5
+		ON T3.GRID_ID = T5.GRID_ID
+		AND T5.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T6
+		ON T5.INFO_ORG_CODE = T6.ORG_CODE
+		AND T6.STATUS = '001'
+		<include refid="rentRoomWhere_dm"/>
+	</select>
+
+	<!-- 2015-12-03 sulch add 获取出租屋数量 -->
+	<select id="statOfRentRoomsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_DC_AREA_ROOM_RENT T1
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T2
+		ON T1.ROOM_ID = T2.ROOM_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T3
+		ON T2.BUILDING_ID = T3.BUILDING_ID
+		AND T3.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T4
+		ON T3.BUILDING_ID = T4.WID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_GRID T5
+		ON T3.GRID_ID = T5.GRID_ID
+		AND T5.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T6
+		ON T5.INFO_ORG_CODE = T6.ORG_CODE
+		AND T6.STATUS = '001'
+		<include refid="rentRoomWhere"/>
+	</select>
+
+	<select id="statOfRentRoomsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T2.ROOM_NAME, T2.ROOM_ADDRESS, T5.GRID_NAME, T3.BUILDING_NAME,
+		T4.SDO.SDO_POINT.X X,
+		T4.SDO.SDO_POINT.Y Y,
+		T4.MAPT MAP_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T4.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_DC_AREA_ROOM_RENT T1
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T2
+		ON T1.ROOM_ID = T2.ROOM_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T3
+		ON T2.BUILDING_ID = T3.BUILDING_ID
+		AND T3.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T4
+		ON T3.BUILDING_ID = T4.WID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_GRID T5
+		ON T3.GRID_ID = T5.GRID_ID
+		AND T5.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T6
+		ON T5.INFO_ORG_CODE = T6.ORG_CODE
+		AND T6.STATUS = '001'
+		<include refid="rentRoomWhere_dm"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-12-03 sulch add 获取出租屋数量 列表数据 -->
+	<select id="statOfRentRoomsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T2.ROOM_NAME, T2.ROOM_ADDRESS, T5.GRID_NAME, T3.BUILDING_NAME,
+		T4.SDO.SDO_POINT.X X,
+		T4.SDO.SDO_POINT.Y Y,
+		T4.MAPT MAP_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T4.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL},#{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_DC_AREA_ROOM_RENT T1
+		LEFT OUTER JOIN T_DC_AREA_ROOM_INFO T2
+		ON T1.ROOM_ID = T2.ROOM_ID
+		AND T2.STATUS = '001'
+		LEFT JOIN T_DC_AREA_BUILDING_INFO T3
+		ON T2.BUILDING_ID = T3.BUILDING_ID
+		AND T3.STATUS = '001'
+		LEFT JOIN MAP_WG_JZW_GIS T4
+		ON T3.BUILDING_ID = T4.WID
+		AND T4.STATUS = '001'
+		LEFT JOIN T_DC_GRID T5
+		ON T3.GRID_ID = T5.GRID_ID
+		AND T5.STATUS = '001'
+		LEFT JOIN T_DC_ORG_ENTITY_INFO T6
+		ON T5.INFO_ORG_CODE = T6.ORG_CODE
+		AND T6.STATUS = '001'
+		<include refid="rentRoomWhere"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 出租屋查询条件  -->
+	<sql id="rentRoomWhere">
+		WHERE 1 = 1
+		<if test="name != null and name != ''">
+			AND T2.ROOM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T2.ROOM_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T5.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T4.MAPT = #{mapType, jdbcType=VARCHAR}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND SDO_WITHIN_DISTANCE(T4.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL}, 0),
+			NULL,
+			NULL),
+			'DISTANCE=${distance}') = 'TRUE'
+		</if>
+	</sql>
+
+	<sql id="rentRoomWhere_dm">
+		WHERE 1 = 1
+		<if test="name != null and name != ''">
+			AND T2.ROOM_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T2.ROOM_ADDRESS LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T5.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T4.MAPT = #{mapType, jdbcType=VARCHAR}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND ROUND(DMGEO.ST_DISTANCE(
+			T4.SDO,
+			DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+			) <![CDATA[<=]]> ${distance}
+		</if>
+	</sql>
+
+	<select id="statOfNonPublicOrgsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_ZZ_COR_BASE_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.CBI_ID = T3.RESOURCES_ID
+		<include refid="NonPublicOrgWhere_dm"/>
+	</select>
+
+	<!-- 2015-12-07 sulch add 获取新经济组织数量 -->
+	<select id="statOfNonPublicOrgsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_ZZ_COR_BASE_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.CBI_ID = T3.RESOURCES_ID
+		<include refid="NonPublicOrgWhere"/>
+	</select>
+
+	<select id="statOfNonPublicOrgsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_ZZ_COR_BASE_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.CBI_ID = T3.RESOURCES_ID
+		<include refid="NonPublicOrgWhere_dm"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-12-07 sulch add 获取新经济组织数量 列表数据 -->
+	<select id="statOfNonPublicOrgsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_ZZ_COR_BASE_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.CBI_ID = T3.RESOURCES_ID
+		<include refid="NonPublicOrgWhere"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 新经济组织查询条件  -->
+	<sql id="NonPublicOrgWhere">
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.COR_ADDR LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND SDO_WITHIN_DISTANCE(T3.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			'DISTANCE=${distance}') = 'TRUE'
+		</if>
+	</sql>
+
+	<sql id="NonPublicOrgWhere_dm">
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.COR_NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.COR_ADDR LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND ROUND(DMGEO.ST_DISTANCE(
+			T3.SDO,
+			DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+			) <![CDATA[<=]]> ${distance}
+		</if>
+	</sql>
+
+	<select id="statOfOrganizationsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_DC_SOCIETY_ORG_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ORG_ID = T3.RESOURCES_ID
+		<include refid="OrganizationWhere_dm"/>
+	</select>
+
+	<!-- 2015-12-07 sulch add 获取新社会组织数量 -->
+	<select id="statOfOrganizationsZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_DC_SOCIETY_ORG_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ORG_ID = T3.RESOURCES_ID
+		<include refid="OrganizationWhere"/>
+	</select>
+
+	<select id="statOfOrganizationsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_DC_SOCIETY_ORG_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ORG_ID = T3.RESOURCES_ID
+		<include refid="OrganizationWhere_dm"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-12-07 sulch add 获取新社会组织数量 列表数据 -->
+	<select id="statOfOrganizationsZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T3.MAP_TYPE, T3.X, T3.Y,T3.MARKER_TYPE,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_DC_SOCIETY_ORG_INFO T1
+		LEFT OUTER JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.ORG_ID = T3.RESOURCES_ID
+		<include refid="OrganizationWhere"/>
+		ORDER BY DISTANCE
+	</select>
+
+	<!-- 2015-12-07 sulch add 新社会组织查询条件  -->
+	<sql id="OrganizationWhere">
+		WHERE T1.STATUS = '01'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.NAME_ LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.REGISTERED_ADDR LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND SDO_WITHIN_DISTANCE(T3.SDO,
+			MDSYS.SDO_GEOMETRY(2001,
+			8192,
+			MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+			NULL,
+			NULL),
+			'DISTANCE=${distance}') = 'TRUE'
+		</if>
+	</sql>
+
+	<sql id="OrganizationWhere_dm">
+		WHERE T1.STATUS = '01'
+		AND T2.STATUS = '001'
+		<if test="markerType != null and markerType != ''">
+			AND T3.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="name != null and name != ''">
+			AND T1.NAME_ LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="address != null and address != ''">
+			AND T1.REGISTERED_ADDR LIKE '%' || #{address, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="mapType != null and mapType != ''">
+			AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		</if>
+		<if test="x!=null and x!='' and y!=null and y!='' and distance!=null and distance!='' ">
+			AND ROUND(DMGEO.ST_DISTANCE(
+			T3.SDO,
+			DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+			) <![CDATA[<=]]> ${distance}
+		</if>
+	</sql>
+
+	<select id="statOfZdPeopleZhouBianCount" resultType="java.lang.Integer" databaseId="dm">
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT A.CI_RS_ID FROM T_DC_CI_RS_TOP A,T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T1.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+	</select><!-- 吸毒人员、矫正人员、刑释解教、上访（江西的个性化上访页面）、邪教、重精神病、危险品从业人员数量-->
+
+	<select id="statOfZdPeopleZhouBianCount" resultType="java.lang.Integer" databaseId="oracle">
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT A.CI_RS_ID FROM T_DC_CI_RS_TOP A,T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID FROM T_DC_AREA_BUILDING_INFO T , MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS='001'
+		AND T1.MAPT = #{mapType}
+		AND SDO_WITHIN_DISTANCE(T1.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE') A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS='1'
+		AND (A2.STATUS='001' OR A2.STATUS='1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+	</select><!-- 吸毒人员、矫正人员、刑释解教、上访（江西的个性化上访页面）、邪教、重精神病、危险品从业人员数量-->
+
+	<select id="statOfZdPeopleZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT * FROM T_DC_CI_RS_TOP WHERE CI_RS_ID IN(
+		SELECT *
+		FROM (SELECT DISTINCT A.CI_RS_ID
+		FROM T_DC_CI_RS_TOP A,
+		T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID,
+		ROUND(DMGEO.ST_DISTANCE(T1.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_DC_AREA_BUILDING_INFO T, MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS = '001'
+		AND T1.MAPT = #{mapType}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T1.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}) A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS = '1'
+		AND (A2.STATUS = '001' OR A2.STATUS = '1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+		)
+	</select><!-- 吸毒人员、矫正人员、刑释解教、上访（江西的个性化上访页面）、邪教、重精神病、危险品从业人员列表-->
+
+	<select id="statOfZdPeopleZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT * FROM T_DC_CI_RS_TOP WHERE CI_RS_ID IN(
+		SELECT *
+		FROM (SELECT DISTINCT A.CI_RS_ID
+		FROM T_DC_CI_RS_TOP A,
+		T_DC_CI_RS_ROOM A1,
+		${peopleTypeTableName} A2,
+		(SELECT DISTINCT T.BUILDING_ID,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T1.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005),
+		0) DISTANCE
+		FROM T_DC_AREA_BUILDING_INFO T, MAP_WG_JZW_GIS T1
+		WHERE T.BUILDING_ID = T1.WID
+		AND T.STATUS = '001'
+		AND T1.STATUS = '001'
+		AND T1.MAPT = #{mapType}
+		AND SDO_WITHIN_DISTANCE(T1.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE') A3
+		WHERE A1.BUILDING_ID = A3.BUILDING_ID
+		AND A.CI_RS_ID = A1.CI_RS_ID
+		AND A.CI_RS_ID = A2.CI_RS_ID
+		AND A.STATUS = '1'
+		AND (A2.STATUS = '001' OR A2.STATUS = '1')
+		<if test="peopleTypeTableName == 'T_DC_CI_RS_UNEMPLOYED' " >
+			AND A2.EMP_WAY = #{empWay}
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' " >
+			AND A.ORG_CODE LIKE #{infoOrgCode}||'%'
+		</if>
+		<if test="name != null and name != ''" >
+			AND A.I_NAME LIKE CONCAT('%', CONCAT(#{name,jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="order != null and order == 'updateTime'">
+			ORDER BY A.UPDATE_TIME DESC
+		</if>
+		<if test="order != null and order == 'name'">
+			ORDER BY A.I_NAME
+		</if>
+		)
+		)
+	</select><!-- 吸毒人员、矫正人员、刑释解教、上访（江西的个性化上访页面）、邪教、重精神病、危险品从业人员列表-->
+
+	<select id="statOfFireTeamNewZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="dm">
+		SELECT COUNT(0)
+		FROM T_FIRE_TEAM_NEW T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+	</select><!-- 获取周边消防队（晋江1.现役消防队2.义务消防队3.志愿消防队）数量 -->
+
+	<select id="statOfFireTeamNewZhouBianCount" parameterType="java.util.Map"  resultType="Integer" databaseId="oracle">
+		SELECT COUNT(0)
+		FROM T_FIRE_TEAM_NEW T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+	</select><!-- 获取周边消防队（晋江1.现役消防队2.义务消防队3.志愿消防队）数量 -->
+
+	<select id="statOfFireTeamNewZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="dm">
+		SELECT T1.*, T2.GRID_NAME, T3.MAP_TYPE, T3.X, T3.Y,
+		ROUND(DMGEO.ST_DISTANCE(T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point(' ||#{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL} ||')', 4326)) * 100000, 0
+		) DISTANCE
+		FROM T_FIRE_TEAM_NEW T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND ROUND(DMGEO.ST_DISTANCE(
+		T3.SDO,
+		DMGEO.ST_POINTFROMTEXT('point('|| #{x, jdbcType=DECIMAL}||' '|| #{y, jdbcType=DECIMAL}||')', 4326)) * 100000, 0
+		) <![CDATA[<=]]> ${distance}
+		ORDER BY DISTANCE
+	</select><!-- 分页获取周边消防队（晋江1.现役消防队2.义务消防队3.志愿消防队）地图数据信息 -->
+
+
+	<select id="statOfFireTeamNewZhouBianListPage" parameterType="java.util.Map" resultType="java.util.HashMap" databaseId="oracle">
+		SELECT T1.*, T2.GRID_NAME, T3.MAP_TYPE, T3.X, T3.Y,
+		ROUND(SDO_GEOM.SDO_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		0.005), 0) DISTANCE
+		FROM T_FIRE_TEAM_NEW T1
+		LEFT JOIN T_DC_GRID T2
+		ON T1.GRID_ID = T2.GRID_ID
+		LEFT JOIN T_ZY_RES_MARKER T3
+		ON T1.FIRE_TEAM_ID = T3.RESOURCES_ID
+		WHERE T1.STATUS = '001'
+		AND T2.STATUS = '001'
+		AND T3.MARKER_TYPE = #{markType, jdbcType=VARCHAR}
+		<if test="name != null and name != ''">
+			AND T1.NAME LIKE '%' || #{name, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != ''">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode, jdbcType=VARCHAR} || '%'
+		</if>
+		AND T3.MAP_TYPE = #{mapType, jdbcType=DECIMAL}
+		AND SDO_WITHIN_DISTANCE(T3.SDO,
+		MDSYS.SDO_GEOMETRY(2001,
+		8192,
+		MDSYS.SDO_POINT_TYPE(#{x, jdbcType=DECIMAL}, #{y, jdbcType=DECIMAL},0),
+		NULL,
+		NULL),
+		'DISTANCE=${distance}') = 'TRUE'
+		ORDER BY DISTANCE
+	</select><!-- 分页获取周边消防队（晋江1.现役消防队2.义务消防队3.志愿消防队）地图数据信息 -->
+
+</mapper>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+</head>
+
+<script type="text/javascript" src="${rc.getContextPath()}/js/jquery.counttimer.min.js"></script>
+<script type="text/javascript" src="${rc.getContextPath()}/js/layer/layer.js"></script>
+<link href="${rc.getContextPath()}/js/layer/skin/layer.css" rel="stylesheet" />
+<link href="${rc.getContextPath()}/js/layer/skin/layer.ext.css" rel="stylesheet" />
+<script type="text/javascript" src="${rc.getContextPath()}/ngc3js/ncctools.js"></script>
+<script type="text/javascript" src="${rc.getContextPath()}/ngc3js/ncc.min.js"></script>
+<body id="main_body" style="overflow-y: auto;overflow-x: hidden;">
+ <input id="rr" type="button" onclick="makeCall()" value="未连接"/>
+  <input id="phone" type="text"  style="display: none;"/> 
+  <input id="state" type="text"  value="-1" style="display: none;"/>
+ <!-- <input id="state" type="text"  value="-1" style="display: none;"/>
+
+ <input id="hangup" type="button" onclick="hangup()" value="挂断" style="display: none;" /> -->
+
+<script type="text/javascript">
+
+	$(function (){
+	    G_STAFF_INFO.COMPANY_ID="${COMPANY_ID}";   //所属公司ID
+	    G_STAFF_INFO.STAFF_ID="${STAFF_ID}";     //员工ID  ncc_staff_manager
+	    G_STAFF_INFO.STAFF_NO="${STAFF_NO}";          //员工工号
+	    G_STAFF_INFO.STAFF_PWD="${STAFF_PWD}";       //员工密码
+	    G_STAFF_INFO.STAFF_NAME="管理员1"; //员工姓名
+	    G_STAFF_INFO.DEPT_NAME="系统";   //部门名称
+	    G_STAFF_INFO.ROLE_NAME="默认企业管理员,企业管理员"; //角色名称
+	    G_STAFF_INFO.SKILL_GROUP_LIST="103;1 0 1;"; //技能域;技能组1 技能等级 接通比例; 技能组n 技能等级 接通比例;……。
+	    G_STAFF_INFO.WS_ADDR="ws://127.0.0.1:9002/cas";   //话务接口地址
+	    G_STAFF_INFO.ADDRESS="";  									//SIP电话注册地址
+	    G_STAFF_INFO.SOFT_PHONE="1234";                //软电话号码、SIP电话号码
+	    G_STAFF_INFO.LOGON_TYPE = "1";            //PC+PHONE方式  1软电话、3直线电话(PC+PHONE)
+	    G_STAFF_INFO.CONN_NBR="";      //联系号码、手机号码
+	    G_STAFF_INFO.TERM_SERIAL_NO="5678";           //软电话密码
+	    G_STAFF_INFO.NOT_PLAY_NO = 1;         //1不报工号，0报工号
+	    G_STAFF_INFO.AUTO_OFFHOOK=0;           //自动摘机：1是，其它否
+	    G_STAFF_INFO.CALLIN_NOTIFY=1;          //呼入通知：1是，其它否
+	    G_STAFF_INFO.OFFHOOK_VOICE_ADDRESS="";  //呼入铃声文件 ring.mp3
+	    G_STAFF_INFO.DISPLAY_CONSOLE_LOG = true;    //话务日志，正试环境，false
+	    G_STAFF_INFO.AGENTANI ="${AGENTANI}";         //呼坐席的主叫,一般送企业特服号  
+	    //G_STAFF_INFO.AGENTANI = "2013412083519971";
+	    G_STAFF_INFO.CONF_URL = "http://117.27.129.81:8080/was";     //10.16.213.84  134.132.227.135 117.27.129.81
+	    NCCCall.open();
+	});
+
+	
+	//判断状态
+    function makeCall(telNum){
+		$('#phone').val(telNum);
+		if(6 == $('#state').val()){
+			 layer.open({
+	   	       	  title: '去电提醒',
+	   	       	  content: '<div><div id="phoneNum">'+telNum+'</div><br/><input id="makeCall" type="button" onclick="phoneCall()" value="呼出" /><input id="hangup" type="button" onclick="hangupOut()" value="挂断" style="display: none;" />&nbsp&nbsp<input type="button" onclick="hangup()" value="关闭" /></div>',
+	   	       	  shade:false,
+	   	       	  offset: 'rb',
+	   	       	  closeBtn: 0,
+	   	       	  btn:[]
+	   	       	});	
+		}		
+  	     layer.open({
+  	       	  title: '去电提醒',
+  	       	  content: '<div><div id="phoneNum">'+telNum+'</div><br/><input id="makeCall" type="button" onclick="phoneCall()" value="呼出" /><input id="hangup" type="button" onclick="hangupOut()" value="挂断" style="display: none;" />&nbsp&nbsp<input type="button" onclick="hangup()" value="关闭" /></div>',
+  	       	  shade:false,
+  	       	  offset: 'rb',
+  	       	  closeBtn: 0,
+  	       	  btn:[]
+  	       	});	
+    }
+	
+	//呼出
+	function phoneCall(){
+    	if(6 != $('#state').val()){
+  		  alert("当前状态不允许呼出!!");
+  		}else{
+  	     var dnis2 = $('#phone').val();
+		   NCCCall.op.makeCall(dnis2,0);
+		   $('#makeCall').hide();
+  		 $('#hangup').show();
+  		}
+	}
+    
+    
+    //呼入事件
+    NCCCall.onCallIn=function(data) {
+        console.log('onCallIn：caller='+data["ani"]);
+        //呼入通知
+        if(G_STAFF_INFO.CALLIN_NOTIFY =="1"){
+        	  layer.open({
+            	  title: '来电提醒',
+            	  content: '<div><input id="recevice" type="button" onclick="answerCall()" value="接听" />  <input id="hangup" type="button" onclick="hangup()" value="拒接"/> <input id="out" type="button" onclick="hangup()" value="挂断" /></div>',
+            	  shade:false,
+            	  offset: 'rb',
+            	  closeBtn: 0,
+            	  btn:[]
+            	});
+        }
+    }
+    
+    
+  //建立通话事件
+    NCCCall.onEstablish=function(data){
+    	 if(0 == data["direction"]){
+   			$("#out").show();
+   			$("#hangup").hide();
+   			$("#recevice").hide();
+   			var dnis = data["dnis"];
+   			var ani = data["ani"];
+   		 	var establishTime = data["establishTime"];
+   		  add(ani, dnis, establishTime, "auto");
+   		}
+    }
+  
+    
+  	//接通电话
+    function answerCall(){
+    	//接通电话
+    	NCCCall.op.answerCall()
+    }
+  	
+  	//关闭窗口
+    function hangup(){
+    	layer.closeAll();
+    	NCCCall.op.hangup();
+    	$('#makeCall').show();
+		$('#hangup').hide();
+    }
+  	
+	//关闭窗口
+    function hangupOut(){
+    	NCCCall.op.hangup();
+    	$('#makeCall').show();
+		$('#hangup').hide();
+    }
+
+    //状态改变事件
+    NCCCall.onStateChanged=function(data) {
+    	$('#state').val(data["state"]);
+    	$('#makeCall').val('呼叫');
+        console.log('onStateChanged：state='+data["state"]+', desc='+data['stateDesc']);
+    }
+    
+    NCCCall.onCallEnd=function(data){
+    	if(0 == data["direction"]){
+    		layer.closeAll();
+    	}else{
+    		 $('#makeCall').show();
+    		 $('#hangup').hide();
+    	}
+    }
+</script>
+</body>
+</html>

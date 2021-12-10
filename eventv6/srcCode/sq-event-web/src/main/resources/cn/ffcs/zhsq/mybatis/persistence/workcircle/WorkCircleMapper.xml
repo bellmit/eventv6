@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.workcircle.WorkCircleMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.workcircle.WorkCircle">
+		<id column="WC_ID" property="wcId" jdbcType="DECIMAL" /> <!--工作圈编号-->
+		<result column="WC_TYPE" property="wcType" jdbcType="VARCHAR" /> <!--工作圈类型-->
+		<result column="OP_TYPE" property="opType" jdbcType="VARCHAR" /> <!--操作类型-->
+		<result column="OP_TYPE_NAME" property="opTypeName" jdbcType="VARCHAR" /> <!--操作类型-->
+		<result column="OP_TIME" property="opTime" jdbcType="TIMESTAMP" /> <!--操作时间-->
+		<result column="OP_USER_ID" property="opUserId" jdbcType="DECIMAL" /> <!--操作人员编号-->
+		<result column="OP_USER_NAME" property="opUserName" jdbcType="VARCHAR" /> <!--操作人员名称-->
+		<result column="OP_DEPT_CODE" property="opDeptCode" jdbcType="VARCHAR" /> <!--操作部门-->
+		<result column="OP_DEPT_NAME" property="opDeptName" jdbcType="VARCHAR" /> <!--操作部门名称-->
+		<result column="NEXT_USER_ID" property="nextUserId" jdbcType="VARCHAR" /> <!--下一办理人-->
+		<result column="NEXT_USER_NAME" property="nextUserName" jdbcType="VARCHAR" /> <!--下一办理人名称-->
+		<result column="NEXT_DEPT_CODE" property="nextDeptCode" jdbcType="VARCHAR" /> <!--下一办理部门-->
+		<result column="NEXT_DEPT_NAME" property="nextDeptName" jdbcType="VARCHAR" /> <!--下一办理部门名称-->
+		<result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" /> <!--事件编号-->
+		<result column="EVENT_TITLE" property="eventTitle" jdbcType="VARCHAR" /> <!--事件标题-->
+		<result column="EVENT_TIME" property="eventTime" jdbcType="TIMESTAMP" /> <!--事发时间-->
+		<result column="EVENT_CONTENT" property="eventContent" jdbcType="VARCHAR" /> <!--事件详情-->
+		<result column="EVENT_ADDR" property="eventAddr" jdbcType="VARCHAR" /> <!--事发地址-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--是否有效-->
+		<result column="CREATE_BY" property="createBy" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATE_BY" property="updateBy" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		
+		<result column="REPORT_DEPT" property="reportDept" jdbcType="DECIMAL" /> 
+		<result column="ACCEPTANCE_DEPT" property="acceptanceDept" jdbcType="DECIMAL" /> 
+		<result column="HANDLE_DEPT" property="handleDept" jdbcType="DECIMAL" />
+		<result column="TIMEOUT_DEPT" property="timeoutDept" jdbcType="DECIMAL" /> 
+		<result column="ACCEPTANCE_MONTH" property="acceptanceMonth" jdbcType="DECIMAL" />
+		<result column="ACCEPTANCE_YEAR" property="acceptanceYear" jdbcType="DECIMAL" /> 
+		<result column="HANDLE_MONTH" property="handleMonth" jdbcType="DECIMAL" />
+		<result column="HANDLE_YEAR" property="handleYear" jdbcType="DECIMAL" /> 
+	</resultMap>
+	
+	<select id="searchByEventId"  resultMap="BaseResultMap">
+		SELECT
+			T.WC_ID,
+			T.OP_TYPE_NAME,
+			T.OP_TIME,
+			T.OP_USER_ID,
+			T.OP_USER_NAME,
+			T.OP_DEPT_CODE,
+			T.OP_DEPT_NAME,
+			T.EVENT_ID,
+			T.EVENT_TITLE,
+			T.EVENT_TIME,
+			T.EVENT_ADDR,
+			T.REMARK,
+			T.CREATE_BY,
+			T.CREATE_TIME,
+			T.UPDATE_BY,
+			T.UPDATE_TIME
+		FROM T_ZZ_WORK_CIRCLE T 
+		WHERE T.IS_VALID = '1' AND T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+	</select>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_ZZ_WORK_CIRCLE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.WC_ID,
+			T.WC_TYPE,
+			T.OP_TYPE,
+			T.OP_TYPE_NAME,
+			T.OP_TIME,
+			T.OP_USER_ID,
+			T.OP_USER_NAME,
+			T.OP_DEPT_CODE,
+			T.OP_DEPT_NAME,
+			T.NEXT_USER_ID,
+			T.NEXT_USER_NAME,
+			T.NEXT_DEPT_CODE,
+			T.NEXT_DEPT_NAME,
+			T.EVENT_ID,
+			T.EVENT_TITLE,
+			T.EVENT_TIME,
+			T.EVENT_ADDR,
+			T.EVENT_CONTENT,
+			T.REMARK,
+			T.CREATE_TIME,
+			T.UPDATE_TIME
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.UPDATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchListNotPage"  resultMap="BaseResultMap">
+		SELECT
+			T.WC_ID,
+			T.WC_TYPE,
+			T.OP_TYPE,
+			T.OP_TYPE_NAME,
+			T.OP_TIME,
+			T.OP_USER_ID,
+			T.OP_USER_NAME,
+			T.OP_DEPT_CODE,
+			T.OP_DEPT_NAME,
+			T.NEXT_USER_ID,
+			T.NEXT_USER_NAME,
+			T.NEXT_DEPT_CODE,
+			T.NEXT_DEPT_NAME,
+			T.EVENT_ID,
+			T.EVENT_TITLE,
+			T.EVENT_TIME,
+			T.EVENT_ADDR,
+			T.EVENT_CONTENT,
+			T.REMARK,
+			T.CREATE_TIME,
+			T.UPDATE_TIME
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.UPDATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			AND T.IS_VALID = '1'
+			<if test="opType != null and opType != ''" >
+				<![CDATA[ AND T.OP_TYPE = #{opType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="opUserId != null and opUserId != ''" >
+				<![CDATA[ AND T.OP_USER_ID = #{opUserId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="opDeptCode != null and opDeptCode != ''" >
+				<![CDATA[ AND T.OP_DEPT_CODE LIKE #{opDeptCode,jdbcType=VARCHAR}||'%'  ]]>
+			</if> 
+			<if test="eventId != null and eventId != ''" >
+				<![CDATA[ AND T.EVENT_ID = #{eventId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="eventStartTime != null" >
+				<![CDATA[ AND T.EVENT_TIME >= #{eventStartTime, jdbcType=TIMESTAMP} ]]>
+			</if> 
+			<if test="eventEndTime != null" >
+				<![CDATA[ AND T.EVENT_TIME <= #{eventEndTime, jdbcType=TIMESTAMP} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.workcircle.WorkCircle">
+		<selectKey keyProperty="wcId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_ZZ_WORK_CIRCLE.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_ZZ_WORK_CIRCLE
+		(
+			WC_ID,
+			WC_TYPE,
+			OP_TYPE,
+			OP_TYPE_NAME,
+			OP_TIME,
+			OP_USER_ID,
+			OP_USER_NAME,
+			OP_DEPT_CODE,
+			OP_DEPT_NAME,
+			NEXT_USER_ID,
+			NEXT_USER_NAME,
+			NEXT_DEPT_CODE,
+			NEXT_DEPT_NAME,
+			EVENT_ID,
+			EVENT_TITLE,
+			EVENT_TIME,
+			EVENT_ADDR,
+			EVENT_CONTENT,
+			REMARK,
+			IS_VALID,
+			CREATE_BY,
+			CREATE_TIME,
+			UPDATE_BY,
+			UPDATE_TIME
+		) VALUES (
+			#{wcId,jdbcType=DECIMAL},
+			#{wcType,jdbcType=VARCHAR},
+			#{opType,jdbcType=VARCHAR},
+			#{opTypeName,jdbcType=VARCHAR},
+			SYSDATE,
+			#{opUserId,jdbcType=DECIMAL},
+			#{opUserName,jdbcType=VARCHAR},
+			#{opDeptCode,jdbcType=VARCHAR},
+			#{opDeptName,jdbcType=VARCHAR},
+			#{nextUserId,jdbcType=VARCHAR},
+			#{nextUserName,jdbcType=VARCHAR},
+			#{nextDeptCode,jdbcType=VARCHAR},
+			#{nextDeptName,jdbcType=VARCHAR},
+			#{eventId,jdbcType=DECIMAL},
+			#{eventTitle,jdbcType=VARCHAR},
+			#{eventTime,jdbcType=TIMESTAMP},
+			#{eventAddr,jdbcType=VARCHAR},
+			#{eventContent,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			'1',
+			#{createBy,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updateBy,jdbcType=DECIMAL},
+			SYSDATE
+		)
+		
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.workcircle.WorkCircle">
+		UPDATE
+			T_ZZ_WORK_CIRCLE
+		<set> 
+			UPDATE_TIME = SYSDATE,
+			OP_TIME = SYSDATE,
+			<if test="wcType != null and wcType != '' " >
+				WC_TYPE = #{wcType, jdbcType=VARCHAR},
+			</if>
+			<if test="opType != null and opType != '' " >
+				OP_TYPE = #{opType, jdbcType=VARCHAR},
+			</if>
+			<if test="opTypeName != null and opTypeName != '' " >
+				OP_TYPE_NAME = #{opTypeName, jdbcType=VARCHAR},
+			</if>
+			<if test="opUserId != null " >
+				OP_USER_ID = #{opUserId, jdbcType=DECIMAL},
+			</if>
+			<if test="opUserName != null and opUserName != '' " >
+				OP_USER_NAME = #{opUserName, jdbcType=VARCHAR},
+			</if>
+			<if test="opDeptCode != null and opDeptCode != '' " >
+				OP_DEPT_CODE = #{opDeptCode, jdbcType=VARCHAR},
+			</if>
+			<if test="opDeptName != null and opDeptName != '' " >
+				OP_DEPT_NAME = #{opDeptName, jdbcType=VARCHAR},
+			</if>
+			<if test="nextUserId != null " >
+				NEXT_USER_ID = #{nextUserId, jdbcType=VARCHAR},
+			</if>
+			<if test="nextUserName != null and nextUserName != '' " >
+				NEXT_USER_NAME = #{nextUserName, jdbcType=VARCHAR},
+			</if>
+			<if test="nextDeptCode != null and nextDeptCode != '' " >
+				NEXT_DEPT_CODE = #{nextDeptCode, jdbcType=VARCHAR},
+			</if>
+			<if test="nextDeptName != null and nextDeptName != '' " >
+				NEXT_DEPT_NAME = #{nextDeptName, jdbcType=VARCHAR},
+			</if>
+			<if test="eventId != null " >
+				EVENT_ID = #{eventId, jdbcType=DECIMAL},
+			</if>
+			<if test="eventTitle != null and eventTitle != '' " >
+				EVENT_TITLE = #{eventTitle, jdbcType=VARCHAR},
+			</if>
+			<if test="eventTime != null " >
+				EVENT_TIME = #{eventTime, jdbcType=TIMESTAMP},
+			</if>
+			<if test="eventAddr != null and eventAddr != '' " >
+				EVENT_ADDR = #{eventAddr, jdbcType=VARCHAR},
+			</if>
+			<if test="eventContent != null and eventContent != '' " >
+				EVENT_CONTENT = #{eventContent, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and remark != '' " >
+				REMARK = #{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="updateBy != null " >
+				UPDATE_BY = #{updateBy, jdbcType=DECIMAL},
+			</if>
+		</set>
+		WHERE
+			WC_ID = #{wcId, jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.WC_ID,
+			T.WC_TYPE,
+			T.OP_TYPE,
+			T.OP_TIME,
+			T.OP_TYPE_NAME,
+			T.OP_USER_ID,
+			T.OP_USER_NAME,
+			T.OP_DEPT_CODE,
+			T.OP_DEPT_NAME,
+			T.NEXT_USER_ID,
+			T.NEXT_USER_NAME,
+			T.NEXT_DEPT_CODE,
+			T.NEXT_DEPT_NAME,
+			T.EVENT_ID,
+			T.EVENT_TITLE,
+			T.EVENT_TIME,
+			T.EVENT_ADDR,
+			T.EVENT_CONTENT,
+			T.REMARK,
+			T.IS_VALID,
+			T.CREATE_BY,
+			T.CREATE_TIME,
+			T.UPDATE_BY,
+			T.UPDATE_TIME
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		WHERE
+			WC_ID= #{wcId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.workcircle.WorkCircle">
+		UPDATE
+			T_ZZ_WORK_CIRCLE
+		SET
+			IS_VALID = '0',
+			UPDATE_BY = #{updateBy, jdbcType=DECIMAL},
+			OP_TIME = SYSDATE,
+			UPDATE_TIME = SYSDATE
+		WHERE
+			WC_ID= #{wcId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<select id="searchByDept"   resultMap="BaseResultMap">
+		SELECT
+			NVL(SUM(CASE WHEN  ','||T.NEXT_DEPT_CODE||',' LIKE '%,'||#{opDeptCode,jdbcType=VARCHAR}||',%' AND (T.OP_TYPE='1' OR T.OP_TYPE='4' ) THEN 1 ELSE 0 END  ) ,0) REPORT_DEPT ,
+			NVL(SUM(CASE WHEN  T.OP_DEPT_CODE=#{opDeptCode,jdbcType=VARCHAR} AND (T.OP_TYPE='2'  ) THEN 1 ELSE 0 END  ) ,0) ACCEPTANCE_DEPT ,
+			NVL(SUM(CASE WHEN  T.OP_DEPT_CODE=#{opDeptCode,jdbcType=VARCHAR} AND (T.OP_TYPE='3' OR T.OP_TYPE='4'  ) THEN 1 ELSE 0 END  ) ,0) HANDLE_DEPT
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		WHERE
+			T.IS_VALID=1 
+			<if test="opTimeStr != null and opTimeStr != ''" >
+				<![CDATA[ AND TO_CHAR(T.OP_TIME,'YYYY-MM-DD') = #{opTimeStr,jdbcType=VARCHAR} ]]>
+			</if> 
+	</select>
+	
+	<select id="searchByUserMonth"   resultMap="BaseResultMap">
+		SELECT
+			NVL(SUM(CASE WHEN  T.OP_USER_ID=#{opUserId,jdbcType=VARCHAR} AND (T.OP_TYPE='2'  ) THEN 1 ELSE 0 END  ) ,0) ACCEPTANCE_MONTH ,
+			NVL(SUM(CASE WHEN  T.OP_USER_ID=#{opUserId,jdbcType=VARCHAR} AND (T.OP_TYPE='3' OR T.OP_TYPE='4'  ) THEN 1 ELSE 0 END  ) ,0) HANDLE_MONTH
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		WHERE
+			T.IS_VALID=1 
+			<if test="opTimeMonth != null and opTimeMonth != ''" >
+				<![CDATA[ AND TO_CHAR(T.OP_TIME,'YYYY-MM') = #{opTimeMonth,jdbcType=VARCHAR} ]]>
+			</if> 
+	</select>
+	
+	<select id="searchByUserYear"   resultMap="BaseResultMap">
+		SELECT
+			NVL(SUM(CASE WHEN  T.OP_USER_ID=#{opUserId,jdbcType=VARCHAR} AND (T.OP_TYPE='2'  ) THEN 1 ELSE 0 END  ) ,0) ACCEPTANCE_YEAR ,
+			NVL(SUM(CASE WHEN  T.OP_USER_ID=#{opUserId,jdbcType=VARCHAR} AND (T.OP_TYPE='3' OR T.OP_TYPE='4'  ) THEN 1 ELSE 0 END  ) ,0) HANDLE_YEAR
+		FROM
+			T_ZZ_WORK_CIRCLE T
+		WHERE
+			T.IS_VALID=1 
+			<if test="opTimeYear != null and opTimeYear != ''" >
+				<![CDATA[ AND TO_CHAR(T.OP_TIME,'YYYY') = #{opTimeYear,jdbcType=VARCHAR} ]]>
+			</if> 
+	</select>
+	
+	
+	<select id="searchTimeout"  resultType="java.lang.Integer">
+		SELECT COUNT(DISTINCT T1.EVENT_ID)
+		FROM T_EVENT T1, WORKFLOW.WF_PROCESS_INSTANCE T2, WORKFLOW.WF_WORKFLOW T3, WORKFLOW.JBPM4_TASK T4, WORKFLOW.WF_NODE T5, WORKFLOW.JBPM4_PARTICIPATION T6
+		WHERE T1.EVENT_ID = T2.FORM_ID AND T2.WORKFLOW_ID = T3.WORKFLOW_ID AND T2.INSTANCE_ID = T4.PROCINST_ AND T3.DEPLOYMENT_ID = T5.DEPLOYMENT_ID AND T4.DBID_ = T6.TASK_
+		AND T4.NAME_ = T5.NODE_NAME AND (T4.CREATE_ + T5.TIME_LIMIT &lt;= SYSDATE) 
+		AND T2.FORM_TYPE_ID = 300 AND T3.FLOW_NAME ='' AND T3.WFTYPEID = 'fa' AND T1.STATUS IN ('00', '01', '02', '03') AND T2.STATUS = '1' AND T3.STATUS = '1' 
+		AND ((T6.GROUPID_ = #{opDeptId} AND T6.TYPE_ = '3') OR (T6.USERID_ = #{opUserId} AND T6.TYPE_ = '1'))
+	</select>
+	
+	
+</mapper>

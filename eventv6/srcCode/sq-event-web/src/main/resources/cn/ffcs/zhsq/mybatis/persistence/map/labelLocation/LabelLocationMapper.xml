@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.labelLocation.LabelLocationMapper" >
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.labelLocation.BuildingLLInfo" >
+		<id column="BUILDING_ID" jdbcType="DECIMAL" property="buildingId" />
+		<result column="BUILDING_NAME" jdbcType="VARCHAR" property="buildingName" />
+		<result column="BUILDING_ADDRESS" jdbcType="VARCHAR" property="buildingAddress" />
+		<result column="CEN_LON" jdbcType="VARCHAR" property="x" />
+		<result column="CEN_LAT" jdbcType="VARCHAR" property="y" />
+		<result column="MAPT" jdbcType="DECIMAL" property="mapt" />
+	</resultMap>
+	<resultMap id="ComponentsResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.labelLocation.ComponentsLLInfo" >
+		<id column="OBJ_ID" jdbcType="DECIMAL" property="componentsId" />
+		<result column="NAME" jdbcType="VARCHAR" property="componentsName" />
+		<result column="X" jdbcType="VARCHAR" property="x" />
+		<result column="Y" jdbcType="VARCHAR" property="y" />
+		<result column="MAP_TYPE" jdbcType="DECIMAL" property="mapt" />
+	</resultMap>
+	<sql id="detail_select_building">
+		SELECT T.BUILDING_ID,T.BUILDING_NAME,T.BUILDING_ADDRESS,T2.CEN_LON,T2.CEN_LAT,T2.MAPT
+		FROM T_DC_AREA_BUILDING_INFO T
+		INNER JOIN MAP_WG_JZW_GIS T2
+		ON T.BUILDING_ID = T2.WID
+		AND T2.STATUS = '001'
+		<if test="mapt != null">
+			AND T2.MAPT = #{mapt,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="find_where_building">
+		WHERE T.STATUS = '001'
+		AND (T2.CEN_LON IS NOT NULL OR T2.CEN_LON != '')
+		AND (T2.CEN_LAT IS NOT NULL OR T2.CEN_LAT != '')
+		AND (T2.MAPT IS NOT NULL OR T2.MAPT != '')
+		<if test="buildingId != null and buildingId != ''">
+			AND T.BUILDING_ID = #{buildingId,jdbcType=DECIMAL}
+		</if>
+		<if test="buildingName != null and buildingName != ''">
+			AND T.BUILDING_NAME = #{buildingName,jdbcType=VARCHAR}
+		</if>
+		<if test="buildingAddress != null and buildingAddress != ''">
+			AND T.BUILDING_ADDRESS = #{buildingAddress,jdbcType=VARCHAR}
+		</if>
+		<if test="searchStr != null and searchStr != ''">
+			AND (T.BUILDING_ADDRESS LIKE '%' || #{searchStr, jdbcType = VARCHAR} || '%' OR T.BUILDING_NAME LIKE '%' || #{searchStr, jdbcType = VARCHAR} || '%')
+		</if>
+		<if test="gridId != null" >
+			AND T.GRID_ID in(select T3.GRID_ID from T_DC_GRID T3 where T3.STATUS = '001' START WITH T3.GRID_ID=#{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR T3.GRID_ID = T3.PARENT_GRID_ID)
+		</if>
+
+		ORDER BY T.BUILDING_ID
+	</sql>
+
+
+	<select id="findPageBuildingCriteria" resultMap="BaseResultMap">
+		<include refid="detail_select_building" />
+		<include refid="find_where_building" />
+
+	</select>
+
+	<select id="findCountBuildingCriteria" resultType="java.lang.Integer" >
+		SELECT COUNT(T.BUILDING_ID)
+		FROM T_DC_AREA_BUILDING_INFO T
+		INNER JOIN MAP_WG_JZW_GIS T2
+		ON T.BUILDING_ID = T2.WID
+		AND T2.STATUS = '001'
+		<if test="mapt != null">
+			AND T2.MAPT = #{mapt,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_building" />
+	</select>
+
+	<select id="findBuildingLLInfo" resultMap="BaseResultMap">
+		<include refid="detail_select_building" />
+		<include refid="find_where_building" />
+	</select>
+
+
+
+	<sql id="detail_select_components">
+		SELECT T.OBJ_ID,T.NAME,T2.X,T2.Y,T2.MAP_TYPE
+		FROM T_URBAN_OBJ T
+		INNER JOIN T_ZY_RES_MARKER T2 ON T.OBJ_ID = T2.RESOURCES_ID
+		<if test="mapt != null">
+			AND T2.MAP_TYPE = #{mapt,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<sql id="find_where_components">
+		WHERE T.STATUS = '1'
+		AND (T2.X IS NOT NULL OR T2.X != '')
+		AND (T2.Y IS NOT NULL OR T2.Y != '')
+		AND (T2.MAP_TYPE IS NOT NULL OR T2.MAP_TYPE != '')
+		<if test="componentsId != null and componentsId != ''">
+			AND T.OBJ_ID = #{componentsId,jdbcType=DECIMAL}
+		</if>
+		<if test="componentsName != null and componentsName != ''">
+			AND T.NAME = #{componentsName,jdbcType=VARCHAR}
+		</if>
+		<if test="searchStr != null and searchStr != ''">
+			AND (T.NAME LIKE '%' || #{searchStr, jdbcType = VARCHAR} || '%')
+		</if>
+		<if test="markerType != null and markerType != ''">
+			AND T2.MARKER_TYPE = #{markerType,jdbcType=VARCHAR}
+		</if>
+		<if test="gridId != null" >
+			AND T.GRID_ID in(select T3.GRID_ID from T_DC_GRID T3 where T3.STATUS = '001' START WITH T3.GRID_ID=#{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR T3.GRID_ID = T3.PARENT_GRID_ID)
+		</if>
+		ORDER BY T.OBJ_ID
+	</sql>
+
+	<select id="findCountComponentsCriteria" resultType="java.lang.Integer" >
+		SELECT count(T.OBJ_ID)
+		FROM T_URBAN_OBJ T
+		INNER JOIN T_ZY_RES_MARKER T2 ON T.OBJ_ID = T2.RESOURCES_ID
+		<if test="mapt != null">
+			AND T2.MAP_TYPE = #{mapt,jdbcType=VARCHAR}
+		</if>
+		<include refid="find_where_components" />
+	</select>
+
+	<select id="findPageComponentsCriteria" resultMap="ComponentsResultMap">
+		<include refid="detail_select_components" />
+		<include refid="find_where_components" />
+	</select>
+</mapper>

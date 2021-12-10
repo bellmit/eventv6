@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>南昌市经开区群防群治管控平台</title>
+    <!-- layui样式 -->
+    <#include "/component/szcommonFiles-1.1.ftl" />
+    <#include "/component/szcomponentsFiles-1.1.ftl" />
+    <!--引用百度地图API-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=cgxWxSdSiywGLUvIbfnepU2bmaXcILqf"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="layui-row">
+        <!-- 内容区 -->
+        <div class="layui-col-sm12 layui-form">
+            <!-- 地图层 -->
+            <div class="map-w">
+                <div class="map-cont">
+                    <!--百度地图容器-->
+                    <div style="width:1400px;height:750px;border:#ccc solid 1px;font-size:12px" id="map"></div>
+                </div>
+                <!-- 返回键 -->
+
+                <!-- 侧边栏 -->
+                <div class="map-side">
+                    <div class="map-side-header">
+                        <p class="map-side-tt">人脸轨迹列表</p>
+                        <button type="button" id="closeBtn" class="layui-btn layui-btn-warm btn-back" style="margin: -11px 0 0 302px">返回</button>
+                    </div>
+                    <div class="map-side-body h-x">
+                        <ul class="map-peo-list">
+                            <#if list??>
+                                <#list list as bo>
+                                    <li>
+                                        <input hidden value="${bo.latitude}" name="latitude">
+                                        <input hidden value="${bo.longitude}" name="longitude">
+                                        <div class="map-peo-pic fl" id="imgMap"
+                                             onclick="add('${bo.faceUrl}','${bo.deviceName}','${bo.captureTime}','${bo.longitude}','${bo.latitude}')">
+                                            <img src="${bo.faceUrl}">
+                                        </div>
+                                        <div class="peo-list-map">
+                                            <p class="peo-list-t5 peo-icon-add layui-elip">${bo.deviceName}</p>
+                                            <p id="captureTime" class="peo-list-t5 peo-icon-time layui-elip">${bo.captureTime?number?number_to_datetime}</p>
+                                        </div>
+                                    </li>
+                                </#list>
+                            </#if>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="${uiDomain}/web-assets/common/js/jqry-9-1-12-4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="${uiDomain}/web-assets/plugins/jquery-nicescroll/jquery.nicescroll-1.js"></script>
+    <script src="${uiDomain}/web-assets/plugins/layui-v2.5.5/layui/layui.js"></script>
+    <script>
+
+        var markers = [];
+        var opts = {
+            width : 220, // 信息窗口宽度
+            height: 180, // 信息窗口高度
+            enableMessage:true//设置允许信息窗发送短息
+        };
+
+        layui.use(['form', 'laydate','table'], function () {
+            var form = layui.form,
+                laydate = layui.laydate,
+                table = layui.table;
+
+            //日期时间选择器
+            laydate.render({
+                elem: '#date1'
+                , type: 'datetime'
+            });
+            //日期时间选择器
+            laydate.render({
+                elem: '#date2'
+                , type: 'datetime'
+            });
+
+
+            $("#closeBtn").on('click',function () {
+                parent.layer.closeAll();
+            });
+
+        });
+
+        function add(faceUrl,deviceName,captureTime,longitude,latitude){
+            //横纵坐标定点
+            var point = new BMap.Point(longitude,latitude);
+            var content ="<div><br>地址: "+deviceName+"<br>时间: "+formateTimeStamp(captureTime)+"<img src='"+faceUrl+"' width='100' height='121'></div>";
+            var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+
+        $(function () {
+            $.fn.extend({
+                // 选择组件
+                select: function () {
+                    var _this = this;
+                    $(_this).children('a').click(function () {
+                        $(this).toggleClass('active');
+                        $(this).siblings('ul').slideToggle(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                        return false;
+                    });
+                    $(document).click(function () {
+                        $('.com-select>a').removeClass('active');
+                        $('.com-select>ul').slideUp(200, function () {
+                            $('.fj-ccst-list').getNiceScroll().resize();
+                        });
+                    });
+                    $('.com-select>ul').on('click', 'li', function () {
+                        var pText = $(this).text();
+                        $('.com-select>a').find('p').text(pText);
+                        $('.section-tt-year').text(pText);
+                    });
+                    $('.com-select-list').getNiceScroll().resize();
+                },
+                ranking: function (options) {
+                    var _this = this;
+                    $(_this).find('tbody tr').each(function (index, el) {
+                        $(this).find('.ranking-per>p').css({ 'width': options[index] + '%' });
+                    });
+                }
+
+            });
+
+            // 计算页面高度
+            $('.h-x').niceScroll({
+                cursorcolor: "#ccc",
+                cursoropacitymax: 0.8,
+                cursorwidth: "4px",
+                cursorborderradius: "2px",
+                cursorborder: 'none',
+                autohidemode: true
+            });
+
+        });
+
+        //创建和初始化地图函数：
+        function initMap(){
+            createMap();//创建地图
+            setMapEvent();//设置地图事件
+            addMapControl();//向地图添加控件
+            addMapOverlay();//向地图添加覆盖物
+        }
+        function createMap(){
+            var lng = $("input[name='longitude']").val();
+            var lat = $("input[name='latitude']").val();
+            map = new BMap.Map("map");
+            //map.centerAndZoom(new BMap.Point(114.9788,29.480291),12);
+            map.centerAndZoom(new BMap.Point(lng,lat),12);
+        }
+        function setMapEvent(){
+            map.enableScrollWheelZoom();
+            map.enableKeyboard();
+            map.enableDragging();
+            map.enableDoubleClickZoom()
+        }
+        function addMapOverlay(){
+            //var sContent ="<font color='#f10'>头像信息:</font><br>地址："+deviceName+"<br><br><img src='${bo.faceUrl}' width='80'>";
+
+            var points = []
+                <#if list??>
+                    <#list list as bo>
+                        var deviceName = "${bo.deviceName}";
+                        var faceUrl = "${bo.faceUrl}";
+                        var captureTime = "${bo.captureTime}";
+                        //横纵坐标定点
+                        var point = new BMap.Point("${bo.longitude}","${bo.latitude}");
+                        var marker = new BMap.Marker(point,{icon:new BMap.Icon("http://api.map.baidu.com/lbsapi/createmap/images/icon.png",new BMap.Size(20,25),
+                                {imageOffset: new BMap.Size(-46,-21)})});
+                        var content ="<div><br>地址: "+deviceName+"<br>时间: "+formateTimeStamp(captureTime)+"<img src='${bo.faceUrl}' width='100' height='121'></div>";
+                        markers.push(marker);
+                        points.push({"lng":"${bo.longitude}","lat":"${bo.latitude}"});
+                        //$("#captureTime").text(formateTimeStamp(captureTime));
+                        addClickHandler(content, marker);
+                        map.addOverlay(marker)
+                </#list>
+                </#if>
+            console.log(points);
+            addLine(points);
+        }
+
+        function addClickHandler(content,marker){
+            marker.addEventListener("click",function(e){
+                openInfo(content,e);
+            });
+        }
+        function openInfo(content,e) {
+            var p = e.target;
+            var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+            var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+            map.openInfoWindow(infoWindow, point); //开启信息窗口
+        }
+
+        //向地图添加控件
+        function addMapControl(){
+            var scaleControl = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+            scaleControl.setUnit(BMAP_UNIT_IMPERIAL);
+            map.addControl(scaleControl);
+            var navControl = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+            map.addControl(navControl);
+            var overviewControl = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:true});
+            map.addControl(overviewControl);
+        }
+
+        //添加线
+        function addLine(points){
+
+            var linePoints = [],pointsLen = points.length,i,polyline;
+            if(pointsLen == 0){
+                return;
+            }
+            // 创建标注对象并添加到地图
+            for(i = 0;i <pointsLen;i++){
+                linePoints.push(new BMap.Point(points[i].lng,points[i].lat));
+            }
+
+            polyline = new BMap.Polyline(linePoints, {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});   //创建折线
+            map.addOverlay(polyline);   //增加折线
+        }
+
+        function formateTimeStamp(time){
+            var date = new Date();
+            date.setTime(time);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var hour = date.getHours()< 10 ? "0" + date.getHours() : date.getHours();
+            var minute = date.getMinutes()< 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var second = date.getSeconds()< 10 ? "0" + date.getSeconds() : date.getSeconds();
+            return year + "-" + month + "-" + day+" "+hour+":"+minute+":"+second;
+        }
+
+        // 根据ip定位
+        /*function myFun(result){
+            var cityName = result.name;
+            map.setCenter(cityName);
+            console.log("当前定位城市:"+cityName);
+        }
+        var myCity = new BMap.LocalCity();
+        myCity.get(myFun);*/
+
+        // 添加点聚合效果
+        var markerClusterer = new BMapLib.MarkerClusterer(map, {markers: markers});
+        var map;
+        initMap();
+
+    </script>
+</body>
+
+</html>

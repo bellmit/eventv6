@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventDisposal4ExtraMapper" >
+	<!-- 事件查询列 -->
+	<sql id="eventColumn">
+		T1.EVENT_ID		"eventId",
+		T1.EVENT_NAME	"eventName", 
+		T1.HAPPEN_TIME	"happenTime", 
+		T1.FIN_TIME		"finTime"
+	</sql>
+	
+	<!-- 获取需要星级评价的事件数量 -->
+	<select id="findCount4JurisdictionEventEva" resultType="java.lang.Integer" >
+		SELECT COUNT(1)
+		<include refid="jurisdictionEventEvaSql"></include>
+	</select>
+	
+	<!-- 获取需要星级评价的事件 -->
+	<select id="findPageList4JurisdictionEventEva" resultType="java.util.Map">
+		SELECT 
+			<include refid="eventColumn"></include>, 
+			T4.EVA_LEVEL	"streetEvaLevel",
+			T5.EVA_LEVEL	"districtEvaLevel"
+		<include refid="jurisdictionEventEvaSql"></include>
+		<choose>
+			<when test="evaType != null and evaType == 1 ">
+				ORDER BY T4.EVA_LEVEL DESC, T1.EVENT_ID DESC
+			</when>
+			<when test="evaType != null and evaType == 2 ">
+				ORDER BY T5.EVA_LEVEL DESC, T1.EVENT_ID DESC
+			</when>
+			<otherwise>
+				ORDER BY T1.EVENT_ID DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 需要星级评价的事件相关查询 -->
+	<sql id="jurisdictionEventEvaSql">
+		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+			ON T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+		INNER JOIN WORKFLOW.WF_PROCESS_INSTANCE T3
+			ON T1.EVENT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 300
+		<choose>
+			<when test="evaType != null and evaType == 2 "><!-- 区级复评 -->
+				INNER JOIN T_SJ_EVA_RESULT T4
+					ON T1.EVENT_ID = T4.OBJECT_ID AND T4.EVA_OBJ = '0301'
+			</when>
+			<otherwise>
+				LEFT JOIN T_SJ_EVA_RESULT T4
+					ON T1.EVENT_ID = T4.OBJECT_ID AND T4.EVA_OBJ = '0301'
+			</otherwise>
+		</choose>
+		LEFT JOIN T_SJ_EVA_RESULT T5
+			ON T1.EVENT_ID = T5.OBJECT_ID AND T5.EVA_OBJ = '0302'
+		WHERE T1.STATUS = '04' AND T1.BIZ_PLATFORM = '0'
+			<include refid="find_where_event"></include>
+			<include refid="find_where_grid"></include>
+			<!-- task1为事件采集；task2为网格员处理 -->
+			AND EXISTS (
+			    SELECT 1
+			    FROM WORKFLOW.WF_TASK T6
+			    WHERE T6.INSTANCE_ID = T3.INSTANCE_ID AND T6.TASK_NAME = 'task2' AND T6.PRE_TASK_NAME = 'task1'
+			)
+			<choose>
+				<when test="evaLevelArray != null ">
+					AND (CASE WHEN T5.EVA_OBJ = '0302' THEN T5.EVA_LEVEL ELSE T4.EVA_LEVEL END) IN
+					<foreach collection="evaLevelArray" index="index" item="item" open="(" separator="," close=")">
+				    	#{item}
+				    </foreach>
+				</when>
+				<when test="evaLevel != null and evaLevel != '' ">
+					AND (CASE WHEN T5.EVA_OBJ = '0302' THEN T5.EVA_LEVEL ELSE T4.EVA_LEVEL END) = #{evaLevel,jdbcType=VARCHAR}
+				</when>
+			</choose>
+	</sql>
+	
+	<!-- 事件查询条件 -->
+	<sql id="find_where_event">
+		<if test="keyWord != null and keyWord != '' ">
+			AND (
+				T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+				OR
+				T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+				OR
+				T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			)
+		</if>
+		<if test="createDayStart != null and createDayStart != '' ">
+			AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createDayStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+		</if>
+		<if test="createDayEnd != null and createDayEnd != '' ">
+			AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createDayEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd')+1
+		</if>
+		<if test="happenDayStart != null and happenDayStart != ''">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenDayStart,jdbcType=VARCHAR}, 'yyyy-MM-dd')
+		</if>
+		<if test="happenDayEnd != null and happenDayEnd != '' ">
+			AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenDayEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd') + 1
+		</if>
+	</sql>
+	
+	<!-- 网格查询条件 -->
+	<sql id="find_where_grid">
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</sql>
+	
+</mapper>

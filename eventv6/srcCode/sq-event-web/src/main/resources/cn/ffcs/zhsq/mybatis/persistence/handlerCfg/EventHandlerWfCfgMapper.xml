@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.handlerCfg.EventHandlerWfCfgMapper" >
+
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfCfgPO" >
+		<result column="WFC_ID" property="wfcId" jdbcType="DECIMAL" />
+		<result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" />
+		<result column="WF_CFG_ID" property="wfCfgId" jdbcType="DECIMAL" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+		<result column="STATUS_" property="status" jdbcType="VARCHAR" />
+		<result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+		<result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="DATE" />
+	</resultMap>
+	
+	<!-- 查询列 -->
+	<sql id="viewCol">
+		T.WFC_ID,
+		T.REGION_CODE,
+        T.BIZ_TYPE,
+        T.WF_CFG_ID,
+        T.STATUS_,
+        T.CREATE_USER_ID,
+        T.CREATE_TIME,
+        T.UPDATE_USER_ID,
+        T.UPDATE_TIME
+	</sql>
+	
+	<!-- 新增业务配置 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfCfgPO">
+	  	<selectKey keyProperty="wfcId" resultType="long" order="BEFORE">
+			SELECT SEQ_WFC_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BIZ_WF_CFG (
+			WFC_ID, REGION_CODE, WF_CFG_ID, 
+			BIZ_TYPE, STATUS_, CREATE_USER_ID, 
+			CREATE_TIME
+		)
+		VALUES (
+		  	#{wfcId,jdbcType=DECIMAL}, #{regionCode,jdbcType=VARCHAR}, #{wfCfgId,jdbcType=VARCHAR},
+		  	#{bizType,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createUserId,jdbcType=VARCHAR},
+		  	SYSDATE
+		)
+	</insert>
+	
+	<!-- 依据主键更新业务配置 -->
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfCfgPO">
+		UPDATE T_BIZ_WF_CFG T
+		<set>
+			<if test="regionCode != null and regionCode != '' ">
+				T.REGION_CODE = #{regionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="wfCfgId != null ">
+				T.WF_CFG_ID = #{wfCfgId,jdbcType=DECIMAL},
+			</if>
+			<if test="bizType != null ">
+				T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUserId != null ">
+				T.UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null and status != '' ">
+				T.STATUS_ = #{status,jdbcType=VARCHAR},
+			</if>
+			
+			T.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T.WFC_ID = #{wfcId,jdbcType=DECIMAL}
+	</update>
+	
+	<!-- 依据主键删除业务配置 -->
+	<delete id="delete">
+		UPDATE T_BIZ_WF_CFG T 
+		<set>
+			<if test="delUserId != null ">
+				T.UPDATE_USER_ID = #{delUserId,jdbcType=DECIMAL},
+			</if>
+			
+			T.STATUS_ = '0' 
+		</set>
+		
+		WHERE T.WFC_ID = #{id,jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 依据主键获取业务配置信息 -->
+	<select id="findById" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="viewCol"/>
+		FROM T_BIZ_WF_CFG T
+		WHERE T.STATUS_ = '1' AND T.WFC_ID = #{wfcId,jdbcType=DECIMAL}
+	</select>
+	
+	<!-- 判重验证统计 -->
+	<select id="findCount4Duplicate" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_WF_CFG T
+		WHERE T.STATUS_ = '1'
+		<include refid="find_where"/>
+		<if test="wfcId != null ">
+			AND T.WFC_ID != #{wfcId,jdbcType=DECIMAL}
+		</if>
+	</select>
+	
+	<!-- 统计业务配置记录数量 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_WF_CFG T
+		LEFT JOIN T_DC_GRID G
+			ON T.REGION_CODE = G.INFO_ORG_CODE
+		WHERE T.STATUS_ = '1' AND G.STATUS = '001'
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 获取业务配置记录 -->
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="viewCol"/>
+		FROM T_BIZ_WF_CFG T
+		LEFT JOIN T_DC_GRID G
+			ON T.REGION_CODE = G.INFO_ORG_CODE
+		WHERE T.STATUS_ = '1' AND G.STATUS = '001'
+		<include refid="find_where"/>
+		ORDER BY T.REGION_CODE
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="regionCode != null and regionCode != ''">
+			<choose>
+				<when test="searchType == 'eq' ">
+					AND T.REGION_CODE = #{regionCode,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR} || '%'
+				</otherwise>
+			</choose>
+		</if>
+		<if test="bizType != null and bizType != '' ">
+			AND T.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+		</if>
+		<if test="wfCfgId != null ">
+			AND T.WF_CFG_ID = #{wfCfgId,jdbcType=DECIMAL}
+		</if>
+	</sql>
+	
+</mapper>

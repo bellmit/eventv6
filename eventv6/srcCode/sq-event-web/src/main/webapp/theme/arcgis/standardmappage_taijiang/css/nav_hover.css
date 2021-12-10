@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+
+
+ul,li { list-style:none}
+/**.box {width:330px; height:320px; border:1px solid #a0b3d1; margin:00px; font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif}**/
+.box {width:300px; height:200px;border:none;}
+.tagMenu {height:35px; line-height:28px; background:url(/jsp/scim/gis/gisdt/toolbar/title_bg.png) repeat-x; position:relative; border-bottom:1px solid #999}
+.tagMenu h2 {font-size:12px; padding-left:5px;}
+.tagMenu ul {position:absolute; left:-15px; bottom:-1px; height:35px;}
+ul.menu li { font-size:12px; font-weight:bold;color:#363636;float:left; margin-bottom:1px; line-height:20px; height:20px; margin:10px 0 0 -1px; border-left:1px solid #999; text-align:center; padding:0 12px; cursor:pointer}
+ul.menu li.current {border:1px solid #999; border-bottom:none; background:#fff; height:35px; line-height:34px; margin:0}
+.content { padding:0px;}
+
+
+.tab_contoner {
+	width:280px;
+	height:230px;
+	text-align:left;
+	border:1px solid #a0b3d1;
+	display:none;
+	z-index:10000;
+	position: absolute;
+}
+.contleft {
+	float:left;
+	overflow:hidden;
+	height:23px;
+	width:100%;
+	background:#95cdfe;
+	border-bottom:1px solid #a0b3d1;
+}
+.contspan{ font-size:12px; margin-left:5px; font-weight:bold; color:#FFF; line-height:23px; float:left;}
+.cla_close {
+	height:23px;
+	border-bottom:1px solid #a0b3d1;
+	background:#95cdfe;
+	float:right;
+}
+.cla_close img {
+	margin:6px 3px 0px 0px;
+	border:none;
+}

@@ -1,0 +1,101 @@
+/*--------------SystemTop begin-----------------*/
+.MainTop{position:relative; z-index:1;}
+/*--------------UserInformation begin-----------------*/
+.MainTop .title{background:url(../images/tj_wg_01.png) repeat-x; height:80px; padding:0 10px;}
+.user{color:#fff; font-size:14px; line-height:80px;}
+.user span{color:#a5cceb;}
+.user a{color:#a5cceb;}
+.user a:hover{text-decoration:underline; color:#fff100;}
+.logo{height:80px; background:url(../images/tj_wg_03.png) center -4px no-repeat;}
+/*--------------UserInformation end-----------------*/
+/*--------------TopMenu begin-----------------*/
+.TopMenu{height:120px; background:url(../images/tj_wg_09.png) repeat-x; overflow:hidden;}
+.TopMenu ul li{float:left; width:9.8%; height:120px;}
+.TopMenu ul li a{display:block; width:100%; margin:10px auto 0; font-size:18px; padding-top:80px; color:#313131; font-family:"微软雅黑"; text-align:center; background-position:top center; background-repeat:no-repeat;}
+.TopMenu ul li a:hover{color:#0159b6; text-decoration:none;}
+.TM_1 a{background-image:url(../images/tj_wg_11.png);}
+.TM_2 a{background-image:url(../images/tj_wg_12.png);}
+.TM_3 a{background-image:url(../images/tj_wg_13.png);}
+.TM_4 a{background-image:url(../images/tj_wg_14.png);}
+.TM_5 a{background-image:url(../images/tj_wg_15.png);}
+.TM_6 a{background-image:url(../images/tj_wg_16.png);}
+.TM_7 a{background-image:url(../images/tj_wg_17.png);}
+.TM_8 a{background-image:url(../images/tj_wg_18.png);}
+.TM_9 a{background-image:url(../images/tj_wg_19.png);}
+.TM_10 a{background-image:url(../images/tj_wg_20.png);}
+.TopMenu ul li.line{background:url(../images/tj_wg_10.png); width:2px; height:120px;}
+/*--------------TopMenu end-----------------*/
+/*--------------SystemTop end-----------------*/
+
+/*--------------SystemLeftNav begin-----------------*/
+.middle{position: relative; width: 100%;}
+.MainRight{width:340px; position: absolute; background:#fff; top:32px; right:0;z-index:2}
+.MainRight .title{background:#0159b6; height:38px; position:relative;}
+.MainRight .title ul li{float:left; width:68px; text-align:center; font-size:12px; color:#fff; line-height:38px; font-family:"微软雅黑"; cursor:pointer;}
+.MainRight .title ul li.current{color:#313131; font-weight:bold; background:#fff;}
+.full-con .MainRight{display:none;}
+.box{position:relative;}
+.NavBox ul{background:url(../images/tj_wg_24.png) repeat-x bottom; display:table; padding:10px 0;}
+.NavBox ul li{background:url(../images/tj_wg_21.png) no-repeat 10px 0; padding:0 10px 0 40px; width:273px; line-height:22px; cursor:pointer;}
+.NavBox ul li:hover{background:url(../images/tj_wg_22.png) no-repeat 10px 0;}
+.NavBox div.NavBox2 ul li{background:url(../images/tj_wg_33.png) no-repeat 10px 0; padding:0 10px 0 40px; width:273px; line-height:22px; cursor:pointer;}
+.NavBox div.NavBox2 ul li:hover{background:url(../images/tj_wg_22.png) no-repeat 10px 0;}
+.NavBox ul li em{font-style:normal; font-size:14px; color:#0159b6; font-weight:bold;}
+.NavBox ul li em a{color:#0159b6;}
+.NavBox ul li span{padding:0 5px; background:#00a0e9; color:#fff;}
+.NavBox ul li span.pbsx{padding:0; display:block; width:60px; text-align:center; background:none; color:#000;}
+
+
+.kind{height:32px; background:#F2F2F2; border-bottom:1px solid #E8E8E8; padding-right:10px;}
+.kind span{display:block; width:60px; height:32px; line-height:32px; text-align:center;}
+.VideoSearch{padding:5px 10px; font-size:14px; font-weight:bold; background:url(../images/tj_wg_24.png) repeat-x bottom;}
+.VideoSearch table tr td{padding:5px 10px 5px 0;}
+.VideoSearch select, .VideoSearch input{width:250px; height:24px; line-height:24px;}
+.VideoList ul li{background:url(../images/tj_wg_25.png) no-repeat 10px 3px;}
+.VideoList ul li:hover{background:url(../images/tj_wg_26.png) no-repeat 10px 3px;}
+.page{width:320px; height:24px; line-height:24px; font-size:14px; color:#707070; border-top:1px solid #ddd; background:#f4f4f4; padding:5px 10px; position:absolute; bottom:0; z-index:1;}
+.inp1{border:1px solid #95b8e7; width:26px; height:22px;}
+.btn1{background:url(../images/page_03.png); width:22px; height:22px; border:0;}
+/*---------------------------2014-3-3 begin--------------------------------*/
+.MetterSearch{width:332px; height:24px; background:#F2F2F2; border-bottom:1px solid #dcdcdc; padding:4px; position:absolute; z-index:1; top:0; left:0; display:none;}
+.MetterSearch ul li{float:left;}
+.MetterSearch ul li p{width:270px; height:22px; margin-right:4px; background:url(../images/tj_wg_28.png) repeat-x; border:1px solid #a4a4a4;}
+.MetterSearch ul li p span{float:left; line-height:22px; padding:0 7px;}
+.MetterSearch ul li p span img{vertical-align:middle; margin-left:3px; margin-top:-2px;}
+.MetterSearch ul li p span a:hover{text-decoration:none; color:#0159b6;}
+.MetterSearch em{font-style:normal;}
+.inp2{width:230px; height:22px; line-height:22px; float:left; background:none; border-bottom:none; border-right:none; border-top:none; border-left:1px solid #a4a4a4; padding-left:5px;}
+.btn2{width:54px; height:24px; border:none; background:url(../images/tj_wg_27.png); color:#fff; font-size:12px; text-align:center; line-height:24px; cursor:pointer;}
+.MetterTag{padding:10px;}
+.MetterTag p{font-size:16px; color:#0159b6; font-family:"微软雅黑"; margin-bottom:10px;}
+.MetterTag p span{color:#C1C1C1;}
+.tags{border-bottom:1px dotted #c7c7c7; padding-bottom:5px; margin-bottom:10px;}
+.tags span{background:#e3e3e3; color:#313131; padding:2px 7px; font-size:14px; margin-right:10px; margin-bottom:10px; display:inline-block;}
+.tags span:hover{background:#a8d9f0;}
+.tags span a:hover{text-decoration:none; color:#313131;}
+.tags span b{margin-left:5px; color:#ff0000; font-family:Arial, Helvetica, sans-serif; font-size:16px;}
+.ChangeView{text-align:center; padding:3px 0; cursor:pointer;}
+.ChangeView img{vertical-align:middle; margin-right:5px; margin-top:-4px;}
+/*---------------------------2014-3-3 end--------------------------------*/
+/*--------------SystemLeftNav end-----------------*/
+
+/*--------------SystemRightNav begin-----------------*/
+.containerbox{position:absolute; margin-right:340px;}
+.shad_x{width:100%;height:6px; background:url(../images/shad_x.png) repeat-x; position:absolute; top:0; left:0; z-index:999999999;}
+.shad_y{width:4px; height:100%; background:url(../images/shad_y.png) repeat-y; position:absolute; top:32px; right:340px; z-index:9999999;}
+.Slidebtn{width:18px; position:absolute; top:40%; right:340px; z-index:999999999;}
+.toggle-slide{background:url(../images/btn1.png) no-repeat center; width:18px; height:60px; display:block;}
+.full-con .toggle-slide{background:url(../images/btn2.png) no-repeat center; width:18px; height:60px; display:block;}
+.full-con .containerbox{margin-right:0;}
+/*--------------SystemRightNav end-----------------*/
+
+/*--------------2014-3-14 begin-----------------*/
+.SecNav{height:32px;}
+.SecNav ul li{float:left; width:70px; background:#959595; text-align:center; line-height:22px; height:22px; margin-left:10px; margin-top:5px;}
+.SecNav ul li a{color:#fff;}
+.SecNav ul li a:hover{text-decoration:none;}
+.SecNav ul li.current{background:url(../images/tj_wg_32.png) no-repeat center bottom #00a0e9; font-weight:bold;}
+.SecNav ul li:hover{background:url(../images/tj_wg_32.png) no-repeat center bottom #00a0e9;}
+.MetterSearchBtn{margin-top:3px; margin-right:5px; background:url(../images/tj_wg_31.png); width:34px; height:26px; cursor:pointer;}
+/*--------------2014-3-14 end-----------------*/
+

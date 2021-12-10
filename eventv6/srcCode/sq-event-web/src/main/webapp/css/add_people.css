@@ -1,0 +1,131 @@
+.MaxWidth{width:1010px;}
+.MaxHeight{height:563px; overflow:hidden;}
+.Width800{width:786px;}
+/*-----------------------------left begin---------------------------------------*/
+.WindowLeftMenu{width:150px; height:543px; background:#eff2f4; padding:10px 0;}
+.photo{border:1px solid #cbcbcb; padding:2px; background:#fff; width:94px; margin:0 auto; position:relative;}
+.photo img{width:94px; height:94px;}
+.PhotoEdit{width:100px; height:20px; line-height:20px; text-align:center; position:absolute; z-index:1; left:-1px; bottom:-1px; background:#000; filter:alpha(opacity=60); opacity:0.6; color:#fff; display:none; cursor:pointer;}
+.PhotoEdit a{color:#fff;}
+.WindowLeftMenu .list{width:140px; margin-left:10px;}
+.WindowLeftMenu .list dt{font-size:14px; background:url(../images/sys1_17.png) no-repeat 10px 13px; width:120px; line-height:14px; padding:10px 0 10px 20px;}
+.WindowLeftMenu .list dt a{color:#333;}
+.WindowLeftMenu .list dt a:hover{text-decoration:none;}
+.WindowLeftMenu .list dd{max-height:200px; overflow:auto;}
+.WindowLeftMenu .list dd p{line-height:30px; padding-left:35px;}
+.WindowLeftMenu .list dd a{color:#2b4a78;}
+.WindowLeftMenu .list dd p.current{background-color:#fff; border-bottom:1px solid #e1e7e9; border-top:1px solid #e1e7e9; border-left:1px solid #e1e7e9;}
+.WindowLeftMenu .list dd p.current a{color:#333;}
+.WindowLeftMenu .list dd p.finish{background-image:url(../images/sys1_21.png); background-position:10px 9px; background-repeat:no-repeat;}
+/*-----------------------------left end---------------------------------------*/
+/*-----------------------------right begin---------------------------------------*/
+.WindowRihgtCon{width:860px;}
+.CurrentEdit{height:28px; width:850px; padding:5px; border-bottom:1px dotted #c5c5c5; position:relative;}
+.CurrentEdit ul{background:#c3c3c3; height:28px; width:849px;}
+.CurrentEdit ul li{float:left; font-size:16px; font-family:"微软雅黑"; color:#fff; line-height:28px; width:253px; padding-left:30px;}
+.CurrentEdit ul li.current{background:#4489ca;}
+/*------当前编辑状态上的箭头-------*/
+.FloatArrow{background:url(../images/sys1_03.png); width:37px; height:28px; position:absolute; top:5px; z-index:1;}
+/*-----------右侧固定框架样式 begin--------------*/
+.RightBox{position:relative; width:860px; height:524px;}
+.LeftBtn{background:url(../images/leftbtn.png) no-repeat; width:20px; height:100%; cursor:pointer; position:absolute; z-index:1; top:40%; left:0;}
+.LeftBtn:hover{background:url(../images/leftbtnhover.png) no-repeat;}
+.RightBtn{background:url(../images/rightbtn.png) no-repeat; width:20px; height:100%; cursor:pointer; position:absolute; z-index:1; top:40%; right:0;}
+.RightBtn:hover{background:url(../images/rightbtnhover.png) no-repeat;}
+.SaveBtn{width:100%; height:45px; background:#fafafa; padding:10px 0;}
+.SaveBtn a{display:block; width:120px; height:45px; background:#448aca; color:#fff; font-size:18px; font-family:"微软雅黑"; text-align:center; line-height:45px; float:right; margin-right:20px;}
+.SaveBtn img{vertical-align:middle; margin-top:-4px; margin-right:10px;}
+.SaveBtn a:hover{background:#ff9f00; text-decoration:none;}
+.RightBox .con{width: 810px; height: 439px; overflow:auto; padding: 10px 25px;}
+/*-----------右侧固定框架样式 end--------------*/
+.PeopleInfo{width:67px; height:38px; padding-left:37px; line-height:38px; background:url(../images/people.png); color:#e60012; cursor:pointer; position:relative;}
+.switch{display:block; width:8px; height:4px; margin-top:17px; margin-right:5px;}
+.open{background:url(../images/open.png);}
+.close{background:url(../images/close.png);}
+.OpenLayer{width:200px; box-shadow:0 1px 5px #999999; padding:10px; position:absolute; z-index:1; top:45px; left:0; background:#fff; color:#333; display:none;}
+.OpenLayer ul{border-bottom:1px dotted #c5c5c5;}
+.OpenLayer ul li{float:left; line-height:28px;}
+.ol1{width:72px; text-align:right;}
+.ol2{width:128px;}
+.NorNav{height:28px; margin-top:5px; margin-left:20px;}
+.NorNav a{padding:8px 5px; background:#4489ca; margin-right:10px; display:inline-block; line-height:12px; color:#fff;}
+.NorNav a:hover{background:#8fc31f; color:#fff; text-decoration:none;}
+.NorNav a.current{background:#8fc31f; color:#fff;}
+.NorTitle{font-size:18px; font-family:"微软雅黑"; line-height:18px;}
+.NorTitle a{background:#fff; padding-right:15px; display:inline-block;}
+.NorTitle a:hover{text-decoration:none;}
+.NorTitle p{width:100%; height:1px; background:#d4d4d4; z-index:-1; position:relative; top:-9px; left:0;}
+.LeftForm{border-right:1px dotted #cecece; width:340px; padding-right:10px;}
+.NorForm ul li{clear:both; font-size:14px; min-height:32px; margin-bottom:20px; padding-top:2px;}
+.LabName{width:100px; height:30px; line-height:28px; float:left; text-align:right;}
+.NorForm .inp1{width:200px; float:left;}
+.NorForm .sel1{width:200px; float:left;}
+.NorForm .rad1{width:20px; float:left; margin-top:7px; margin-right:5px;}
+.NorForm ul li em{float:left; color:#e60012; line-height:30px; font-style:normal; padding:0 5px; font-size:12px;}
+.NorForm ul li span{padding-top:20px;}
+.NorForm ul li.error{background:#fff799;}
+.RightForm{width:432px; padding-left:10px;}
+.LabName2{width:154px;}
+.PeopleSearchBtn{width:700px; margin:0 auto 50px;}
+.PeopleSearchBtn ul li{float:left;}
+.PSinp{border-left:1px solid #c3c3c3; border-top:1px solid #c3c3c3; border-bottom:1px solid #c3c3c3; border-right:none; border-bottom-left-radius:10px;  border-top-left-radius:10px; font-size:18px; height:48px; line-height:48px; padding-left:15px; width:574px;}
+.PSbtn{background:#448aca; border-right:1px solid #448aca; border-top:1px solid #448aca; border-bottom:1px solid #448aca; border-left:none; border-bottom-right-radius:10px;  border-top-right-radius:10px; height:50px; text-align:center; width:110px; cursor:pointer; color:#fff; font-size:18px;}
+.PSbtn:hover{background:#5ea2e1;}
+.PeopleSearchBtn .notice{padding-left:15px; padding-top:10px;}
+.PeopleSearchBtn .notice a{color:#005eb3; text-decoration:underline;}
+.PeopleSearchResult{border-top:1px solid #c3c3c3; padding:0 10px;}
+.NotFind{background:url(../images/sys1_27.png) no-repeat center center; height:81px; text-align:center; line-height:81px; font-size:20px; font-family:"微软雅黑";}
+.NotFind a{color:#005eb3; text-decoration:underline;}
+.necessarily{color:#e60012;}
+.necessarily input{border:1px solid #e60012;}
+
+/*---------------------------------事件采集-----------------------------------------*/
+.MC_Top{height:47px; background:#eff2f4;}
+.MC_Top ul li{float:left; padding-top:7px; margin-left:20px;}
+.MC_Top label.LabName{width:70px; font-size:14px; line-height:30px;}
+.MC_Top .sel1{width:180px;}
+.MC_Top ul li.number{float:right; padding-right:5px; font-size:14px; line-height:30px; margin-left:10px;}
+.MC_Top ul li.number span{color:#005eb3;}
+.MC_con{overflow:auto;}
+.MC_con div.LeftForm{width:442px; padding-left:20px;}
+.MC_con div.RightForm{width:260px;}
+.MC_con label.LabName{width:70px; font-size:14px;}
+.MC_con .LeftForm .inp1{width:330px;}
+.MC_con .LeftForm .area1{width:330px; *width:323px;}
+.MC_con .NorForm ul li code{margin-right:15px;}
+.MC_con .NorForm ul li code a{line-height:28px; color:#4489ca; text-decoration:underline;}
+.MC_con .RightForm .inp1, .MC_con .RightForm .sel1{width:160px;}
+.MC_con .RightForm ul li b{background:url(../images/unlocal.png) no-repeat 0 5px; line-height:28px; padding:10px 0 10px 20px;}
+.MC_con .RightForm ul li b.local{background:url(../images/local.png) no-repeat 0 5px; color:#4489ca;}
+.addinfo{float:left; width:370px;}
+.addinfo p{float:left; line-height:28px; margin-right:15px;}
+.addinfo p img{margin-left:5px;}
+.NorForm ul li.DiySelect span{padding-top:0;}
+.NorForm ul li.CasePeople span{padding:0;}/*spinner 使用*/
+.FormCheckBox{margin-top:4px; float:left;}
+.FormCheckBox input{margin-right:10px; vertical-align:top; margin-top:4px;}
+.NorForm ul li span.FormCheckBox{padding-top:0;}
+
+/*----------------------------------处理环节----------------------------------------*/
+.ProcessingLink{padding:10px 0;}
+.ProcessingLink .ht{height:30px; line-height:30px; font-weight:bold; background:#f4f4f4; margin-bottom:10px;}
+.ProcessingLink .ht ul li{float:left;}
+.t_pic, .f_pic{height:10px; background-position: 123px 0; background-repeat:no-repeat;}
+.t_pic{background-image:url(../images/link_03.png);}
+.f_pic{background-image:url(../images/link_20.png);}
+.LinkList{background: url(../images/link_05.png) repeat-y 123px 0; padding-bottom:20px;}
+.WitchLink{margin-top: 8px;line-height: 21px;text-align:right; font-size:14px; font-weight:bold; width: 100px; padding-right: 15px; color:#8fc31f;}
+.LinkDot{margin-top: 8px;width:9px; height:9px; padding:6px; line-height:0; font-size:0; background:url(../images/link_16.png);}
+.WhoHandle{padding-left: 15px; padding-right:20px; line-height: 20px;}
+.HandleAdvice{position:relative;}
+.HandleAdvice span, .appraise span{display:inline-block; border:1px solid #c5d0dc; background:#f9f9f9; line-height:20px; padding:5px 7px; border-radius:5px;}
+.DialogArrow{width:12px; height:19px; background:url(../images/link_08.png); position:absolute; top: 6px; left:-11px; z-index:1;}
+.DBLink{padding: 10px 0 0 138px;}
+.appraise{padding:10px;}
+.appraise em{font-style:normal;}
+.appraise .list{margin-bottom:10px;}
+.MetterDetail div.ListShow{background:#fff; border-top:1px solid #c5d0dc;}
+.MetterDetailShow{width:50px; height:15px; background:url(../images/btn_09.png); margin:0 auto; cursor:pointer;}
+.MetterDetailShow:hover{background:url(../images/btn_10.png);}
+.MetterDetailHide{background:url(../images/btn_11.png);}
+.MetterDetailHide:hover{background:url(../images/btn_12.png);}

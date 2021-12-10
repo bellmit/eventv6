@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.event.EventAndReportJsonpMapper" >
+  
+  	
+	<select id="getReportFocusTypeList" resultType="java.util.Map">
+	SELECT REPORT_TYPE,'reportType_'||REPORT_TYPE as REPORT_STR,REPORT_TITLE,DEPARTMENT_NAME,REPORT_URL,DEPARTMENT_CODE,DICT_CODE,ATTACHMENT_TYPE ,MARKER_TYPE   
+	  FROM T_EVENT_REPORT_FOCUS_TYPE T WHERE T.STATUS=2 ORDER BY TO_NUMBER(T.REPORT_TYPE ) 
+	</select>
+	<select id="findEventDateTotal" resultType="java.util.Map">
+		  SELECT count(1) total ,
+		  sum(case when t.status in ('03', '04') then 1 else 0 end ) endTotal,
+		<choose>
+			<when test="date == 'year' ">
+				to_char(t.create_time,'yyyy-MM') date_
+			</when>
+			<otherwise>
+					to_char(t.create_time,'yyyy-MM-dd') date_
+			</otherwise>
+		</choose>
+  fROM t_event t 
+     join t_dc_grid g
+       on t.grid_id = g.grid_id
+      and g.status = '001'
+     join ${dbuser.workflow}.wf_process_instance p
+       on t.event_id = p.form_id
+      and p.form_type_id = 300
+    where g.info_org_code like #{infoOrgCode}  || '%'
+      and t.status in ('00', '01', '02', '03', '04')
+      and g.status = '001' 
+      <choose>
+			<when test="date == 'year' ">
+				 and t.create_time>trunc(sysdate,'yyyy') 
+      group by to_char(t.create_time,'yyyy-MM')
+			</when>
+			<otherwise>
+					 and t.create_time>trunc(sysdate,'MM') 
+      group by to_char(t.create_time,'yyyy-MM-dd')
+			</otherwise>
+		</choose>
+     
+	</select> 
+	
+	<select id="findReportDateTotal" resultType="java.util.Map">
+		 SELECT count(1) total, 
+		 sum(case when p.STATUS ='2' then 1 else 0 end ) endTotal,
+		 <choose>
+			<when test="date == 'year' ">
+				to_char(t.report_time,'yyyy-MM') date_
+			</when>
+			<otherwise>
+					to_char(t.report_time,'yyyy-MM-dd') date_
+			</otherwise>
+		</choose>
+  FROM T_EVENT_REPORT_FOCUS t
+  join ${dbuser.workflow}.wf_process_instance p
+    on t.report_id = p.form_id 
+ where  p.form_type_id in (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+   and    p.STATUS in ('2', '1')   AND t.IS_VALID = '1'
+   and instr(t.region_code, #{infoOrgCode}) = 1 
+   and t.report_type=#{type_} 
+   
+    <choose>
+			<when test="date == 'year' ">
+				 and t.report_time>trunc(sysdate,'yyyy') 
+      group by to_char(t.report_time,'yyyy-MM')
+			</when>
+			<otherwise>
+					 and t.report_time>trunc(sysdate,'MM') 
+      group by to_char(t.report_time,'yyyy-MM-dd')
+			</otherwise>
+		</choose>
+	</select> 
+  
+	<select id="findEventGridTotal" resultType="java.util.Map">
+		 with event_ as
+		  (SELECT g.info_org_code, count(1) total,sum(case when t.status in ('03','04') then 1 else 0 end ) endTotal 
+		     FROM t_event t
+		     join t_dc_grid g
+		       on t.grid_id = g.grid_id
+		      and g.status = '001'
+		     join ${dbuser.workflow}.wf_process_instance p
+		       on t.event_id = p.form_id
+		      and p.form_type_id = 300
+		    where g.info_org_code like #{infoOrgCode} || '%'
+		      and t.status in ('00', '01', '02', '03', '04')
+		      and g.status = '001'
+		    GROUP BY g.info_org_code)
+		 SELECT g.info_org_code,
+		        sum(total) total,
+		        sum(endTotal) endTotal ,
+       round( sum(endTotal)/SUM(TOTAL)*100,2) rate 
+		   FROM event_ t, t_dc_grid g
+		  where t.info_org_code like g.info_org_code || '%'
+		    and g.parent_grid_id = #{parentGridId} 
+		    and g.status = '001'
+		  group by g.info_org_code  
+	</select> 
+	
+	<select id="findReportGridTotal" resultType="java.util.Map">
+		 with event_ as
+      (SELECT t.region_code info_org_code, count(1) total,sum(decode(p.STATUS,'2',1,0)) endTotal
+         FROM T_EVENT_REPORT_FOCUS t
+  join ${dbuser.workflow}.wf_process_instance p
+    on t.report_id = p.form_id
+ where  p.form_type_id in (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+   and    p.STATUS IN ('1','2')   AND t.IS_VALID = '1' 
+   and t.report_type = #{type_}
+   and instr(t.region_code,#{infoOrgCode}) = 1
+        GROUP BY t.region_code)
+     SELECT g.info_org_code,
+            sum(total) total,
+             sum(endTotal) endTotal ,
+       round( sum(endTotal)/SUM(TOTAL)*100,2) rate 
+       FROM event_ t, t_dc_grid g
+      where t.info_org_code like g.info_org_code || '%'
+        and g.parent_grid_id = #{parentGridId} 
+        and g.status = '001'
+      group by g.info_org_code 
+	</select> 
+	
+	<select id="findEventTotal" resultType="java.util.Map">
+		SELECT count(1) total,
+  sum(case when t.status in ('00', '01', '02') then 1 else 0 end ) doingTotal,
+  sum(case when t.status in ('00', '01', '02')  and t.handle_date_flag='2' then 1 else 0 end ) yjTotal,
+  sum(case when t.handle_date_flag='3' then 1 else 0 end ) cqTotal ,
+  sum(case when t.create_time>trunc(sysdate,'MM') then 1 else 0 end ) monthTotal    
+ 
+	  FROM t_event t
+	  join t_dc_grid g
+	    on t.grid_id = g.grid_id
+	   and g.status = '001'
+	  join ${dbuser.workflow}.wf_process_instance p
+	    on t.event_id = p.form_id
+	   and p.form_type_id = 300
+	 where g.info_org_code like #{infoOrgCode} ||'%'  
+	   and t.status in ('00', '01', '02', '03', '04') 
+	</select> 
+	
+	
+	<select id="findReportTotal" resultType="java.util.Map">
+	SELECT count(1) total,
+       sum(case when p.STATUS = '1' then 1 else 0 end ) doingTotal,
+  sum(case when k.duedate_ <![CDATA[<]]> sysdate and p.STATUS = '1' then 1 else 0 end ) cqTotal  ,
+  sum(case when t.REPORT_TIME>=trunc(sysdate,'MM') then 1 else 0 end ) monthTotal    
+  FROM T_EVENT_REPORT_FOCUS t
+  join ${dbuser.workflow}.wf_process_instance p
+    on t.report_id = p.form_id
+ left join ${dbuser.workflow}.jbpm4_task k
+    on p.instance_id = k.procinst_ 
+ where  p.form_type_id in (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+   and    p.STATUS in ('2', '1')   AND t.IS_VALID = '1'
+   and t.report_type = #{type_}
+   and instr(t.region_code, #{infoOrgCode}) = 1  
+   
+	</select> 
+	
+	<select id="findDoingEventCount" resultType="java.lang.Integer">
+	select count(1) from t_event_report_list t 
+		inner join t_dc_grid g on t.info_org_code = g.info_org_code and g.status = '001'
+		where <include refid="find_where"></include>
+	</select> 
+	
+	
+	<select id="findDoingEventData" resultType="java.util.Map">
+	select event_id,	
+			t.event_id as "eventId",
+			REPORT_UUID,
+			code_,
+			EVENT_NAME,
+			t.EVENT_NAME as "eventName",
+       		t.instance_id as "instanceId",
+			TYPE_, t.handle_date,
+	       instance_id ,
+	       EVENT_TYPE,
+	       T.STATUS,
+	       T.INFO_ORG_CODE,
+	       CREATE_TIME,
+	       case  when t.handle_date_flag = '0' then
+          (case when t.handle_date <![CDATA[<]]> sysdate then '3' else '1' end) else t.handle_date_flag end handle_date_flag,
+	       URGENCY_DEGREE,
+	       OCCURRED ,
+	   t.cur_org_id,-- 待转组织名称 	"curOrgName",cur_org 
+			g.grid_path
+	from  t_event_report_list t 
+	inner join t_dc_grid g on t.info_org_code = g.info_org_code and g.status = '001'
+	 where  	
+	<include refid="find_where"></include> order by t.CREATE_TIME desc 
+	</select>
+	
+	<sql id="find_where"> 
+		t.is_end='0' <!-- vw_event_and_report_doing 在办  -->
+		<choose>
+			<!-- <when test="@Ognl@isNotEmpty(doing)"> 重大事件	事件条件去掉and t.urgency_degree in ('02','03','04') 效果同在办
+				vw_event_and_report_urgency t 
+			</when> -->
+			<when test="@Ognl@isNotEmpty(superviseMark)"><!-- vw_event_and_report_supervise 督办  -->
+				 and t.cur_remind = '1'  
+			</when>
+			<when test="@Ognl@isNotEmpty(timeOut)"><!--vw_event_and_report_time_out 超时  -->
+				 and t.handle_date <![CDATA[<]]> sysdate
+			</when>
+			
+		</choose> 
+	<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		and t.info_org_code like #{infoOrgCode} ||'%'  
+	</if>
+	
+	<if test="@Ognl@isNotEmpty(keyWord)">
+		and ( t.event_name like '%'||#{keyWord}||'%' or t.occurred like '%'||#{keyWord}||'%' ) 
+	</if>
+	
+	 		<choose>
+                <when test="@Ognl@isNotEmpty(type_) and type_ =='0'.toString() and @Ognl@isNotEmpty(eventType)">
+                  and   t.type_= #{type_}  and t.event_type like #{eventType} ||'%'
+                </when>
+                <when test="@Ognl@isNotEmpty(type_)  and type_ =='1'.toString() and @Ognl@isNotEmpty(eventType)">
+                  and   t.type_= #{type_}  and t.event_type = #{eventType}
+                </when>
+                <when test="@Ognl@isNotEmpty(type_) and type_ =='1'.toString() and @Ognl@isNotEmpty(eventTypeList)">
+					and   t.type_= #{type_}  and t.event_type in 
+					<foreach collection="eventTypeList" index="index" item="item" open="(" separator="," close=")">
+				    	#{item}
+				    </foreach>
+                </when>
+                <otherwise>
+                	<if test="@Ognl@isNotEmpty(type_)"> 
+						and   t.type_= #{type_} 
+					</if>
+					<if test="@Ognl@isNotEmpty(eventType)"> 
+						and t.event_type = #{eventType}
+					</if>
+                </otherwise>
+            </choose>
+	
+	<if test="@Ognl@isNotEmpty(socialOrgCode)">	<!-- 查部门 --> 
+      and EXISTS (select 1 from   t_dc_org_social_info s
+     where  s.org_id = t.cur_org_id and  s.org_code like  #{socialOrgCode}|| '%' and s.status='001')                      	
+		</if>
+	</sql>
+	
+	
+	<select id="eventTypeDayTotal" resultType="java.util.Map">
+	SELECT type_,
+       count(1) total,
+       sum(decode(t.status, '0', 1, 0)) doing,
+       to_char(create_time, 'yyyy-MM-dd') date_ FROM (
+SELECT '0' type_,create_time ,t.is_end status FROM t_event_report_list t  where t.type_='0' and  t.info_org_code like #{infoOrgCode} ||'%'    
+	 		and t.create_time >= to_date(#{startDate},'yyyy-MM-dd') 
+	 		and t.create_time <![CDATA[<]]> to_date(#{endDate},'yyyy-MM-dd') +1    union all  
+SELECT t.event_type type_,create_time,t.is_end status  FROM t_event_report_list t where t.type_='1' and  t.info_org_code like #{infoOrgCode} ||'%'    
+	 		and t.create_time >= to_date(#{startDate},'yyyy-MM-dd') 
+	 		and t.create_time <![CDATA[<]]> to_date(#{endDate},'yyyy-MM-dd') +1  ) t    
+ 
+	 group by t.type_, to_char(create_time, 'yyyy-MM-dd') 
+	  
+	</select>
+	
+	<select id="eventTypeGridTotal" resultType="java.util.Map">
+	 SELECT g.info_org_code, count(1) total, type_,max(g.grid_name) grid_name ,max(g.grid_id) grid_id
+	  FROM (
+SELECT '0' type_,info_org_code FROM t_event_report_list t  where t.type_='0' and  t.info_org_code like #{infoOrgCode} ||'%'    
+	 		and t.create_time >= to_date(#{startDate},'yyyy-MM-dd') 
+	 	and t.create_time <![CDATA[<]]> to_date(#{endDate},'yyyy-MM-dd') +1   union all 
+SELECT t.event_type type_,info_org_code  FROM t_event_report_list t where t.type_='1' and  t.info_org_code like #{infoOrgCode} ||'%'    
+	 		and t.create_time >= to_date(#{startDate},'yyyy-MM-dd') 
+	 	and t.create_time <![CDATA[<]]> to_date(#{endDate},'yyyy-MM-dd') +1  ) t, t_dc_grid g
+	 where  t.info_org_code like g.info_org_code || '%'
+	   and g.parent_grid_id = #{parentGridId}
+	   and g.status = '001'
+	 GROUP BY type_, g.info_org_code 
+	 
+	</select>
+	
+	<select id="findGridInfoByParentId" resultType="java.util.Map">
+	 SELECT g.info_org_code,g.grid_name,g.grid_id,'0' total FROM t_dc_grid g where
+	  g.parent_grid_id =#{parentGridId} and g.status ='001' order by g.order_id,g.info_org_code
+	</select>
+	
+	
+	<select id="startDay2EndDay" resultType="java.util.Map">
+		select to_char(to_date(#{startDate}, 'yyyy-MM-dd') + rownum - 1,'YYYY-MM-dd') as DATE_
+		 <if test="@Ognl@isNotEmpty(initNum)"> 
+					,'0' TOTAL,'0' DOING 
+				</if>
+					
+	  from dual
+	connect by rownum <![CDATA[<=]]>  (to_date(#{endDate}, 'yyyy-MM-dd')+1 -
+	           to_date(#{startDate}, 'yyyy-MM-dd'))
+
+	</select>
+	
+	<select id="startMonth2EndMonth" resultType="java.util.Map">
+		 select  to_char(add_months(trunc(sysdate,'yyyy'),rownum-1) ,'yyyy-MM') MONTH_,'0' TOTAL      from dual
+  connect by rownum <![CDATA[<=]]> (to_number(to_char(sysdate,'MM'))+1 - to_number(to_char(trunc(sysdate,'yyyy'),'MM')))
+
+	</select>
+	
+	
+	<select id="findAllDoingEventForNananList" resultType="map">
+		 SELECT 
+		 CASE WHEN T.TYPE_='0' THEN TO_CHAR(T.EVENT_ID) ELSE T.CODE_ END AS "eventId",
+		 T.EVENT_NAME 		"eventName",
+		 T.TYPE_ 		"type",
+		 T.EVENT_TYPE 		"eventType",
+		 T.CREATE_TIME 		"createTime",
+		 T.X 				"longitude",
+  		 T.Y 				"latitude",
+  		 T.Z 				"z"
+		 FROM t_event_report_list t
+		 <include refid="find_where_alldoing"/>
+	</select>
+	
+	<select id="findAllDoingEventForNananCount" resultType="long">
+		 SELECT COUNT(1) 
+		 FROM  t_event_report_list t 
+		 <include refid="find_where_alldoing"/>
+	</select>
+	
+	
+	<sql id="find_where_alldoing"> 
+	 where t.is_end='0'  
+		<if test="@Ognl@isNotEmpty(keyWord)">
+			AND (
+				T.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+				OR
+				T.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}||'%'
+			)
+		</if>
+  		
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND INSTR(T.INFO_ORG_CODE, #{infoOrgCode,jdbcType=VARCHAR}) = 1
+		</if>
+		<if test="@Ognl@isNotEmpty(code)">
+			AND T.CODE_ LIKE '%'||#{code,jdbcType=VARCHAR}||'%'
+		</if>
+		
+	   	<if test="@Ognl@isNotEmpty(createTimeStart)">
+	  		AND T.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<choose>
+	   		<when test="@Ognl@isNotEmpty(createTimeEnd)">
+	   			AND T.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   		</when>
+	   		<when test="@Ognl@isNotEmpty(createDateTimeEnd)">
+	   			AND T.CREATE_TIME <![CDATA[<=]]>TO_DATE(#{createDateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   		</when>
+	   	</choose>
+		
+	</sql>
+	
+	
+	<!-- 入格趋势查询 -->
+	<select id="getReportFocusTrend" resultType="java.util.Map">
+		SELECT count(1) "eventTotal", to_char(t.create_time, 'yyyy-MM-dd') "trendDate"
+		<if test="@Ognl@isNotEmpty(searchSettlesTotal)">
+	   		,SUM(DECODE(p.STATUS,'2',1,0)) "settlesTotal"
+		</if>
+		  FROM T_EVENT_REPORT_FOCUS T
+		  JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		    ON T.REPORT_ID = P.FORM_ID
+		 WHERE T.IS_VALID = '1'
+		 <choose>
+         	<when test="@Ognl@isNotEmpty(reportType)">
+				AND t.REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+			</when>
+            <when test="@Ognl@isNotEmpty(reportTypeList)">
+				AND t.REPORT_TYPE IN 
+				<foreach collection="reportTypeList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+             </when>
+         </choose>
+	   and t.create_time between to_date(#{createTimeStart},'yyyy-MM-dd') and  to_date(#{createTimeEnd},'yyyy-MM-dd') + 1
+	   AND P.FORM_TYPE_ID IN
+	       (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+	  <if test="@Ognl@isNotEmpty(infoOrgCode)"> AND t.region_code LIKE  #{infoOrgCode,jdbcType=VARCHAR} || '%'</if>
+	 group by to_char(t.create_time, 'yyyy-MM-dd')
+	</select>
+	
+	
+	<!-- 入格趋势查询 (月份)-->
+	<select id="getReportFocusTrendForMonth" resultType="java.util.Map">
+		SELECT count(1) "eventTotal", to_char(t.create_time, 'yyyy-MM') "trendDate"
+		<if test="@Ognl@isNotEmpty(searchSettlesTotal)">
+	   		,SUM(DECODE(p.STATUS,'2',1,0)) "settlesTotal"
+		</if>
+		  FROM T_EVENT_REPORT_FOCUS T
+		  JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		    ON T.REPORT_ID = P.FORM_ID
+		 WHERE T.IS_VALID = '1'
+		 
+		 <choose>
+         	<when test="@Ognl@isNotEmpty(reportType)">
+				AND t.REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+			</when>
+            <when test="@Ognl@isNotEmpty(reportTypeList)">
+				AND t.REPORT_TYPE IN 
+				<foreach collection="reportTypeList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+             </when>
+         </choose>
+	   and t.create_time between to_date(#{createTimeStart},'yyyy-MM-dd') and  (to_date(#{createTimeEnd},'yyyy-MM-dd')+1)
+	   AND P.FORM_TYPE_ID IN
+	       (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+	  <if test="@Ognl@isNotEmpty(infoOrgCode)"> AND t.region_code LIKE  #{infoOrgCode,jdbcType=VARCHAR} || '%'</if>
+	  group by to_char(t.create_time, 'yyyy-MM')
+	</select>
+	
+	
+	<!-- 事件趋势查询 -->
+	<select id="getEventTrend" resultType="java.util.Map"> 
+	SELECT to_char(t.create_time,'yyyy-MM-dd') "trendDate",count(1) "eventTotal" FROM T_EVENT T 
+     join ${dbuser.workflow}.wf_process_instance p  on t.event_id = p.form_id  and p.form_type_id = 300
+    JOIN T_DC_GRID G ON T.GRID_ID = G.GRID_ID AND G.STATUS = '001'
+        <if test="@Ognl@isNotEmpty(infoOrgCode)">
+	   		AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+    WHERE T.STATUS IN ('00','01','02','03','04')
+		and t.create_time between to_date(#{createTimeStart},'yyyy-MM-dd') and  to_date(#{createTimeEnd},'yyyy-MM-dd') + 1
+     group by to_char(t.create_time,'yyyy-MM-dd')
+     
+	</select>
+	
+	
+	<!-- 列表数据统计 -->
+	<select id="getReportFocusCount" resultType="long">
+		SELECT COUNT(T.Report_Id)
+		FROM T_EVENT_REPORT_FOCUS T
+		JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P ON T.REPORT_ID = P.FORM_ID		
+		<include refid="find_table" />
+		<include refid="find_where_list" />
+	</select>
+	<sql id="find_table">
+	<if test="@Ognl@isNotEmpty(publicReport)"><!-- 群众举报  -->
+			<choose>
+				<when test="reportType == 1 ">
+					INNER JOIN T_EVENT_TWO_VIOLATION_PRE T1 ON T.REPORT_UUID = T1.REPORT_UUID AND T1.IS_VALID = '1' AND T1.DATA_SOURCE = '05'
+				</when>
+				<when test="reportType == 2 ">
+					INNER JOIN T_EVENT_HOUSE_HIDDEN_DANGER T2 ON T.REPORT_UUID = T2.REPORT_UUID AND T2.IS_VALID = '1' AND T2.DATA_SOURCE = '02'
+				</when>
+				<when test="reportType == 3 ">
+					INNER JOIN T_EVENT_ENTER_HIDDEN_DANGER T3 ON T.REPORT_UUID = T3.REPORT_UUID AND T3.IS_VALID = '1' AND T3.DATA_SOURCE = '05'
+				</when>
+				<when test="reportType == 4 ">
+					INNER JOIN T_EVENT_EPIDEMIC_PRE_CONTROL T4 ON T.REPORT_UUID = T4.REPORT_UUID AND T4.IS_VALID = '1' AND T4.DATA_SOURCE = '03'
+				</when>
+				<when test="reportType == 5 ">
+					INNER JOIN T_EVENT_WATER_QUALITY T5 ON T.REPORT_UUID = T5.REPORT_UUID AND T5.IS_VALID = '1' AND T5.DATA_SOURCE = '03'
+				</when>
+				<when test="reportType == 9 ">
+					INNER JOIN T_EVENT_FOREST_FIRE_PREVENTION T9 ON T.REPORT_UUID = T9.REPORT_UUID AND T9.IS_VALID = '1' AND T9.DATA_SOURCE = '05'
+				</when>
+				<when test="reportType == 10 ">
+					INNER JOIN T_EVENT_BUSINESS_PROBLEM T10 ON T.REPORT_UUID = T10.REPORT_UUID AND T10.IS_VALID = '1' AND T10.DATA_SOURCE = '02'
+				</when>
+			</choose>
+		</if>
+		<if test="jurisdiction == 1 ">
+			JOIN ${dbuser.workflow}.JBPM4_TASK T7
+			ON P.Instance_Id = T7.Procinst_
+		</if>
+		<if test="capDB == 1 ">
+			INNER JOIN workflow.WF_INSTANCE_STATUS T13
+			ON P.INSTANCE_ID = T13.Instance_Id
+			AND T13.SUPERVISE_MARK='1'
+		</if>
+		<if test="isCapRegionPath == 1">
+			LEFT JOIN T_DC_ORG_ENTITY_INFO T12
+			ON T.REGION_CODE = T12.ORG_CODE
+			AND T12.STATUS = '001'
+		</if>
+		<if test="@Ognl@isNotEmpty(timeOut)"><!-- 环节超期  -->
+			LEFT JOIN ${dbuser.workflow}.JBPM4_TASK K ON P.INSTANCE_ID = K.PROCINST_
+		</if>
+	</sql>
+	<!-- 列表数据 -->
+	<select id="getReportFocusList" resultType="java.util.Map">
+		SELECT  T.REPORT_ID,
+               T.REPORT_UUID,
+               T.REPORT_CODE,
+               T.REPORTER_NAME,
+               T.REPORT_TYPE EVENT_TYPE,
+               T.REPORT_STATUS STATUS,
+               T.REGION_CODE,
+               T.REPORT_TIME CREATE_TIME,
+               T.OCCURRED,
+               P.INSTANCE_ID,
+               '1' TYPE_,
+				P.CUR_USER	"curUserName",
+				P.CUR_ORG	"curOrgName"
+				<if test="isCapRegionPath == 1">
+					,T12.ORG_ENTITY_PATH "regionPath"
+				</if>
+		FROM T_EVENT_REPORT_FOCUS T
+		JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P ON T.REPORT_ID = P.FORM_ID
+		<include refid="find_table" />
+		<include refid="find_where_list" />
+		ORDER BY T.REPORT_TIME DESC
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_list">
+		<where>
+			T.IS_VALID = '1'
+			AND P.FORM_TYPE_ID IN (SELECT form_type_id FROM t_event_report_focus_type  where status in (1,2) )
+			<choose>
+				<when test="jurisdiction == 0 ">
+					AND P.STATUS IN ('2', '1')
+				</when>
+				<when test="jurisdiction == 3 ">
+					AND P.STATUS IN ('2', '1')
+				</when>
+				<when test="jurisdiction == 2 ">
+					AND P.STATUS = '2'
+				</when>
+				<when test="jurisdiction == 1 ">
+					AND P.STATUS = '1'
+				</when>
+				<otherwise>
+					AND P.STATUS = '1'
+				</otherwise>
+			</choose>
+			<if test="@Ognl@isNotEmpty(reportWay)">
+		   		AND T.REPORT_WAY = #{reportWay,jdbcType=VARCHAR}
+			</if>
+	        <if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   		AND T.REGION_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(reportType)">
+		   		AND T.REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(keyWord)">
+				AND (T.REPORTER_NAME LIKE '%'||#{keyWord}||'%' OR T.OCCURRED LIKE '%'||#{keyWord}||'%' ) 
+			</if>
+			<if test="@Ognl@isNotEmpty(reportCode)">
+	  			AND T.REPORT_CODE = #{reportCode,jdbcType=VARCHAR}
+	  		</if>
+	  		<if test="@Ognl@isNotEmpty(reportDayStart)">
+	   			AND T.REPORT_TIME <![CDATA[>=]]> #{reportDayStart,jdbcType=TIMESTAMP}
+	   		</if>
+	   		<!-- 传入空字符串时，会导致时间计算异常，因此需要同时将null和空串排除 -->
+	   		<if test="@Ognl@isNotEmpty(reportDayEnd)">
+	   			AND T.REPORT_TIME <![CDATA[<]]> #{reportDayEnd,jdbcType=TIMESTAMP} + 1
+	   		</if>
+	   		<if test="@Ognl@isNotEmpty(timeOut)"><!-- 环节超期  -->
+				AND K.duedate_ <![CDATA[<]]> sysdate
+			</if>
+			<if test="overDue == 1">
+				AND T.HANDLE_DATE_FLAG = '3'
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 各入格数量统计 -->
+	<select id="countDoingReportFocusList" resultType="java.util.Map">
+		SELECT COUNT(1) TOTAL, T.REPORT_TYPE
+        FROM T_EVENT_REPORT_FOCUS T
+        JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P ON T.REPORT_ID = P.FORM_ID
+		<include refid="find_where_list" />
+		GROUP BY T.REPORT_TYPE
+	</select>
+</mapper>

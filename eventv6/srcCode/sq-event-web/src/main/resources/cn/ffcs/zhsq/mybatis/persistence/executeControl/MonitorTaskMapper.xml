@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.executeControl.MonitorTaskMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.executeControl.MonitorTask">
+		<id column="ID" property="id" jdbcType="VARCHAR" /> <!--主键ID-->
+		<result column="TASK_TYPE" property="taskType" jdbcType="VARCHAR" /> <!--布控布类型-->
+		<result column="NAME" property="name" jdbcType="VARCHAR" /> <!--布控布名称-->
+		<result column="DESCRIPTION_" property="description" jdbcType="VARCHAR" /> <!--布控布描述-->
+		<result column="VALID_TIME" property="validTime" jdbcType="VARCHAR" /> <!--布控任务有效期开始时间-->
+		<result column="INVALID_TIME" property="invalidTime" jdbcType="VARCHAR" /> <!--布控任务有效期结束时间-->
+		<result column="CAPTURE_START_TIME" property="captureStartTime" jdbcType="VARCHAR" /> <!--每天的抓拍开始时间-->
+		<result column="CAPTURE_END_TIME" property="captureEndTime" jdbcType="VARCHAR" /> <!--每天的抓拍结束时间-->
+		<result column="LIB_IDS" property="libIds" jdbcType="VARCHAR" /> <!--布控库ids-->
+		<result column="DEVICE_DIS" property="deviceIds" jdbcType="VARCHAR" /> <!--布控设备ids-->
+		<result column="DEVICE_NAMES" property="deviceNames" jdbcType="VARCHAR" /> <!--布控设备名称-->
+		<result column="ACCEPT_ALARM_USER_IDS" property="acceptAlarmUserIds" jdbcType="VARCHAR" /> <!--报警消息接收者-->
+		<result column="ALARM_THRESHOLD" property="alarmThreshold" jdbcType="DECIMAL" /> <!--布控报警阈值-->
+		<result column="ALARM_MODE" property="alarmMode" jdbcType="VARCHAR" /> <!--报警推送方式-->
+		<result column="REPEAT_MODE" property="repeatMode" jdbcType="VARCHAR" /> <!--布控任务多重方式-->
+		<result column="EXPIRE_TYPE" property="expireType" jdbcType="VARCHAR" /> <!--报警存储时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--是否有效-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--更新人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="GRID_ID" property="gridId" jdbcType="DECIMAL" /> <!--所属网格-->
+		<result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR" /> <!--网格编码-->
+		<result column="GRID_NAME" property="gridName" jdbcType="VARCHAR" /> <!--网格名称-->
+		<result column="GRID_PATH" property="gridPath" jdbcType="VARCHAR" /> <!--网格全路径-->
+		<result column="CONTROL_TASK_ID" property="controlTaskId" jdbcType="VARCHAR" /> <!--布控任务ID-->
+		<result column="QUERY_TYPE" property="queryType" jdbcType="DECIMAL" /> <!--布控任务ID-->
+		<result column="IGNORE_STATUS" property="ignoreStatus" jdbcType="DECIMAL" /> <!--布控任务ID-->
+		<result column="TASK_STATUS" property="taskStatus" jdbcType="DECIMAL" /> <!--布控任务ID-->
+		<result column="SCOPE" property="scope" jdbcType="VARCHAR" /> <!--布控任务ID-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_MONITOR_TASK T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.TASK_TYPE,
+			T.NAME,
+			T.DESCRIPTION_,
+			T.VALID_TIME,
+			T.INVALID_TIME,
+			T.CAPTURE_START_TIME,
+			T.CAPTURE_END_TIME,
+			T.LIB_IDS,
+			T.DEVICE_DIS,
+			T.ACCEPT_ALARM_USER_IDS,
+			T.ALARM_THRESHOLD,
+			T.ALARM_MODE,
+			T.REPEAT_MODE,
+			T.EXPIRE_TYPE,
+			T.DEVICE_NAMES,
+			T.CONTROL_TASK_ID,
+			T.QUERY_TYPE,
+			T.IGNORE_STATUS,
+			T.TASK_STATUS,
+			T.SCOPE
+		FROM
+			T_MONITOR_TASK T
+		<include refid="find_where" />
+		ORDER BY 
+			T.ID DESC
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(libIds)">
+				AND T.LIB_IDS = #{libIds,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(name)">
+				AND T.NAME LIKE '%' || #{name} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(taskType)">
+				AND T.TASK_TYPE = #{taskType}
+			</if>
+			<if test="@Ognl@isNotEmpty(queryType)">
+				AND T.QUERY_TYPE = #{queryType,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(ignoreStatus)">
+				AND T.IGNORE_STATUS = #{ignoreStatus}
+			</if>
+			<if test="@Ognl@isNotEmpty(taskStatus)">
+				AND T.TASK_STATUS = #{taskStatus}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.executeControl.MonitorTask">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_MONITOR_TASK.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_MONITOR_TASK
+		(
+			ID,
+			TASK_TYPE,
+			NAME,
+			DESCRIPTION_,
+			VALID_TIME,
+			INVALID_TIME,
+			CAPTURE_START_TIME,
+			CAPTURE_END_TIME,
+			LIB_IDS,
+			DEVICE_DIS,
+			ACCEPT_ALARM_USER_IDS,
+			ALARM_THRESHOLD,
+			ALARM_MODE,
+			REPEAT_MODE,
+			EXPIRE_TYPE,
+			IS_VALID,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			GRID_ID,
+			GRID_CODE,
+			GRID_NAME,
+			GRID_PATH,
+			DEVICE_NAMES,
+			CONTROL_TASK_ID,
+			QUERY_TYPE,
+			IGNORE_STATUS,
+			TASK_STATUS,
+			SCOPE
+		) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{taskType,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR},
+			#{validTime,jdbcType=VARCHAR},
+			#{invalidTime,jdbcType=VARCHAR},
+			#{captureStartTime,jdbcType=VARCHAR},
+			#{captureEndTime,jdbcType=VARCHAR},
+			#{libIds,jdbcType=VARCHAR},
+			#{deviceIds,jdbcType=VARCHAR},
+			#{acceptAlarmUserIds,jdbcType=VARCHAR},
+			#{alarmThreshold,jdbcType=DECIMAL},
+			#{alarmMode,jdbcType=VARCHAR},
+			#{repeatMode,jdbcType=VARCHAR},
+			#{expireType,jdbcType=VARCHAR},
+			1,
+			#{creator,jdbcType=DECIMAL},
+			sysdate,
+			#{updator,jdbcType=DECIMAL},
+			sysdate,
+			#{gridId,jdbcType=DECIMAL},
+			#{gridCode,jdbcType=VARCHAR},
+			#{gridName,jdbcType=VARCHAR},
+			#{gridPath,jdbcType=VARCHAR},
+			#{deviceNames,jdbcType=VARCHAR},
+			#{controlTaskId,jdbcType=VARCHAR},
+			#{queryType,jdbcType=VARCHAR},
+			#{ignoreStatus,jdbcType=VARCHAR},
+			#{taskStatus,jdbcType=VARCHAR},
+			#{scope,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.executeControl.MonitorTask">
+		UPDATE
+			T_MONITOR_TASK
+		<set> 
+			<if test="taskType != null " >
+				TASK_TYPE=#{taskType,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null " >
+				NAME=#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null " >
+				DESCRIPTION_=#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="validTime != null " >
+				VALID_TIME=#{validTime,jdbcType=VARCHAR},
+			</if>
+			<if test="invalidTime != null " >
+				INVALID_TIME=#{invalidTime,jdbcType=VARCHAR},
+			</if>
+			<if test="captureStartTime != null " >
+				CAPTURE_START_TIME=#{captureStartTime,jdbcType=VARCHAR},
+			</if>
+			<if test="captureEndTime != null " >
+				CAPTURE_END_TIME=#{captureEndTime,jdbcType=VARCHAR},
+			</if>
+			<if test="libIds != null " >
+				LIB_IDS=#{libIds,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceIds != null " >
+				DEVICE_DIS=#{deviceIds,jdbcType=VARCHAR},
+			</if>
+			<if test="acceptAlarmUserIds != null " >
+				ACCEPT_ALARM_USER_IDS=#{acceptAlarmUserIds,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmThreshold != null " >
+				ALARM_THRESHOLD=#{alarmThreshold,jdbcType=DECIMAL},
+			</if>
+			<if test="alarmMode != null " >
+				ALARM_MODE=#{alarmMode,jdbcType=VARCHAR},
+			</if>
+			<if test="repeatMode != null " >
+				REPEAT_MODE=#{repeatMode,jdbcType=VARCHAR},
+			</if>
+			<if test="expireType != null " >
+				EXPIRE_TYPE=#{expireType,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="gridId != null " >
+				GRID_ID=#{gridId,jdbcType=DECIMAL},
+			</if>
+			<if test="gridCode != null " >
+				GRID_CODE=#{gridCode,jdbcType=VARCHAR},
+			</if>
+			<if test="gridName != null " >
+				GRID_NAME=#{gridName,jdbcType=VARCHAR},
+			</if>
+			<if test="gridPath != null " >
+				GRID_PATH=#{gridPath,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceNames != null " >
+				DEVICE_NAMES=#{deviceNames,jdbcType=VARCHAR},
+			</if>
+			<if test="controlTaskId != null " >
+				CONTROL_TASK_ID=#{controlTaskId,jdbcType=VARCHAR},
+			</if>
+			<if test="queryType != null " >
+				QUERY_TYPE=#{queryType,jdbcType=VARCHAR},
+			</if>
+			<if test="ignoreStatus != null " >
+				IGNORE_STATUS=#{ignoreStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="taskStatus != null " >
+				TASK_STATUS=#{taskStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="scope != null " >
+				SCOPE=#{scope,jdbcType=VARCHAR},
+			</if>
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			ID= #{id,jdbcType=VARCHAR} 
+	</update>
+
+	<!-- 修改 -->
+	<update id="updateStatusOrIgnore" parameterType="cn.ffcs.zhsq.mybatis.domain.executeControl.MonitorTask">
+		UPDATE
+		T_MONITOR_TASK
+		<set>
+			<if test="@Ognl@isNotEmpty(ignoreStatus)" >
+				IGNORE_STATUS=#{ignoreStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(taskStatus)" >
+				TASK_STATUS=#{taskStatus,jdbcType=VARCHAR},
+			</if>
+			UPDATE_TIME = sysdate
+		</set>
+		WHERE
+		CONTROL_TASK_ID= #{controlTaskId,jdbcType=VARCHAR}
+	</update>
+
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.ID,
+			T.TASK_TYPE,
+			T.NAME,
+			T.DESCRIPTION_,
+			T.VALID_TIME,
+			T.INVALID_TIME,
+			T.CAPTURE_START_TIME,
+			T.CAPTURE_END_TIME,
+			T.LIB_IDS,
+			T.DEVICE_DIS,
+			T.ACCEPT_ALARM_USER_IDS,
+			T.ALARM_THRESHOLD,
+			T.ALARM_MODE,
+			T.REPEAT_MODE,
+			T.EXPIRE_TYPE,
+			T.IS_VALID,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.GRID_ID,
+			T.GRID_CODE,
+			T.GRID_NAME,
+			T.GRID_PATH,
+			T.DEVICE_NAMES,
+			T.CONTROL_TASK_ID,
+			T.QUERY_TYPE,
+			T.IGNORE_STATUS,
+			T.TASK_STATUS,
+			T.SCOPE
+		FROM
+			T_MONITOR_TASK T
+		WHERE
+			ID= #{id,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.executeControl.MonitorTask">
+		UPDATE
+			T_MONITOR_TASK
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+			ID= #{id,jdbcType=VARCHAR}
+	</delete>
+</mapper>

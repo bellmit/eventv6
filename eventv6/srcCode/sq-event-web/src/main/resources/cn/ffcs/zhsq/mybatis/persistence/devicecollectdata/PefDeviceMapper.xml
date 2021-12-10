@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.devicecollectdata.PefDeviceMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.PefDevice">
+		<id column="REF_DEV_ID" property="refDevId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="DEVICE_SERVICE_ID" property="deviceServiceId" jdbcType="VARCHAR" /> <!--主设备ID-->
+		<result column="REF_DEVICE_SERVICE_ID" property="refDeviceServiceId" jdbcType="VARCHAR" /> <!--子设备ID-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_REF_DEVICE T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.REF_DEV_ID,
+			T.DEVICE_SERVICE_ID,
+			T.REF_DEVICE_SERVICE_ID
+		FROM
+			T_REF_DEVICE T
+		<include refid="find_where" />
+		ORDER BY 
+			T.REF_DEV_ID ASC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="refDevId != null and refDevId != ''" ><![CDATA[ AND T.REF_DEV_ID = #{refDevId,jdbcType=DECIMAL} ]]></if> 
+			<if test="deviceServiceId != null and deviceServiceId != ''" ><![CDATA[ AND T.DEVICE_SERVICE_ID = #{deviceServiceId,jdbcType=VARCHAR} ]]></if> 
+			<if test="refDeviceServiceId != null and refDeviceServiceId != ''" ><![CDATA[ AND T.REF_DEVICE_SERVICE_ID = #{refDeviceServiceId,jdbcType=VARCHAR} ]]></if> 
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.PefDevice">
+		<selectKey keyProperty="refDevId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_REF_DEV.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_REF_DEVICE
+		(
+			REF_DEV_ID,
+			DEVICE_SERVICE_ID,
+			REF_DEVICE_SERVICE_ID
+		) VALUES (
+			#{refDevId,jdbcType=DECIMAL},
+			#{deviceServiceId,jdbcType=VARCHAR},
+			#{refDeviceServiceId,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.PefDevice">
+		UPDATE
+			T_REF_DEVICE
+		<set> 
+			<if test="deviceServiceId != null and deviceServiceId != ''" >DEVICE_SERVICE_ID=#{deviceServiceId,jdbcType=VARCHAR},</if>
+			<if test="refDeviceServiceId != null and refDeviceServiceId != ''" >REF_DEVICE_SERVICE_ID=#{refDeviceServiceId,jdbcType=VARCHAR},</if>
+		</set>
+		WHERE
+			REF_DEV_ID= #{refDevId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.REF_DEV_ID,
+			T.DEVICE_SERVICE_ID,
+			T.REF_DEVICE_SERVICE_ID
+		FROM
+			T_REF_DEVICE T
+		WHERE
+			REF_DEV_ID= #{refDevId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.devicecollectdata.PefDevice">
+		DELETE FROM T_REF_DEVICE WHERE REF_DEV_ID= #{refDevId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

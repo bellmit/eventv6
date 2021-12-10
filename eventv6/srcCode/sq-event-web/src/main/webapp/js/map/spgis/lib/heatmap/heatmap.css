@@ -1,0 +1,62 @@
+@charset "utf-8";
+/* CSS Document */
+.map_noprint{position: absolute;z-index:10;
+    bottom: 0px;
+    right: 12px;
+    top: auto;
+    left: auto;
+    padding: 7px;
+	color:#fff;
+	font-size:12px;
+	}
+.AlphaBack{	background-color: rgba(0, 0, 0, 0.5);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8c000000',endColorstr='#8c000000')}
+.legend-text{float: left;
+    line-height: 21px;}
+.legend-1{background: rgb(0,0,255);}
+.legend-item{
+    background: #46b035;
+    float: left;
+    margin-left: 1px;
+    padding: 2px 12px;
+    color: #fff;
+    /*position: relative;*/
+    text-decoration: none;
+    cursor: pointer;}
+.legend-2{background: rgb(0,255,255);}
+.legend-3{background: rgb(0,255,0);}
+.legend-4{background: yellow;}
+.legend-5{background: rgb(255,0,0);}
+.legend-item-wrapper{
+	position: absolute;
+    height: 45px;
+    top:-58px;
+	right: 52px;
+    /*left: -87px;*/
+    width: 200px;
+}
+.legend-item-tip{    
+    position: relative;
+    white-space: nowrap;
+    background-repeat: no-repeat;
+    padding: 6px 14px 6px 14px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+	background-color: rgba(0, 0, 0, 0.5);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8c000000',endColorstr='#8c000000');
+	float:left;
+	}
+.legend-item-tip-arrow{
+	background:url(images/rlt_icon2.png) no-repeat;
+    width: 13px;
+    height: 8px;
+    position: absolute;
+    left: 50%;
+    margin-left: -3px;
+    top: 38px;
+}
+.legend-1 .legent-item-pic{ background:url(images/rlt_icon1.png) no-repeat; display:inline-block; width:65px; height:25px; vertical-align:middle; margin-right:8px;}
+.legend-2 .legent-item-pic{ background:url(images/rlt_icon3.png) no-repeat; display:inline-block; width:65px; height:25px; vertical-align:middle; margin-right:8px;}
+.legend-3 .legent-item-pic{ background:url(images/rlt_icon4.png) no-repeat; display:inline-block; width:65px; height:25px; vertical-align:middle; margin-right:8px;}
+.legend-4 .legent-item-pic{ background:url(images/rlt_icon5.png) no-repeat; display:inline-block; width:65px; height:25px; vertical-align:middle; margin-right:8px;}
+.legend-5 .legent-item-pic{ background:url(images/rlt_icon6.png) no-repeat; display:inline-block; width:65px; height:25px; vertical-align:middle; margin-right:8px;}

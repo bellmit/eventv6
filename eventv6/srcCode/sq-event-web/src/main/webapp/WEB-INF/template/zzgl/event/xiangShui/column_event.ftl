@@ -1,0 +1,1 @@
+<@extends name="/zzgl/event/column_event.ftl" />

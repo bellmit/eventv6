@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.aqi.ZgAQIMapper">
+	<resultMap id="AQIMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.aqi.ZgAQI">
+		<id column="SEQID" property="seqid" jdbcType="INTEGER" />
+		<result column="STATIONNAME" property="stationName" jdbcType="VARCHAR" />
+		<result column="STATIOID" property="statioId" jdbcType="VARCHAR" />
+		<result column="MONITORTIME" property="monitorTime" jdbcType="TIMESTAMP" />
+		<result column="MONITORTYPE" property="monitorType" jdbcType="VARCHAR" />
+		<result column="HOUR" property="hour" jdbcType="VARCHAR" />
+		<result column="AQI" property="aqi" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="VARCHAR" />
+		<result column="STATENAME" property="stateName" jdbcType="VARCHAR" />
+		<result column="AIRCLASS" property="airClass" jdbcType="VARCHAR" />
+		<result column="CLASSNAME" property="className" jdbcType="VARCHAR" />
+		<result column="SO2" property="so2" jdbcType="VARCHAR" />
+		<result column="SO2_24" property="so224" jdbcType="VARCHAR" />
+		<result column="NO2" property="no2" jdbcType="VARCHAR" />
+		<result column="NO2_24" property="no224" jdbcType="VARCHAR" />
+		<result column="PM10" property="pm10" jdbcType="VARCHAR" />
+		<result column="PM10_24" property="pm1024" jdbcType="VARCHAR" />
+		<result column="PM2_5" property="pm25" jdbcType="VARCHAR" />
+		<result column="PM2_5_24" property="pm2524" jdbcType="VARCHAR" />
+		<result column="CO" property="co" jdbcType="VARCHAR" />
+		<result column="CO_24" property="co24" jdbcType="VARCHAR" />
+		<result column="O3" property="o3" jdbcType="VARCHAR" />
+		<result column="O3_8" property="o38" jdbcType="VARCHAR" />
+		<result column="MAINFOMITE" property="mainFomite" jdbcType="VARCHAR" />
+		<result column="PICPATH" property="picPath" jdbcType="VARCHAR" />
+		<result column="CLASS_24" property="class24" jdbcType="VARCHAR" />
+		<result column="STATE_24" property="state24" jdbcType="VARCHAR" />
+		<result column="AQI_24" property="aqi24" jdbcType="VARCHAR" />
+		<result column="EFFECTINFO" property="effectInfo" jdbcType="OTHER" />
+		<result column="ADVISEINFO" property="adviseInfo" jdbcType="OTHER" />
+		<result column="X" property="x" jdbcType="VARCHAR" />
+		<result column="Y" property="y" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR" />
+		<result column="DIMENSIONS" property="dimensions" jdbcType="VARCHAR" />
+		<result column="OPDATE" property="opdate" jdbcType="DATE" />
+	</resultMap>
+	<!-- 插入一条 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.persistence.szzg.aqi.ZgAQIMapper">
+		<selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+			SELECT ${dbuser.zhsq_szzg}.SEQ_ZG_AQI_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO 
+			${dbuser.zhsq_szzg}.zg_aqi(SEQID,STATIONNAME,STATIOID,MONITORTIME,MONITORTYPE,AQI,
+			STATE,MAINFOMITE,PM2_5,PM10,OPDATE,CO,NO2,O3,SO2)
+    	VALUES (
+			#{seqid,jdbcType=DECIMAL},#{stationName,jdbcType=VARCHAR}, #{statioId,jdbcType=VARCHAR},
+			#{monitorTime,jdbcType=TIMESTAMP},#{monitorType,jdbcType=VARCHAR},#{aqi,jdbcType=VARCHAR},
+			#{state,jdbcType=VARCHAR},#{mainFomite,jdbcType=VARCHAR},#{pm25,jdbcType=VARCHAR},
+			#{pm10,jdbcType=VARCHAR},SYSDATE
+			,#{co,jdbcType=VARCHAR}
+			,#{no2,jdbcType=VARCHAR}
+			,#{o3,jdbcType=VARCHAR},
+			#{so2,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="findCountByStatioId" resultType="int" >
+		SELECT count(1) 
+		from  ${dbuser.zhsq_szzg}.zg_aqi  where 1=1
+		<if test="statioId != null and statioId != ''">
+			AND STATIOID = #{statioId,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			<![CDATA[ AND MONITORTIME = TO_DATE(#{updateTime,jdbcType=VARCHAR}, 'yyyy-mm-dd hh24:mi')]]>
+		</if>  
+		<if test="monitorType != null and monitorType != ''">
+			AND MONITORTYPE = #{monitorType,jdbcType=VARCHAR}
+		</if> 
+	</select>
+	
+	<select id="findAQI" resultMap="AQIMap">
+	<!-- 站点空气质量指数查询 [该查询语句暂时使用]-->
+		SELECT a.seqid,
+	       a2.stationname,
+	       a.statioid,
+	       a.monitortime,
+	       a.monitortype,
+	       a.hour,
+	       a.aqi,
+	       a1.state,
+	       a.statename,
+	       --a.airclass,
+	       a1.classname,
+	       a.so2,
+	       a.so2_24,
+	       a.no2,
+	       a.no2_24,
+	       a.pm10,
+	       a.pm10_24,
+	       a.pm2_5,
+	       a.pm2_5_24,
+	       a.co,
+	       a.co_24,
+	       a.o3,
+	       a.o3_8,
+	       a.mainfomite,
+	       a.picpath,
+	       a.class_24,
+	       a.state_24,
+	       a.aqi_24,
+	       --a.effectinfo,
+	       a1.adviseinfo,
+	       a2.x,
+	       a2.y,
+			a2.LONGITUDE,
+			a2.DIMENSIONS
+			--a.opdate
+	  FROM ${dbuser.zhsq_szzg}.zg_aqi a
+	  LEFT JOIN ${dbuser.zhsq_szzg}.zg_aqi_std a1
+	    ON a.state = a1.state
+	  LEFT JOIN ${dbuser.zhsq_szzg}.zg_aqi_station a2
+	    ON a.statioid = a2.stationid
+	 WHERE a.monitortime = (SELECT MAX(t.monitortime)
+	                          FROM zg_aqi t
+	                         WHERE t.monitortype IN ('1', '3'))
+	 ORDER BY a.monitortype, a2.stationid
+
+	</select>
+	<select id="findList" resultMap="AQIMap">
+	<!-- 站点空气质量指数查询 -->
+		SELECT a.seqid,
+		       a2.stationname,
+		       a.statioid,
+		       a.monitortime,
+		       a.monitortype,
+		       a.hour,
+		       a.aqi,
+		       a1.state,
+		       a1.statename,
+		       a1.classname,
+		       a.so2,
+		       a.so2_24,
+		       a.no2,
+		       a.no2_24,
+		       a.pm10,
+		       a.pm10_24,
+		       a.pm2_5,
+		       a.pm2_5_24,
+		       a.co,
+		       a.co_24,
+		       a.o3,
+		       a.o3_8,
+		       a.mainfomite,
+		       a.picpath,
+		       a.class_24,
+		       a.state_24,
+		       a.aqi_24,
+		       a1.adviseinfo,
+		       a2.x,
+		       a2.y,
+		       a2.LONGITUDE, 
+			   a2.DIMENSIONS
+		  FROM ${dbuser.zhsq_szzg}.zg_aqi a
+		  LEFT JOIN ${dbuser.zhsq_szzg}.zg_aqi_std a1
+		    ON a.state = a1.state
+		  LEFT JOIN ${dbuser.zhsq_szzg}.zg_aqi_station a2
+		    ON a.statioid = a2.stationid
+		 WHERE a.monitortime = 
+		 (SELECT MAX(t.monitortime) FROM ${dbuser.zhsq_szzg}.zg_aqi t WHERE t.monitortype IN ('1', '3') 
+	 			 <if test="statioId != null">                   
+		                          and t.statioid like #{statioId}||'%'
+		        </if>
+		 )
+		                          AND a.monitortype IN ('1', '3')   
+      			 <if test="statioId != null">                   
+                          and a.statioid like #{statioId}||'%'
+        		</if>
+		 ORDER BY a.monitortype, a2.stationid   
+	</select>
+	<select id="getTime" resultType="Map">
+	<!-- [该查询语句暂时使用] -->
+		SELECT
+		to_char(max(t.monitortime),'yyyy"年"mm"月"dd"日"hh24"时"') nowtime FROM
+		${dbuser.zhsq_szzg}.zg_AQI t
+	</select>
+	<select id="getHour" resultType="Map">
+		<!-- 最近24小时 -->
+		<!--	SELECT to_char(monitortime, 'dd"日"hh24"时"') label, aqi VALUE
+			  FROM (SELECT monitortime, aqi
+			          FROM ${dbuser.zhsq_szzg}.zg_aqi a
+			         WHERE a.monitortime &lt;= (SELECT MAX(t.monitortime) FROM ${dbuser.zhsq_szzg}.zg_aqi t) AND
+			               a.statioid = #{statioId} AND a.monitortype IN ('1', '3') AND
+			               rownum &lt;= 24
+			         ORDER BY monitortime DESC)
+			 ORDER BY monitortime -->
+	select to_char(day, 'dd"日"hh24"时"') label, a.aqi VALUE  from 
+       ( 
+         SELECT  
+       to_date(TO_CHAR(SYSDATE - ROWNUM / 24 - 1 / 24 / 60 - 1 / 24 / 60 / 60, 
+               'yyyy-mm-dd hh24'),'yyyy-mm-dd hh24') day 
+                FROM DUAL  CONNECT BY ROWNUM &lt;= 24
+       ) t1
+  	left join ${dbuser.zhsq_szzg}.zg_aqi a on t1.day=a.monitortime
+  	and a.statioid = #{statioId}   AND a.monitortype= '1'
+  	order by label asc
+	</select>
+	<select id="getDay" resultType="Map">
+		<!-- 最近两周 -->
+	 <!-- 	SELECT * 
+		  FROM (select to_char(t.monitortime, 'mm"月"dd"日"') label, t.aqi value
+		          from ${dbuser.zhsq_szzg}.zg_aqi t
+		         where t.monitortype = '2'
+		           AND t.statioid = #{statioId}
+		         order by t.monitortime desc) A
+		 WHERE rownum &lt;= 14 ORDER BY LABEL ASC-->
+	 select to_char(day,  'mm"月"dd"日"') label, a.aqi VALUE  from 
+       ( 
+           SELECT to_date(to_char(trunc(sysdate, 'dd'), 'yyyy-mm-dd'), 'yyyy-mm-dd') - rownum  as day
+          FROM dual  CONNECT BY ROWNUM &lt;= 14 
+       ) t1
+  
+	  left join ${dbuser.zhsq_szzg}.zg_aqi a on t1.day=a.monitortime
+	  and a.statioid = #{statioId}  AND a.monitortype = '2'
+	  order by day asc
+	</select>
+	
+	
+	<select id="getStationListByCity" resultType="Map">
+		<![CDATA[
+			select s.seqid,s.stationid,s.stationname,s.location,s.x,s.y,s.longitude,s.dimensions 
+			from ${dbuser.zhsq_szzg}.zg_aqi_station s where s.stationid 
+			like #{statioId}||'%'
+		]]>
+	</select>
+
+</mapper>

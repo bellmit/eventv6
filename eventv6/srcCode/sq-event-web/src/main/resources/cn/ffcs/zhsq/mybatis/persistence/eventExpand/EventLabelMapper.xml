@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventExpand.EventLabelMapper">
+	
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_EVENT_LABEL T
+		INNER JOIN T_DC_GRID G
+		ON T.REGION_CODE=G.INFO_ORG_CODE
+		AND G.STATUS='001'
+		WHERE 1=1 
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultType="map">
+		SELECT
+			T.LABEL_ID			"labelId",
+			T.LABEL_NAME		"labelName",
+			T.LABEL_ALIAS		"labelAlias",
+			T.LABEL_MODEL		"labelModel",
+			T.ADD_URL			"addUrl",
+			T.DETAIL_URL		"detailUrl",
+			T.REGION_CODE		"regionCode",
+			T.ORDER_BY			"orderBy",
+			T.IS_VALID			"isValid",
+			T.CREATOR			"creator",
+			T.CREATE_DATE		"createDate",
+			T.UPDATER			"updater",
+			T.UPDATE_DATE		"updateDate",
+			G.GRID_PATH			"gridPath"
+		FROM
+			T_EVENT_LABEL T
+		INNER JOIN T_DC_GRID G
+		ON T.REGION_CODE=G.INFO_ORG_CODE
+		AND G.STATUS='001'
+		WHERE 1=1 
+		<include refid="find_where" />
+		ORDER BY T.ORDER_BY,T.LABEL_ID,T.CREATE_DATE DESC
+	</select>
+	
+	<!-- 列表（不分页） -->	
+	<select id="searchByParams"  resultType="map">
+		SELECT
+			T.LABEL_ID			"labelId",
+			T.LABEL_NAME		"labelName",
+			T.LABEL_ALIAS		"labelAlias",
+			T.LABEL_MODEL		"labelModel",
+			T.ADD_URL			"addUrl",
+			T.DETAIL_URL		"detailUrl",
+			T.REGION_CODE		"regionCode",
+			T.ORDER_BY			"orderBy",
+			T.IS_VALID			"isValid",
+			T.CREATOR			"creator",
+			T.CREATE_DATE		"createDate",
+			T.UPDATER			"updater",
+			T.UPDATE_DATE		"updateDate",
+			G.GRID_PATH			"gridPath"
+		FROM
+			T_EVENT_LABEL T
+		INNER JOIN T_DC_GRID G
+		ON T.REGION_CODE=G.INFO_ORG_CODE
+		AND G.STATUS='001'
+		WHERE 1=1 
+		<include refid="find_where" />
+		ORDER BY T.ORDER_BY,T.LABEL_ID,T.CREATE_DATE DESC
+	</select>
+	
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="map">
+		<selectKey keyProperty="labelId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_EVENT_LABEL.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_EVENT_LABEL
+		(
+			LABEL_ID,
+			LABEL_NAME,
+			LABEL_ALIAS,
+			LABEL_MODEL,
+			ADD_URL,
+			DETAIL_URL,
+			REGION_CODE,
+			ORDER_BY,
+			IS_VALID,
+			CREATOR,
+			CREATE_DATE,
+			UPDATER,
+			UPDATE_DATE
+		) VALUES (
+			#{labelId,jdbcType=DECIMAL},
+			#{labelName,jdbcType=VARCHAR},
+			#{labelAlias,jdbcType=VARCHAR},
+			#{labelModel,jdbcType=VARCHAR},
+			#{addUrl,jdbcType=VARCHAR},
+			#{detailUrl,jdbcType=VARCHAR},
+			#{regionCode,jdbcType=VARCHAR},
+			#{orderBy,jdbcType=DECIMAL},
+			'1',
+			#{creator,jdbcType=DECIMAL},
+			SYSDATE,
+			#{updater,jdbcType=DECIMAL},
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="map">
+		UPDATE
+			T_EVENT_LABEL
+		<set> 
+			<if test="labelName != null and labelName != '' " >
+				LABEL_NAME =#{labelName,jdbcType=VARCHAR},
+			</if>
+			<if test="labelAlias != null and labelAlias != '' " >
+				LABEL_ALIAS =#{labelAlias,jdbcType=VARCHAR},
+			</if>
+			<if test="labelModel != null and labelModel != '' " >
+				LABEL_MODEL=#{labelModel,jdbcType=VARCHAR},
+			</if>
+			<if test="addUrl != null and addUrl != '' " >
+				ADD_URL=#{addUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="detailUrl != null and detailUrl != '' " >
+				DETAIL_URL=#{detailUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="regionCode != null and regionCode != '' " >
+				REGION_CODE=#{regionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="orderBy != null " >
+				ORDER_BY=#{orderBy,jdbcType=DECIMAL},
+			</if>
+			<if test="isValid != null and isValid != '' " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="updater != null " >
+				UPDATER=#{updater,jdbcType=DECIMAL},
+			</if>
+			<choose>
+				<when test="updateDate != null " >
+					UPDATE_DATE=#{updateDate,jdbcType=TIMESTAMP},
+				</when>
+				<otherwise>
+					UPDATE_DATE=SYSDATE,
+				</otherwise>
+			</choose>
+		</set>
+		WHERE
+			LABEL_ID= #{labelId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultType="map">
+		SELECT
+			T.LABEL_ID			"labelId",
+			T.LABEL_NAME		"labelName",
+			T.LABEL_ALIAS		"labelAlias",
+			T.LABEL_MODEL		"labelModel",
+			T.ADD_URL			"addUrl",
+			T.DETAIL_URL		"detailUrl",
+			T.REGION_CODE		"regionCode",
+			T.ORDER_BY			"orderBy",
+			T.IS_VALID			"isValid",
+			T.CREATOR			"creator",
+			T.CREATE_DATE		"createDate",
+			T.UPDATER			"updater",
+			T.UPDATE_DATE		"updateDate",
+			G.GRID_PATH			"gridPath"
+		FROM
+			T_EVENT_LABEL T
+		INNER JOIN T_DC_GRID G
+			ON T.REGION_CODE=G.INFO_ORG_CODE
+			AND G.STATUS='001'
+		WHERE
+			LABEL_ID= #{labelId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<update id="deleteByLabelId" parameterType="long">
+		UPDATE T_EVENT_LABEL SET IS_VALID='0',UPDATER=#{updater,jdbcType=DECIMAL},UPDATE_DATE=SYSDATE WHERE LABEL_ID= #{labelId,jdbcType=DECIMAL} 
+	</update>
+
+
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="labelName != null and labelName != ''">
+			AND T.LABEL_NAME LIKE #{labelName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="labelModel != null and labelModel != '' ">
+			AND T.LABEL_MODEL LIKE #{labelModel,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="infoOrgCode != null and infoOrgCode != '' ">
+			AND #{infoOrgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE||'%'
+		</if>
+		<choose>
+			<when test="isValid != null and isValid != '' " >
+				AND T.IS_VALID=#{isValid,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T.IS_VALID='1'
+			</otherwise>
+		</choose>
+		<if test="@Ognl@isNotEmpty(eventLabelIdList)">
+			AND T1.LABEL_ID IN
+			<foreach collection="eventLabelIdList" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="creator != null ">
+			AND T.CREATOR=#{creator,jdbcType=DECIMAL}
+		</if>
+		<if test="createTimeStart!=null">
+  			AND T.CREATE_DATE <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  		</if>
+		<if test="createTimeEnd != null">
+   			AND T.CREATE_DATE <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   		</if>
+		<if test="updater != null ">
+			AND T.UPDATER=#{updater,jdbcType=DECIMAL}
+		</if>
+		<if test="updateTimeStart != null">
+  			AND T.UPDATE_DATE <![CDATA[>=]]>TO_DATE(#{updateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+  		</if>
+   		<if test="updateTimeEnd != null">
+   			AND T.UPDATE_DATE <![CDATA[<]]>TO_DATE(#{updateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+   		</if>
+	</sql>
+	
+</mapper>

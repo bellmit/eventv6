@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.PatrolMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+    <id column="PATROL_ID" property="patrolId" jdbcType="DECIMAL" />
+    <result column="CODE_" property="code" jdbcType="VARCHAR" />
+    <result column="NAME_" property="name" jdbcType="VARCHAR" />
+    <result column="TYPE_" property="type" jdbcType="VARCHAR" />
+    <result column="CONTENT_" property="content" jdbcType="VARCHAR" />
+    <result column="OCCURRED" property="occurred" jdbcType="VARCHAR" />
+    <result column="START_PATROL_TIME" property="startPatrolTime" jdbcType="DATE" />
+    <result column="END_PATROL_TIME" property="endPatrolTime" jdbcType="DATE" />
+    <result column="INVOLVED_NUM" property="involvedNum" jdbcType="VARCHAR" />
+    <result column="PRINCIPAL" property="principal" jdbcType="VARCHAR" />
+    <result column="PRINCIPAL_TEL" property="principalTel" jdbcType="VARCHAR" />
+    <result column="HANDLE_RESULT" property="handleResult" jdbcType="VARCHAR" />
+    <result column="GRID_ID" property="gridId" jdbcType="DECIMAL" />
+    <result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="CHAR" />
+    <result column="CREATED" property="created" jdbcType="DATE" />
+    <result column="CREATOR" property="creator" jdbcType="DECIMAL" />
+    <result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR" />
+    <result column="UPDATED" property="updated" jdbcType="DATE" />
+    <result column="UPDATOR" property="updator" jdbcType="DECIMAL" />
+    <result column="UPDATOR_NAME" property="updatorName" jdbcType="VARCHAR" />
+    <!-- extra -->
+    <result column="GRID_NAME" property="gridName" jdbcType="VARCHAR" />
+    <result column="START_PATROL_TIME_STR" property="startPatrolTimeStr" jdbcType="VARCHAR" />
+    <result column="END_PATROL_TIME_STR" property="endPatrolTimeStr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    T1.PATROL_ID, T1.CODE_, T1.NAME_, T1.TYPE_, T1.CONTENT_, T1.OCCURRED, T1.START_PATROL_TIME, T1.END_PATROL_TIME, 
+    T1.INVOLVED_NUM, T1.PRINCIPAL, T1.PRINCIPAL_TEL, T1.HANDLE_RESULT, T1.GRID_ID, T1.GRID_CODE, T1.STATUS, 
+    T1.CREATED, T1.CREATOR, T1.CREATOR_NAME, T1.UPDATED, T1.UPDATOR, T1.UPDATOR_NAME, T2.GRID_NAME,
+    TO_CHAR(T1.START_PATROL_TIME,'YYYY-MM-DD HH24:MI:DD') START_PATROL_TIME_STR, 
+    TO_CHAR(T1.END_PATROL_TIME,'YYYY-MM-DD HH24:MI:DD')  END_PATROL_TIME_STR
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_ZZ_PATROL T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+    AND PATROL_ID = #{patrolId,jdbcType=DECIMAL}
+  </select>
+   <select id="getPotarlSequence" resultType="long">  
+  	select SEQ_POTARLN_CODE.nextval from dual  
+  </select> 
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_ZZ_PATROL
+    where PATROL_ID = #{patrolId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+  	<selectKey keyProperty="patrolId" resultType="long" order="BEFORE">
+		SELECT  SEQ_PATROL_ID.NEXTVAL from DUAL
+	</selectKey>
+    insert into T_ZZ_PATROL (PATROL_ID, CODE_, NAME_, 
+      TYPE_, CONTENT_, OCCURRED, 
+      START_PATROL_TIME, END_PATROL_TIME, INVOLVED_NUM, 
+      PRINCIPAL, PRINCIPAL_TEL, HANDLE_RESULT, 
+      GRID_ID, GRID_CODE, STATUS, 
+      CREATED, CREATOR, CREATOR_NAME, 
+      UPDATED, UPDATOR, UPDATOR_NAME
+      )
+    values (#{patrolId,jdbcType=DECIMAL}, #{code,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{occurred,jdbcType=VARCHAR}, 
+      to_date(#{startPatrolTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      to_date(#{endPatrolTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'), #{involvedNum,jdbcType=VARCHAR}, 
+      #{principal,jdbcType=VARCHAR}, #{principalTel,jdbcType=VARCHAR}, #{handleResult,jdbcType=VARCHAR}, 
+      #{gridId,jdbcType=DECIMAL}, #{gridCode,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 
+      SYSDATE, #{creator,jdbcType=DECIMAL}, #{creatorName,jdbcType=VARCHAR}, 
+      SYSDATE, #{updator,jdbcType=DECIMAL}, #{updatorName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+    insert into T_ZZ_PATROL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="patrolId != null" >
+        PATROL_ID,
+      </if>
+      <if test="code != null" >
+        CODE_,
+      </if>
+      <if test="name != null" >
+        NAME_,
+      </if>
+      <if test="type != null" >
+        TYPE_,
+      </if>
+      <if test="content != null" >
+        CONTENT_,
+      </if>
+      <if test="occurred != null" >
+        OCCURRED,
+      </if>
+      <if test="startPatrolTime != null" >
+        START_PATROL_TIME,
+      </if>
+      <if test="endPatrolTime != null" >
+        END_PATROL_TIME,
+      </if>
+      <if test="involvedNum != null" >
+        INVOLVED_NUM,
+      </if>
+      <if test="principal != null" >
+        PRINCIPAL,
+      </if>
+      <if test="principalTel != null" >
+        PRINCIPAL_TEL,
+      </if>
+      <if test="handleResult != null" >
+        HANDLE_RESULT,
+      </if>
+      <if test="gridId != null" >
+        GRID_ID,
+      </if>
+      <if test="gridCode != null" >
+        GRID_CODE,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="created != null" >
+        CREATED,
+      </if>
+      <if test="creator != null" >
+        CREATOR,
+      </if>
+      <if test="creatorName != null" >
+        CREATOR_NAME,
+      </if>
+      <if test="updated != null" >
+        UPDATED,
+      </if>
+      <if test="updator != null" >
+        UPDATOR,
+      </if>
+      <if test="updatorName != null" >
+        UPDATOR_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="patrolId != null" >
+        #{patrolId,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="occurred != null" >
+        #{occurred,jdbcType=VARCHAR},
+      </if>
+      <if test="startPatrolTime != null" >
+        #{startPatrolTime,jdbcType=DATE},
+      </if>
+      <if test="endPatrolTime != null" >
+        #{endPatrolTime,jdbcType=DATE},
+      </if>
+      <if test="involvedNum != null" >
+        #{involvedNum,jdbcType=VARCHAR},
+      </if>
+      <if test="principal != null" >
+        #{principal,jdbcType=VARCHAR},
+      </if>
+      <if test="principalTel != null" >
+        #{principalTel,jdbcType=VARCHAR},
+      </if>
+      <if test="handleResult != null" >
+        #{handleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="gridId != null" >
+        #{gridId,jdbcType=DECIMAL},
+      </if>
+      <if test="gridCode != null" >
+        #{gridCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="created != null" >
+        SYSDATE,
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=DECIMAL},
+      </if>
+      <if test="creatorName != null" >
+        #{creatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="updated != null" >
+        SYSDATE,
+      </if>
+      <if test="updator != null" >
+        #{updator,jdbcType=DECIMAL},
+      </if>
+      <if test="updatorName != null" >
+        #{updatorName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="deleteByIdForLogic" parameterType="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+  	update T_ZZ_PATROL
+  	<set >
+  	STATUS = '3'
+  	<if test="updated != null" >
+        ,UPDATED = SYSDATE
+      </if>
+      <if test="updator != null" >
+        ,UPDATOR = #{updator,jdbcType=DECIMAL}
+      </if>
+      <if test="updatorName != null" >
+        ,UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR}
+      </if>
+  	</set>
+  	where PATROL_ID = #{patrolId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+    update T_ZZ_PATROL
+    <set >
+      <if test="code != null" >
+        CODE_ = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        NAME_ = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        TYPE_ = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        CONTENT_ = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="occurred != null" >
+        OCCURRED = #{occurred,jdbcType=VARCHAR},
+      </if>
+      <if test="startPatrolTimeStr != null" >
+        START_PATROL_TIME = TO_DATE(#{startPatrolTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+      <if test="endPatrolTimeStr != null" >
+        END_PATROL_TIME = TO_DATE(#{endPatrolTimeStr,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+      </if>
+      <if test="involvedNum != null" >
+        INVOLVED_NUM = #{involvedNum,jdbcType=VARCHAR},
+      </if>
+      <if test="principal != null" >
+        PRINCIPAL = #{principal,jdbcType=VARCHAR},
+      </if>
+      <if test="principalTel != null" >
+        PRINCIPAL_TEL = #{principalTel,jdbcType=VARCHAR},
+      </if>
+      <if test="handleResult != null" >
+        HANDLE_RESULT = #{handleResult,jdbcType=VARCHAR},
+      </if>
+      <if test="gridId != null" >
+        GRID_ID = #{gridId,jdbcType=DECIMAL},
+      </if>
+      <if test="gridCode != null" >
+        GRID_CODE = #{gridCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=CHAR},
+      </if>
+      <if test="updated != null" >
+        UPDATED = SYSDATE,
+      </if>
+      <if test="updator != null" >
+        UPDATOR = #{updator,jdbcType=DECIMAL},
+      </if>
+      <if test="updatorName != null" >
+        UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PATROL_ID = #{patrolId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.event.Patrol" >
+    update T_ZZ_PATROL
+    set CODE_ = #{code,jdbcType=VARCHAR},
+      NAME_ = #{name,jdbcType=VARCHAR},
+      TYPE_ = #{type,jdbcType=VARCHAR},
+      CONTENT_ = #{content,jdbcType=VARCHAR},
+      OCCURRED = #{occurred,jdbcType=VARCHAR},
+      START_PATROL_TIME = #{startPatrolTime,jdbcType=DATE},
+      END_PATROL_TIME = #{endPatrolTime,jdbcType=DATE},
+      INVOLVED_NUM = #{involvedNum,jdbcType=VARCHAR},
+      PRINCIPAL = #{principal,jdbcType=VARCHAR},
+      PRINCIPAL_TEL = #{principalTel,jdbcType=VARCHAR},
+      HANDLE_RESULT = #{handleResult,jdbcType=VARCHAR},
+      GRID_ID = #{gridId,jdbcType=DECIMAL},
+      GRID_CODE = #{gridCode,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=CHAR},
+      CREATED = SYSDATE,
+      CREATOR = #{creator,jdbcType=DECIMAL},
+      CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+      UPDATED = #{updated,jdbcType=DATE},
+      UPDATOR = #{updator,jdbcType=DECIMAL},
+      UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR}
+    where PATROL_ID = #{patrolId,jdbcType=DECIMAL}
+  </update>
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+  	SELECT COUNT(*)
+  	FROM T_ZZ_PATROL T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001' AND T1.STATUS != '3'
+  	<include refid="find_where"/>
+  </select>
+  
+  <select id="findPageListByCriteria" resultMap="BaseResultMap">
+  	SELECT
+  	<include refid="Base_Column_List"/>
+  	FROM T_ZZ_PATROL T1, T_DC_GRID T2
+  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001' AND T1.STATUS != '3'
+  	<include refid="find_where"/>
+  	ORDER BY T1.CREATED DESC
+  </select>
+  
+  <sql id="find_where">
+  	<if test="keyWord != null and keyWord != ''" >
+  		
+  		AND (T1.NAME_ like '%'||#{keyWord,jdbcType=VARCHAR}||'%' OR T1.CONTENT_ like '%'||#{keyWord,jdbcType=VARCHAR}||'%' OR T1.OCCURRED like '%'||#{keyWord,jdbcType=VARCHAR}||'%')
+  		<!-- 
+  		AND (REGEXP_LIKE(T1.NAME_,#{keyWord,jdbcType=VARCHAR}) OR REGEXP_LIKE(T1.CONTENT_,#{keyWord,jdbcType=VARCHAR}) OR REGEXP_LIKE(T1.OCCURRED,#{keyWord,jdbcType=VARCHAR}))
+  		 -->
+  	</if>
+  	<if test="gridId != null and gridId != ''" >
+  		AND T1.GRID_ID  in (select g.grid_id from t_dc_grid g start with g.grid_id = #{gridId,jdbcType=DECIMAL}  
+         connect by prior g.grid_id = g.parent_grid_id and  g.status = '001')  
+  	</if>
+  	<if test="gridCode != null and gridCode != ''">
+  		AND T1.GRID_CODE LIKE '%'||#{gridCode,jdbcType=VARCHAR}||'%'
+  	</if>
+  	<if test="type != null and type != ''">
+  		AND T1.TYPE_ = #{type,jdbcType=VARCHAR}
+  	</if>
+  	
+  </sql>
+</mapper>

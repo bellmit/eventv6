@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.triadRelatedCases.TrialRecordMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.triadRelatedCases.TrialRecord">
+		<id column="TRIAL_UUID" property="trialUuid" jdbcType="VARCHAR" /> <!--庭审记录ID-->
+		<result column="UND_CASE_UUID" property="undCaseUuid" jdbcType="VARCHAR" /> <!--涉黑案件逻辑主键-->
+		<result column="TRIAL_LEVEL" property="trialLevel" jdbcType="DECIMAL" /> <!--审判等级-->
+		<result column="JUDGMENT_TIME" property="judgmentTime" jdbcType="TIMESTAMP" /> <!--判决时间-->
+		<result column="JUDICIAL_UNIT" property="judicialUnit" jdbcType="VARCHAR" /> <!--审判单位-->
+		<result column="TRIAL_STATUS" property="trialStatus" jdbcType="VARCHAR" /> <!--审判状态-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--组织编码-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--有效状态(1有效0无效)-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+	</resultMap>
+
+
+	<!--批量插入-->
+	<insert id="batchInsert" parameterType="cn.ffcs.zhsq.mybatis.domain.triadRelatedCases.CaseFilling">
+
+			INSERT INTO T_TRIAL_RECORD
+		(
+		TRIAL_UUID,
+		UND_CASE_UUID,
+		TRIAL_LEVEL,
+		JUDGMENT_TIME,
+		JUDICIAL_UNIT,
+		TRIAL_STATUS,
+		ORG_CODE,
+		CREATOR,
+		CREATE_TIME,
+		UPDATOR,
+		UPDATE_TIME,
+		IS_VALID,
+		REMARK
+		)
+			<foreach collection="trialRecords" item="item" index="index" separator="union all">
+				SELECT
+				SYS_GUID(),
+				#{undCaseUuid,jdbcType=VARCHAR},
+				#{item.trialLevel,jdbcType=DECIMAL},
+				#{item.judgmentTime,jdbcType=TIMESTAMP},
+				#{item.judicialUnit,jdbcType=VARCHAR},
+				#{item.trialStatus,jdbcType=VARCHAR},
+				#{item.orgCode,jdbcType=VARCHAR},
+				#{creator,jdbcType=DECIMAL},
+				sysdate,
+				#{updator,jdbcType=DECIMAL},
+				sysdate,
+				'1',
+				#{item.remark,jdbcType=VARCHAR}
+				from dual
+			</foreach>
+	</insert>
+	<!-- 删除 -->
+	<delete id="deleteByUndCaseUuid">
+		UPDATE
+			T_TRIAL_RECORD
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+			UND_CASE_UUID= #{undCaseUuid,jdbcType=VARCHAR}
+	</delete>
+
+
+
+	<select id="searchListById" parameterType="String"  resultMap="BaseResultMap">
+		SELECT
+			TRIAL_UUID,
+			UND_CASE_UUID,
+			TRIAL_LEVEL,
+			JUDGMENT_TIME,
+			JUDICIAL_UNIT,
+			TRIAL_STATUS,
+			ORG_CODE,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			REMARK
+		FROM
+			T_TRIAL_RECORD
+		WHERE
+			IS_VALID='1'
+		AND
+			UND_CASE_UUID= #{undCaseUuid,jdbcType=VARCHAR}
+			order by TRIAL_LEVEL
+	</select>
+
+</mapper>

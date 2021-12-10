@@ -1,0 +1,560 @@
+@CHARSET "UTF-8";
+
+body{
+	perspective: 1000px;
+}
+html, body, .container_fluid, .container{
+	width: 100%;
+	height: 100%;
+}
+.container_fluid{
+	position: relative;
+	overflow: hidden;
+}
+.container{
+	position: absolute;
+	top: 0;
+	left: 0;
+	min-width: 1000px;
+	min-height: 618px;
+	margin: 0 auto;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+.container1{
+	z-index: 10;
+}
+.container2{
+	z-index: 20;
+}
+.header{
+	height: 80px;
+	background-color: rgba(51, 105, 255, .1);
+}
+.logo{
+	height: 64px;
+	float: left;	
+	margin: 8px 0 0 32px;
+}
+.logo>img{
+	height: 64px;
+}
+.header_c{
+	float: right;
+	margin-right: 20px;
+	height: 80px;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
+}
+.header_c>p{
+	font-size: 16px;
+	color: #ffea7f;
+	font-family: '造字工房明黑';
+	line-height: 1;
+}
+.header_c>a{
+	display: inline-block;
+	font-size: 16px;
+	color: #fff;
+	font-family: 'HYk2gj';
+	line-height: 1;
+	margin-right: 48px;
+}
+
+/******左侧智慧罗坊旋转 start******/
+.circle_t{
+	position: absolute;
+	top: 30%;
+	left: 13%;
+	z-index: 20;
+	width: 600px;
+	height: 600px;
+	opacity: 0;
+	filter: Alpha(opacity=0);
+	-webkit-animation: circle_t 1.5s linear forwards;
+	animation: circle_t 1.5s linear forwards;
+}
+@-webkit-keyframes circle_t{
+	to{top: 20%; opacity: 1; filter: Alpha(opacity=100);}
+}
+@keyframes circle_t{
+	to{top: 20%; opacity: 1; filter: Alpha(opacity=100);}
+}
+.circle_t_wrap{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	-webkit-animation: circle_t1 6s 1.5s linear infinite;
+	animation: circle_t1 6s 1.5s linear infinite;
+}
+@-webkit-keyframes circle_t1{
+	0%{top: 0%;}
+	25%{top: 2%;}
+	75%{top: -2%;}
+	100%{top: 0%;}
+}
+@keyframes circle_t1{
+	0%{top: 0%;}
+	25%{top: 2%;}
+	75%{top: -2%;}
+	100%{top: 0%;}
+}
+.circle_t>.circle_t_wrap>div{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.circle_t1{
+	background: url(../images/icon_circle_t1.png) no-repeat;
+}
+.circle_t2{
+	background: url(../images/icon_circle_t2.png) no-repeat;
+	-webkit-animation: circle_t2 60s linear infinite;
+	-moz-animation: circle_t2 60s linear infinite;
+	-ms-animation: circle_t2 60s linear infinite;
+	animation: circle_t2 60s linear infinite;
+}
+@-webkit-keyframes circle_t2{from{-webkit-transform: rotate(0deg);}to{-webkit-transform: rotate(360deg);}}
+@keyframes circle_t2{from{transform: rotate(0deg);}to{transform: rotate(360deg);}}
+.circle_t3{
+	background: url(../images/icon_circle_t3.png) no-repeat;
+	-webkit-animation: circle_t3 50s linear infinite;
+	-moz-animation: circle_t3 50s linear infinite;
+	-ms-animation: circle_t3 50s linear infinite;
+	animation: circle_t3 50s linear infinite;
+}
+@-webkit-keyframes circle_t3{from{-webkit-transform: rotate(0deg);}to{-webkit-transform: rotate(-360deg);}}
+@keyframes circle_t3{from{transform: rotate(0deg);}to{transform: rotate(-360deg);}}
+.circle_t4{
+	background: url(../images/icon_circle_t4.png) no-repeat;
+	-webkit-animation: circle_t4 5s linear infinite;
+	-moz-animation: circle_t4 5s linear infinite;
+	-ms-animation: circle_t4 5s linear infinite;
+	animation: circle_t4 5s linear infinite;
+}
+@-webkit-keyframes circle_t4{0%{-webkit-transform: rotate(0deg);}30%{-webkit-transform: rotate(30deg);}100%{-webkit-transform: rotate(0deg);}}
+@keyframes circle_t4{0%{transform: rotate(0deg);}30%{transform: rotate(30deg);}100%{transform: rotate(0deg);}}
+.circle_t5{
+	background: url(../images/icon_circle_t5.png) no-repeat;
+	-webkit-animation: circle_t5 10s linear infinite;
+	-moz-animation: circle_t5 10s linear infinite;
+	-ms-animation: circle_t5 10s linear infinite;
+	animation: circle_t5 10s linear infinite;
+}
+@-webkit-keyframes circle_t5{0%{-webkit-transform: rotate(0deg);}40%{-webkit-transform: rotate(-40deg);}100%{-webkit-transform: rotate(0deg);}}
+@keyframes circle_t5{0%{transform: rotate(0deg);}40%{transform: rotate(-40deg);}100%{transform: rotate(0deg);}}
+.circle_t6{
+	background: url(../images/icon_circle_t6.png) no-repeat;
+	-webkit-animation: circle_t6 5s linear infinite;
+	-moz-animation: circle_t6 5s linear infinite;
+	-ms-animation: circle_t6 5s linear infinite;
+	animation: circle_t6 5s linear infinite;
+}
+@-webkit-keyframes circle_t6{0%{-webkit-transform: rotate(0deg);}25%{-webkit-transform: rotate(-3deg);}75%{-webkit-transform: rotate(3deg);}100%{-webkit-transform: rotate(0deg);}}
+@keyframes circle_t6{0%{transform: rotate(0deg);}25%{transform: rotate(-3deg);}75%{transform: rotate(3deg);}100%{transform: rotate(0deg);}}
+.circle_t7{
+	background: url(../images/icon_circle_t7.png) no-repeat;
+	-webkit-animation: circle_t7 70s linear infinite;
+	-moz-animation: circle_t7 70s linear infinite;
+	-ms-animation: circle_t7 70s linear infinite;
+	animation: circle_t7 70s linear infinite;
+}
+@-webkit-keyframes circle_t7{from{-webkit-transform: rotate(0deg);}to{-webkit-transform: rotate(360deg);}}
+@keyframes circle_t7{from{transform: rotate(0deg);}to{transform: rotate(360deg);}}
+.circle_t8{
+	background: url(../images/icon_circle_t8.png) no-repeat;
+}
+.circle_t>div{
+	background-size: 100% 100%;
+}
+/******左侧智慧罗坊旋转 end******/
+
+/******彗星环绕 start******/
+.circle_hx{
+	position: absolute;
+	top: 52%;
+	left: 10%;
+	z-index: 20;
+	width: 750px;
+	height: 750px;
+	transform-style: preserve-3d;
+	transform: rotateY(75deg);
+	-webkit-animation: circle_hx 1.5s linear forwards;
+	animation: circle_hx 1.5s linear forwards;
+}
+@-webkit-keyframes circle_hx{
+	to{top: 12%;}
+}
+@keyframes circle_hx{
+	to{top: 12%;}
+}
+.hx_co{
+	width: 750px;
+	height: 750px;
+	border-radius: 1000px;
+	transform-style: preserve-3d;
+	-webkit-animation: hxz 20s linear infinite;
+	animation: hxz 20s linear infinite;
+}
+@-webkit-keyframes hxz {
+    0% {transform: rotateX(0deg);}
+    100% {transform: rotateX(-360deg);}
+}
+@keyframes hxz {
+    0% {transform: rotateX(0deg);}
+    100% {transform: rotateX(-360deg);}
+}
+.hx_co>li{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.hx_co>li>span{
+	display: block;
+	-webkit-animation: hx_co 3s linear infinite;
+	animation: hx_co 3s linear infinite;
+}
+@-webkit-keyframes hx_co {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+@keyframes hx_co {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+.hx_co2{
+	transform: rotateX(60deg) rotateZ(60deg);
+}
+.hx_co3{
+	transform: rotateX(-60deg) rotateZ(-60deg);
+}
+/******彗星环绕 end******/
+
+/******左侧底部圆环 start******/
+.circle_b{
+	position: absolute;
+	top: 34%;
+    left: 8%;
+	width: 750px;
+	height: 750px;
+	transform-style: preserve-3d;
+}
+.circle_bt{
+	position: absolute;
+}
+.circle_bt1{
+	width: 750px;
+	height: 750px;
+	top: 0;
+	left: 0;
+	-webkit-transform: translate(0px, 126px) rotateX(77deg) rotateY(-1deg);
+	transform: translate(0px, 126px) rotateX(77deg) rotateY(-1deg);
+}
+.circle_bt2{
+	width: 500px;
+	height: 500px;
+	top: 125px;
+	left: 125px;
+	-webkit-transform: translate(0px, 104px) rotateX(102deg) rotateY(-1deg);
+	transform: translate(0px, 104px) rotateX(102deg) rotateY(-1deg);
+}
+.circle_bt3{
+	width: 1400px;
+	height: 1400px;
+	top: -255px;
+	left: -325px;
+	-webkit-transform: translate(0px, 104px) rotateX(77deg) rotateY(0deg);
+	transform: translate(0px, 104px) rotateX(77deg) rotateY(0deg);
+    opacity: .4;
+    filter: Alpha(opacity=40);
+}
+.circle_bt4{
+    width: 2000px;
+    height: 2000px;
+    top: -518px;
+    left: -484px;
+    -webkit-transform: translate(0px, 104px) rotateX(102deg) rotateY(1deg);
+    transform: translate(0px, 104px) rotateX(102deg) rotateY(1deg);
+    opacity: .2;
+    filter: Alpha(opacity=20);
+}
+.circle_bt>span{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.circle_bt1>span{
+	background: url(../images/icon_circle_bt1.png) no-repeat;
+	background-size: 100% 100%;
+	-webkit-animation: circle_bt 30s linear infinite;
+	animation: circle_bt 30s linear infinite;
+}
+.circle_bt2>span{
+	background: url(../images/icon_circle_bt2.png) no-repeat;
+	background-size: 100% 100%;
+	-webkit-animation: circle_bt 30s linear infinite;
+	animation: circle_bt 30s linear infinite;
+}
+.circle_bt3>span{
+	background: url(../images/icon_circle_bt2.png) no-repeat;
+	background-size: 100% 100%;
+	-webkit-animation: circle_bt 30s linear infinite;
+	animation: circle_bt 30s linear infinite;
+}
+.circle_bt4>span{
+	background: url(../images/icon_circle_bt1.png) no-repeat;
+	background-size: 100% 100%;
+	-webkit-animation: circle_bt 30s linear infinite;
+	animation: circle_bt 30s linear infinite;
+}
+@-webkit-keyframes circle_bt{
+	from{ transform: rotate(0deg);}
+	to{ transform: rotate(360deg);}
+}
+@keyframes circle_bt{
+	from{ transform: rotate(0deg);}
+	to{ transform: rotate(360deg);}
+}
+.circle_y{
+	position: absolute;
+	top: 32%;
+    left: 8%;
+	width: 750px;
+	height: 750px;
+    z-index: -1;
+	transform-style: preserve-3d;
+}
+.circle_y>img{
+	margin-left: -337px;
+    margin-top: 87px;
+    width: 1382px;
+    height: 601px;
+}
+/******左侧底部圆环 end******/
+
+/******登录框 start******/
+.login{
+	position: absolute;
+	width: 440px;
+	height: 440px;
+	right: 6%;
+	top: 50%;
+	margin-top: -220px;
+	background: rgba(51, 105, 255, .15) url(../images/icon_login_bg.png) no-repeat;
+	box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+	opacity: 0;
+	filter: Alpha(opacity=0);
+	-webkit-animation: login 1s linear forwards;
+	animation: login 1s linear forwards;
+}
+@-webkit-keyframes login{
+	to{right: 14%; opacity: 1; filter: Alpha(opacity=100);}
+}
+@keyframes login{
+	to{right: 14%; opacity: 1; filter: Alpha(opacity=100);}
+}
+.login_wel{
+	position: absolute;
+	top: 60px;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 12px;
+	color: rgba(76, 160, 255, .5);
+}
+.login_error{
+	position: absolute;
+	bottom: 94px;
+	left: 0;
+	width: 100%;
+	font-size: 12px;
+	color: #ff3939;
+	padding-left: 48px;
+}
+.login_h{
+	font-size: 28px;
+	color: #f2eeff;
+	text-align: center;	
+	font-family: 'ZZGFBH';
+	line-height: 1;
+}
+.login_i{
+	width: 360px;
+	margin: 22px auto 0;
+}
+.input_g + .input_g{
+	margin-top: 18px;
+}
+.input_g>p{
+	font-size: 12px;
+	color: #8c9fc8;
+	margin-bottom: 6px;
+}
+.input_wrap{
+	position: relative;
+	height: 44px;
+}
+.input_wrap>input{
+	position: absolute;
+	z-index: 2;
+	font-size: 12px;
+	color: #cce0ff;
+	height: 42px;
+	width: 318px;
+	border: 1px solid #486aa9;
+	padding: 0 0 0 40px;
+	background-color: rgba(204, 224, 255, .15);
+}
+.input_wrap>input:focus{
+	-webkit-box-shadow: 0px 0px 8px rgba(251, 150, 33, 0.8);
+	-moz-box-shadow: 0px 0px 8px rgba(251, 150, 33, 0.8);
+	box-shadow: 0px 0px 8px rgba(251, 150, 33, 0.8);
+	border: solid 1px rgba(251, 150, 33, 1);
+}
+.input_wrap>input.yzm{
+	width: 200px;
+	float: left;
+}
+.login_yzm_get {
+	float: right;
+    width: 96px;
+    font-size: 14px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    margin-left: 10px;
+    vertical-align: top;
+}
+.login_yzm_get>a {
+    display: block;
+    color: #00A8FF;
+    height: 100%;
+}
+.login_yzm_get>a>img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.usn{
+	background: url(../images/icon_username.png) no-repeat 12px 12px;
+}
+.psd{
+	background: url(../images/icon_password.png) no-repeat 12px 12px;
+}
+.yzm{
+	background: url(../images/icon_yzm.png) no-repeat 12px 12px;
+}
+.input_t{
+	position: absolute;
+	right: 8px;
+	top: 15px;
+	z-index: 10;
+	height: 12px;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
+}
+.input_t>a{
+	display: block;
+	margin-left: 10px;
+	padding: 0 2px;
+}
+.input_t>a>img{
+	display: block;
+}
+.login_btn{
+	width: 360px;
+	margin: 40px auto 0;
+}
+.login_btn>a{
+	display: block;
+	height: 42px;
+	background: #4ca0ff;
+	-webkit-box-shadow: 0px 4px 6px 0px rgba(122, 184, 255, 0.2);
+	-moz-box-shadow: 0px 4px 6px 0px rgba(122, 184, 255, 0.2);
+	box-shadow: 0px 4px 6px 0px rgba(122, 184, 255, 0.2);
+	border: solid 1px rgba(72, 106, 169, 1);
+	text-align: center;
+	line-height: 42px;
+	font-size: 18px;
+	color: #fff;
+}
+.login_btn>a:hover{
+	background: #388ded;
+}
+/******登录框 end******/
+
+
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #8c9fc8; opacity:1; 
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #8c9fc8;opacity:1;
+}
+
+input:-ms-input-placeholder{
+    color: #8c9fc8;opacity:1;
+}
+input::-webkit-input-placeholder{
+    color: #8c9fc8;opacity:1;
+}
+@media screen and (max-width: 1400px) {
+	.circle_b{
+		top: 16%;
+		left: 0%;
+	}
+	.circle_y{
+		top: 15%;
+		left: 0%;
+	}
+	.circle_t{
+	    left: 6%;
+		-webkit-animation: circle_me1 1.5s linear forwards;
+		animation: circle_me1 1.5s linear forwards;
+	}
+	.circle_hx{
+		left: -2%;
+	}
+	@-webkit-keyframes circle_me1{
+		to{top: 8%; opacity: 1; filter: Alpha(opacity=100);}
+	}
+	@keyframes circle_me1{
+		to{top: 8%; opacity: 1; filter: Alpha(opacity=100);}
+	}
+	.login{
+		right: 2%;
+		animation: login_me 1s linear forwards;
+	}
+	@-webkit-keyframes login_me{
+		to{right: 6%; opacity: 1; filter: Alpha(opacity=100);}
+	}
+	@keyframes login_me{
+		to{right: 6%; opacity: 1; filter: Alpha(opacity=100);}
+	}
+}
+
+@media only screen and (min-width: 1600px) and (max-width: 1900px) {
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

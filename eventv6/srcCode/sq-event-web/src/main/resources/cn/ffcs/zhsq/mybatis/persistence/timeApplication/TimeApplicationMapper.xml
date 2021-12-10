@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.timeApplication.TimeApplicationMapper" >
+  	<!-- 查询列 -->
+  	<sql id="sameCol">
+       	T1.APPLICATION_ID			"applicationId",
+       	T1.APPLICATION_TYPE			"applicationType",
+       	T1.BUSINESS_ID				"businessId",
+       	T1.BUSINESS_KEY_ID			"businessKeyId",
+       	T1."INTERVAL"					"interval",
+       	T1.INTERVAL_UNIT			"intervalUnit",
+       	T1.EVENT_TYPE_AFTER			"eventTypeAfter",
+       	T1.EVENT_TYPE_PRE			"eventTypePre",
+       	T1.REASON					"reason",
+       	T1.REMARK					"remark",
+       	T1.STATUS					"status",
+       	T1.CREATOR_ID				"creatorId",
+       	T1.CREATE_TIME				"createTime"
+  	</sql>
+  	
+  	<!-- 申请人相关信息 -->
+  	<sql id="applicantCol">
+  		T5.PARTY_NAME			"applicantName"
+  	</sql>
+  	
+  	<!-- 新增时限申请信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="applicationId" resultType="long" order="BEFORE">
+			SELECT SEQ_APPLICATION_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_TIME_APPLICATION (
+			APPLICATION_ID, APPLICATION_TYPE, BUSINESS_ID, BUSINESS_KEY_ID,
+			"INTERVAL", INTERVAL_UNIT, EVENT_TYPE_AFTER, EVENT_TYPE_PRE,
+			REASON, REMARK, STATUS,
+			CREATOR_ID, CREATE_TIME
+        )
+        VALUES(
+        	#{applicationId,jdbcType=DECIMAL}, #{applicationType,jdbcType=VARCHAR}, #{businessId,jdbcType=DECIMAL}, #{businessKeyId,jdbcType=DECIMAL},
+        	#{interval,jdbcType=DECIMAL}, #{intervalUnit,jdbcType=VARCHAR}, #{eventTypeAfter,jdbcType=VARCHAR}, #{eventTypePre,jdbcType=VARCHAR},
+        	#{reason,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+        	#{creatorId,jdbcType=DECIMAL}, SYSDATE
+        )
+  	</insert>
+  	
+  	<!-- 依据id更新时限申请信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_TIME_APPLICATION T1 
+		<set>
+			<if test="@Ognl@isNotEmpty(status)">
+				T1.STATUS = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(reason)">
+				T1.REASON = #{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(remark)">
+				T1.REMARK = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="updaterId != null ">
+				T1.UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+			</if>
+		  	
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		
+		WHERE T1.APPLICATION_ID = #{applicationId,jdbcType=DECIMAL}
+  	</update>
+  	
+  	<!-- 依据id删除时限申请信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_TIME_APPLICATION T1
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T1.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T1.STATUS = '0', 
+	  		T1.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	WHERE T1.APPLICATION_ID = #{applicationId,jdbcType=DECIMAL}
+  	</delete>
+  	
+  	<!-- 依据id获取时限申请信息 -->
+  	<select id="findById" resultType="java.util.Map" parameterType="java.lang.Long">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_TIME_APPLICATION T1
+	  	WHERE T1.APPLICATION_ID = #{applicationId,jdbcType=DECIMAL} AND T1.STATUS = '1'
+  	</select>
+  	
+  	<!-- 无分页获取时限申请信息 -->
+  	<select id="findApplicationList" resultType="java.util.Map">
+  		SELECT
+  			T2.CHECK_ID			"checkId",
+  			T2.AUDITOR_ID		"auditorId",
+  			T2.AUDITOR_ORG_ID	"auditorOrgId",
+  			T2.STATUS	  		"timeAppCheckStatus",	
+  			T2.CHECK_ADVICE		"checkAdvice",
+  			T2.REMARK			"checkRemark",
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_TIME_APPLICATION T1, T_EVENT_TIME_CHECK T2
+	  	WHERE T1.APPLICATION_ID = T2.APPLICATION_ID
+	  	<include refid="find_where_check"></include>
+	  	<include refid="find_where"></include>
+	  	ORDER BY T1.APPLICATION_ID DESC
+  	</select>
+  	
+  	<!-- 统计时限申请信息 -->
+  	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+  		FROM T_EVENT_TIME_APPLICATION T1
+  		WHERE 1 = 1
+  		<include refid="find_where"></include>
+  	</select>
+  	 
+  	<!-- 分页获取时限申请信息 -->
+  	<select id="findPageListByCriteria" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="sameCol"/>
+	  	FROM T_EVENT_TIME_APPLICATION T1
+	  	WHERE 1 = 1
+	  	<include refid="find_where"></include>
+	  	ORDER BY T1.APPLICATION_ID DESC
+  	</select>
+  	
+  	<!-- 统计事件时限申请信息 -->
+  	<select id="findEventTimeAppCountByCriteria" resultType="java.lang.Integer">
+  		SELECT COUNT(1)
+  		<include refid="eventTimeApplication"></include>
+  	</select>
+  	
+  	<!-- 分页获取事件时限申请信息 -->
+  	<select id="findEventTimeAppListByCriteria" resultType="java.util.Map">
+  		SELECT T3.EVENT_ID    	"eventId",
+		       T3.EVENT_NAME  	"eventName",
+		       T3.HAPPEN_TIME 	"happenTime",
+		       T3.HANDLE_DATE 	"handleDate",
+		       T3.TYPE_       	"type",
+		       T3.STATUS      	"eventStatus",
+		       T3.SUB_STATUS  	"eventSubStatus",
+		       T3.CREATE_TIME 	"eventCreateTime",
+		       T4.GRID_PATH   	"gridPath",
+		       T2.STATUS	  	"timeAppCheckStatus",	
+		       T2.CHECK_ADVICE	"checkAdvice",
+		       T2.CHECK_ID		"checkId",
+		       <include refid="sameCol"></include>
+		       <if test="isCapApplicant == true ">
+		       	,<include refid="applicantCol"></include>
+		       </if>
+		 <include refid="eventTimeApplication"></include>
+		 ORDER BY T2.STATUS DESC, T1.APPLICATION_ID DESC
+  	</select>
+  	
+  	<!-- 事件时限申请 -->
+  	<sql id="eventTimeApplication">
+  		FROM T_EVENT_TIME_APPLICATION T1
+  		INNER JOIN T_EVENT_TIME_CHECK T2
+  			ON T1.APPLICATION_ID = T2.APPLICATION_ID
+  		INNER JOIN T_EVENT T3
+  			ON T1.BUSINESS_KEY_ID = T3.EVENT_ID
+  		INNER JOIN T_DC_GRID T4
+  			ON T3.GRID_ID = T4.GRID_ID
+  		<if test="isCapApplicant == true ">
+  			LEFT JOIN T_DC_USER_ENTITY T5
+       			ON T1.CREATOR_ID = T5.USER_ID AND T5.STATUS = '001'
+  		</if>
+		WHERE T4.STATUS = '001'
+		
+		<include refid="find_where_event"></include>
+		<include refid="find_where_grid"></include>
+		<include refid="find_where_check"></include>
+		<include refid="find_where"></include>
+  	</sql>
+  	
+  	<!-- 事件查询条件 -->
+  	<sql id="find_where_event">
+		 <choose>
+		 	<when test="@Ognl@isNotEmpty(eventKeyWord)">
+		 		AND (
+			 		T3.CONTENT_ LIKE '%'||#{eventKeyWord,jdbcType=VARCHAR}||'%'
+				  	OR
+				  	T3.EVENT_NAME LIKE '%'||#{eventKeyWord,jdbcType=VARCHAR}||'%'
+				   	OR
+				  	T3.OCCURRED LIKE '%'||#{eventKeyWord,jdbcType=VARCHAR}||'%'
+			 	)
+		 	</when>
+		 	<when test="@Ognl@isNotEmpty(eventKeyRemarkWord)">
+		 		AND (
+			 		T3.CONTENT_ LIKE '%'||#{eventKeyRemarkWord,jdbcType=VARCHAR}||'%'
+				  	OR
+				  	T3.EVENT_NAME LIKE '%'||#{eventKeyRemarkWord,jdbcType=VARCHAR}||'%'
+				   	OR
+				  	T3.OCCURRED LIKE '%'||#{eventKeyRemarkWord,jdbcType=VARCHAR}||'%'
+					OR
+					T3.REMARK LIKE '%'||#{eventKeyRemarkWord,jdbcType=VARCHAR}||'%'
+			 	)
+		 	</when>
+		 </choose>
+		 <if test="@Ognl@isNotEmpty(code)">
+		 	AND T3.CODE_ = #{code,jdbcType=VARCHAR}
+		 </if>
+		 <if test="@Ognl@isNotEmpty(eventType)">
+		 	AND T3.TYPE_ LIKE #{eventType,jdbcType=VARCHAR} || '%'
+		 </if>
+		 <if test="@Ognl@isNotEmpty(eventCreateTimeStart)">
+		 	AND T3.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{eventCreateTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		 </if>
+		 <if test="@Ognl@isNotEmpty(eventCreateTimeEnd)">
+		 	AND T3.CREATE_TIME <![CDATA[<]]>TO_DATE(#{eventCreateTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		 </if>
+		 <choose>
+		 	<when test="@Ognl@isNotEmpty(eventCollectWayArray)">
+				AND T3.COLLECT_WAY IN
+				<foreach collection="eventCollectWayArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(eventCollectWay)">
+				AND T3.COLLECT_WAY = #{eventCollectWay,jdbcType=VARCHAR}
+			</when>
+		 </choose>
+		 <choose>
+		 	<when test="@Ognl@isNotEmpty(eventSourceArray)">
+				AND T3.SOURCE IN
+				<foreach collection="eventSourceArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(eventSource)">
+				AND T3.SOURCE = #{eventSource,jdbcType=VARCHAR}
+			</when>
+		 </choose>
+		 <choose>
+		 	<when test="@Ognl@isNotEmpty(eventStatusArray)">
+		 		AND T3.STATUS IN
+				<foreach collection="eventStatusArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		 	</when>
+		 	<when test="@Ognl@isNotEmpty(eventStatus)">
+		 		AND T3.STATUS = #{eventStatus ,jdbcType=VARCHAR}
+		 	</when>
+		 	<otherwise>
+		 		AND T3.STATUS IN ('00', '01', '02', '03', '04')
+		 	</otherwise>
+		 </choose>
+  	</sql>
+  	
+  	<!-- 时限审核查询条件 -->
+  	<sql id="find_where_check">
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(auditorType)">
+  				AND T2.AUDITOR_TYPE = #{auditorType,jdbcType=VARCHAR}
+  				<if test="auditorId != null ">
+	  				AND T2.AUDITOR_ID = #{auditorId,jdbcType=DECIMAL}
+	  			</if>
+	  			<if test="auditorOrgId != null ">
+	  				AND T2.AUDITOR_ORG_ID = #{auditorOrgId,jdbcType=DECIMAL}
+	  			</if>
+  			</when>
+  			<otherwise>
+  				<if test="auditorId != null or auditorOrgId != null ">
+		  			AND (
+			  			(
+				  			T2.AUDITOR_TYPE = '0'
+				  			<if test="auditorId != null ">
+				  				AND T2.AUDITOR_ID = #{auditorId,jdbcType=DECIMAL}
+				  			</if>
+				  			<if test="auditorOrgId != null ">
+				  				AND T2.AUDITOR_ORG_ID = #{auditorOrgId,jdbcType=DECIMAL}
+				  			</if>
+			  			)
+			  			
+			  			OR
+			  			
+			  			(
+				  			T2.AUDITOR_TYPE = '1'
+				  			<if test="auditorOrgId != null ">
+				  				AND T2.AUDITOR_ORG_ID = #{auditorOrgId,jdbcType=DECIMAL}
+				  			</if>
+			  			)
+		  			)
+		  		</if>
+  			</otherwise>
+  		</choose>
+  		
+  		<choose>
+		 	<when test="@Ognl@isNotEmpty(timeAppCheckStatus)">
+		 		AND T2.STATUS = #{timeAppCheckStatus ,jdbcType=VARCHAR}
+		 	</when>
+		 	<when test="@Ognl@isNotEmpty(timeAppCheckStatusList)">
+  				AND T2.STATUS IN
+				<foreach collection="timeAppCheckStatusList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+  			</when>
+		 	<otherwise>
+		 		AND T2.STATUS IN ('1', '2', '3')
+		 	</otherwise>
+		 </choose>
+  	</sql>
+  	
+  	<!-- 所属网格过滤条件 -->
+  	<sql id="find_where_grid">
+  		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+  			AND T4.INFO_ORG_CODE LIKE #{infoOrgCode ,jdbcType=VARCHAR} || '%'
+  		</if>
+  		<if test="@Ognl@isNotEmpty(gridRegionType)">
+  			AND T4.REGION_TYPE = #{gridRegionType,jdbcType=VARCHAR}
+  		</if>
+  	</sql>
+  	
+  	<!-- 查询条件 -->
+  	<sql id="find_where">
+  		AND T1.STATUS = '1'
+  		<if test="applicationId != null ">
+  			AND T1.APPLICATION_ID = #{applicationId,jdbcType=DECIMAL}
+  		</if>
+  		<choose>
+  			<when test="@Ognl@isNotEmpty(applicationType)">
+  				AND T1.APPLICATION_TYPE = #{applicationType,jdbcType=VARCHAR}
+  			</when>
+  			<when test="@Ognl@isNotEmpty(applicationTypeList)">
+  				AND T1.APPLICATION_TYPE IN 
+  				<foreach collection="applicationTypeList" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+  			</when>
+  		</choose>
+		<if test="businessId != null ">
+			AND T1.BUSINESS_ID = #{businessId,jdbcType=DECIMAL}
+		</if>
+		<if test="businessKeyId != null ">
+			AND T1.BUSINESS_KEY_ID = #{businessKeyId,jdbcType=DECIMAL}
+		</if>
+		<if test="creatorId != null ">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		<if test="@Ognl@isNotEmpty(createTimeStart)">
+			AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		</if>
+		<if test="@Ognl@isNotEmpty(createTimeEnd)">
+			AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+		</if>
+		<!-- 申请人员查询相关查询条件 -->
+		<if test="isCapApplicant == true ">
+			<if test="@Ognl@isNotEmpty(applicantName)">
+				AND T5.PARTY_NAME LIKE '%' || #{applicantName,jdbcType=VARCHAR} || '%'
+			</if>
+		</if>
+		
+  	</sql>
+</mapper>

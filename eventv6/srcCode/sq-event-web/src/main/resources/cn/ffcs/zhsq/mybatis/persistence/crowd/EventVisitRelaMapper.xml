@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.crowd.EventVisitRelaMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.crowd.EventVisitRela" >
+    <result column="ASSOCIATION_ID" property="associationId" jdbcType="DECIMAL" />
+    <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+    <result column="VISIT_ID" property="visitId" jdbcType="DECIMAL" />
+ </resultMap>
+ <sql id="detail_select">
+    select * from T_SJ_EVENT_VISIT_RELA 
+  </sql>
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    <include refid="detail_select" />
+    where EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </select>
+  <insert id="visitRelaInsert">
+  	<selectKey keyProperty="associationId" resultType="long" order="BEFORE">
+		select SEQ_SJ_EVENT_VISIT_RELA_ID.NEXTVAL from DUAL
+	</selectKey>
+  	insert into T_SJ_EVENT_VISIT_RELA (ASSOCIATION_ID,EVENT_ID,VISIT_ID) 
+  	values (#{associationId,jdbcType=DECIMAL},#{eventId,jdbcType=DECIMAL},#{visitId,jdbcType=DECIMAL})
+  </insert>
+  
+</mapper>

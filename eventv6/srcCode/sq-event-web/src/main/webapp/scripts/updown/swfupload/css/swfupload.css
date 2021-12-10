@@ -1,0 +1,150 @@
+
+img{border: 0;}
+.bar{
+	width:300px;
+	margin-top:7px;
+	background-color:#FFF;
+	border:1px solid #C7C7C7;
+	height:10px;
+	font-size:5px;
+}
+
+.progress_bar{
+	height:100%;
+	float:left;
+	font-size:5px;
+	background-color:#B4E91F;
+}
+
+.can_btn2{
+	font-size: 12px;
+	height: 21px;
+	width: 58px;
+	background-image: url(../images/btn2.gif);
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	vertical-align:top;
+	cursor: pointer;
+}
+
+
+.can_btn{
+	font-size: 12px;
+	height: 21px;
+	width: 81px;
+	background: url(../images/cancel.png);
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	vertical-align:top;
+	cursor:pointer;
+}
+.can_btn:hover{
+	background: url(../images/cancel.png) 0 21px;
+}
+.can_btn3{
+	font-size: 12px;
+	height: 21px;
+	width: 81px;
+	background-image: url(../images/cancel2.png);
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	vertical-align:top;
+}
+
+/*提示信息图标*/
+.warning_tips{
+	height: 14px;
+	width: 16px;
+	display: inline-block;
+	background: url(../images/icon/warning.png) no-repeat;
+}
+
+.upload_table td {
+	padding: 0 !important;
+	color: #000;
+}
+
+.upload_table a:link {
+	text-decoration: none;
+	color: #1E5494;
+}
+
+.upload_table a:hover {
+	color: #1E5494;
+	text-decoration: underline;
+}
+/*
+#upload_table {
+	border:1px solid #6D7A89;
+}
+#upload_table th {
+	font-size:12px;
+	font-weight:normal;
+	text-align:left;
+	color:#9a9a9a;
+	padding:8px 0;
+	padding-left:15px;
+	border-bottom:1px solid #ebebeb;
+}
+
+#upload_table td {
+	font-size:12px;
+	color:#333;
+	height:33px;
+	padding-left:15px;
+	border-bottom:1px solid #ebebeb;
+
+}
+*/
+.upload_table {
+	/*width: 320px !important; �ڹ�����ʽ�и��ðٷֱ�*/
+	border: solid 1px #c3c3c3;
+	border-collapse: collapse;
+}
+
+.upload_table th {
+	background-color: #E8F2FF;	
+	border-bottom: solid 1px #7FAAFF;
+	height: 22px !important;
+	line-height: 22px !important;
+	font-size: 12px;
+}
+
+.upload_table td {
+	padding-left: 5px; 
+	height: 22px !important; 
+	line-height: 22px !important;
+	font-size: 12px;
+	border-buttom: solid 1px #7FAAFF;
+}
+
+#upload_table_info {
+	width: 100%;
+	border: hidden;
+	background: #F7FAFD;
+	margin: 10px 0 0;
+	font-size: 12px;
+	margin: 0 auto;
+	padding: 0;
+}
+
+#upload_table_info th {
+	vertical-align: top;
+	background: #F7FAFD;
+	width: 50px;
+	padding: 10px 10px 10px 0;
+	text-align: right;
+	font-size: 14px;
+	font-weight: 700;
+	border: hidden;
+}
+
+#upload_table_info td {
+	border: hidden;
+}

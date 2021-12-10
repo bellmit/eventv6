@@ -1,0 +1,62 @@
+/*--------------SystemTop begin-----------------*/
+.MainTop{position:relative; z-index:1;}
+/*--------------UserInformation begin-----------------*/
+.TopBar{height:40px; padding:10px 0; line-height:20px; font-size:14px; position:absolute; z-index:1; top:0; right:0;}
+.notice{background:url(../images/oa_14.png) no-repeat 0 8px; height:30px; padding-left:20px;}
+.LoginInfo{height:30px;}
+.LoginInfo ul li{float:left; margin:0 10px; cursor:pointer;}
+.LoginInfo ul li.line{background:url(../images/oa_04.png) no-repeat; width:2px; height:30px;}
+.LoginInfo ul li img{vertical-align:top; margin-right:5px;}
+.LoginInfo ul li a{color:#fff;}
+/*--------------UserInformation end-----------------*/
+/*--------------TopMenu begin-----------------*/
+.TopBanner{height:103px; overflow:hidden;}
+.BannerImg{width:100%; overflow:hidden;}
+.TopMenu{width:750px; position:absolute; z-index:2; bottom:0; right:0; height:43px;}
+.TopMenu .con{background:url(../images/menuback.png) repeat-x; padding:0 15px;}
+.TopMenu ul li{float:left; font-size:14px; line-height:43px; color:#fff;}
+.TopMenu ul li a{color:#fff;}
+.TopMenu ul li.line{margin:0 14px;}
+/*--------------TopMenu end-----------------*/
+/*--------------SystemTop end-----------------*/
+
+/*--------------SystemLeftNav begin-----------------*/
+.middle{position: relative; width: 100%;}
+.MainLeft{width:175px; position: absolute; background:#e2ebf5; top:0; left:0;}
+.MainLeft .title{background:url(../images/tj_wg_25.png) repeat-x; height:36px; font-size:18px; color:#0067a1; line-height:36px; font-family:"微软雅黑"; width:200px; padding-left:10px;}
+.toggle-slide{background:url(../images/tj_wg_38.png) no-repeat center; width:10px; height:100%; display:block;}
+.full-con .toggle-slide{background:url(../images/tj_wg_40.png) no-repeat center; width:10px; height:100%; display:block;}
+.full-con .containerbox{margin-left:10px;}
+.full-con .MainLeft{left:-200px;}
+.nav-loading{position:absolute; width:25px; height:25px; background:url(../images/loading.gif) no-repeat center center; top:50px; left:50%; margin-left:-25px; display:none;}
+.NavBox{overflow-y:auto; overflow-x:hidden; width: 175px;}
+.nav-list{width:175px; background:#cedbe9; font-size:14px; line-height:33px; margin-bottom:3px;}
+.nav-now{background:url(../images/oa_39.png) no-repeat top left #fff;}
+.nav-now ul li.MenuSwitch{background:url(../images/oa_101.png) center center no-repeat;}
+.tabbj{height:33px; cursor:pointer; color:#000;}
+.tabbj:hover{color:#000;}
+.tabbj li{float:left;}
+.tabtu{width:16px; height:16px; margin:9px 10px 0 10px; line-height:16px;}
+.tabtu img{width:16px; height:16px;}
+.tabzi{width: 120px;}
+.tabzi a:hover{text-decoration:none;}
+.MenuSwitch{background:url(../images/oa_100.png) center center no-repeat; width:12px; height:33px;}
+.leveltow{display:none; padding:7px 0; background:#e2ebf5;}
+.leveltow li a{display:block; width: 120px; background:url(../images/oa_95.png) no-repeat 40px 13px; padding-left: 55px; line-height:32px; height:32px; overflow:hidden; color:#595959; cursor:pointer;}
+.leveltow li a:hover{background:url(../images/oa_95.png) no-repeat 40px 13px; color:#2d78bf; transition:all 0; -moz-transition:all 0; -webkit-transition:all 0; text-decoration:none;}
+.leveltow li a.current{color:#2d78bf; font-weight:bold;}
+/*--------------SystemLeftNav end-----------------*/
+
+.LeftSwitch{width:6px; background:url(../images/shadow.png) repeat-y top right; height:100%; position:absolute; top:0; left: 169px;}
+
+/*--------------SystemRightNav begin-----------------*/
+.containerbox{position: relative;margin-left: 210px;}
+.label{height:36px; background:url(../images/tj_wg_25.png) repeat-x;}
+.label ul{padding-top:6px; height:30px;}
+.label li{background:url(../images/oa_46.png) no-repeat; height:30px; line-height:30px; padding-left:10px; font-size:14px; float:left; margin-right:5px; cursor:pointer; color:#fff;}
+.label li span{background:url(../images/oa_47.png) no-repeat top right; display:block; height:30px; padding-right:10px;}
+.label li.nav-tab-now{background:url(../images/tj_wg_34.png); color:#0067a1; font-weight:bold;}
+.label li.nav-tab-now span{background:url(../images/tj_wg_35.png) no-repeat top right;}
+.label span a{margin-left:5px;}
+/*--------------SystemRightNav end-----------------*/
+

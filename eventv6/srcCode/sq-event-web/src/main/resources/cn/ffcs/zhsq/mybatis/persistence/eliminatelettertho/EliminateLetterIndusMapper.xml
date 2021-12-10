@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eliminatelettertho.EliminateLetterIndusMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+        <id column="INDUS_ID" property="indusId" jdbcType="DECIMAL"/> <!--主键-->
+        <result column="INDUS_UUID" property="indusUuid" jdbcType="VARCHAR"/> <!--逻辑主键-->
+        <result column="THO_ID" property="thoId" jdbcType="DECIMAL"/> <!--主表主键-->
+        <result column="INDUSTRIAL_CODE" property="industrialCode" jdbcType="VARCHAR"/> <!--行业领域CODE-->
+        <result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR"/> <!--组织编码-->
+        <result column="CREATOR" property="creator" jdbcType="DECIMAL"/> <!--创建人-->
+        <result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR"/> <!--创建时间-->
+        <result column="UPDATOR" property="updator" jdbcType="DECIMAL"/> <!--修改人-->
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR"/> <!--修改时间-->
+        <result column="IS_VALID" property="isValid" jdbcType="VARCHAR"/> <!--有效状态-->
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/> <!--备注-->
+    </resultMap>
+
+    <select id="searchByThoId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+        T.INDUS_ID,
+        T.INDUS_UUID,
+        T.THO_ID,
+        T.INDUSTRIAL_CODE,
+        T.ORG_CODE
+        FROM
+        T_ELIMINATE_LETTER_INDUS T
+        WHERE
+        T.THO_ID = ${thoId}
+        AND T.IS_VALID = '1'
+    </select>
+
+    <!-- 列表（总数） -->
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM T_ELIMINATE_LETTER_INDUS T
+        <include refid="find_where"/>
+    </select>
+
+    <!-- 列表（分页） -->
+    <select id="searchList" resultMap="BaseResultMap">
+        SELECT
+        T.INDUS_ID,
+        T.INDUS_UUID,
+        T.THO_ID,
+        T.INDUSTRIAL_CODE,
+        T.ORG_CODE
+        FROM
+        T_ELIMINATE_LETTER_INDUS T
+        <include refid="find_where"/>
+        ORDER BY
+        T.INDUS_ID DESC
+    </select>
+
+    <!-- 列表（条件） -->
+    <sql id="find_where">
+        <where>
+            AND T.IS_VALID = '1'
+            <if test="thoIdList != null and thoIdList.size() > 0" >
+                AND T.M_ID IN
+                <foreach collection="thoIdList" index="index" item="item" open="(" separator="," close=")">
+                    #{item,jdbcType=DECIMAL}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+        <selectKey keyProperty="indusId" resultType="long" order="BEFORE">
+            SELECT SEQ_ELIMINATE_LETTER_INDUS.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        T_ELIMINATE_LETTER_INDUS
+        (
+        INDUS_ID,
+        INDUS_UUID,
+        THO_ID,
+        INDUSTRIAL_CODE,
+        ORG_CODE,
+        CREATOR,
+        CREATE_TIME,
+        UPDATOR,
+        UPDATE_TIME,
+        IS_VALID,
+        REMARK
+        ) VALUES (
+        #{indusId,jdbcType=DECIMAL},
+        #{indusUuid,jdbcType=VARCHAR},
+        #{thoId,jdbcType=DECIMAL},
+        #{industrialCode,jdbcType=VARCHAR},
+        #{orgCode,jdbcType=VARCHAR},
+        #{creator,jdbcType=DECIMAL},
+        sysdate,
+        #{updator,jdbcType=DECIMAL},
+        sysdate,
+        '1',
+        #{remark,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+        UPDATE
+        T_ELIMINATE_LETTER_INDUS
+        <set>
+            <if test="thoId != null ">
+                THO_ID=#{thoId,jdbcType=DECIMAL},
+            </if>
+            <if test="industrialCode != null ">
+                INDUSTRIAL_CODE=#{industrialCode,jdbcType=VARCHAR},
+            </if>
+            <if test="orgCode != null ">
+                ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="updator != null ">
+                UPDATOR=#{updator,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null ">
+                REMARK=#{remark,jdbcType=VARCHAR},
+            </if>
+            UPDATE_TIME = sysdate
+        </set>
+        WHERE
+        INDUS_ID= #{indusId,jdbcType=DECIMAL}
+    </update>
+
+    <update id="invalidByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+        UPDATE
+        T_ELIMINATE_LETTER_INDUS
+        SET
+        IS_VALID = '0',
+        UPDATOR = #{updator,jdbcType=DECIMAL},
+        UPDATE_TIME = sysdate
+        WHERE
+        THO_ID = #{thoId}
+        AND IS_VALID = '1'
+    </update>
+
+    <!-- 详情 -->
+    <select id="searchById" parameterType="long" resultMap="BaseResultMap">
+		SELECT
+			T.INDUS_ID,
+			T.INDUS_UUID,
+			T.THO_ID,
+			T.INDUSTRIAL_CODE,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_ELIMINATE_LETTER_INDUS T
+		WHERE
+			INDUS_ID= #{indusId,jdbcType=DECIMAL} 
+	</select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+		UPDATE
+			T_ELIMINATE_LETTER_INDUS
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+			INDUS_ID= #{indusId,jdbcType=DECIMAL}
+	</delete>
+
+    <!-- 删除 -->
+    <delete id="deleteByThoId" parameterType="cn.ffcs.zhsq.mybatis.domain.eliminatelettertho.EliminateLetterIndus">
+		UPDATE
+			T_ELIMINATE_LETTER_INDUS
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+			THO_ID= #{thoId,jdbcType=DECIMAL}
+	</delete>
+</mapper>

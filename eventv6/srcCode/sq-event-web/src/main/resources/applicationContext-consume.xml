@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans  
+        http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://code.alibabatech.com/schema/dubbo  
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd  
+        ">
+ 
+    <!-- consumer application name 
+    <dubbo:application name="applicationContext-consumer"  />-->
+ 
+    <!-- registry address, used for consumer to discover services -->
+ 
+    <!-- which service to consume? 
+    <dubbo:reference id="busEventDisposalServiceProvider" interface="cn.ffcs.api.cmb.event.provider.BusEventDisposalServiceProvider" url="dubbo://192.168.22.229:10004" timeout="100000"/>
+    -->
+</beans>

@@ -1,0 +1,102 @@
+/*4新疆平台框架-多项选择弹出*/
+
+@CHARSET "UTF-8";
+
+td { vertical-align: middle; }
+
+
+.flex { display: flex; display: -webkit-flex; }
+.flex.align-c { justify-content:center; }
+.align-c {text-align:center; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.table-wrapper {margin:0px 20px;  box-sizing: border-box; overflow: auto; min-width: 840px; position: relative; }
+
+.btn-box { width: 100%; height: 32px; position: relative; }
+/*平台右侧操作按钮start*/
+.ab-r { position: absolute; right: 0; top:0; }
+.btn-wrap a + a { margin-left:10px; }
+.btn-a {position:relative; font-size:14px; height: 32px; padding-left: 20px; padding-right: 20px; border-radius: 2px; line-height: 32px; }
+.btn-a:hover { -webkit-animation: gd-shake 0.15s ease-in-out; -moz-animation: gd-shake 0.15s ease-in-out;animation: gd-shake 0.15s ease-in-out;}
+.btn-wrap .btn-a { color:#fff; }
+
+@-webkit-keyframes gd-shake{0%{top:0px;} 50%{top:-1px;} 100%{top:1px;}}
+@-moz-keyframes gd-shake{0%{top:0px;} 50%{top:-1px;} 100%{top:1px;}}
+@-ms-keyframes gd-shake{0%{top:0px;} 50%{top:-1px;} 100%{top:1px;}}
+@keyframes gd-shake{0%{top:0px;} 50%{top:-1px;} 100%{top:1px;}}
+.bgc-blue { background: #5294e8; }
+.bgc-green { background: #6dd56d; }
+.bgc-gray { background: #ecf1f7; color:#6c758a !important; }
+.bgc-green:hover { box-shadow:0 2px 8px rgba(109,213,109,.5);}
+.bgc-blue:hover { box-shadow:0 2px 8px rgba(82,148,232,.5);}
+.bgc-gray:hover {background:#e6eaf0; }
+/*平台右侧操作按钮end*/
+
+input:-moz-placeholder, textarea:-moz-placeholder{ color:#6c758a; opacity:0.6;/*Firefox 18-*/}
+input::-moz-placeholder, textarea::-moz-placeholder {color:#6c758a; opacity:0.6;/*Firefox 19+*/}
+input:-ms-input-placeholder, textarea:-ms-input-placeholder{  color:#6c758a; opacity:0.6;/*ms*/}
+input::-webkit-input-placeholder,  textarea::-webkit-input-placeholder{  color:#6c758a; opacity:0.6;/*webkit*/}
+
+.table-box { overflow:auto; }
+.table-list { width: 100%; }
+.table-list > thead { font-size: 14px; font-weight: bold; color: #454E63; background: #f9fafb; }
+.table-list > tbody { font-size: 12px; color: #6c758a; font-family: "微软雅黑"; }
+.table-list-tr { border-bottom: 1px solid #ecf1f7; border-top: 1px solid #ecf1f7; height: 46px; }
+.table-list-tr:hover { background-color: #f9fafb; }
+
+.table-list > thead > tr > td {height:44px; line-height:44px; }
+.table-list > thead > tr > td > span {display:block; width:98%; min-width:30px; padding:0px 1%;  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+/*.title-span { display: block; width: 80%; }*/
+.table-list > tbody > tr > td > span {display:block; width:98%; min-width:40px; padding:0px 1%;  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+
+
+.tr-sec-bg { background-color: #ECF1F7; }
+.tr-sec-bg:hover {background-color: #ECF1F7; }
+.td-name { min-width:60px; }
+.td-id { min-width:60px; }
+.table-list > thead tr { height: 40px; border-top: 1px solid #ECF1F7; }
+.icon-oper-box {display:-webkit-flex; display:flex; align-items:center; justify-content:center; }
+.disappear { display: none !important; }
+.add { height: 11px; width: 11px;  cursor: pointer; display:-webkit-flex; display:flex;}
+.reduce { height: 11px; width: 11px;  cursor: pointer; padding-top: 6px; display:-webkit-flex; display:flex;}
+.reduce > img { max-height: 1px; }
+
+.table-detail-main { padding-top:8px; padding-bottom: 10px; margin:0px 2px 10px; box-shadow: 0px 5px 10px rgba(0,0,0,.08); }
+.table-detail-con { width: 98%; margin:0 auto 0px;  }
+.table-detail-con td { width: 33.33%; padding:8px 0px; }
+.table-detail-con span { color: #454e63; }
+.table-detail-con tr { min-height: 30px; border-bottom: 1px solid #f0f4fa; }
+
+.bb1 { border-bottom: 1px solid #ecf1f7; }
+
+.asterisk { color: red; }
+/*input+select+check*/
+.input-text { color: #6C758A !important; font-size: 12px !important; height: 28px; line-height:26px; flex: 1; -webkit-flex: 1; margin: 0 18px 0 32px; padding-left: 10px !important; }
+input[type="text"] { border: 1px solid #e1e8f2; border-radius:2px !important;}
+input[type=text]:hover, select:hover, input[type=text]:focus, select:focus { border: 1px solid rgba(82,148,232,.6); box-shadow: 0px 1px 15px rgba(82,148,232,.3) !important; }
+.select-text { background-color: #fff; color: #6C758A; font-size: 12px; border-radius: 2px; height: 28px; flex: 1; -webkit-flex: 1; margin: 0 18px 0 32px; line-height: 26px; padding-top: 0 !important; padding-left: 10px !important; min-width: 148px; }
+select { border: 1px solid #e1e8f2; appearance: none; -webkit-appearance: none; padding-right: 10px; background: url(../images/icon_select_03.png) no-repeat scroll 95% center transparent; }
+select::-ms-expand { display: none; }
+
+.input-container { justify-content: center; -webkit-justify-content: center; align-items:center;}
+.input-container > div:first-child { text-align: right; width: 33%; }
+
+.table-list-check { text-align: center; }
+.check-box { flex: 1; -webkit-flex: 1; margin-left: 32px; margin-right:18px; min-width:148px; }
+.check-i { position: relative; }
+.check-i .input-check { position: absolute; width: 18px; height: 18px; visibility: hidden; border-radius: 2px; }
+
+.input-check + label {margin-top:4px; border: 1px solid #e1e8f2;  display: inline-block; width: 18px; height: 18px; background: url(../images/icon_check_03.png) no-repeat; background-position: -31px -3px; border-radius: 2px; cursor: pointer; background-color: #fff;  }
+.input-check + label:hover {border: 1px solid rgba(82,148,232,.6); box-shadow: 0px 1px 15px rgba(82,148,232,.3) !important;  }
+.input-check:checked + label { background-position: 2px 3px; }
+ /**/
+.table-detail-wrap { display:none; transition:all 0.1s ease-in-out; -webkit-transition:all 0.1s ease-in-out; -moz-transition:all 0.1s ease-in-out;}
+.tb-exp-box {display: flex; display: -webkit-flex; flex-wrap:wrap; padding:0 0 10px; margin-top:-9px; margin-bottom:-9px; border: 1px; border-color: #ecf1f7; border-style: dashed dashed solid dashed; background-color: #f8f9fb; }
+.tb-exp-box .input-container { float:left; width:33.33%; margin-top:10px; }
+/**/
+.s-pic-show { display:block; width:26px; height:26px; background:url(../images/icon_tpsc_pic_03.png) no-repeat;}
+.s-pic-show:hover { box-shadow:0 0 5px rgba(82,148,232,.6)}
+.mode-tit { position:relative; height:32px; }
+.mode-tit h3 { font-size:14px; color:#454E63; padding-left:15px; line-height:32px;}
+.mode-tit h3::after { content:""; position:absolute; top:8px; left:0px; width:4px; height:16px; border-radius:2px; background-color:#5294e8; }
+
+.nicescroll-rails:hover > .nicescroll-cursors { background-color: rgba(0,0,0,.3) !important; cursor: pointer;}

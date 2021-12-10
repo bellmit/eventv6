@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-/W3C/DTD XHTML 1.0 Transitional/EN" "http:/www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http:/www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>车辆详细信息</title>
+<script type="text/javascript" src="${rc.getContextPath()}/js/jquery-1.8.2.min.js" ></script>
+<#include "/map/arcgis/standardmappage/common/standard_common.ftl" />
+<style>
+.ManagerInfo .left{
+    font-weight: normal;
+    padding: 0;
+    font-size: 12px;
+    width: 40%;
+    display: inline-block;
+}
+.ManagerInfo .right{
+    font-weight: normal;
+    padding: 0;
+    font-size: 12px;
+    float: right;
+    width: 40%;
+    display: inline-block;
+    margin-right: 20px;
+}
+.ManagerInfo ul li{width:100%;}
+.ManagerSearch .c-title{
+	color: #0075a9;
+    font-size: 13px;
+    font-weight: bold;
+    padding-right: 10px;
+    display:inline-block;
+}
+.ManagerSearch .c-data{
+    font-size: 12px;
+    color: #666;
+    display:inline-block;
+}
+.ManagerSearch .sprator{
+    color: #0075a9;
+    display:inline-block;
+}
+</style>
+</head>
+<iframe id="cross_domain_iframe" scrolling='no' frameborder='0' style='display:none;'></iframe>
+<body style="background-color:rgba(238, 238, 238, .4);">
+	<div style="margin:2px 3px 0px 3px;">
+	<#if data?exists>
+		<div class="con ManagerWatch">
+        	<div class="ManagerInfo"> 
+                <ul>
+                    <li>
+                    	<p>
+                    		<span class="left"><code>车辆类型：</code><span>${data.unit!''}</span></span>
+                        	<span class="right"><code>车牌号码：</code><span>${data.carcode!''}</span></span>
+                    	</p>
+                        <p>
+                        	<span class="left"><code>车辆编号：</code><span>${data.carnumber!''}</span></span>
+                        	<span class="right"><code>车辆标识：</code><span>${data.identifier!''}</span></span>
+                        </p>
+                        <p>
+                        	<span class="left"><code>车载卡号：</code><span>${data.telephone!''}</span></span>
+                        	<span class="right"><code>增加日期：</code><span id="dateSpan"></span></span>
+                        </p>
+                    </li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+        </div>
+    <#else>
+    <table cellpadding="0" cellspacing="0" border="0"  class="searchList-2">
+    	<tr style="height: 185px"><td align="center" style="color:red;font:14;width:350px" class="sj_cot2_sty" >未查到相关数据！</td></tr>
+    </table>
+    </#if>
+		
+	</div>
+	
+</body>
+<script type="text/javascript">
+function covertToDate(unittime) {
+	if(!unittime) return '暂无';
+    //1.获取时间戳前十位数字
+    unittime = unittime+"".replace("/Date(", "").replace(")/", "");
+    var shijian = unittime.substr(0, unittime.length - 3);
+
+    //2.把获取的数据*1000
+    shijian = shijian * 1000;
+    //3.转换成js时间格式
+    var jsDate = new Date(shijian);
+    var UnixTimeToDate = jsDate.getFullYear() + '-' + (jsDate.getMonth() + 1) + '-' + jsDate.getDate();
+    //+ ' ' + jsDate.getHours() + ':' + jsDate.getMinutes();
+    //+ ' ' + jsDate.getHours() + ':' + jsDate.getMinutes() + ':' + jsDate.getSeconds();
+    return UnixTimeToDate;
+
+}
+
+$(function(){
+	$('#dateSpan').html(covertToDate('${data.createtime!''}'));
+})
+</script>
+</html>

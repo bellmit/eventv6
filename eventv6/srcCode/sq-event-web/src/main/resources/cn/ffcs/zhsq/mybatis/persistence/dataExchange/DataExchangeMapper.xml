@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dataExchange.DataExchangeMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchange" >
+    <id column="INTER_ID" property="interId" jdbcType="DECIMAL" />
+    <result column="OPPO_SIDE_BIZ_TYPE" property="oppoSideBizType" jdbcType="VARCHAR" />
+    <result column="OPPO_SIDE_BIZ_CODE" property="oppoSideBizCode" jdbcType="VARCHAR" />
+    <result column="OPPO_SIDE_BIZ_STATUS" property="oppoSideBizStatus" jdbcType="VARCHAR" />
+    <result column="OWN_SIDE_BIZ_TYPE" property="ownSideBizType" jdbcType="VARCHAR" />
+    <result column="OWN_SIDE_BIZ_CODE" property="ownSideBizCode" jdbcType="VARCHAR" />
+    <result column="OWN_SIDE_BIZ_STATUS" property="ownSideBizStatus" jdbcType="VARCHAR" />
+    <result column="SRC_PLATFORM" property="srcPlatform" jdbcType="VARCHAR" />
+    <result column="DEST_PLATFORM" property="destPlatform" jdbcType="VARCHAR" />
+    <result column="EXCHANGE_FLAG" property="exchangeFlag" jdbcType="CHAR" />
+    <result column="STATUS_" property="status" jdbcType="CHAR" />
+    <result column="CREATE_USER_ID" property="createUserId" jdbcType="DECIMAL" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="UPDATE_USER_ID" property="updateUserId" jdbcType="DECIMAL" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="DATE" />
+    <result column="XML_DATA" property="xmlData" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    INTER_ID, OPPO_SIDE_BIZ_TYPE, OPPO_SIDE_BIZ_CODE, OPPO_SIDE_BIZ_STATUS, OWN_SIDE_BIZ_TYPE, 
+    OWN_SIDE_BIZ_CODE, OWN_SIDE_BIZ_STATUS, SRC_PLATFORM, DEST_PLATFORM, EXCHANGE_FLAG, 
+    STATUS_, CREATE_USER_ID, CREATE_TIME, UPDATE_USER_ID, UPDATE_TIME
+  </sql>
+  
+  <select id="findCountByCriteria" resultType="java.lang.Integer" >
+		SELECT COUNT(1) FROM T_BAS_DATA_EXCHANGE_STATUS T1
+		WHERE 1 = 1 and t1.STATUS_ = '1'
+		<include refid="find_where"/>
+	</select>
+	
+	<select id="findPageListByCriteria" resultMap="BaseResultMap" >
+		SELECT <include refid="Base_Column_List"/>
+		FROM T_BAS_DATA_EXCHANGE_STATUS T1
+		WHERE 1 = 1 and t1.STATUS_ = '1'
+		<include refid="find_where"/>
+	</select>
+	
+	<sql id="find_where">
+		<if test="exchangeFlag != null">
+			AND EXCHANGE_FLAG = #{exchangeFlag,jdbcType=VARCHAR}
+		</if>
+		<if test="ownSideBizCode != null">
+			AND OWN_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR}
+		</if>
+		<if test="oppoSideBizCode != null">
+			AND OPPO_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR}
+		</if>
+
+		<if test="oppoSideBizType != null">
+			AND OPPO_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR}
+		</if>
+		<if test="ownSideBizType != null">
+			AND OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR}
+		</if>
+
+		<if test="srcPlatform != null">
+			AND SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR}
+		</if>
+		<if test="destPlatform != null">
+			AND DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<select id="findByDataExchang" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List"/>
+		  FROM T_BAS_DATA_EXCHANGE_STATUS
+		 WHERE STATUS_ = 1
+		   <include refid="find_where"/>	
+	</select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_BAS_DATA_EXCHANGE_STATUS
+    where INTER_ID = #{interId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_BAS_DATA_EXCHANGE_STATUS
+    where INTER_ID = #{interId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchange" >
+    insert into T_BAS_DATA_EXCHANGE_STATUS (INTER_ID, OPPO_SIDE_BIZ_TYPE, OPPO_SIDE_BIZ_CODE, 
+      OPPO_SIDE_BIZ_STATUS, OWN_SIDE_BIZ_TYPE, OWN_SIDE_BIZ_CODE, 
+      OWN_SIDE_BIZ_STATUS, SRC_PLATFORM, DEST_PLATFORM, 
+      EXCHANGE_FLAG, STATUS_, CREATE_USER_ID, 
+      CREATE_TIME, UPDATE_USER_ID, UPDATE_TIME, 
+      XML_DATA)
+    values (#{interId,jdbcType=DECIMAL}, #{oppoSideBizType,jdbcType=VARCHAR}, #{oppoSideBizCode,jdbcType=VARCHAR}, 
+      #{oppoSideBizStatus,jdbcType=VARCHAR}, #{ownSideBizType,jdbcType=VARCHAR}, #{ownSideBizCode,jdbcType=VARCHAR}, 
+      #{ownSideBizStatus,jdbcType=VARCHAR}, #{srcPlatform,jdbcType=VARCHAR}, #{destPlatform,jdbcType=VARCHAR}, 
+      #{exchangeFlag,jdbcType=CHAR}, #{status,jdbcType=CHAR}, #{createUserId,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=DATE}, #{updateUserId,jdbcType=DECIMAL}, #{updateTime,jdbcType=DATE}, 
+      #{xmlData,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchange" >
+    insert into T_BAS_DATA_EXCHANGE_STATUS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="interId != null" >
+        INTER_ID,
+      </if>
+      <if test="oppoSideBizType != null" >
+        OPPO_SIDE_BIZ_TYPE,
+      </if>
+      <if test="oppoSideBizCode != null" >
+        OPPO_SIDE_BIZ_CODE,
+      </if>
+      <if test="oppoSideBizStatus != null" >
+        OPPO_SIDE_BIZ_STATUS,
+      </if>
+      <if test="ownSideBizType != null" >
+        OWN_SIDE_BIZ_TYPE,
+      </if>
+      <if test="ownSideBizCode != null" >
+        OWN_SIDE_BIZ_CODE,
+      </if>
+      <if test="ownSideBizStatus != null" >
+        OWN_SIDE_BIZ_STATUS,
+      </if>
+      <if test="srcPlatform != null" >
+        SRC_PLATFORM,
+      </if>
+      <if test="destPlatform != null" >
+        DEST_PLATFORM,
+      </if>
+      <if test="exchangeFlag != null" >
+        EXCHANGE_FLAG,
+      </if>
+      <if test="status != null" >
+        STATUS_,
+      </if>
+      <if test="createUserId != null" >
+        CREATE_USER_ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateUserId != null" >
+        UPDATE_USER_ID,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="xmlData != null" >
+        XML_DATA,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="interId != null" >
+        #{interId,jdbcType=DECIMAL},
+      </if>
+      <if test="oppoSideBizType != null" >
+        #{oppoSideBizType,jdbcType=VARCHAR},
+      </if>
+      <if test="oppoSideBizCode != null" >
+        #{oppoSideBizCode,jdbcType=VARCHAR},
+      </if>
+      <if test="oppoSideBizStatus != null" >
+        #{oppoSideBizStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizType != null" >
+        #{ownSideBizType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizCode != null" >
+        #{ownSideBizCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizStatus != null" >
+        #{ownSideBizStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="srcPlatform != null" >
+        #{srcPlatform,jdbcType=VARCHAR},
+      </if>
+      <if test="destPlatform != null" >
+        #{destPlatform,jdbcType=VARCHAR},
+      </if>
+      <if test="exchangeFlag != null" >
+        #{exchangeFlag,jdbcType=CHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=DATE},
+      </if>
+      <if test="xmlData != null" >
+        #{xmlData,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchange" >
+    update T_BAS_DATA_EXCHANGE_STATUS
+    <set >
+      <if test="oppoSideBizType != null" >
+        OPPO_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR},
+      </if>
+      <if test="oppoSideBizCode != null" >
+        OPPO_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR},
+      </if>
+      <if test="oppoSideBizStatus != null" >
+        OPPO_SIDE_BIZ_STATUS = #{oppoSideBizStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizType != null" >
+        OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizCode != null" >
+        OWN_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ownSideBizStatus != null" >
+        OWN_SIDE_BIZ_STATUS = #{ownSideBizStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="srcPlatform != null" >
+        SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR},
+      </if>
+      <if test="destPlatform != null" >
+        DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR},
+      </if>
+      <if test="exchangeFlag != null" >
+        EXCHANGE_FLAG = #{exchangeFlag,jdbcType=CHAR},
+      </if>
+      <if test="status != null" >
+        STATUS_ = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createUserId != null" >
+        CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="updateUserId != null" >
+        UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=DATE},
+      </if>
+      <if test="xmlData != null" >
+        XML_DATA = #{xmlData,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where INTER_ID = #{interId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.dataExchange.DataExchange" >
+    update T_BAS_DATA_EXCHANGE_STATUS
+    set OPPO_SIDE_BIZ_TYPE = #{oppoSideBizType,jdbcType=VARCHAR},
+      OPPO_SIDE_BIZ_CODE = #{oppoSideBizCode,jdbcType=VARCHAR},
+      OPPO_SIDE_BIZ_STATUS = #{oppoSideBizStatus,jdbcType=VARCHAR},
+      OWN_SIDE_BIZ_TYPE = #{ownSideBizType,jdbcType=VARCHAR},
+      OWN_SIDE_BIZ_CODE = #{ownSideBizCode,jdbcType=VARCHAR},
+      OWN_SIDE_BIZ_STATUS = #{ownSideBizStatus,jdbcType=VARCHAR},
+      SRC_PLATFORM = #{srcPlatform,jdbcType=VARCHAR},
+      DEST_PLATFORM = #{destPlatform,jdbcType=VARCHAR},
+      EXCHANGE_FLAG = #{exchangeFlag,jdbcType=CHAR},
+      STATUS_ = #{status,jdbcType=CHAR},
+      CREATE_USER_ID = #{createUserId,jdbcType=DECIMAL},
+      CREATE_TIME = #{createTime,jdbcType=DATE},
+      UPDATE_USER_ID = #{updateUserId,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=DATE},
+      XML_DATA = #{xmlData,jdbcType=VARCHAR}
+    where INTER_ID = #{interId,jdbcType=DECIMAL}
+  </update>
+</mapper>

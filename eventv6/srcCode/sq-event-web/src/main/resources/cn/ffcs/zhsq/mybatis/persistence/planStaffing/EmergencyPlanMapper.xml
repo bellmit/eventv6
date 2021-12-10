@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.planStaffing.EmergencyPlanMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.planStaffing.EmergencyPlan">
+		<id column="PLAN_ID" property="planId" jdbcType="VARCHAR" /> <!--预案主键-->
+		<result column="PLAN_NAME" property="planName" jdbcType="VARCHAR" /> <!--预案名称-->
+		<result column="PLAN_TYPE" property="planType" jdbcType="VARCHAR" /> <!--预案类型-->
+		<result column="PLAN_CONTENT" property="planContent" jdbcType="VARCHAR" /> <!--预案内容-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--更新人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--更新时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--记录状态-->
+		<result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" /> <!--地域编码-->
+		<result column="GRID_NAME" property="regionName" jdbcType="VARCHAR" /> <!--地域名称-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_EMERGENCY_PLAN T
+		 LEFT JOIN T_DC_GRID G
+          ON T.REGION_CODE=G.INFO_ORG_CODE AND G.STATUS='001'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.PLAN_ID,
+			T.PLAN_NAME,
+			T.PLAN_TYPE,
+			T.PLAN_CONTENT,
+			T.REMARK,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REGION_CODE,
+			G.GRID_NAME 
+		FROM
+			T_EMERGENCY_PLAN T
+			LEFT JOIN T_DC_GRID G
+          ON T.REGION_CODE=G.INFO_ORG_CODE AND G.STATUS='001'
+		<include refid="find_where" />
+		ORDER BY 
+		    T.PLAN_ID DESC ,
+			T.UPDATE_TIME DESC
+			
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			AND T.IS_VALID = '1'
+			<if test="planName != null and planName != ''" >
+				<![CDATA[ AND T.PLAN_NAME LIKE '%'||#{planName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="planType != null and planType != ''" >
+				<![CDATA[ AND T.PLAN_TYPE = #{planType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="regionCode != null and regionCode != ''" >
+				<![CDATA[ AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="regionCodeAll != null and regionCodeAll != ''" >
+				<![CDATA[ AND T.REGION_CODE = #{regionCodeAll,jdbcType=VARCHAR} ]]>
+			</if>
+			<if test="excludeId != null and excludeId != ''" >
+				<![CDATA[ AND T.PLAN_ID != #{excludeId,jdbcType=VARCHAR} ]]>   
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.planStaffing.EmergencyPlan">
+		<selectKey keyProperty="planId" resultType="String" order="BEFORE"> 
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		
+		INSERT INTO
+			T_EMERGENCY_PLAN
+		(
+			PLAN_ID,
+			PLAN_NAME,
+			PLAN_TYPE,
+			PLAN_CONTENT,
+			REMARK,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			REGION_CODE
+		) VALUES (
+			#{planId,jdbcType=VARCHAR},
+			#{planName,jdbcType=VARCHAR},
+			#{planType,jdbcType=VARCHAR},
+			#{planContent,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR},
+			#{creator,jdbcType=DECIMAL},
+			sysdate,
+			#{updator,jdbcType=DECIMAL},
+			sysdate,
+			'1',
+			#{regionCode,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.planStaffing.EmergencyPlan">
+		UPDATE
+			T_EMERGENCY_PLAN
+		<set> 
+			<if test="planName != null " >
+				PLAN_NAME=#{planName,jdbcType=VARCHAR},
+			</if>
+			<if test="planType != null " >
+				PLAN_TYPE=#{planType,jdbcType=VARCHAR},
+			</if>
+			<if test="planContent != null " >
+				PLAN_CONTENT=#{planContent,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null " >
+				REMARK=#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+	 
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			UPDATE_TIME=sysdate,
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="regionCode != null " >
+				REGION_CODE=#{regionCode,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			PLAN_ID= #{planId,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="String"  resultMap="BaseResultMap">
+		SELECT
+			T.PLAN_ID,
+			T.PLAN_NAME,
+			T.PLAN_TYPE,
+			T.PLAN_CONTENT,
+			T.REMARK,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REGION_CODE,
+			G.GRID_NAME 
+		FROM
+			T_EMERGENCY_PLAN T
+			LEFT JOIN T_DC_GRID G
+          ON T.REGION_CODE=G.INFO_ORG_CODE AND G.STATUS='001'
+		WHERE
+			PLAN_ID= #{planId,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.planStaffing.EmergencyPlan">
+		UPDATE
+			T_EMERGENCY_PLAN
+		SET
+			IS_VALID='0'
+		WHERE
+			PLAN_ID= #{planId,jdbcType=VARCHAR} 
+	</delete>
+</mapper>

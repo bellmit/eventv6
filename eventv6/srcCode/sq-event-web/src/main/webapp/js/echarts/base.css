@@ -1,0 +1,68 @@
+/***********************通用基础样式************************/
+/*目前要兼容的浏览器的hack方法*/
+/*样式初始化*/
+/*屏幕分辨率与字体大小比值为25*/
+@media only screen and (max-width: 960px), only screen and (max-device-width:480px) {
+ html,body {font-size:38.4px;}
+ }
+@media only screen and (max-width: 800px), only screen and (max-device-width:480px) {
+ html,body {font-size:32px;}
+ }
+@media only screen and (max-width: 768px), only screen and (max-device-width:480px) {
+ html,body {font-size:30.72px;}
+ }
+@media only screen and (max-width: 760px), only screen and (max-device-width:480px) {
+ html,body {font-size:30.4px;}
+ }
+@media only screen and (max-width: 720px), only screen and (max-device-width:480px) {
+ html,body {font-size:28.8px;}
+ }
+@media only screen and (max-width: 680px), only screen and (max-device-width:480px) {
+ html,body {font-size:27.2px;}
+ }
+@media only screen and (max-width: 640px), only screen and (max-device-width:480px) {
+ html,body {font-size:25.6px;}
+ }
+@media only screen and (max-width: 600px), only screen and (max-device-width:480px) {
+ html,body {font-size:24px;}
+ }
+@media only screen and (max-width: 560px), only screen and (max-device-width:480px) {
+ html,body {font-size:22.4px;}
+ }
+@media only screen and (max-width: 520px), only screen and (max-device-width:480px) {
+ html,body {font-size:20.8px;}
+ }
+ @media only screen and (max-width: 480px), only screen and (max-device-width:480px) {
+ html,body {font-size:19.2px;}
+ }
+ @media only screen and (max-width: 414px), only screen and (max-device-width:414px) {
+ html,body {font-size:16.56px;}
+ }
+ @media only screen and (max-width: 400px), only screen and (max-device-width:400px) {
+ html,body {font-size:16px;}
+ }
+ @media only screen and (max-width: 375px), only screen and (max-device-width:375px) {
+ html,body {font-size:15px;}
+ }
+ @media only screen and (max-width: 360px), only screen and (max-device-width:360px) {
+ html,body {font-size:14.4px;}
+ }
+ @media only screen and (max-width: 320px), only screen and (max-device-width:320px) {
+ html,body {font-size:12.8px;}
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

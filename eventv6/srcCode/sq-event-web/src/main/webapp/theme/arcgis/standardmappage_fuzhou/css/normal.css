@@ -1,0 +1,37 @@
+body{font-size: 12px;color: #707070;margin:0 auto; background:#fff; font-family:"瀹嬩綋","Arial Narrow";}
+a{text-decoration: none;color: #707070;}
+a:hover {text-decoration:underline;color: #707070;}
+dl, dt, dd, ul, li, p, input, textarea, button, form, table, tr, td, h1, h2, h3{margin:0;padding:0;list-style:none;}
+input, select, textarea{font-size:12px;vertical-align:bottom;}
+/**/
+input[type="text"]{box-sizing: border-box; -webkit-box-sizing:border-box; -moz-box-sizing: border-box;}
+img{border:none;}
+input, button{font-size:12px;}
+.fl{float:left;}
+.fr{float:right;}
+.clear{clear:both;}
+.h_10{height:10px; font-size:0; line-height:0; overflow:hidden;}
+.main{padding:10px;}
+.MainLeft{width:300px;}
+.NorTitle{background:url(../images/index_45.png) repeat-x; height:36px; padding-left:10px; line-height:34px; border:1px solid #0352a2; font-size:16px; font-family:"寰蒋闆呴粦"; color:#fff;}
+.NorBox{border-bottom:1px solid #c4c7d0; border-left:1px solid #c4c7d0; border-right:1px solid #c4c7d0;}
+.model_1 .NorBox{padding:10px; height:360px; overflow:hidden;}
+.model_1 .NorBox ul li{background:url(../images/index_53.png); width:230px; height:43px; padding-left:50px; line-height:42px; color:#fff; font-size:18px; font-family:"寰蒋闆呴粦"; margin-bottom:10px;}
+.model_1 .NorBox ul li a{color:#fff;}
+.model_2 .NorBox{padding:10px; height:130px; overflow-y:scroll;} 
+.model_2 .NorBox ul li{border:1px solid #e4e44b; background:url(../images/index_64.png) 8px 6px no-repeat #ffff88; line-height:29px; padding-left:38px; padding-right:7px; color:#e60012; font-weight:bold; font-size:14px; margin-bottom:10px;}
+.model_2 .NorBox ul li a{color:#e60012;}
+.map .NorTitle ul li{float:left; font-size:16px; cursor:pointer; width:79px; height:29px; text-align:center; line-height:28px; margin-top:3px;}
+.map .NorTitle ul li.current{background:url(../images/index_48.png); color:#2e57ab;}
+.map .NorTitle ul li a{color:#fff;}
+.NavList{height:36px; line-height:36px; padding:0 10px; color:#2e57ab; background:#fafafa; border-bottom:1px solid #c4c7d0; font-size:14px;}
+.NavList a{color:#2e57ab;}
+/*----------------------------------5-26------------------------------------*/
+.SwitchBtn{width:10px; height:618px; position:absolute; z-index:1; top:0; cursor:pointer;}
+.shut{background:url(../images/shut.png) no-repeat; left:310px;}
+.open{background:url(../images/open.png) no-repeat; left:0;}
+
+.MapSwitchBtn{height:10px; width:100%; position:absolute; z-index:1; left:0; cursor:pointer;}
+.MapShut{background:url(../images/top_shut.png) no-repeat top center; top:75px;}
+.MapOpen{background:url(../images/top_open.png) no-repeat top center; top:1px;}
+.map{position:relative;}

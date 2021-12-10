@@ -1,0 +1,1540 @@
+.tabsPage .tabsPageContent
+{
+	border-bottom-color: #b8d0d6;
+	border-top-color: #b8d0d6;
+	background: #fff;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+.panelBar
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.toolBar SPAN
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.pagination
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.pagination LI SPAN
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.pagination LI.disabled SPAN SPAN
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.panelBar .line
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.pagination LI.jumpto
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.pagination LI.jumpto .goto
+{
+	background: url(../images/button/grid.png) no-repeat;
+}
+.panelBar
+{
+	border-bottom-color: #b8d0d6;
+	background-color: #efefef;
+	border-top-color: #b8d0d6;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+.grid .gridHeader
+{
+	background: #eee;
+}
+.grid
+{
+	background: #fff;
+}
+.grid TABLE
+{
+	border-bottom-color: #d0d0d0;
+	border-top-color: #d0d0d0;
+	border-right-color: #d0d0d0;
+	border-left-color: #d0d0d0;
+}
+.grid .gridHeader
+{
+	border-bottom-color: #d0d0d0;
+	border-top-color: #d0d0d0;
+	background: url(../images/button/tableth.png) #f0eff0 repeat-x;
+	border-right-color: #d0d0d0;
+	border-left-color: #d0d0d0;
+}
+.grid .gridHeader TH
+{
+	border-bottom-color: #d0d0d0;
+	border-top-color: #d0d0d0;
+	background: url(../images/button/tableth.png) #f0eff0 repeat-x;
+	border-right-color: #d0d0d0;
+	border-left-color: #d0d0d0;
+}
+.grid TABLE TH DIV
+{
+	border-right-color: #d0d0d0;
+	border-left-color: #eee;
+}
+.grid TABLE TD
+{
+	border-bottom-color: #ededed;
+	border-top-color: #ededed;
+	border-right-color: #ededed;
+	border-left-color: #ededed;
+}
+.grid .resizeMarker
+{
+	background: url(../images/button/resizeCol.png) repeat-y;
+}
+.grid .resizeProxy
+{
+	background: url(../images/button/resizeCol.png) repeat-y;
+}
+.textInput
+{
+	background: url(../images/button/input_bg.png) no-repeat;
+}
+input.required
+{
+	background: url(../images/button/input_bg.png) no-repeat;
+}
+input.readonly
+{
+	background: url(../images/button/input_bg.png) no-repeat;
+}
+.textInput
+{
+	border-bottom-color: #b8d0d6;
+	background-color: #fff;
+	border-top-color: #a2bac0;
+	border-right-color: #b8d0d6;
+	border-left-color: #a2bac0;
+	height: 24px;
+	vertical-align:middle;
+}
+TABLE SELECT {
+	vertical-align:middle;
+}
+input.required
+{
+	border-bottom-color: #b8d0d6;
+	background-color: #fff;
+	border-top-color: #a2bac0;
+	border-right-color: #b8d0d6;
+	border-left-color: #a2bac0;
+}
+input.readonly
+{
+	border-bottom-color: #d5dbdf;
+	background-color: #f6f6f6;
+	border-top-color: #9eabb3;
+	border-right-color: #d5dbdf;
+	border-left-color: #9eabb3;
+}
+.inputDateButton
+{
+	background: url(../images/button/input_bt.png) no-repeat;
+}
+.button
+{
+	background: url(../images/button/button_s.png) no-repeat;
+}
+.button SPAN
+{
+	background: url(../images/button/button_s.png) no-repeat;
+}
+.buttonActive
+{
+	background: url(../images/button/button_s.png) no-repeat;
+}
+.button .buttonContent
+{
+	background: url(../images/button/button_s.png) no-repeat;
+}
+.buttonActive .buttonContent
+{
+	background: url(../images/button/button_s.png) no-repeat;
+}
+.button SPAN
+{
+	color: #183152;
+}
+.button .buttonContent
+{
+	color: #183152;
+}
+.buttonActive .buttonContent
+{
+	color: #183152;
+}
+.button BUTTON
+{
+	color: #183152;
+}
+.buttonActive BUTTON
+{
+	color: #183152;
+}
+.accountInfo
+{
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+	display: block;
+	background: url(../images/button/account_info_bg.png) repeat-x;
+	height: 60px;
+	overflow: hidden;
+	padding-top: 0px;
+}
+.accountInfo P
+{
+	padding-bottom: 0px;
+	line-height: 19px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 8px;
+}
+.accountInfo P SPAN
+{
+	font-size: 14px;
+	font-weight: bold;
+}
+.accountInfo .right
+{
+	text-align: right;
+	padding-right: 10px;
+	float: right;
+}
+.accountInfo .alertInfo
+{
+	border-left: #accdf4 1px solid;
+	padding-left: 10px;
+	width: 300px;
+	float: right;
+	height: 60px;
+}
+.accountInfo .alertInfo H2
+{
+	padding-bottom: 8px;
+	line-height: 17px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 8px;
+}
+.accountInfo .alertInfo A
+{
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 6px;
+}
+.page .pageHeader
+{
+	border-bottom-color: #b8d0d6;
+	border-top-color: #b8d0d6;
+	background: url(../images/button/pageHeader_bg.png) #ebf0f5 repeat-x;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+.formBar
+{
+	border-bottom-color: #b8d0d6;
+	border-top-color: #b8d0d6;
+	background: url(../images/button/pageHeader_bg.png) #ebf0f5 repeat-x;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+
+.page .searchBar LABEL
+{
+	color: #183152;
+}
+.divider
+{
+	border-bottom-color: #b8d0d6;
+	border-top-color: #b8d0d6;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+.combox .select A
+{
+	color: #183152;
+}
+.combox
+{
+	background: url(../images/button/search-bg.gif) no-repeat;
+}
+.combox DIV
+{
+	background: url(../images/button/search-bg.gif) no-repeat;
+}
+.combox DIV A
+{
+	background: url(../images/button/search-bg.gif) no-repeat;
+}
+.tabsPage .tabsPageContent
+{
+	border-bottom: 1px solid;
+	position: relative;
+	border-left: 1px solid;
+	display: block;
+	overflow: hidden;
+	border-top: 0px solid;
+	border-right: 1px solid;
+}
+.panelBar
+{
+	border-bottom: 1px solid;
+	border-left: 0px solid;
+	display: block;
+	background-repeat: repeat-x;
+	height: 25px;
+	overflow: hidden;
+	border-top: 1px solid;
+	border-right: 0px solid;
+}
+.panelBar UL
+{
+	padding-bottom: 1px;
+	padding-left: 1px;
+	padding-right: 1px;
+	padding-top: 1px;
+}
+.panelBar LI
+{
+	padding-bottom: 0px;
+	padding-left: 5px;
+	padding-right: 0px;
+	display: block;
+	float: left;
+	height: 23px;
+	overflow: hidden;
+	padding-top: 0px;
+}
+.panelBar .toolBar LI
+{
+	padding-bottom: 0px;
+	padding-left: 5px;
+	padding-right: 0px;
+	background-position: 0px -100px;
+	padding-top: 0px;
+}
+.panelBar .toolBar A
+{
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 5px;
+	display: block;
+	background-position: 100% -150px;
+	float: left;
+	overflow: hidden;
+	text-decoration: none;
+	padding-top: 0px;
+}
+.panelBar .toolBar SPAN
+{
+	padding-bottom: 0px;
+	line-height: 23px;
+	padding-left: 20px;
+	padding-right: 0px;
+	display: block;
+	float: left;
+	height: 23px;
+	overflow: hidden;
+	cursor: pointer;
+	padding-top: 0px;
+}
+.panelBar .toolBar A.add SPAN
+{
+	background-position: 0px -696px;
+}
+.panelBar .toolBar A.delete SPAN
+{
+	background-position: 0px -746px;
+}
+.panelBar .toolBar A.edit SPAN
+{
+	background-position: 0px -796px;
+}
+.panelBar .toolBar A.icon SPAN
+{
+	background-position: 0px -846px;
+}
+.panelBar .toolBar LI.line
+{
+	padding-bottom: 0px;
+	text-indent: -1000px;
+	padding-left: 0px;
+	width: 12px;
+	padding-right: 0px;
+	display: block;
+	background-position: 5px -200px;
+	overflow: hidden;
+	padding-top: 0px;
+}
+.panelBar .pages
+{
+	padding-bottom: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	float: left;
+	height: 21px;
+	overflow: hidden;
+	padding-top: 2px;
+}
+.panelBar .pages SPAN
+{
+	line-height: 21px;
+	float: left;
+}
+.panelBar .pages SELECT
+{
+	margin: 0px 3px;
+	float: left;
+	font-size: 12px;
+}
+.pagination
+{
+	padding-left: 7px;
+	background-position: 0px -199px;
+	float: right;
+}
+.pagination LI
+{
+	padding-bottom: 0px;
+	padding-left: 5px;
+	padding-right: 0px;
+	background-position: 0px -100px;
+	padding-top: 0px;
+}
+.pagination A
+{
+	padding-bottom: 0px;
+	line-height: 23px;
+	padding-left: 0px;
+	padding-right: 5px;
+	display: block;
+	background-position: 100% -150px;
+	float: left;
+	text-decoration: none;
+	padding-top: 0px;
+}
+.pagination LI SPAN
+{
+	padding-bottom: 0px;
+	line-height: 23px;
+	padding-left: 0px;
+	padding-right: 5px;
+	display: block;
+	background-position: 100% -150px;
+	float: left;
+	text-decoration: none;
+	padding-top: 0px;
+}
+.pagination LI.selected A
+{
+	color: red;
+	font-weight: bold;
+}
+.pagination SPAN
+{
+	line-height: 23px;
+	display: block;
+	float: left;
+	height: 23px;
+	cursor: pointer;
+}
+.pagination LI .first SPAN
+{
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 0px;
+	padding-top: 0px;
+}
+.panelBar LI .previous SPAN
+{
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 0px;
+	padding-top: 0px;
+}
+.pagination LI .next SPAN
+{
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 10px;
+	padding-top: 0px;
+}
+.panelBar LI .last SPAN
+{
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 10px;
+	padding-top: 0px;
+}
+.pagination LI .first SPAN
+{
+	background-position: 0px -244px;
+}
+.pagination LI .previous SPAN
+{
+	background-position: 0px -294px;
+}
+.pagination LI .next SPAN
+{
+	background-position: 100% -344px;
+}
+.pagination LI .last SPAN
+{
+	background-position: 100% -394px;
+}
+.pagination LI .last
+{
+	margin-right: 5px;
+}
+.pagination LI.disabled
+{
+	background: none transparent scroll repeat 0% 0%;
+}
+.pagination LI.disabled SPAN
+{
+	background-position: 0px 100px;
+	cursor: default;
+}
+.pagination LI.disabled SPAN SPAN
+{
+	color: #666;
+}
+.pagination LI.disabled .first SPAN
+{
+	background-position: 0px -444px;
+}
+.pagination LI.disabled .previous SPAN
+{
+	background-position: 0px -494px;
+}
+.pagination LI.jumpto
+{
+	padding-bottom: 0px;
+	padding-left: 7px;
+	padding-right: 2px;
+	background-position: 0px -200px;
+	padding-top: 2px;
+}
+.pagination LI.jumpto .textInput
+{
+	border-bottom-color: #acaeaf;
+	padding-bottom: 1px;
+	border-top-color: #acaeaf;
+	padding-left: 1px;
+	width: 30px;
+	padding-right: 1px;
+	float: left;
+	border-right-color: #acaeaf;
+	border-left-color: #acaeaf;
+	padding-top: 1px;
+}
+.pagination LI.jumpto .goto
+{
+	border-right-width: 0px;
+	text-indent: -1000px;
+	width: 16px;
+	display: block;
+	background-position: 0px -650px;
+	float: left;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	height: 19px;
+	overflow: hidden;
+	border-left-width: 0px;
+	cursor: pointer;
+}
+.grid
+{
+	position: relative;
+	border-right-width: 1px;
+	width: 100%;
+	display: block;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	overflow: hidden;
+	border-left-width: 1px;
+}
+.grid .gridHeader
+{
+	width: auto;
+	display: block;
+	overflow: hidden;
+}
+.grid .gridScroller
+{
+	position: relative;
+	display: block;
+	overflow: auto;
+}
+.grid TABLE
+{
+	border-right-width: 0px;
+	border-collapse: collapse;
+	border-top-width: 0px;
+	table-layout: fixed;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+.grid .gridHeader TH
+{
+	border-bottom: 1px solid;
+	border-left: 0px solid;
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 3px;
+	padding-right: 3px;
+	white-space: nowrap;
+	vertical-align: top;
+	border-top: 0px solid;
+	cursor: default;
+	border-right: 1px solid;
+	padding-top: 0px;
+}
+.grid .gridTbody TD
+{
+	border-bottom: #ededed 1px solid;
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 3px;
+	padding-right: 3px;
+	vertical-align: middle;
+	overflow: hidden;
+	border-right: #ededed 1px solid;
+	padding-top: 0px;
+}
+.grid .gridTbody TD DIV
+{
+	line-height: 21px;
+	display: block;
+	white-space: nowrap;
+	height: 21px;
+	overflow: hidden;
+}
+.grid .gridTbody TD DIV A
+{
+	line-height: 21px;
+}
+.grid .gridCol
+{
+	line-height: 21px;
+	width: 100%;
+	display: block;
+	white-space: nowrap;
+	height: 21px;
+	overflow: hidden;
+}
+.grid .resizeMarker
+{
+	position: absolute;
+	width: 1px;
+	display: block;
+	overflow: hidden;
+}
+.grid .resizeProxy
+{
+	position: absolute;
+	width: 1px;
+	display: block;
+	overflow: hidden;
+}
+.grid .center
+{
+	text-align: center;
+}
+.grid .gridHeader TH.asc
+{
+	background: url(../images/button/order_up.gif) no-repeat right 50%;
+	cursor: pointer;
+}
+.textInput
+{
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-bottom: 2px;
+	line-height: 15px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	font-size: 12px;
+	border-top: 1px solid;
+	border-right: 1px solid;
+	padding-top: 2px;
+}
+input.required
+{
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-bottom: 2px;
+	line-height: 15px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	font-size: 12px;
+	border-top: 1px solid;
+	border-right: 1px solid;
+	padding-top: 2px;
+}
+input.readonly
+{
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-bottom: 2px;
+	line-height: 15px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	font-size: 12px;
+	border-top: 1px solid;
+	border-right: 1px solid;
+	padding-top: 2px;
+}
+input.required
+{
+	background-position: 100% 0px;
+}
+SELECT
+{
+	border-bottom: #b8d0d6 1px solid;
+	border-left: #a2bac0 1px solid;
+	border-top: #a2bac0 1px solid;
+	border-right: #b8d0d6 1px solid;
+}
+.inputDateButton
+{
+	text-indent: -1000px;
+	width: 16px;
+	display: block;
+	background-position: 0px -100px;
+	float: left;
+	height: 21px;
+	overflow: hidden;
+}
+LABEL.alt
+{
+	position: absolute;
+	line-height: 20px;
+	display: block;
+	overflow: hidden;
+}
+.button
+{
+	padding-left: 5px;
+	display: block;
+	float: left;
+	height: 25px;
+	overflow: hidden;
+}
+.buttonActive
+{
+	padding-left: 5px;
+	display: block;
+	float: left;
+	height: 25px;
+	overflow: hidden;
+}
+.button SPAN
+{
+	line-height: 25px;
+	display: block;
+	float: left;
+	height: 25px;
+	overflow: hidden;
+	font-weight: bold;
+}
+.button .buttonContent
+{
+	line-height: 25px;
+	display: block;
+	float: left;
+	height: 25px;
+	overflow: hidden;
+	font-weight: bold;
+}
+.buttonActive .buttonContent
+{
+	line-height: 25px;
+	display: block;
+	float: left;
+	height: 25px;
+	overflow: hidden;
+	font-weight: bold;
+}
+.button
+{
+	background-position: 0px 0px;
+}
+.button .buttonContent
+{
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 5px;
+	background-position: 100% -50px;
+	padding-top: 0px;
+}
+.button SPAN
+{
+	padding-bottom: 0px;
+	padding-left: 5px;
+	padding-right: 10px;
+	background-position: 100% -50px;
+	cursor: pointer;
+	padding-top: 0px;
+}
+.buttonActive
+{
+	background-position: 0px -200px;
+}
+.buttonActive .buttonContent
+{
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 5px;
+	background-position: 100% -250px;
+	padding-top: 0px;
+}
+.button BUTTON
+{
+	padding-bottom: 5px;
+	border-right-width: 0px;
+	margin: 0px;
+	padding-left: 0px;
+	width: auto;
+	padding-right: 0px;
+	background: none transparent scroll repeat 0% 0%;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	height: 25px;
+	font-size: 12px;
+	border-left-width: 0px;
+	cursor: pointer;
+	font-weight: bold;
+	padding-top: 0px;
+}
+.buttonActive BUTTON
+{
+	padding-bottom: 5px;
+	border-right-width: 0px;
+	margin: 0px;
+	padding-left: 0px;
+	width: auto;
+	padding-right: 0px;
+	background: none transparent scroll repeat 0% 0%;
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+	height: 25px;
+	font-size: 12px;
+	border-left-width: 0px;
+	cursor: pointer;
+	font-weight: bold;
+	padding-top: 0px;
+}
+#layout
+{
+	text-align: left;
+}
+#layout
+{
+	position: relative;
+	display: block;
+	height: 100%;
+}
+#container
+{
+	position: absolute;
+	top: 55px;
+	left: 210px;
+}
+/*-------------------与frame.css样式中的.page冲突
+.page
+{
+	width: 100%;
+	display: block;
+	float: left;
+	overflow: hidden;
+}--------------*/
+.pageHeader
+{
+	border-bottom: 1px solid;
+	position: relative;
+	border-left: 0px solid;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: block;
+	margin-bottom: 1px;
+	overflow: auto;
+	border-top: 0px solid;
+	border-right: 0px solid;
+	padding-top: 5px;
+}
+.searchBar UL.searchContent
+{
+	display: block;
+	height: 25px;
+	overflow: hidden;
+}
+.searchBar UL.searchContent LI
+{
+	padding-bottom: 2px;
+	padding-left: 0px;
+	width: 300px;
+	padding-right: 0px;
+	display: block;
+	float: left;
+	height: 21px;
+	overflow: hidden;
+	padding-top: 2px;
+}
+.searchBar LABEL
+{
+	padding-bottom: 0px;
+	line-height: 23px;
+	padding-left: 5px;
+	width: 80px;
+	padding-right: 5px;
+	float: left;
+	padding-top: 0px;
+}
+.searchBar .subBar
+{
+	height: 25px;
+}
+.searchBar .subBar UL
+{
+	float: right;
+}
+.searchBar .subBar LI
+{
+	float: left;
+	margin-left: 5px;
+}
+H2
+{
+	padding-bottom: 0px;
+	line-height: 100%;
+	margin: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	padding-top: 0px;
+}
+H2.contentTitle
+{
+	border-bottom: #8DB2E3 1px solid;
+	line-height: 28px;
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 13px;
+	padding-top: 0px;
+	/**background-color:#e4effa;**/
+	background: url(../images/button/pageHeader_bg.png) #ebf0f5 repeat-x;
+	
+	
+}
+H2.addTitle
+{
+
+	border-bottom: #red 1px solid;
+	line-height: 28px;
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 13px;
+	padding-top: 0px;
+	/**background-color:#e4effa;**/
+	background: url(../images/button/title.jpg) #ebf0f5 repeat-x;
+	
+}
+.pageContent
+{
+	position: relative;
+	/*display: block;*/
+	overflow: auto;
+	/*
+	SCROLLBAR-FACE-COLOR:#ffffff;
+	SCROLLBAR-HIGHLIGHT-COLOR:#ffffff;
+	SCROLLBAR-SHADOW-COLOR:#919192;
+	SCROLLBAR-3DLIGHT-COLOR:#000000;
+	SCROLLBAR-ARROW-COLOR:#919192;
+	SCROLLBAR-TRACK-COLOR:#ffffff;
+	SCROLLBAR-DARKSHADOW-COLOR:#000000;
+	*/
+	height:100%;
+	width:100%;
+	
+}
+.pageForm
+{
+	display: block;
+	overflow: auto;
+}
+.pageFormContent
+{
+	position: relative;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: block;
+	overflow: auto;
+	padding-top: 10px;
+	background:#ffffff;
+}
+.pageFormContent DIV.unit
+{
+	position: relative;
+	padding-bottom: 5px;
+	margin: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	display: block;
+	clear: both;
+	padding-top: 5px;
+}
+.pageFormContent P
+{
+	position: relative;
+	padding-bottom: 5px;
+	margin: 0px;
+	padding-left: 0px;
+	width: 380px;
+	padding-right: 0px;
+	display: block;
+	float: left;
+	height: 21px;
+	padding-top: 5px;
+}
+.pageFormContent LABEL
+{
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 5px;
+	width: 120px;
+	padding-right: 5px;
+	float: left;
+	padding-top: 0px;
+}
+.pageFormContent th
+{
+	position: relative;
+	padding-bottom: 5px;
+	margin: 0px;
+	padding-left: 0px;
+	width: 380px;
+	padding-right: 0px;
+	display: block;
+	float: left;
+	height: 21px;
+	padding-top: 5px;
+}
+.pageFormContent td
+{
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 5px;
+	width: 120px;
+	padding-right: 5px;
+	float: left;
+	padding-top: 0px;
+}
+.pageFormContent .textInput
+{
+	float: left;
+}
+.pageFormContent SELECT
+{
+	float: left;
+}
+.pageFormContent SPAN.unit
+{
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 0px;
+}
+.formBar
+{
+	border-bottom: 0px solid;
+	border-left: 0px solid;
+	padding-bottom: 0px;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 40px;
+	clear: both;
+	border-top: 1px solid;
+	border-right: 0px solid;
+	padding-top: 5px;
+}
+.formBar UL
+{
+	float: left;
+}
+.formBar LI
+{
+	float: left;
+	margin-left: 5px;
+}
+.divider
+{
+	border-bottom: 1px dotted;
+	border-left: 0px dotted;
+	padding-bottom: 0px;
+	text-indent: -1000px;
+	padding-left: 0px;
+	width: auto;
+	padding-right: 0px;
+	display: block;
+	margin-bottom: 5px;
+	height: 1px;
+	clear: both;
+	overflow: hidden;
+	border-top: 0px dotted;
+	border-right: 0px dotted;
+	padding-top: 4px;
+}
+.combox
+{
+	background-position: 100% -25px;
+	float: left;
+	margin-right: 3px;
+}
+.combox SELECT
+{
+	display: none;
+}
+.combox .select
+{
+	float: left;
+}
+.combox .select A
+{
+	padding-bottom: 0px;
+	line-height: 21px;
+	padding-left: 6px;
+	padding-right: 22px;
+	display: block;
+	background-position: 100% -50px;
+	float: left;
+	height: 23px;
+	font-size: 12px;
+	overflow: hidden;
+	text-decoration: none;
+	padding-top: 0px;
+}
+A.btnDel
+{
+	text-indent: -1000px;
+	width: 22px;
+	display: block;
+	background: url(../images/button/imgX.gif) no-repeat;
+	float: left;
+	height: 20px;
+	overflow: hidden;
+	margin-right: 3px;
+}
+A.btnEdit
+{
+	text-indent: -1000px;
+	width: 22px;
+	display: block;
+	background: url(../images/button/imgX.gif) no-repeat;
+	float: left;
+	height: 20px;
+	overflow: hidden;
+	margin-right: 3px;
+}
+A.btnLook
+{
+	text-indent: -1000px;
+	width: 22px;
+	display: block;
+	background: url(../images/button/imgX.gif) no-repeat;
+	float: left;
+	height: 20px;
+	overflow: hidden;
+	margin-right: 3px;
+}
+A.btnDel
+{
+	background-position: -23px 0px;
+}
+A.btnEdit
+{
+	background-position: -138px 0px;
+}
+A.btnLook
+{
+	background-position: -161px 0px;
+}
+.panelBar .toolBar SPAN
+{
+	line-height: 25px;
+}
+.panelBar .pagination SPAN
+{
+	line-height: 25px;
+}
+.grid .gridCol
+{
+	line-height: 23px;
+}
+.textInput
+{
+	padding-bottom: 1px;
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 3px;
+}
+.button SPAN
+{
+	line-height: 27px;
+}
+.button BUTTON
+{
+	line-height: 27px;
+}
+.buttonActive BUTTON
+{
+	line-height: 27px;
+}
+.tabs
+{
+}
+.tabsHeader
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabsHeaderContent
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabs .tabsHeader UL
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabs .tabsHeader LI
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabs .tabsHeader LI A
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabs .tabsHeader LI SPAN
+{
+	background: url(../images/button/tabspanel.png) no-repeat;
+}
+.tabs .tabsFooter
+{
+}
+.tabs .tabsFooterContent
+{
+}
+.tabs .tabsHeader LI A
+{
+	color: #03408b;
+}
+.tabs .tabsHeader LI SPAN
+{
+	color: #183152;
+}
+.tabs .tabsContent
+{
+	
+}
+.tabsPage .tabsPageContent
+{
+	border-bottom-color: #b8d0d6;
+	border-top-color: #b8d0d6;
+	background: #fff;
+	border-right-color: #b8d0d6;
+	border-left-color: #b8d0d6;
+}
+ .tabs
+{
+	background-repeat: repeat-x;
+	background-position: 0px 100%;
+}
+.tabs .tabsHeader
+{
+	padding-left: 5px;
+	display: block;
+	background-position: 0px 0px;
+	height: 28px;
+	overflow: hidden;
+}
+.tabs .tabsHeaderContent
+{
+	padding-right: 5px;
+	display: block;
+	background-position: 100% -50px;
+	height: 28px;
+	overflow: hidden;
+}
+.tabs .tabsHeader UL
+{
+	display: block;
+	background-repeat: repeat-x;
+	background-position: 0px -100px;
+	height: 28px;
+}
+.tabs .tabsHeader LI
+{
+	display: block;
+	background-repeat: repeat-x;
+	background-position: 0px -250px;
+	float: left;
+	height: 28px;
+	cursor: pointer;
+	margin-right: 2px;
+}
+.tabs .tabsHeader LI A
+{
+	padding-left: 5px;
+	display: block;
+	background-position: 0px -150px;
+	float: left;
+	height: 28px;
+}
+.tabs .tabsHeader LI SPAN
+{
+	padding-bottom: 0px;
+	line-height: 25px;
+	padding-left: 5px;
+	padding-right: 10px;
+	display: block;
+	background-position: 100% -200px;
+	float: left;
+	height: 28px;
+	overflow: hidden;
+	cursor: pointer;
+	padding-top: 2px;
+}
+.tabs .tabsHeader LI.selected
+{
+	background-position: 0px -550px;
+}
+.tabs .tabsHeader LI.selected A
+{
+	background-position: 0px -450px;
+}
+.tabs .tabsHeader LI.selected SPAN
+{
+	background-position: 100% -500px;
+	font-weight: bold;
+}
+.tabs .tabsContent
+{
+	border-bottom: 0px solid;
+	border-left: 0px solid;
+	padding-bottom: 1px;
+	padding-left: 5px;
+	padding-right: 5px;
+	display: block;
+	overflow: auto;
+	border-top: 0px solid;
+	border-right: 0px solid;
+	padding-top: 5px;
+}
+.tabs .tabsFooter
+{
+	display: block;
+	background-position: 0px -600px;
+	height: 5px;
+	overflow: hidden;
+}
+.tabs .tabsFooterContent
+{
+	display: block;
+	background-position: 100% -650px;
+	height: 5px;
+	overflow: hidden;
+}
+.tabsPage .tabsPageContent
+{
+	border-bottom: 1px solid;
+	position: relative;
+	border-left: 1px solid;
+	display: block;
+	overflow: hidden;
+	border-top: 0px solid;
+	border-right: 1px solid;
+}
+INPUT.error
+{
+	background: url(../images/button/input_bg.png) no-repeat;
+}
+INPUT.error
+{
+	border-bottom-color: #fb7e81;
+	border-top-color: #f80c11;
+	border-right-color: #fb7e81;
+	border-left-color: #f80c11;
+}
+INPUT.readonly
+{
+	border-bottom-color: #d5dbdf;
+	background-color: #f6f6f6;
+	border-top-color: #9eabb3;
+	border-right-color: #d5dbdf;
+	border-left-color: #9eabb3;
+}
+INPUT.readonly
+{
+	background: url(../images/button/input_bg.png) no-repeat;
+}
+INPUT.readonly
+{
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-bottom: 2px;
+	line-height: 15px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	font-size: 12px;
+	border-top: 1px solid;
+	border-right: 1px solid;
+	padding-top: 2px;
+}
+
+INPUT.error
+{
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-bottom: 2px;
+	line-height: 15px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	font-size: 12px;
+	border-top: 1px solid;
+	border-right: 1px solid;
+	padding-top: 2px;
+}
+.hiddenTable{
+background:url(../images/button/grid.png) repeat-x;
+line-height:30px;
+text-align:left;
+font-weight:bold;
+font-size:14px;
+padding:0 6px 0 10px;
+}
+
+.searchList-1{
+	background:#BAD3F6; 
+	color:#444; 
+	width:100%;
+	margin:3px 0;
+}
+.searchList-1 th{
+	text-align:right; 
+	padding:2px 5px; 
+	background:#EEF2F6;
+	font-weight:normal;width:12%;
+}
+
+.searchList-2{
+	background:#BAD3F6; 
+	color:#444; 
+	width:100%;
+	margin:3px 0;
+}
+.searchList-2 th{
+	text-align:right; 
+	padding:2px 5px; 
+	background:#EEF2F6;
+	font-weight:normal;
+	width:15%;
+}
+.searchList-2 td{padding:2px 5px; background:#fff;}
+
+
+.searchList-3{
+	background:#BAD3F6; 
+	color:#444; 
+	width:98%;
+	margin:3px 0;
+}
+.searchList-3 th{
+	text-align:center; 
+	padding:2px 5px; 
+	background:#EEF2F6;
+	font-weight:normal;
+}
+.searchList-3 td{padding:2px 5px; background:#fff;}
+
+.searchList-1 td{padding:2px 5px; background:#fff;}
+
+.searchList td{padding:5px 5px 5px 8px; background:#fff;}
+	.searchList select{width:100%; _width:auto;}
+	.searchList .other{background:#e1f0fb;}
+	.searchList .readonly{border:0; background:none;}
+#newPreview
+{
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale);
+    margin-left:3px;
+}
+.singleRow {
+	padding-right: 2px ;
+	padding-left: 2px ;
+	padding-bottom: 2px ;
+	line-height: 25px ;
+	padding-top: 2px ;
+	height: 23px ;
+	background-color: #ffffff ;
+	text-align: center ;
+}
+
+.doubleRow {
+	padding-right: 2px ;
+	padding-left: 2px ;
+	padding-bottom: 2px ;
+	line-height: 25px ;
+	padding-top: 2px ;
+	height: 23px ;
+	background-color: #f5fbff ; 
+	text-align: center ;
+}
+
+.tab_contoner {
+	width:626px;
+	height:360px;
+	text-align:left;
+	border:1px solid #a0b3d1;
+	position: absolute;
+	background: #DFE8F6;
+}
+.contleft {
+	float:left;
+	overflow:hidden;
+	height:23px;
+	width:100%;
+	background:#95cdfe;
+	border-bottom:1px solid #a0b3d1;
+}
+.contspan{ font-size:12px; margin-left:5px; font-weight:bold; color:#FFF; line-height:23px; float:left;}
+.cla_close {
+	height:23px;
+	border-bottom:1px solid #a0b3d1;
+	background:#95cdfe;
+	float:right;
+}
+.cla_close img {
+	margin:6px 3px 0px 0px;
+	border:none;
+}

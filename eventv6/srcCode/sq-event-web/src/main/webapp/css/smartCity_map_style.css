@@ -1,0 +1,214 @@
+@charset "utf-8";
+/* CSS Document */
+body{ font-family:"微软雅黑"; font-size:0.875em; color:#fff;}
+.npmap{  background-attachment:fixed; background-size:cover;}
+h1,h2,h3,h4,h5,body,ul,li,p,dl,dd,dt{ margin:0; padding:0;}
+ul,li{ list-style:none;}
+a{ text-decoration:none; display:inline-block;color:#fff;}
+.clearfloat{ clear:both;}
+.citybgbox{background:rgba(19,55,81,0.7);}
+.npcityHeader{ background:rgba(19,55,81,0.85); height:69px;box-shadow: 0px 2px 1px #aaa;}
+.npcityHeader h1{ background:url(../images/smartCity/np_city_logo1.png) left center no-repeat; width:308px; height:50px; padding:18px 0 0 0px; float:left; margin-left:20px;}
+.nplogininfo{float: right; padding: 24px 20px;position: relative;}
+.npeixt{ background:#38b6a0;float:right; padding:5px 10px; border-radius:4px; color:#fff; margin-left:10px; margin-top:-4px; position:relative;}
+.npeixt a{ color:#fff;}
+.triangle-left{width: 0; position:absolute; left:-5px; top:9px; 
+height: 0; 
+border-top: 5px solid transparent; 
+border-right: 5px solid #38b6a0; 
+border-bottom: 5px solid transparent;}
+.nphnav{float: right;margin-right: 20px;}
+.nphnav li{ float:left; border-right:1px solid #133044; border-left:1px solid #4d6779; text-align:center; padding:11px 0px; width:148px;}
+.nphnav li a{font-size:16px;} 
+.nphnav li.ds-current,.nphnav li:hover{ background:url(../images/smartCity/np_city_bg2.png) left bottom no-repeat; cursor:pointer;}
+.npcityBottom{ position:absolute;bottom:0;}
+.npcityBottom ul li{ float:left; text-align:center; line-height:1;}
+.npcityBottom ul li a{ background:rgba(19,55,81,0.8) url(../images/smartCity/np_city_line1.png) right center no-repeat;  font-size:16px;webkit-transition: background .5s ease-in-out;
+    -moz-transition: background .5s ease-in-out;
+    -o-transition: background .5s ease-in-out;
+    transition: background .5s ease-in-out; padding:10px 20px;}
+.npcityBottom ul li a:hover,.npcityBottom ul li a.npbtm-dq{ background:rgba(7,141,210,0.95) url(../images/smartCity/np_city_line1.png) right center no-repeat;}
+.npcitybmenu{ position:absolute; top:-285px; left:-38px;}
+.npcitybmenu dd{ 
+    padding:7px 10px;	
+	border: 1px solid #32d6c5;
+	border-image: -webkit-linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+	border-image: -moz-linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+	border-image: linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+	margin:10px;
+	min-width:140px;}
+.npcitybmenu dd:hover,.npcitybmenu dd.popu-dq{background:rgba(7,141,210,0.85);}
+.triico{ background:url(../images/smartCity/np_city_icon12.png) 0px center no-repeat; width:7px; height:12px; display:inline-block; float:right; margin:3px 0 0 30px;}
+.buidmenu{top:-105px; left:8%; }
+.buidmenu dd{ padding:6px 0 1px 10px;height:27px;line-height:22px; }
+.imgico{ float:left; margin:0px 10px 0 0;}
+.npAlarminfo{ width:570px; position:absolute;border-radius:8px; padding:12px;background:rgba(30,64,89,0.75);}
+.npAlarminfo h4{ border-bottom:1px solid #81a1b9; font-size:16px; position:relative; height:35px;}
+.npAlarminfo h4 span{ display:inline-block; border-bottom:3px solid #00c3ff;padding-bottom:12px;}
+.alarlist{padding-left:120px;}
+.npAlarminfo h4 .btn-alarmclose{display:inline-block; background:url(images/np_cjclose_a.png) no-repeat; width:17px; height:16px; position:absolute; right:0px; top:4px;}
+.npAlarminfo h4 .btn-alarmclose:hover{background:url(../images/smartCity/np_cjclose_h.png) no-repeat;}
+.alarlist .alarlistbox{border-left:1px solid #81a1b9;position: relative;padding: 0px;}
+.alarlist .list-dynamic{position: relative;border-bottom:1px dashed #778da0;}
+.alarlist .round6{ position: absolute;
+    top: 12px;
+    left: -8px;
+    width: 10px;
+    height: 10px;
+    border: 2px #365265 solid;
+    border-radius: 50%;
+    background: #fd7f7f;}
+.alarlist .data{position: absolute;top: 6px;left: -120px;width: 100px;text-align:center; background:#fd7f7f; color:#0e0e0e; border-radius:4px; padding:4px 0;}
+.alarlist .triangle-right{ position:absolute; right:-5px; top:8px;border-top: 5px solid transparent;
+    border-left: 5px solid #fd7f7f;
+    border-bottom: 5px solid transparent;}
+.alarlist .dynamic-item{ padding:13px 0 13px 20px; }
+.alarlist .dynamic-item a{ color:#fff;}
+.alarlist .dynamic-item a:hover{ color:#fd7f7f}
+.bpsmain{ width:880px;}
+.bpscon{ border:1px solid #81a1b9; margin-top:10px;}
+.bpscon-tit{ float:left; }
+.npcityBottom .bpscon-tit li{ float:none; text-align:left; padding:24px 10px; border-bottom:1px solid #81a1b9;border-right:1px solid #81a1b9; background:rgba(40,71,82,0.5); height:18px; line-height:18px; width:110px;}
+.npcityBottom .bpscon-tit li.noline{ border-bottom:none;}
+.npcityBottom .bpscon-tit li:hover,.npcityBottom .bpscon-tit li.bpscon-tit-dq{background:rgba(7,141,210,0.85); cursor:pointer;}
+.npcityBottom .bpscon-tit li i{ float:left; margin-right:5px;}
+.npcityBottom .key-tit li{ padding:19px 10px; height:19px; }
+.bpscon-box{ margin-left:140px; padding-bottom:10px;}
+.bpscon-box-tit{ padding:10px 0 0 0;}
+.bpscon-box-chart{background:rgba(40,71,82,0.5); border:1px solid #6a8089; margin:10px 10px 0 0px;}
+.bpscon-box-chart h5{ font-size:14px; font-weight:normal; padding:10px;}
+.bpscon-chart{ float:left; padding:0 10px;}
+.maptab{ position:absolute; left:15px; top:60%; border:1px solid #022c4c; background:url(../images/smartCity/np_city_bg3.jpg) no-repeat; width:47px; height:50px;}
+.maptab a{ background:rgba(19,55,81,0.8); display:inline-block; width:100%; color:#00f0ff; text-align:center; position:absolute; bottom:0; left:0;}
+.alarmbox{position:absolute; left:15px; top:70%;background:rgba(19,55,81,0.8);width:47px; padding:5px 0;text-align:center; color:#fd4444;}
+.alarmbox i{ display:block;}
+.trend-left{ float:left; width:353px;}
+.tacon{ padding:6px 10px;}
+.trend-right{ margin-left:363px;}
+.trend-right h5{ padding-left:22px;}
+.key-chart{ padding-top:10px;}
+.key-left{ float:left; width:484px;}
+.key-con{background:rgba(40,71,82,0.5); border:1px solid #6a8089; margin:0px 10px 0 0px; float:left; padding:10px;}
+.key-chart h5{ font-size:14px; font-weight:normal; padding-bottom:8px;}
+.key-right{background:rgba(40,71,82,0.5); border:1px solid #6a8089; margin:0px 10px 0 492px; padding:5px;}
+.replist{ border-collapse:collapse;}
+.replist tr.coltit,.grosslist tr.coltit{background:rgba(0,170,255,0.4);}
+.replist tr.colgh,.generlist tr.colgh,.grosslist tr.colgh{background:rgba(0,170,255,0.2);}
+.replist td{border:1px solid #6d8ca4; text-align:center; padding:4px 0;}
+.npcityFlow{position: absolute;bottom:10%;left: 0; padding:5px;}
+.flow-tit{ text-align:center; padding:5px 0 0 0;}
+.flow-con table td{ padding:5px 2px;}
+.flow-no{  
+    width: 18px;
+    height: 18px;
+    background: #1c64d2;
+    text-align: center;
+    line-height: 18px;
+    font-size: 12px;
+}
+.npcityTime{width:295px;position: absolute;top:15%;right:43%; padding:4px 6px;}
+.time-progress-container{ float:left;}
+.time-progress-bar{width: 245px;
+    height:2px;
+    position: relative;
+    margin-top: 6px;
+	background:#fff;
+	border-radius:10px;
+	margin-bottom: 6px;}
+.time-progress {
+    background:#f9604e;
+	border:3px solid #fff;
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    top: -5px;
+    left: 0px;
+	border-radius:50%;
+}
+.time-progress-text {
+    overflow: hidden;
+    width: 262px;
+    position: relative;
+}
+.time-progress-tick{
+    padding-top: 7px;
+    margin-left: 4%;
+    text-align: center;
+}
+.time-panel-btn {
+    background: url(../images/smartCity/time-btn-pause.png) no-repeat 0 0;
+    width: 33px;
+    height: 33px;
+    float: right;
+    cursor: pointer;}
+.play {
+    background: url(../images/smartCity/np_city_icon18.png) no-repeat 0 0;
+}
+.npcityBomb{ position:absolute; left:55%; top:30%; width:340px;}
+.npcityBomb h4 em{ font-style:normal; float:right; margin-right:45px; font-weight:normal;}
+.bombcon table{ border-collapse:collapse;}
+.bombcon table td{ border:1px solid #6d8ca4; padding:5px;}
+.bombbtn li{ float:left;}
+.bombbtn li a{ float:left; display:inline-block; background:#f8a02f; margin:10px 0px 0 0px; width:165px; height:32px; text-align:center; line-height:32px;}
+.bombbtn li a.f-red{background:#f9604e;}
+.bombbtn li a.f-blue{background:#5e89d7;}
+.bombbtn li a.f-green{background:#6dc149;}
+.bombbtn li a:hover{ background:#999;}
+.npcityWeek{ width:400px;position:
+ absolute;top:15%;right: 10%;}
+.npcityWeek ul li{ float:left;
+    width: 80px;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;}
+.npcityWeek ul li.date-active{background: #3370d1;}
+.npcityWeek ul li .date-yc{background: url(../images/smartCity/np_city_icon17.png) no-repeat;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: -5px;
+    top: 8px;
+    z-index: 99;}
+.npcityHufi{position: absolute;bottom:5%;right: 2%; padding:8px; font-size:12px;}
+.npcityHufi span{ display:inline-block; background:#f23030; padding:1px 8px; margin:0 2px;}
+.npcityHufi span.zs-m{ background:#ff9e19;}
+.npcityHufi span.zs-d{ background:#26d921;}
+.buildcon{ margin-top:10px;}
+.buildleft{ float:left; border:1px solid #81a1b9; width:188px;background:rgba(40,71,82,0.5); min-height:404px;}
+.buildleft-tit{border-bottom:1px solid #81a1b9; height:37px; line-height:37px;}
+.buildleft-tit ul li{ padding:12px 0;width:49.5%;border-right:1px solid #81a1b9;}
+.buildleft-tit ul li.build-dq{ background:rgba(40,71,82,0.5); color:#ff4140;}
+.buildleft-tit ul li.noline{ border:none;}
+.buildleft-list ul li{ float:none; text-align:left;padding: 8px 10px;
+    border: 1px solid #32d6c5;
+    border-image: -webkit-linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+    border-image: -moz-linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+    border-image: linear-gradient(45deg, #04c1cd, #715de7 50%, #d701ff) 10 10;
+    margin:7px 10px;
+    min-width: 140px;}
+.buildleft-list ul li.buildleft-list-dq,.buildleft-list ul li:hover{background: rgba(7,141,210,0.85);}
+.buildleft-list ul li i{float: left; margin-right: 5px;}
+.buildright{ margin-left:198px;}
+.buildright-chart1{ width:396px; float:left;}
+.generbox{ padding:10px; border:1px solid #6d8ca4; margin-bottom:10px;background: rgba(40,71,82,0.5); height:186px;}
+.buildright h5{ font-weight:normal; font-size:14px; padding:0px 0 5px 0;}
+.generlist table{ border-collapse:collapse; font-size:12px;}
+.generlist table td{ border:1px solid #6d8ca4; padding:5px;}
+.orange{ color:#fddd6e;}
+.buildright-chart2{ margin-left:406px;}
+.generlist dl{ float:left; border:1px solid #81a1b9; width:181px; margin-right:8px; margin-bottom:5px; font-size:12px;}
+.generlist dl dt{ background:#48bd6e; width:22px; float:left; height:20px; margin-right:5px; padding:5px 4px;}
+.generlist dl dd{ height:30px; line-height:30px;}
+.fisright-chart1{border:1px solid #6d8ca4;background: rgba(40,71,82,0.5); float:left; width:376px; padding:10px;}
+.fr{ float:right;}
+.fl{ float:left;}
+.fislist{ margin:16px 0;}
+.fislist ul li{ width:90px; height:40px; border:5px solid #7a70f2; border-radius:50%; margin:0 11px; line-height:1.5; padding:25px 0;}
+.fislist ul li.col-pri1{border:5px solid #64e1ad;}
+.fislist ul li.col-pri2{border:5px solid #f9a57a;padding:15px 0; height:60px;}
+.fisright-chart2{ margin-left:406px;border:1px solid #6d8ca4;background: rgba(40,71,82,0.5); padding:10px; min-height: 381px;}
+.fisright-chart2 table{border-collapse:collapse; font-size:12px;}
+.fisright-chart2 table td{ border:1px solid #6d8ca4; padding:8px 5px;}
+.fisright-chart2 table img{ margin-right:4px;}
+.npAlarminfo select{border: solid 1px #fff; background:none; color:#fff; padding:3px 15px; margin-right:5px;}
+.npAlarminfo select option{ color:#666;}

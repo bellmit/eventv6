@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.typeRela.TypeRelaMapper">
+
+    <!-- 新增 -->
+    <insert id="insert">
+        <selectKey keyProperty="typeId" resultType="long" order="BEFORE">
+            SELECT SEQ_TP_RE_ID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        T_TYPE_RELA
+        (
+        TYPE_ID,
+        BIZ_TYPE,
+        BIZ_ID,
+        BIZ_COLUMN,
+        TYPE_CODE,
+        TYPE_VAL
+        ) VALUES (
+        #{typeId,jdbcType=DECIMAL},
+        #{bizType,jdbcType=VARCHAR},
+        #{bizId,jdbcType=DECIMAL},
+        #{bizColumn,jdbcType=VARCHAR},
+        #{typeCode,jdbcType=VARCHAR},
+        #{typeVal,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update">
+        UPDATE
+        T_TYPE_RELA
+        <set>
+            <if test="bizType != null " >
+                BIZ_TYPE=#{bizType,jdbcType=VARCHAR},
+            </if>
+            <if test="bizId != null " >
+                BIZ_ID=#{bizId,jdbcType=DECIMAL},
+            </if>
+            <if test="bizColumn != null " >
+                BIZ_COLUMN=#{bizColumn,jdbcType=VARCHAR},
+            </if>
+            <if test="typeCode != null " >
+                TYPE_CODE=#{typeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="typeVal != null " >
+                TYPE_VAL=#{typeVal,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE
+        TYPE_ID= #{typeId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 删除；根据记录的业务类型和业务ID删除记录信息 -->
+    <delete id="delTypeRela">
+        DELETE FROM T_TYPE_RELA
+        WHERE BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+        AND BIZ_ID = #{bizId,jdbcType=DECIMAL}
+    </delete>
+</mapper>

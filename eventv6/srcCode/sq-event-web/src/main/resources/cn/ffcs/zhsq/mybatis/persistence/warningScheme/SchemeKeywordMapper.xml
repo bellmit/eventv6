@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.warningScheme.SchemeKeywordMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.warningScheme.SchemeKeyword">
+		<id column="SCHEME_KEYWORD_ID" property="schemeKeywordId" jdbcType="DECIMAL" /> <!--SCHEME_KEYWORD_ID-->
+		<result column="SCHEME_ID" property="schemeId" jdbcType="DECIMAL" /> <!--SCHEME_ID-->
+		<result column="CODE" property="code" jdbcType="VARCHAR" /> <!--事件等级编码-->
+		<result column="KEYWORD" property="keyword" jdbcType="VARCHAR" /> <!--关键字-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_SCHEME_KEYWORD T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 判断关键字匹配匹配 -->	
+	<select id="fetchKeyword" parameterType="java.util.Map"  resultType="java.util.Map">
+		SELECT T.URGENCY_DEGREE FROM T_EVENT T
+		WHERE
+		T.EVENT_ID=#{eventId,jdbcType=DECIMAL} 
+		AND 
+		( 1=0 
+		<if test="keyword!=null and keyword.size()>0">
+		    <foreach collection="keyword" item="kw">
+		        OR T.EVENT_NAME LIKE '%' || #{kw,jdbcType=VARCHAR} || '%' 
+		        OR T.CONTENT_ LIKE '%' || #{kw,jdbcType=VARCHAR} || '%'
+		    </foreach>
+		</if>
+		)
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.SCHEME_KEYWORD_ID,
+			T.SCHEME_ID,
+			T.CODE,
+			T.KEYWORD
+		FROM
+			T_SCHEME_KEYWORD T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+		    <if test="schemeId != null and schemeId != '' " >
+				AND T.SCHEME_ID=#{schemeId,jdbcType=DECIMAL}
+			</if>
+			<if test="code != null and code != '' " >
+				AND T.CODE=#{code,jdbcType=VARCHAR}
+			</if>
+			<if test="keyword != null and keyword != '' " >
+				AND T.KEYWORD=#{keyword,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.warningScheme.SchemeKeyword">
+		<selectKey keyProperty="schemeKeywordId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_T_SCHEME_KEYWORD.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_SCHEME_KEYWORD
+		(
+			SCHEME_KEYWORD_ID,
+			SCHEME_ID,
+			CODE,
+			KEYWORD
+		) VALUES (
+			#{schemeKeywordId,jdbcType=DECIMAL},
+			#{schemeId,jdbcType=DECIMAL},
+			#{code,jdbcType=VARCHAR},
+			#{keyword,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.warningScheme.SchemeKeyword">
+		UPDATE
+			T_SCHEME_KEYWORD
+		<set> 
+			<if test="schemeId != null " >
+				SCHEME_ID=#{schemeId,jdbcType=DECIMAL},
+			</if>
+			<if test="code != null " >
+				CODE=#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="keyword != null " >
+				KEYWORD=#{keyword,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			SCHEME_KEYWORD_ID= #{schemeKeywordId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.SCHEME_KEYWORD_ID,
+			T.SCHEME_ID,
+			T.CODE,
+			T.KEYWORD
+		FROM
+			T_SCHEME_KEYWORD T
+		WHERE
+			SCHEME_KEYWORD_ID= #{schemeKeywordId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 详情 (根据外键获取)-->	
+	<select id="searchBySchemeId" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.SCHEME_KEYWORD_ID,
+			T.SCHEME_ID,
+			T.CODE,
+			T.KEYWORD
+		FROM
+			T_SCHEME_KEYWORD T
+			inner join t_bas_datadict g
+			on t.code=g.dict_general_code
+		WHERE
+			T.SCHEME_ID= #{schemeId,jdbcType=DECIMAL} 
+			and g.dict_pcode='A001093271' 
+		ORDER BY 
+		    G.DICT_ORDERBY
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.warningScheme.SchemeKeyword">
+		DELETE FROM T_SCHEME_KEYWORD WHERE SCHEME_KEYWORD_ID= #{schemeKeywordId,jdbcType=DECIMAL} 
+	</delete>
+	
+	<!-- 批量新增 -->	
+    <insert id="insertByList" parameterType="java.util.List">
+
+        INSERT INTO
+			T_SCHEME_KEYWORD
+		(
+			SCHEME_KEYWORD_ID,
+			SCHEME_ID,
+			CODE,
+			KEYWORD
+		)
+		SELECT SEQ_T_SCHEME_KEYWORD.NEXTVAL, A.* FROM 
+		(
+			<foreach collection="list" item="item" index="index" separator="union all" >
+				SELECT
+					#{item.schemeId,jdbcType=DECIMAL} AS schemeId,
+			        #{item.code,jdbcType=VARCHAR} AS code,
+			        #{item.keyword,jdbcType=VARCHAR} AS keyword
+				FROM DUAL
+			</foreach>
+		) A
+
+    </insert>
+
+
+	<!-- 批量修改 -->
+	<update id="updateByList" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open="begin"
+			close=";end;" separator=";">
+			UPDATE
+			T_SCHEME_KEYWORD
+			<set>
+				<if test="item.schemeId != null ">
+					SCHEME_ID=#{item.schemeId,jdbcType=DECIMAL},
+				</if>
+				<if test="item.code != null ">
+					CODE=#{item.code,jdbcType=VARCHAR},
+				</if>
+				<if test="item.keyword != null ">
+					KEYWORD=#{item.keyword,jdbcType=VARCHAR},
+				</if>
+			</set>
+			WHERE
+			SCHEME_KEYWORD_ID= #{item.schemeKeywordId,jdbcType=DECIMAL}
+		</foreach>
+	</update>
+    
+    
+    
+    <!-- 获取所有的code -->	
+	<select id="findAllCode"  resultType="String">
+		SELECT DISTINCT(CODE) FROM  T_SCHEME_KEYWORD
+	</select>
+	
+</mapper>

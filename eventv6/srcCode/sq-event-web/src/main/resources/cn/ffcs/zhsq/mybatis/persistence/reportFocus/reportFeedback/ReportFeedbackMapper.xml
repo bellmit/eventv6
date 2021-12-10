@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.reportFocus.reportFeedback.ReportFeedbackMapper" >
+	<!-- 新增下达信息反馈记录 -->
+	<insert id="insert">
+		<selectKey keyProperty="fbUUId" resultType="String" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_REPORT_FEEDBACK(
+			FB_UUID, SE_UUID, 
+			SE_CONTENT, SE_TIME, 
+			<if test="@Ognl@isNotEmpty(seStatus)">
+				SE_STATUS,
+			</if>
+			RE_DEADLINE,
+			<if test="@Ognl@isNotEmpty(reStatus)">
+				RE_STATUS,
+			</if>
+			FB_DEADLINE,
+			<if test="@Ognl@isNotEmpty(fbStatus)">
+				FB_STATUS,
+			</if>
+			FB_ORG_ID, FB_ORG_NAME, 
+			FB_USER_ID, FB_USER_NAME,
+			FB_CONTENT, REMARK, 
+			IS_VALID,
+			CREATOR, CREATE_TIME, UPDATOR, UPDATE_TIME
+		) VALUES (
+			#{fbUUId,jdbcType=VARCHAR}, #{seUUId,jdbcType=VARCHAR},
+			NULLIF(#{seContent,jdbcType=VARCHAR}, ''), #{seTime,jdbcType=TIMESTAMP},
+			<if test="@Ognl@isNotEmpty(seStatus)">
+				#{seStatus,jdbcType=VARCHAR},
+			</if>
+			#{reDeadline,jdbcType=TIMESTAMP},
+			<if test="@Ognl@isNotEmpty(reStatus)">
+				#{reStatus,jdbcType=VARCHAR},
+			</if>
+			#{fbDeadline,jdbcType=TIMESTAMP},
+			<if test="@Ognl@isNotEmpty(fbStatus)">
+				#{fbStatus,jdbcType=VARCHAR},
+			</if>
+			#{fbOrgId,jdbcType=DECIMAL}, NULLIF(#{fbOrgName,jdbcType=VARCHAR}, ''),
+			#{fbUserId,jdbcType=DECIMAL}, NULLIF(#{fbUserName,jdbcType=VARCHAR}, ''),
+			NULLIF(#{fbContent,jdbcType=VARCHAR}, ''), NULLIF(#{remark,jdbcType=VARCHAR}, ''),
+			'1',
+			#{creator,jdbcType=DECIMAL}, SYSDATE, #{updator,jdbcType=DECIMAL}, SYSDATE
+		)
+	</insert>
+
+	<!-- 更新下达信息反馈记录 -->
+	<update id="updateMap" parameterType="java.util.Map">
+		UPDATE T_EVENT_REPORT_FEEDBACK T1
+		<set>
+			<if test="@Ognl@isNotEmpty(seContent)">
+				T1.SE_CONTENT = #{seContent,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(seStatus)">
+				T1.SE_STATUS = #{seStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(reTime)">
+				T1.RE_TIME = #{reTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="@Ognl@isNotEmpty(reStatus)">
+				T1.RE_STATUS = #{reStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(fbTime)">
+				T1.FB_TIME = #{fbTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="@Ognl@isNotEmpty(fbStatus)">
+				T1.FB_STATUS = #{fbStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="@Ognl@isNotEmpty(fbContent)">
+				T1.FB_CONTENT = #{fbContent,jdbcType=VARCHAR},
+			</if>
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.FB_UUID = #{fbUUId,jdbcType=VARCHAR} AND T1.IS_VALID = '1'
+		<if test="@Ognl@isNotEmpty(preReStatus)">
+			AND T1.RE_STATUS = #{preReStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(preFbStatus)">
+			AND T1.FB_STATUS = #{preFbStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(noUpdate)">
+			AND 1 = 2
+		</if>
+	</update>
+
+	<!-- 依据UUID查找反馈记录信息 -->
+	<select id="findById" resultType="java.util.Map">
+		SELECT
+			T1.RE_DEADLINE	"reDeadline",
+			T1.FB_DEADLINE	"fbDeadline"
+		FROM T_EVENT_REPORT_FEEDBACK T1
+		WHERE T1.FB_UUID = #{fbUUId,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 依据UUID删除记录 -->
+	<delete id="delete">
+		UPDATE T_EVENT_REPORT_FEEDBACK T1
+		<set>
+			T1.IS_VALID = '0',
+			<if test="updator != null ">
+				T1.UPDATOR = #{updator,jdbcType=DECIMAL},
+			</if>
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.FB_UUID = #{fbUUId,jdbcType=VARCHAR}
+	</delete>
+
+    <!-- 依据fbuuid获取反馈信息 -->
+    <select id="findByFbUUId" resultType="java.util.Map">
+        SELECT
+		<include refid="feedbackAllCol"/>
+		<include refid="sql4From3Table" />
+        AND T1.FB_UUID = #{fbUUId,jdbcType=VARCHAR}
+    </select>
+
+	<!-- 依据fbuuid获取反馈信息 -->
+    <select id="findBySeUUId" resultType="java.util.Map">
+        SELECT
+        <include refid="feedbackCol"/>
+        FROM T_EVENT_REPORT_FEEDBACK T1
+        WHERE T1.SE_UUID = #{seuuid,jdbcType=VARCHAR} AND T1.IS_VALID = '1'
+    </select>
+
+	<!-- 列表（分页） -->
+	<select id="searchReportFeedbackDataList" resultType="java.util.Map">
+		SELECT
+		<include refid="feedbackAllCol"/>
+		<include refid="sql4From3Table" />
+		<include refid="find_where_reportFeedback" />
+		<include refid="order_by" />
+	</select>
+
+	<!-- 列表（总数） -->
+	<select id="countReportFeedbackDataList"  resultType="java.lang.Long">
+		SELECT COUNT(1)
+		<include refid="sql4From3Table" />
+		<include refid="find_where_reportFeedback" />
+	</select>
+
+	<sql id="sql4From2Table">
+		FROM T_EVENT_REPORT_FEEDBACK T1,
+		     T_EVENT_REPORT_SEND T2
+		WHERE T1.SE_UUID = T2.SE_UUID
+			  AND T1.IS_VALID = '1'
+			  AND T2.IS_VALID = '1'
+	</sql>
+
+	<sql id="sql4From3Table">
+		FROM T_EVENT_REPORT_FEEDBACK T1,
+		     T_EVENT_REPORT_SEND T2,
+		     T_DC_GRID T3
+		WHERE T1.SE_UUID = T2.SE_UUID
+			  AND T2.REGION_CODE = T3.INFO_ORG_CODE
+			  AND T1.IS_VALID = '1'
+			  AND T2.IS_VALID = '1'
+			  AND T3.STATUS = '001'
+	</sql>
+
+	<!-- 列表（条件） -->
+	<sql id="find_where_reportFeedback">
+		<if test="@Ognl@isNotEmpty(fbUUId)">
+			AND T1.FB_UUID = #{fbUUId,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(fbUserId)">
+			AND T1.FB_USER_ID = #{fbUserId,jdbcType=DECIMAL}
+		</if>
+		<if test="@Ognl@isNotEmpty(fbOrgId)">
+			AND T1.FB_ORG_ID = #{fbOrgId,jdbcType=DECIMAL}
+		</if>
+		<if test="@Ognl@isNotEmpty(regionCode)">
+			AND T2.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="@Ognl@isNotEmpty(bizType)">
+			AND T2.BIZ_TYPE = #{bizType,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(bizSign)">
+			AND T2.BIZ_SIGN = #{bizSign,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(bizCode)">
+			AND T2.BIZ_CODE = #{bizCode,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(dataSource)">
+			AND T2.DATA_SOURCE = #{dataSource,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(dataSign)">
+			AND T2.DATA_SIGN = #{dataSign,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(seStatus)">
+			AND T1.SE_STATUS = #{seStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(reStatus)">
+			AND T1.RE_STATUS = #{reStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(fbStatus)">
+			AND T1.FB_STATUS = #{fbStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="@Ognl@isNotEmpty(keyWord)">
+            AND (
+                T1.SE_CONTENT LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+                OR
+                T1.FB_CONTENT LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+            )
+		</if>
+		<if test="@Ognl@isNotEmpty(beginSeTime) ">
+			<![CDATA[  AND T1.SE_TIME >= #{beginSeTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(endSeTime)">
+			<![CDATA[  AND T1.SE_TIME <= #{endSeTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(beginReTime) ">
+			<![CDATA[  AND T1.RE_TIME >= #{beginReTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(endReTime)">
+			<![CDATA[  AND T1.RE_TIME <= #{endReTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(beginFbTime) ">
+			<![CDATA[  AND T1.FB_TIME >= #{beginFbTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(endFbTime)">
+			<![CDATA[  AND T1.FB_TIME <= #{endFbTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(beginReDeadline) ">
+			<![CDATA[  AND T1.RE_DEADLINE >= #{beginReDeadline, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(endReDeadline)">
+			<![CDATA[  AND T1.RE_DEADLINE <= #{endReDeadline, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(beginFbDeadline) ">
+			<![CDATA[  AND T1.FB_DEADLINE >= #{beginFbDeadline, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="@Ognl@isNotEmpty(endFbDeadline)">
+			<![CDATA[  AND T1.FB_DEADLINE <= #{endFbDeadline, jdbcType=TIMESTAMP} ]]>
+		</if>
+	</sql>
+
+	<sql id="feedbackCol">
+		T1.FB_UUID "fbUUId",
+		T1.SE_UUID "seUUId",
+		T1.SE_CONTENT "seContent",
+		T1.SE_TIME "seTime",
+		T1.SE_STATUS "seStatus",
+		T1.RE_TIME "reTime",
+		T1.RE_DEADLINE "reDeadline",
+		T1.RE_STATUS "reStatus",
+		T1.FB_TIME "fbTime",
+		T1.FB_DEADLINE "fbDeadline",
+		T1.FB_STATUS "fbStatus",
+		T1.FB_ORG_ID "fbOrgId",
+		T1.FB_ORG_NAME "fbOrgName",
+		T1.FB_USER_ID "fbUserId",
+		T1.FB_USER_NAME "fbUserName",
+		T1.FB_CONTENT "fbContent"
+	</sql>
+
+	<sql id="sendCol">
+		T2.REGION_CODE "regionCode",
+		T2.BIZ_TYPE "bizType",
+		T2.BIZ_SIGN "bizSign",
+		T2.BIZ_CODE "bizCode",
+		T2.DATA_SOURCE "dataSource",
+		T2.DATA_SIGN "dataSign"
+	</sql>
+
+	<sql id="feedbackAllCol">
+		<include refid="sendCol"/>,
+		T3.GRID_PATH "gridPathName",
+		<include refid="feedbackCol"/>
+	</sql>
+	<sql id="order_by">
+		<choose>
+			<when test="@Ognl@isNotEmpty(orderByField)">
+				ORDER BY ${orderByField}
+			</when>
+			<otherwise>
+				ORDER BY T1.CREATE_TIME DESC,T2.CREATE_TIME DESC
+			</otherwise>
+		</choose>
+	</sql>
+</mapper>

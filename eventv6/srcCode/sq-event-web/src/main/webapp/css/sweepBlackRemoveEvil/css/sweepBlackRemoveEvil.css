@@ -1,0 +1,27 @@
+/**************************按钮背景颜色 开始******************************/
+/*绿色按钮背景色*/
+.green-btn{background: #7cb81c;}
+/*蓝色按钮背景色*/
+.blue-btn{background: #4f91ff;}
+/**************************按钮背景颜色 结束******************************/
+
+/**************************列表快速搜索图标 开始***************************/
+/*图标选中凹陷效果只有在ie9及其以上才有效果*/
+.icon_select{ background:#ccc;box-shadow:inset 1px 1px 0px 0px #999; border-radius:3px; height:23px; line-height:23px; display:inline-block; padding:0 15px 0 0;text-align:center; margin-left: 10px;}
+/*全部线索*/
+.toolbar-icon-all{display:inline-block; background:url(../images/search-all.png) no-repeat; background-size: cover;}
+/*上级转办*/
+.toolbar-icon-assign{display:inline-block; background:url(../images/superior-assign.png) no-repeat; background-size: cover;}
+/*普通线索*/
+.toolbar-icon-ordinary{display:inline-block; background:url(../images/import-degree-0.png) no-repeat; background-size: cover;}
+/*重要线索*/
+.toolbar-icon-key{display:inline-block; background:url(../images/import-degree-1.png) no-repeat; background-size: cover;}
+
+/**************************列表快速搜索图标 结束***************************/
+
+/**************************字体颜色 开始*********************************/
+/*蓝色*/
+.font-blue{color: #4c91ff;}
+/*红色*/
+.font-red{color: #dd3b44;}
+/**************************字体颜色 结束*********************************/

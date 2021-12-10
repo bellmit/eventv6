@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.rent.EventRentMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventRent" >
+    <id column="ER_ID" property="erId" jdbcType="DECIMAL" />
+    <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+    <result column="LESSOR" property="lessor" jdbcType="VARCHAR" />
+    <result column="LESSEE" property="lessee" jdbcType="VARCHAR" />
+    <result column="RENT_START" property="rentStart" jdbcType="DATE" />
+    <result column="RENT_START_STR" property="rentStartStr" jdbcType="VARCHAR" />
+    <result column="RENT_END" property="rentEnd" jdbcType="DATE" />
+    <result column="RENT_END_STR" property="rentEndStr" jdbcType="VARCHAR" />
+    <result column="RENT_NUM" property="rentNum" jdbcType="DECIMAL" /> 
+    <result column="RENTAL_STAFF" property="rentalStaff" jdbcType="VARCHAR" />
+    <result column="REMARKS" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="detail_select">
+   SELECT 
+   	   T.ER_ID,
+   	   T.EVENT_ID,
+       T.LESSOR,
+       T.LESSEE,
+       T.RENT_START,
+       TO_CHAR(T.RENT_START,'yyyy-MM-dd HH24:mi:ss') RENT_START_STR,
+       T.RENT_END,
+       TO_CHAR(T.RENT_END,'yyyy-MM-dd HH24:mi:ss') RENT_END_STR,
+       T.RENT_NUM,
+       T.RENTAL_STAFF,
+       T.REMARKS
+     FROM T_SJ_EVENT_RENT T
+  </sql>
+   
+  <insert id="insert" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.event.EventRent">
+  <selectKey keyProperty="erId" resultType="long" order="BEFORE">
+		select SEQ_SJ_EVENT_RENT_ID.NEXTVAL from DUAL
+	</selectKey>
+	insert into T_SJ_EVENT_RENT (ER_ID,EVENT_ID,LESSOR,
+		LESSEE,RENT_START,RENT_END,
+		RENT_NUM,RENTAL_STAFF,REMARKS)
+		VALUES (#{erId,jdbcType=DECIMAL},#{eventId,jdbcType=DECIMAL},#{lessor,jdbcType=VARCHAR},
+		#{lessee,jdbcType=VARCHAR},#{rentStart,jdbcType=TIMESTAMP},#{rentEnd,jdbcType=TIMESTAMP},
+		#{rentNum,jdbcType=DECIMAL},#{rentalStaff,jdbcType=VARCHAR},#{remarks,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="cn.ffcs.shequ.mybatis.domain.zzgl.event.EventRent">
+  update T_SJ_EVENT_RENT 
+  <set>
+  <if test="lessor!=null">
+   LESSOR = #{lessor,jdbcType=VARCHAR},
+  </if>
+  <if test="lessee!=null">
+   LESSEE = #{lessee,jdbcType=VARCHAR},
+  </if>
+  <if test="rentStart!=null">
+   RENT_START = #{rentStart,jdbcType=TIMESTAMP},
+  </if>
+  <if test="rentEnd!=null">
+   RENT_END = #{rentEnd,jdbcType=TIMESTAMP},
+  </if>
+  <if test="rentNum!=null">
+   RENT_NUM = #{rentNum,jdbcType=DECIMAL},
+  </if>
+  <if test="rentalStaff!=null">
+   RENTAL_STAFF = #{rentalStaff,jdbcType=VARCHAR},
+  </if>
+  <if test="remarks!=null">
+   REMARKS = #{remarks,jdbcType=VARCHAR},
+  </if>
+  </set>
+   where EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </update>
+  
+  <select id="findEventRentByEventId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  	<include refid="detail_select"/>
+  	WHERE T.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  </select>
+   
+</mapper>

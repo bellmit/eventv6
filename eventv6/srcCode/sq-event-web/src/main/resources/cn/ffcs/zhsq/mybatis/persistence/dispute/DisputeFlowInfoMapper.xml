@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.DisputeFlowInfoMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeFlowInfo">
+		<id column="HFI_ID" property="hfiId" jdbcType="VARCHAR" /> <!--主键ID-->
+		<result column="BIZ_ID" property="bizId" jdbcType="DECIMAL" /> <!--业务ID-->
+		<result column="BIZ_UUID" property="bizUuid" jdbcType="VARCHAR" /> <!--业务ID（UUID）-->
+		<result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" /> <!--业务类型-->
+		<result column="HANDLER_NAME" property="handlerName" jdbcType="VARCHAR" /> <!--办理人姓名-->
+		<result column="HANDLER_ID" property="handlerId" jdbcType="DECIMAL" /> <!--办理人ID-->
+		<result column="HANDLE_UNIT_ID" property="handleUnitId" jdbcType="DECIMAL" /> <!--办理单位ID-->
+		<result column="HANDLE_UNIT_CODE" property="handleUnitCode" jdbcType="VARCHAR" /> <!--办理单位CODE-->
+		<result column="HANDLE_UNIT_NAME" property="handleUnitName" jdbcType="VARCHAR" /> <!--办理单位名称-->
+		<result column="HANDLE_TIME" property="handleTime" jdbcType="VARCHAR" /> <!--办理时间-->
+		<result column="HANDLE_OPINION" property="handleOpinion" jdbcType="VARCHAR" /> <!--办理意见-->
+		<result column="HANDLE_STATUS" property="handleStatus" jdbcType="VARCHAR" /> <!--办理状态-->
+		<result column="HANDLE_SEQUENCE" property="handleSequence" jdbcType="DECIMAL" /> <!--办理时序-->
+		<result column="HANDLE_LINK_NAME" property="handleLinkName" jdbcType="VARCHAR" /> <!--办理环节名称-->
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" /> <!--创建组织名称-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--创建组织Code-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="VARCHAR" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--更新人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR" /> <!--更新时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--是否有效-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_HANDLE_FLOW_INFO T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.HFI_ID,
+			T.BIZ_ID,
+			T.BIZ_UUID,
+			T.BIZ_TYPE,
+			T.HANDLER_NAME,
+			T.HANDLER_ID,
+			T.HANDLE_UNIT_ID,
+			T.HANDLE_UNIT_CODE,
+			T.HANDLE_UNIT_NAME,
+			T.HANDLE_TIME,
+			T.HANDLE_OPINION,
+			T.HANDLE_STATUS,
+			T.HANDLE_SEQUENCE,
+			T.HANDLE_LINK_NAME,
+			T.ORG_NAME,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_HANDLE_FLOW_INFO T
+		<include refid="find_where" />
+		ORDER BY 
+			T.HFI_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			T.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(mediationId)">
+				AND BIZ_ID = #{mediationId,jdbcType=DECIMAL}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeFlowInfo">
+		<selectKey keyProperty="hfiId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_HANDLE_FLOW_INFO.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_HANDLE_FLOW_INFO
+		(
+			HFI_ID,
+			BIZ_ID,
+			BIZ_UUID,
+			BIZ_TYPE,
+			HANDLER_NAME,
+			HANDLER_ID,
+			HANDLE_UNIT_ID,
+			HANDLE_UNIT_CODE,
+			HANDLE_UNIT_NAME,
+			HANDLE_TIME,
+			HANDLE_OPINION,
+			HANDLE_STATUS,
+			HANDLE_SEQUENCE,
+			HANDLE_LINK_NAME,
+			ORG_NAME,
+			ORG_CODE,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			REMARK
+		) VALUES (
+			#{hfiId,jdbcType=VARCHAR},
+			#{bizId,jdbcType=DECIMAL},
+			#{bizUuid,jdbcType=VARCHAR},
+			#{bizType,jdbcType=VARCHAR},
+			#{handlerName,jdbcType=VARCHAR},
+			#{handlerId,jdbcType=DECIMAL},
+			#{handleUnitId,jdbcType=DECIMAL},
+			#{handleUnitCode,jdbcType=VARCHAR},
+			#{handleUnitName,jdbcType=VARCHAR},
+			#{handleTime,jdbcType=VARCHAR},
+			#{handleOpinion,jdbcType=VARCHAR},
+			#{handleStatus,jdbcType=VARCHAR},
+			#{handleSequence,jdbcType=DECIMAL},
+			#{handleLinkName,jdbcType=VARCHAR},
+			#{orgName,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{creator,jdbcType=DECIMAL},
+			sysdate,
+			#{updator,jdbcType=DECIMAL},
+			sysdate,
+			'1',
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeFlowInfo">
+		UPDATE
+			T_HANDLE_FLOW_INFO
+		<set> 
+			<if test="bizId != null " >
+				BIZ_ID=#{bizId,jdbcType=DECIMAL},
+			</if>
+			<if test="bizUuid != null " >
+				BIZ_UUID=#{bizUuid,jdbcType=VARCHAR},
+			</if>
+			<if test="bizType != null " >
+				BIZ_TYPE=#{bizType,jdbcType=VARCHAR},
+			</if>
+			<if test="handlerName != null " >
+				HANDLER_NAME=#{handlerName,jdbcType=VARCHAR},
+			</if>
+			<if test="handlerId != null " >
+				HANDLER_ID=#{handlerId,jdbcType=DECIMAL},
+			</if>
+			<if test="handleUnitId != null " >
+				HANDLE_UNIT_ID=#{handleUnitId,jdbcType=DECIMAL},
+			</if>
+			<if test="handleUnitCode != null " >
+				HANDLE_UNIT_CODE=#{handleUnitCode,jdbcType=VARCHAR},
+			</if>
+			<if test="handleUnitName != null " >
+				HANDLE_UNIT_NAME=#{handleUnitName,jdbcType=VARCHAR},
+			</if>
+			<if test="handleTime != null " >
+				HANDLE_TIME=#{handleTime,jdbcType=VARCHAR},
+			</if>
+			<if test="handleOpinion != null " >
+				HANDLE_OPINION=#{handleOpinion,jdbcType=VARCHAR},
+			</if>
+			<if test="handleStatus != null " >
+				HANDLE_STATUS=#{handleStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="handleSequence != null " >
+				HANDLE_SEQUENCE=#{handleSequence,jdbcType=DECIMAL},
+			</if>
+			<if test="handleLinkName != null " >
+				HANDLE_LINK_NAME=#{handleLinkName,jdbcType=VARCHAR},
+			</if>
+			<if test="orgName != null " >
+				ORG_NAME=#{orgName,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null " >
+				REMARK=#{remark,jdbcType=VARCHAR},
+			</if>
+		 UPDATE_TIME = sysdate
+		</set>
+		WHERE
+			HFI_ID= #{hfiId,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.HFI_ID,
+			T.BIZ_ID,
+			T.BIZ_UUID,
+			T.BIZ_TYPE,
+			T.HANDLER_NAME,
+			T.HANDLER_ID,
+			T.HANDLE_UNIT_ID,
+			T.HANDLE_UNIT_CODE,
+			T.HANDLE_UNIT_NAME,
+			T.HANDLE_TIME,
+			T.HANDLE_OPINION,
+			T.HANDLE_STATUS,
+			T.HANDLE_SEQUENCE,
+			T.HANDLE_LINK_NAME,
+			T.ORG_NAME,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.REMARK
+		FROM
+			T_HANDLE_FLOW_INFO T
+		WHERE
+			HFI_ID= #{hfiId,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeFlowInfo">
+		UPDATE
+			T_HANDLE_FLOW_INFO
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE, UPDATOR = #{updator,jdbcType=DECIMAL}
+		WHERE
+			HFI_ID= #{hfiId,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insertBatch" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeFlowInfo">
+		INSERT INTO
+		T_HANDLE_FLOW_INFO (
+		HFI_ID,
+		BIZ_ID,
+		BIZ_UUID,
+		BIZ_TYPE,
+		HANDLER_NAME,
+		HANDLER_ID,
+		HANDLE_UNIT_ID,
+		HANDLE_UNIT_CODE,
+		HANDLE_UNIT_NAME,
+		HANDLE_TIME,
+		HANDLE_OPINION,
+		HANDLE_STATUS,
+		HANDLE_SEQUENCE,
+		HANDLE_LINK_NAME,
+		ORG_NAME,
+		ORG_CODE,
+		CREATOR,
+		CREATE_TIME,
+		UPDATOR,
+		UPDATE_TIME,
+		IS_VALID,
+		REMARK
+		)
+		SELECT SEQ_HANDLE_FLOW_INFO.NEXTVAL,T.* FROM (
+		<foreach collection="list" item="item" separator="union all">
+			(
+			SELECT
+			#{item.bizId,jdbcType=DECIMAL},
+			#{item.bizUuid,jdbcType=VARCHAR},
+			#{item.bizType,jdbcType=VARCHAR},
+			#{item.handlerName,jdbcType=VARCHAR},
+			#{item.handlerId,jdbcType=DECIMAL},
+			#{item.handleUnitId,jdbcType=DECIMAL},
+			#{item.handleUnitCode,jdbcType=VARCHAR},
+			#{item.handleUnitName,jdbcType=VARCHAR},
+			#{item.handleTime,jdbcType=VARCHAR},
+			#{item.handleOpinion,jdbcType=VARCHAR},
+			#{item.handleStatus,jdbcType=VARCHAR},
+			#{item.handleSequence,jdbcType=DECIMAL},
+			#{item.handleLinkName,jdbcType=VARCHAR},
+			#{item.orgName,jdbcType=VARCHAR},
+			#{item.orgCode,jdbcType=VARCHAR},
+			#{item.creator,jdbcType=DECIMAL},
+			sysdate,
+			#{item.updator,jdbcType=DECIMAL},
+			sysdate,
+			'1',
+			#{item.remark,jdbcType=VARCHAR}
+			FROM DUAL
+			)
+		</foreach>
+		) T
+	</insert>
+
+	<delete id="deleteByDisputeId" parameterType="java.lang.Long">
+		UPDATE
+			T_HANDLE_FLOW_INFO
+		SET IS_VALID = '0', UPDATE_TIME = SYSDATE
+		WHERE
+			BIZ_ID= #{bizId,jdbcType=DECIMAL}
+	</delete>
+</mapper>

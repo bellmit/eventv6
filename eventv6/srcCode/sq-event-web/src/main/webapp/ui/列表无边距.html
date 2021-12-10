@@ -1,0 +1,92 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="css/normal.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div class="ConSearch" style="padding:10px 10px 0 10px;">
+        <div class="fl">
+        	<ul>
+            	<li style="margin-right:0;">搜索条件：</li>
+                <li><input name="" type="text" class="inp1" style="width:120px;" /></li>
+            	<li style="margin-right:0;">搜索条件：</li>
+                <li><select name="" class="sel1" style="width:120px;"></select></li>
+                <li style="position:relative;">
+                	<a href="#" class="AdvanceSearchBtn FontDarkBlue">高级搜索</a>
+                    <div class="AdvanceSearch DropDownList hide" style="width:412px; top: 42px; left: -160px;">
+                        <div class="LeftShadow">
+                            <div class="RightShadow">
+                                <div class="list NorForm">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td><label class="LabName">事件标题：</label><input name="" type="text" class="inp1" /></td>
+                                      </tr>
+                                      <tr>
+                                        <td><label class="LabName">涉事人员：</label>
+                                        <input name="input" type="text" class="inp1" /></td>
+                                      </tr>
+                                      <tr>
+                                        <td><label class="LabName">奇葩的字段名称：</label><input name="" type="text" class="inp1" onkeydown="if (event.keyCode==13) {}" onblur="if(this.value=='')value='输入涉事人员身份证';" onfocus="if(this.value=='输入涉事人员身份证')value='';" value="输入涉事人员身份证" /></td>
+                                      </tr>
+                                      <tr>
+                                        <td><label class="LabName">事件标题：</label><textarea name="textarea" id="textarea" cols="45" rows="5" class="area1"></textarea></td>
+                                      </tr>
+                                    </table>
+                                </div>
+                                <div class="BottomShadow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="btns">
+        	<ul>
+            	<li><a href="#" class="chaxun" title="点击搜索">搜索</a></li>
+            	<li><a href="#" class="chongzhi" title="重置搜索条件">重置</a></li>
+            </ul>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="h_10"></div>
+    <div class="ConList">
+        <div class="ListShow" style="border:none;">
+            <div class="ToolBar">
+                <div class="fl"><img src="images/icon_07.png" />一般<img src="images/icon_09.png" />紧急</div>
+                <div class="tool fr">
+                    <a href="#" class="NorToolBtn MoreBtn ShowMoreTool">更多</a>
+                    <a href="#" class="NorToolBtn ShangBaoBtn">上报</a>
+                    <a href="#" class="NorToolBtn JieAnBtn">结案</a>
+                    <a href="#" class="NorToolBtn EditBtn">编辑</a>
+                    <a href="#" class="NorToolBtn DelBtn">删除</a>
+                    <a href="#" class="NorToolBtn AddBtn">新增</a>
+                    <div class="MoreTool DropDownList hide" style="width: 127px; top: 32px; right: 4px;">
+                        <div class="LeftShadow">
+                            <div class="RightShadow">
+                                <div class="list">
+                                    <ul>
+                                        <li><a href="#" class="NorToolBtn YueJiShangBaoBtn">越级上报</a></li>
+                                        <li><a href="#" class="NorToolBtn ToDepartmentBtn">分流到部门</a></li>
+                                        <li><a href="#" class="NorToolBtn ToPeopleBtn">分流到人</a></li>
+                                    </ul>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="BottomShadow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<!--------------------------------easyUi列表------------------------------------------>
+<div class="tabss">
+	<div>easyUi列表</div>
+</div>
+<script type="text/javascript" src="js/function.js"></script>
+<script type="text/javascript" src="js/jquery-1.7.min.js"></script>
+</body>
+</html>

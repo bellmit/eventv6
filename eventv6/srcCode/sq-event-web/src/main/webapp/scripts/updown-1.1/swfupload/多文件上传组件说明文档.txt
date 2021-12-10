@@ -1,0 +1,55 @@
+
+说明：上传组件中SWFUpload上进行封装；
+1、使用说明
+	1）JSP页面要引入的文件(需jquery支持)
+		<link rel="stylesheet" type="text/css" href="script/swfupload/css/swfupload.css" />
+		<script type="text/javascript" src="script/jquery/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="script/swfupload/swfupload.js"></script>
+		<script type="text/javascript" src="script/swfupload/handlers.js"></script>
+	2）页面引入
+		<div id="_fileupload"></div>
+	3）修改handlers.js顶部默认配置（上传文件URL、下载文件URL、删除文件URL、脚本路径）
+	4）编写JS初始化
+		
+		<script type="text/javascript">
+		$(function(){
+			fileUpload({
+				positionId:'_fileupload',
+				type:'add',
+			});
+			
+		});
+		</script>
+		或
+		<script type="text/javascript">
+		$(function(){
+			fileUpload({
+				positionId:'',//附件列表DIV的id值',
+				type:'',//add edit detail
+				initType:'',//ajax、hidden编辑表单时获取已上传附件列表方式
+				ajaxUrl:'',//配合initType:'ajax'
+				ajaxData:'',//配合initType:'ajax'
+				hiddenId:'',//配合initType:'hidden'
+				upload_url:'',//文件上传路径默认default_config.upload_url
+				file_upload_limit:''//文件数大小默认50
+				file_size_limit:'',//单文件大小默认1024M
+				file_types:'',//上传文件类型默认*.*
+			});
+			
+		});
+		</script>
+		
+		备注：
+		文件上传成功接收的Json格式：
+		{"filePath":"upload\\interview\\20121109\\1352426422074.exe","fileName":"BaiduPlayer1.19.0.32_1.exe"}
+		初始化文件列表Json格式：
+		[{"fileSize":"48.22MB","fileId":1,"filePath":"upload\\interview\\20121108\\1352340107199.docx","fileName":"QQ2012Beta3_QQProtect2.8.exe"},
+		{"fileSize":"33.28MB","fileId":2,"filePath":"upload\\interview\\20121108\\1352340107199.docx","fileName":"QvodSetup5.4.113.2012101617.exe"},
+		{"fileSize":"19.34KB","fileId":3,"filePath":"upload\\interview\\20121108\\1352340107199.docx","fileName":"入党申请书.docx"},
+		{"fileSize":"48.22MB","fileId":1,"filePath":"upload\\interview\\20121108\\1352340107199.docx","fileName":"QQ2012Beta3_QQProtect2.8.exe"}]
+		
+	5）Action方法接收
+		String[] fileName = request.getParameterValues("fileName");
+		String[] filePath = request.getParameterValues("filePath");
+		String[] fileSize = request.getParameterValues("fileSize");
+		

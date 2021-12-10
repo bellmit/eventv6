@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.bus.BusMapper">
+	<resultMap id="BaseResultMap_Busline" type="cn.ffcs.zhsq.mybatis.domain.map.bus.Busline">
+		<id column="BUSLINE_ID" property="buslineId" jdbcType="DECIMAL" /> <!--公交线路ID-->
+		<result column="BUSLINE_NO" property="buslineNo" jdbcType="VARCHAR" /> <!--线路编号-->
+		<result column="BUSLINE_NAME" property="buslineName" jdbcType="VARCHAR" /> <!--线路名称-->
+		<result column="COURSE_UP" property="courseUp" jdbcType="DECIMAL" /> <!--上行里程(单位:千米)-->
+		<result column="COURSE_DOWN" property="courseDown" jdbcType="DECIMAL" /> <!--下行里程(单位:千米)-->
+		<result column="RUN_TIME" property="runTime" jdbcType="DECIMAL" /> <!--运行时长(单位:分钟)-->
+		<result column="STIME_UP" property="stimeUp" jdbcType="VARCHAR" /> <!--上行首班(格式：HH24:MI)-->
+		<result column="ETIME_UP" property="etimeUp" jdbcType="VARCHAR" /> <!--上行末班(格式：HH24:MI)-->
+		<result column="STIME_DOWN" property="stimeDown" jdbcType="VARCHAR" /> <!--下行首班(格式：HH24:MI)-->
+		<result column="ETIME_DOWN" property="etimeDown" jdbcType="VARCHAR" /> <!--下行末班(格式：HH24:MI)-->
+		<result column="PRICE_BASE" property="priceBase" jdbcType="DECIMAL" /> <!--基本票价(单位:元)-->
+		<result column="PRICE_ALL" property="priceAll" jdbcType="DECIMAL" /> <!--全程票价(单位:元)-->
+	</resultMap>
+	
+	<delete id="deleteAllBusline">
+		DELETE FROM T_NP_BUS_LINE T WHERE 1=1
+	</delete>
+	<update id="batchMergeBusline">
+		MERGE INTO T_NP_BUS_LINE T
+	    USING (
+    	<foreach collection="list" item="item" separator="union All">
+			SELECT
+				#{item.buslineId,jdbcType=DECIMAL} BUSLINE_ID,
+				#{item.buslineNo,jdbcType=VARCHAR} BUSLINE_NO,
+				#{item.buslineName,jdbcType=VARCHAR} BUSLINE_NAME,
+				#{item.courseUp,jdbcType=DECIMAL} COURSE_UP,
+				#{item.courseDown,jdbcType=DECIMAL} COURSE_DOWN,
+				#{item.runTime,jdbcType=DECIMAL} RUN_TIME,
+				#{item.stimeUp,jdbcType=VARCHAR} STIME_UP,
+				#{item.etimeUp,jdbcType=VARCHAR} ETIME_UP,
+				#{item.stimeDown,jdbcType=VARCHAR} STIME_DOWN,
+				#{item.etimeDown,jdbcType=VARCHAR} ETIME_DOWN,
+				#{item.priceBase,jdbcType=DECIMAL} PRICE_BASE,
+				#{item.priceAll,jdbcType=DECIMAL} PRICE_ALL
+			FROM DUAL
+		</foreach>
+		) oData
+	    ON (t.busline_id = oData.busline_id)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.BUSLINE_NO = oData.BUSLINE_NO,
+				T.BUSLINE_NAME = oData.BUSLINE_NAME,
+				T.COURSE_UP = oData.COURSE_UP,
+				T.COURSE_DOWN = oData.COURSE_DOWN,
+				T.RUN_TIME = oData.RUN_TIME,
+				T.STIME_UP = oData.STIME_UP,
+				T.ETIME_UP = oData.ETIME_UP,
+				T.STIME_DOWN = oData.STIME_DOWN,
+				T.ETIME_DOWN = oData.ETIME_DOWN,
+				T.PRICE_BASE = oData.PRICE_BASE,
+				T.PRICE_ALL = oData.PRICE_ALL
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		BUSLINE_ID,
+				BUSLINE_NO,
+				BUSLINE_NAME,
+				COURSE_UP,
+				COURSE_DOWN,
+				RUN_TIME,
+				STIME_UP,
+				ETIME_UP,
+				STIME_DOWN,
+				ETIME_DOWN,
+				PRICE_BASE,
+				PRICE_ALL 
+			) VALUES(
+	      		oData.BUSLINE_ID,
+				oData.BUSLINE_NO,
+				oData.BUSLINE_NAME,
+				oData.COURSE_UP,
+				oData.COURSE_DOWN,
+				oData.RUN_TIME,
+			  	oData.STIME_UP,
+				oData.ETIME_UP,
+				oData.STIME_DOWN,
+				oData.ETIME_DOWN,
+				oData.PRICE_BASE,
+				oData.PRICE_ALL
+	      )
+	</update>
+	<delete id="deleteAllCarBusline">
+		DELETE FROM T_NP_BUS_CAR T WHERE 1=1
+	</delete>
+	<update id="batchMergeCarBusline">
+		MERGE INTO T_NP_BUS_CAR T
+	    USING (
+    	<foreach collection="list" item="item" separator="union All">
+			SELECT
+				#{item.carId,jdbcType=DECIMAL} CAR_ID,
+				#{item.buslineId,jdbcType=DECIMAL} BUSLINE_ID,
+				#{item.carNo,jdbcType=VARCHAR} CAR_NO,
+				#{item.devId,jdbcType=VARCHAR} DEV_ID
+			FROM DUAL
+		</foreach>
+		) oData
+	    ON (t.CAR_ID = oData.CAR_ID)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.BUSLINE_ID = oData.BUSLINE_ID,
+				T.CAR_NO = oData.CAR_NO,
+				T.DEV_ID = oData.DEV_ID
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		CAR_ID,
+				BUSLINE_ID,
+				CAR_NO,
+				DEV_ID
+			) VALUES(
+	      		oData.CAR_ID,
+				oData.BUSLINE_ID,
+				oData.CAR_NO,
+				oData.DEV_ID
+	      )
+	      WHERE oData.CAR_ID IS NOT NULL
+	</update>
+	<delete id="deleteAllCarLastGps">
+		DELETE FROM T_NP_BUS_LAST_LOCATION T WHERE 1=1
+	</delete>
+	<update id="batchMergeCarLastGps" parameterType="java.util.List">
+		MERGE INTO T_NP_BUS_LAST_LOCATION T
+	    USING (
+    	<foreach collection="list" item="item" separator="union All">
+			SELECT
+				#{item.buslineId,jdbcType=DECIMAL} BUSLINE_ID,
+				#{item.carId,jdbcType=DECIMAL} CAR_ID,
+				#{item.carNo,jdbcType=VARCHAR} CAR_NO,
+				#{item.gpsTime,jdbcType=VARCHAR} GPS_TIME,
+				#{item.lng,jdbcType=DECIMAL} LNG,
+				#{item.lat,jdbcType=DECIMAL} LAT,
+				#{item.hight,jdbcType=DECIMAL} HIGHT,
+				#{item.speed,jdbcType=DECIMAL} SPEED,
+				#{item.direct,jdbcType=DECIMAL} DIRECT
+			FROM DUAL
+		</foreach>
+		) oData
+	    ON (t.CAR_ID = oData.CAR_ID AND T.BUSLINE_ID = oData.BUSLINE_ID and T.GPS_TIME = oData.GPS_TIME)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.CAR_NO = oData.CAR_NO,
+				T.LNG = oData.LNG,
+				T.LAT = oData.LAT,
+				T.HIGHT = oData.HIGHT,
+				T.SPEED = oData.SPEED,
+				T.DIRECT = oData.DIRECT
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		BUSLINE_ID,
+				CAR_ID,
+				CAR_NO,
+				GPS_TIME,
+				LNG,
+				LAT,
+				HIGHT,
+				SPEED,
+				DIRECT
+			) VALUES(
+	      		oData.BUSLINE_ID,
+				oData.CAR_ID,
+				oData.CAR_NO,
+				oData.GPS_TIME,
+				oData.LNG,
+				oData.LAT,
+				oData.HIGHT,
+				oData.SPEED,
+				oData.DIRECT
+	      )
+	      WHERE oData.CAR_ID IS NOT NULL
+	</update>
+	<delete id="deleteAllStation">
+		DELETE FROM T_NP_BUS_STATION T WHERE 1=1
+	</delete>
+	<update id="batchMergeStation">
+		MERGE INTO T_NP_BUS_STATION T
+	    USING (
+    	<foreach collection="list" item="item" separator="union All">
+			SELECT
+				#{item.stationId,jdbcType=DECIMAL} STATION_ID,
+				#{item.stationName,jdbcType=VARCHAR} STATION_NAME,
+				#{item.lng,jdbcType=DECIMAL} LNG,
+				#{item.lat,jdbcType=DECIMAL} LAT
+			FROM DUAL
+		</foreach>
+		) oData
+	    ON (t.STATION_ID = oData.STATION_ID)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.STATION_NAME = oData.STATION_NAME,
+				T.LNG = oData.LNG,
+				T.LAT = oData.LAT
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		STATION_ID,
+				STATION_NAME,
+				LNG,
+				LAT
+			) VALUES(
+	      		oData.STATION_ID,
+				oData.STATION_NAME,
+				oData.LNG,
+				oData.LAT
+	      )
+	      WHERE oData.STATION_ID IS NOT NULL
+	</update>
+	<delete id="deleteAllStationBusline">
+		DELETE FROM T_NP_BUS_STATION_LINE T WHERE 1=1
+	</delete>
+	<update id="batchMergeStationBusline">
+		MERGE INTO T_NP_BUS_STATION_LINE T
+	    USING (
+	    	<foreach collection="list" item="item" separator="union">
+				SELECT
+					#{item.stationId,jdbcType=DECIMAL} STATION_ID,
+					#{item.buslineId,jdbcType=DECIMAL} BUSLINE_ID,
+					#{item.upDown,jdbcType=VARCHAR} UP_DOWN,
+					#{item.stationIndex,jdbcType=DECIMAL} STATION_INDEX
+				FROM DUAL
+			</foreach>
+		) oData
+	    ON (t.STATION_ID = oData.STATION_ID AND t.BUSLINE_ID = oData.BUSLINE_ID and T.UP_DOWN = oData.UP_DOWN)
+	    WHEN MATCHED THEN
+	      UPDATE SET
+				T.STATION_INDEX = oData.STATION_INDEX
+	    WHEN NOT MATCHED THEN
+	      INSERT (
+	      		STATION_ID,
+				BUSLINE_ID,
+				UP_DOWN,
+				STATION_INDEX
+			) VALUES(
+	      		oData.STATION_ID,
+				oData.BUSLINE_ID,
+				oData.UP_DOWN,
+				oData.STATION_INDEX
+	      )
+	      WHERE oData.STATION_ID IS NOT NULL
+	</update>
+	
+	<!-- 列表（总数） -->	
+	<select id="countBuslineList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_BUS_LINE T
+		<include refid="find_where_busline" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchBuslineList" resultMap="BaseResultMap_Busline">
+		SELECT
+			T.BUSLINE_ID,
+			T.BUSLINE_NO,
+			T.BUSLINE_NAME,
+			T.COURSE_UP,
+			T.COURSE_DOWN,
+			T.RUN_TIME,
+			T.STIME_UP,
+			T.ETIME_UP,
+			T.STIME_DOWN,
+			T.ETIME_DOWN,
+			T.PRICE_BASE,
+			T.PRICE_ALL
+		FROM
+			T_NP_BUS_LINE T
+		<include refid="find_where_busline" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_busline">
+		<where>
+			<if test="buslineId != null and buslineId != ''" >
+				<![CDATA[ AND T.BUSLINE_ID = #{buslineId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="buslineNo != null and buslineNo != ''" >
+				<![CDATA[ AND T.BUSLINE_NO LIKE '%'||#{buslineNo,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="buslineName != null and buslineName != ''" >
+				<![CDATA[ AND T.BUSLINE_NAME LIKE '%'||#{buslineName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="runTime != null and runTime != ''" >
+				<![CDATA[ AND T.RUN_TIME = #{runTime,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="stimeUp != null and stimeUp != ''" >
+				<![CDATA[ AND T.STIME_UP = #{stimeUp,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="etimeUp != null and etimeUp != ''" >
+				<![CDATA[ AND T.ETIME_UP = #{etimeUp,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="stimeDown != null and stimeDown != ''" >
+				<![CDATA[ AND T.STIME_DOWN = #{stimeDown,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="etimeDown != null and etimeDown != ''" >
+				<![CDATA[ AND T.ETIME_DOWN = #{etimeDown,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="priceBase != null and priceBase != ''" >
+				<![CDATA[ AND T.PRICE_BASE = #{priceBase,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="priceAll != null and priceAll != ''" >
+				<![CDATA[ AND T.PRICE_ALL = #{priceAll,jdbcType=DECIMAL} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	
+	<!-- 详情 -->	
+	<select id="searchBuslineById" parameterType="long"  resultMap="BaseResultMap_Busline">
+		SELECT
+			T.BUSLINE_ID,
+			T.BUSLINE_NO,
+			T.BUSLINE_NAME,
+			T.COURSE_UP,
+			T.COURSE_DOWN,
+			T.RUN_TIME,
+			T.STIME_UP,
+			T.ETIME_UP,
+			T.STIME_DOWN,
+			T.ETIME_DOWN,
+			T.PRICE_BASE,
+			T.PRICE_ALL
+		FROM
+			T_NP_BUS_LINE T
+		WHERE
+			BUSLINE_ID= #{buslineId,jdbcType=DECIMAL} 
+	</select>
+	
+	<resultMap id="BaseResultMap_CarBusline" type="cn.ffcs.zhsq.mybatis.domain.map.bus.CarBusline">
+		<id column="CAR_ID" property="carId" jdbcType="DECIMAL" /> <!--车辆ID-->
+		<result column="BUSLINE_ID" property="buslineId" jdbcType="DECIMAL" /> <!--公交线路ID-->
+		<result column="CAR_NO" property="carNo" jdbcType="VARCHAR" /> <!--车牌号-->
+		<result column="DEV_ID" property="devId" jdbcType="VARCHAR" /> <!--设备ID-->
+	</resultMap>
+	
+	<!-- 列表（总数） -->	
+	<select id="countCarBuslineList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_BUS_CAR T
+		<include refid="find_where_car_busline" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchCarBuslineList"  resultMap="BaseResultMap_CarBusline">
+		SELECT
+			T.CAR_ID,
+			T.BUSLINE_ID,
+			T.CAR_NO,
+			T.DEV_ID
+		FROM
+			T_NP_BUS_CAR T
+		<include refid="find_where_car_busline" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_car_busline">
+		<where>
+			<if test="carId != null and carId != ''" >
+				<![CDATA[ AND T.CAR_ID = #{carId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="buslineId != null and buslineId != ''" >
+				<![CDATA[ AND T.BUSLINE_ID = #{buslineId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="carNo != null and carNo != ''" >
+				<![CDATA[ AND T.CAR_NO LIKE '%'||#{carNo,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="devId != null and devId != ''" >
+				<![CDATA[ AND T.DEV_ID LIKE '%'||#{devId,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 详情 -->	
+	<select id="searchCarBuslineById" parameterType="long"  resultMap="BaseResultMap_CarBusline">
+		SELECT
+			T.CAR_ID,
+			T.BUSLINE_ID,
+			T.CAR_NO,
+			T.DEV_ID
+		FROM
+			T_NP_BUS_CAR T
+		WHERE
+			CAR_ID= #{carId,jdbcType=DECIMAL} 
+	</select>
+	
+	
+	<resultMap id="BaseResultMap_CarLastGps" type="cn.ffcs.zhsq.mybatis.domain.map.bus.CarLastGps">
+		<id column="BUSLINE_ID" property="buslineId" jdbcType="DECIMAL" /> <!--线路ID-->
+		<result column="CAR_ID" property="carId" jdbcType="DECIMAL" /> <!--车辆ID-->
+		<result column="CAR_NO" property="carNo" jdbcType="VARCHAR" /> <!--车牌号-->
+		<result column="GPS_TIME" property="gpsTime" jdbcType="VARCHAR" /> <!--GPS时间，格式：YYYY-MM-DD HH24:MI:SS-->
+		<result column="LNG" property="lng" jdbcType="DECIMAL" /> <!--经度，乘以10的6次方-->
+		<result column="LAT" property="lat" jdbcType="DECIMAL" /> <!--纬度，乘以10的6次方-->
+		<result column="HIGHT" property="hight" jdbcType="DECIMAL" /> <!--高度，乘以10的2次方-->
+		<result column="SPEED" property="speed" jdbcType="DECIMAL" /> <!--速度，乘以10的4次方-->
+		<result column="DIRECT" property="direct" jdbcType="DECIMAL" /> <!--方向，乘以10的2次方-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countCarLastGpsList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_BUS_LAST_LOCATION T
+		<include refid="find_where_CarLastGps" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchCarLastGpsList"  resultMap="BaseResultMap_CarLastGps">
+		SELECT
+			T.BUSLINE_ID,
+			T.CAR_ID,
+			T.CAR_NO,
+			T.GPS_TIME,
+			T.LNG,
+			T.LAT,
+			T.HIGHT,
+			T.SPEED,
+			T.DIRECT
+		FROM
+			T_NP_BUS_LAST_LOCATION T
+		<include refid="find_where_CarLastGps" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_CarLastGps">
+		<where>
+			<if test="buslineId != null and buslineId != ''" >
+				<![CDATA[ AND T.BUSLINE_ID = #{buslineId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="carId != null and carId != ''" >
+				<![CDATA[ AND T.CAR_ID = #{carId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="carNo != null and carNo != ''" >
+				<![CDATA[ AND T.CAR_NO LIKE '%'||#{carNo,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 详情 -->	
+	<select id="searchCarLastGpsById" parameterType="long"  resultMap="BaseResultMap_CarLastGps">
+		SELECT
+			T.BUSLINE_ID,
+			T.CAR_ID,
+			T.CAR_NO,
+			T.GPS_TIME,
+			T.LNG,
+			T.LAT,
+			T.HIGHT,
+			T.SPEED,
+			T.DIRECT
+		FROM
+			T_NP_BUS_LAST_LOCATION T
+		WHERE
+			BUSLINE_ID= #{buslineId,jdbcType=DECIMAL} 
+	</select>
+	
+	<resultMap id="BaseResultMap_Station" type="cn.ffcs.zhsq.mybatis.domain.map.bus.Station">
+		<id column="STATION_ID" property="stationId" jdbcType="DECIMAL" /> <!--站点ID-->
+		<result column="STATION_NAME" property="stationName" jdbcType="VARCHAR" /> <!--站点名称-->
+		<result column="LNG" property="lng" jdbcType="DECIMAL" /> <!--经度(乘以10的六次方)-->
+		<result column="LAT" property="lat" jdbcType="DECIMAL" /> <!--纬度(乘以10的六次方)-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countStationList" resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_BUS_STATION T
+		<include refid="find_where_Station" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchStationList" resultMap="BaseResultMap_Station">
+		SELECT
+			T.STATION_ID,
+			T.STATION_NAME,
+			T.LNG,
+			T.LAT
+		FROM
+			T_NP_BUS_STATION T
+		<include refid="find_where_Station" />
+	</select>
+	
+	<!-- 根据线路等信息获取站点列表 -->
+	<select id="searchStationListByLineInfo" resultMap="BaseResultMap_Station">
+		SELECT 
+			T.STATION_ID,STATION_NAME,T.LNG,T.LAT
+		FROM T_NP_BUS_STATION t,t_np_bus_station_line li
+		WHERE li.station_id = t.station_id
+		AND li.busline_id = #{buslineId,jdbcType=DECIMAL}
+		AND li.up_down = #{upDown,jdbcType=VARCHAR}
+		<include refid="find_where_Station" />
+		ORDER BY li.station_index
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_Station">
+		<where>
+			<if test="stationId != null and stationId != ''" >
+				<![CDATA[ AND T.STATION_ID = #{stationId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="stationName != null and stationName != ''" >
+				<![CDATA[ AND T.STATION_NAME LIKE '%'||#{stationName,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 详情 -->	
+	<select id="searchStationById" parameterType="long"  resultMap="BaseResultMap_Station">
+		SELECT
+			T.STATION_ID,
+			T.STATION_NAME,
+			T.LNG,
+			T.LAT
+		FROM
+			T_NP_BUS_STATION T
+		WHERE
+			STATION_ID= #{stationId,jdbcType=DECIMAL} 
+	</select>
+	
+	<resultMap id="BaseResultMap_StationBusline" type="cn.ffcs.zhsq.mybatis.domain.map.bus.StationBusline">
+		<id column="STATION_ID" property="stationId" jdbcType="DECIMAL" /> <!--公交站Id-->
+		<result column="BUSLINE_ID" property="buslineId" jdbcType="DECIMAL" /> <!--线路ID-->
+		<result column="UP_DOWN" property="upDown" jdbcType="VARCHAR" /> <!--上下行(1=上行，2=下行)-->
+		<result column="STATION_INDEX" property="stationIndex" jdbcType="DECIMAL" /> <!--站点序号(从1开始)-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countStationBuslineList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_BUS_STATION_LINE T
+		<include refid="find_where_StationBusline" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchStationBuslineList"  resultMap="BaseResultMap_StationBusline">
+		SELECT
+			T.STATION_ID,
+			T.BUSLINE_ID,
+			T.UP_DOWN,
+			T.STATION_INDEX
+		FROM
+			T_NP_BUS_STATION_LINE T
+		<include refid="find_where_StationBusline" />
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where_StationBusline">
+		<where>
+			<if test="stationId != null and stationId != ''" >
+				<![CDATA[ AND T.STATION_ID = #{stationId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="buslineId != null and buslineId != ''" >
+				<![CDATA[ AND T.BUSLINE_ID = #{buslineId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="upDown != null and upDown != ''" >
+				<![CDATA[ AND T.UP_DOWN = #{upDown,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="stationIndex != null and stationIndex != ''" >
+				<![CDATA[ AND T.STATION_INDEX = #{stationIndex,jdbcType=DECIMAL} ]]>
+			</if> 
+		</where>
+	</sql>
+	
+	<!-- 详情 -->	
+	<select id="searchStationBuslineById" parameterType="long"  resultMap="BaseResultMap_StationBusline">
+		SELECT
+			T.STATION_ID,
+			T.BUSLINE_ID,
+			T.UP_DOWN,
+			T.STATION_INDEX
+		FROM
+			T_NP_BUS_STATION_LINE T
+		WHERE
+			STATION_ID= #{stationId,jdbcType=DECIMAL} 
+	</select>
+</mapper>

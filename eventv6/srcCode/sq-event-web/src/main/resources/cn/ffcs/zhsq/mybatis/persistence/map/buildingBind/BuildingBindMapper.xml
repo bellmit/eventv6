@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.buildingBind.BuildingBindMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.buildingBind.BuildingBindInfo">
+        <id column="BUILDING_BIND_ID" jdbcType="DECIMAL" property="buildingBindId" />
+        <result column="BUILDING_ID" jdbcType="DECIMAL" property="buildingId" />
+        <result column="BUILDING_NAME" jdbcType="VARCHAR" property="buildingName" />
+        <result column="BUILDING_ADDRESS" jdbcType="VARCHAR" property="buildingAddress" />
+        <result column="OID" jdbcType="VARCHAR" property="oid" />
+    </resultMap>
+    <resultMap id="carTrajectoryResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.buildingBind.CarTrajectoryInfo">
+        <id column="CAR_TRAJECTORY_ID" jdbcType="DECIMAL" property="carTrajectoryId" />
+        <result column="CAR_ID" jdbcType="DECIMAL" property="carId" />
+        <result column="X" jdbcType="VARCHAR" property="x" />
+        <result column="Y" jdbcType="VARCHAR" property="y" />
+        <result column="Z" jdbcType="VARCHAR" property="z" />
+        <result column="MAP_TYPE" jdbcType="VARCHAR" property="mapType" />
+        <result column="LOCAL_TIME" jdbcType="TIMESTAMP" property="localTime" />
+        <result column="CREATEOR" jdbcType="DECIMAL" property="creator" />
+        <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="creatDate" />
+    </resultMap>
+
+  <sql id="detail_select">
+    select T1.BUILDING_ID,T1.BUILDING_NAME,T1.BUILDING_ADDRESS,T3.OID
+    from T_DC_AREA_BUILDING_INFO T1
+    LEFT JOIN T_BUILDING_BAND_INFO T3 ON T1.BUILDING_ID = T3.BUILDING_ID
+    left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID and t2.status='001'
+  </sql>
+  
+  <sql id="find_where">
+       WHERE T1.STATUS='001' 
+      <if test="gridId != null" >
+          AND T1.GRID_ID in(select T3.GRID_ID from T_DC_GRID T3 where T3.STATUS = '001' START WITH T3.GRID_ID=#{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR T3.GRID_ID = T3.PARENT_GRID_ID)
+      </if>
+      <if test="infoOrgCode!=null and infoOrgCode!='' ">
+      	<choose>
+         <when test="infoOrgCode.length() &lt;5">AND instr(T2.INFO_ORG_CODE,#{infoOrgCode,jdbcType=VARCHAR})=1</when>
+         <otherwise>AND T2.INFO_ORG_CODE LIKE CONCAT(#{infoOrgCode,jdbcType=VARCHAR}, '%') </otherwise>
+     	</choose>
+      </if>
+
+      <if test="buildingName!=null and buildingName!=''">
+          AND T1.BUILDING_NAME LIKE CONCAT('%', CONCAT(#{buildingName,jdbcType=VARCHAR}, '%'))
+      </if>
+      <if test="buildingAddress!=null and buildingAddress!='' ">
+          AND T1.BUILDING_ADDRESS LIKE CONCAT('%', CONCAT(#{buildingAddress,jdbcType=VARCHAR}, '%'))
+      </if>
+
+      <!-- 是否绑定 -->
+      <if test="isBind != null and isBind != ''">
+      	<choose>
+      		<!-- 没有绑定 -->
+      		<when test="isBind == 0">
+      			AND (T3.OID = '' OR T3.OID IS NULL)
+      		</when>
+      		<!-- 已经绑定 -->
+      		<when test="isBind == 1">
+      			AND (T3.OID IS NOT NULL)
+      		</when>
+      		<when test="isBind == '-1'">
+      		
+      		</when>
+      	</choose>
+      </if>
+  </sql>
+
+
+  <select id="findCountByCriteria"  resultType="java.lang.Integer" >
+     select count(*) from T_DC_AREA_BUILDING_INFO T1
+      LEFT JOIN T_BUILDING_BAND_INFO T3 ON T1.BUILDING_ID = T3.BUILDING_ID
+     left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID and t2.status='001'
+    <include refid="find_where" />
+  </select>
+
+  <sql id="list_column">
+     select T1.BUILDING_ID,T1.BUILDING_NAME,T1.BUILDING_ADDRESS,T3.OID
+        from T_DC_AREA_BUILDING_INFO T1
+        LEFT JOIN T_BUILDING_BAND_INFO T3 ON T1.BUILDING_ID = T3.BUILDING_ID
+     left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID and t2.status='001'
+  </sql>
+
+  <select id="findPageListByCriteria"  resultMap="BaseResultMap" >
+    <include refid="list_column" />
+    <include refid="find_where" />
+     <choose>
+         <when test="orderBy=='none'"></when>
+         <when test="orderBy=='buildingId'">ORDER BY T1.BUILDING_ID DESC</when>
+         <when test="orderBy=='buildingId2'">ORDER BY T1.BUILDING_ID ASC</when>
+         <when test="orderBy=='letter'">ORDER BY T1.BUILDING_NAME DESC</when>
+         <when test="orderBy=='letter2'">ORDER BY T1.BUILDING_NAME ASC</when>
+         <when test="orderBy=='updateDate'">ORDER BY T1.UPDATE_DATE DESC</when>
+         <when test="orderBy=='updateDate2'">ORDER BY T1.UPDATE_DATE ASC</when>
+         <otherwise>ORDER BY T1.BUILDING_ID DESC </otherwise>
+     </choose>
+  </select>
+
+  <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <include refid="detail_select" />
+        where T1.STATUS='001' AND T1.BUILDING_ID = #{id,jdbcType=DECIMAL}
+  </select>
+
+    <select id="getBuildingBindInfoForIsExist" resultMap="BaseResultMap">
+        SELECT *
+        FROM T_BUILDING_BAND_INFO T
+        WHERE 1=1
+        <if test="buildingId!=null and buildingId!='' ">
+            AND T.BUILDING_ID= #{buildingId, jdbcType=DECIMAL}
+        </if>
+        <if test="mapType!=null and mapType!='' ">
+            AND T.MAP_TYPE= #{mapType, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <insert id="insertBuildingBindInfo" parameterType="cn.ffcs.zhsq.mybatis.domain.map.buildingBind.BuildingBindInfo">
+        <selectKey keyProperty="buildingBindId" resultType="long" order="BEFORE">
+            select SEQ_BUILDING_BIND_ID.NEXTVAL from DUAL
+        </selectKey>
+        INSERT INTO T_BUILDING_BAND_INFO(BUILDING_BIND_ID,BUILDING_ID,OID,MAP_TYPE)
+        VALUES(#{buildingBindId,jdbcType=DECIMAL},#{buildingId,jdbcType=DECIMAL},#{oid,jdbcType=DECIMAL},#{mapType,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateBuildingBindInfo" parameterType="cn.ffcs.zhsq.mybatis.domain.map.buildingBind.BuildingBindInfo">
+        UPDATE T_BUILDING_BAND_INFO T
+        SET T.OID = #{oid,jdbcType=DECIMAL}
+        WHERE T.BUILDING_ID = #{buildingId,jdbcType=DECIMAL}
+        AND T.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="findBuildingBindInfoByParams" resultMap="BaseResultMap">
+        <include refid="detail_select" />
+        WHERE T1.STATUS='001'
+        <if test="buildingId!=null and buildingId!='' ">
+            AND T1.BUILDING_ID= #{buildingId, jdbcType=DECIMAL}
+        </if>
+        <if test="oid!=null and oid!='' ">
+            AND T3.OID= #{oid, jdbcType=DECIMAL}
+        </if>
+        <if test="mapType!=null and mapType!='' ">
+            AND T3.MAP_TYPE= #{mapType, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+    <select id="findCarTrajectoryInfoByParams" resultMap="carTrajectoryResultMap">
+        SELECT *
+        FROM T_CAR_TRAJECTORY_INFO T
+        WHERE 1=1
+        <if test="carId != null and carId != '' ">
+            AND T.CAR_ID= #{carId, jdbcType=DECIMAL}
+        </if>
+        <if test="mapType!=null and mapType!='' ">
+            AND T.MAP_TYPE= #{mapType, jdbcType=VARCHAR}
+        </if>
+        <if test="(startTime != null and startTime != '') and (endTime == null or endTime == '') ">
+            AND T.LOCAL_TIME <![CDATA[>]]>TO_DATE(#{startTime},'YYYY-MM-DD hh24:mi:ss')
+        </if>
+        <if test="(startTime == null or startTime == '') and  (endTime == null or endTime == '')">
+            AND T.LOCAL_TIME <![CDATA[>=]]>SYSDATE -10/(24*60*60)
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+            AND T.LOCAL_TIME <![CDATA[>]]>TO_DATE(#{startTime},'YYYY-MM-DD hh24:mi:ss')
+            AND T.LOCAL_TIME<![CDATA[<]]>TO_DATE(#{endTime},'YYYY-MM-DD hh24:mi:ss')
+        </if>
+        ORDER BY T.CAR_ID ASC,T.CAR_TRAJECTORY_ID ASC
+    </select>
+
+</mapper>

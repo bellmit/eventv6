@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>  
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+	<title>实时轨迹</title>  
+	<style type="text/css">  
+		html{height:100%}  
+		body{height:100%;margin:0px;padding:0px}  
+		#container{height:100%;margin: 20px;}  
+	</style>  
+	<!-- <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script> -->
+	<script src="http://api.map.baidu.com/api?v=2.0&ak=OBm0kGjTPSEXKjr3igMrjT9Hgml8fGPP" type="text/javascript"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+
+</head>  
+
+<body>  
+	<div id="container"></div> 
+	<script type="text/javascript"> 
+		// 实时轨迹demo。
+		// 实际运用的话可能ajax实时读取后台数据，加载到地图上。 
+
+		
+		// 获取随机数 
+		function getRandom(n){
+			return Math.floor(Math.random()*n+1);
+		}
+		
+		function getRandom(num,divNum){
+			return Math.floor(Math.random()*num+1)/divNum;
+		}
+
+		var myIcon = new BMap.Icon(
+			'http://test.sq.aishequ.org:86/images/taxi.png',
+			new BMap.Size(52, 26), {
+				offset: new BMap.Size(5, 5),    //相当于CSS精灵 
+				imageOffset: new BMap.Size(10, -5),    //图片的偏移量。为了是图片底部中心对准坐标点。
+				anchor : new BMap.Size(27, 13)
+		});
+		
+		var isMarker = false;
+		var marker ;
+		//在轨迹点上创建图标，并添加点击事件，显示轨迹点信息。points,数组。 
+		function addMarker(points,newLinePoints){
+			var pointsLen = points.length;
+			if(pointsLen == 0){
+				return;
+			}
+			
+			if(!isMarker){
+				marker = new BMap.Marker(points[0], {icon: myIcon});
+				var label = new BMap.Label('闽A888888', {
+					offset : new BMap.Size(0, -30)
+				});
+				label.setStyle({
+					border : "1px solid rgb(204, 204, 204)",
+					color : "rgb(0, 0, 0)",
+					borderRadius : "10px",
+					padding : "5px",
+					background : "rgb(255, 255, 255)",
+				});
+				marker.setLabel(label);
+				marker.setTitle('设备ID:18350083305');
+				isMarker = true;
+			}
+			
+			// 创建标注对象并添加到地图   
+			for(var i = 0;i <pointsLen;i++){
+				var point = new BMap.Point(points[i].lng,points[i].lat);
+				var arrLen = pointsArray.length;
+				if(arrLen > 1){
+					var rotation = findRotation(pointsArray[arrLen-2],pointsArray[arrLen-1]);
+					console.log('rotation='+rotation);
+					marker.setRotation(rotation);
+				}
+				marker.setPosition(point);
+				map.addOverlay(marker); 
+			}
+		}    
+
+		//添加线 
+		function addLine(points){
+
+			var linePoints = [],pointsLen = points.length,i,polyline;
+			if(pointsLen == 0){
+				return;
+			}
+			// 创建标注对象并添加到地图   
+			for(i = 0;i <pointsLen;i++){
+				linePoints.push(new BMap.Point(points[i].lng,points[i].lat));
+			}
+
+			polyline = new BMap.Polyline(linePoints, {strokeColor:"red", strokeWeight:2, strokeOpacity:0.5});   //创建折线 
+			map.addOverlay(polyline);   //增加折线 
+		}
+
+		//随机生成新的点，加入到轨迹中。
+		function dynamicLine(){
+			var lng = 118+parseFloat(getRandom(999,1000));
+			var lat = 26+parseFloat(getRandom(99,100));
+			var id = getRandom(1000);
+			var point = {"lng":lng,"lat":lat,"status":1,"id":id};
+			var makerPoints = [];
+			var newLinePoints = [];
+			var len;
+			
+			makerPoints.push(point);			
+			pointsArray.push(point);
+			bPoints.push(new BMap.Point(lng,lat));
+			len = pointsArray.length;
+			newLinePoints = pointsArray.slice(len-2, len);//最后两个点用来画线。 
+			addMarker(makerPoints);//增加对应该的轨迹点 
+			addLine(newLinePoints);//增加轨迹线 
+			setZoom(bPoints);
+			setTimeout(dynamicLine, 1000);
+		}
+
+		//根据点信息实时更新地图显示范围，让轨迹完整显示。设置新的中心点和显示级别. 
+		//更新。设置不是每次增加点都重新设置显示范围。因为有可能会想放大了看。 
+		function setZoom(bPoints){
+			var view = map.getViewport(eval(bPoints));
+			if(map.oldView != JSON.stringify(view)){
+				var mapZoom = view.zoom; 
+				var centerPoint = view.center; 
+				map.centerAndZoom(centerPoint,mapZoom);
+				map.oldView = JSON.stringify(view);
+			}
+
+		}
+		
+		function getRotation(prePos,curPos,targetPos){
+            var deg = 0;
+            //start!
+            curPos =  map.pointToPixel(curPos);
+            targetPos =  map.pointToPixel(targetPos);   
+
+            if(targetPos.lng != curPos.lng){
+                    var tan = (targetPos.lat - curPos.lat)/(targetPos.lng - curPos.lng),
+                    atan  = Math.atan(tan);
+                    deg = atan*360/(2*Math.PI);
+                    //degree  correction;
+                    if(targetPos.lat < curPos.lat){
+                        deg = -deg + 90 + 90;
+
+                    } else {
+                        deg = -deg;
+                    }
+
+                    return (-deg);   
+
+            }else {
+                    var disy = targetPos.lat- curPos.lat ;
+                    var bias = 0;
+                    if(disy > 0)
+                        bias=-1
+                    else
+                        bias = 1
+                   return (-bias * 90);  
+            }
+        }
+		
+		function findRotation(startPoint,endPoint){
+	        var x = endPoint.lng-startPoint.lng;//lng-经度，lat-纬度
+	        var y = endPoint.lat-startPoint.lat;
+	        if(x==0){
+	            return 0;
+	        }
+	        if(x>0){
+	            var z=Math.sqrt(x*x+y*y);
+	            var jiaodu=Math.round((Math.asin(y/z)/Math.PI*180));//最终角度
+	            if(jiaodu>=0){
+	                return 90-jiaodu;
+	            }else{
+	                return 90+Math.abs(jiaodu);
+	            }
+	        }
+	        if(x<0){
+	            var z=Math.sqrt(x*x+y*y);
+	            var jiaodu=Math.round((Math.asin(y/z)/Math.PI*180));//最终角度
+	            if(jiaodu>=0){
+	                return 270+jiaodu;
+	            }else{
+	                return 270-Math.abs(jiaodu);
+	            }
+	        }
+	    }
+
+		//数据准备,
+		var pointsArray = [];//原始点信息数组 
+		var bPoints = [];//百度化坐标数组。用于更新显示范围。
+
+		//地图操作开始 
+		var map = new BMap.Map("container");  
+		map.centerAndZoom(new BMap.Point(118.17,26.65), 12);//初始 
+		map.enableScrollWheelZoom();//允许鼠标滚轮缩放 
+		map.addControl(new BMap.NavigationControl({enableGeolocation: false,anchor:BMAP_ANCHOR_TOP_RIGHT}));//平移缩放控件 
+		map.addControl(new BMap.ScaleControl());//比例尺 
+		map.addControl(new BMap.OverviewMapControl({isOpen:true}));//小视窗 
+		
+		setTimeout(dynamicLine, 1000);//动态生成新的点。
+
+	</script>  
+</body>  
+</html>

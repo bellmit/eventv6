@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.school.SchoolMapper">
+    <resultMap id="BaseResultMapper" type="cn.ffcs.zhsq.mybatis.domain.szzg.school.SchoolBo">
+        <result property="seqid" column="SEQ_ID"/>
+        <result property="orgCode" column="ORG_CODE"/>
+        <result property="orgName" column="ORG_NAME"/>
+        <result property="orgPath" column="ORG_PATH"/>
+        <result property="type" column="TYPE"/>
+
+        <result property="typeName" column="TYPE_NAME"/>
+        <result property="schoolName" column="SCHOOL_NAME"/>
+        <result property="teachers" column="TEACHERS"/>
+        <result property="students" column="STUDENTS"/>
+        <result property="males" column="MALES"/>
+        <result property="females" column="FEMALES"/>
+        <result property="x" column="X"/>
+        <result property="y" column="Y"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="url" column="URL"/>
+        <result property="area" column="AREA"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+        <result property="status" column="STATUS"/>
+
+        <result property="orgLevel" column="ORG_LEVEL"/>
+        <result property="year" column="YEAR"/>
+        <result property="schoolNumber" column="school_number"/>
+    </resultMap>
+
+    <select id="findSchoolMark" resultType="map">
+   SELECT t.x as x,t.y as y,s.school_name as name FROM t_zy_res_marker t join ${dbuser.zhsq_szzg}.zg_school s
+on t.resources_id=s.seq_id 
+where t.marker_type='SCHOOL_MARK'  and s.org_code like #{inOrgCode}||'%'
+    </select>
+
+    <select id="findSchoolPoint" resultMap="BaseResultMapper">
+        SELECT *
+        FROM ${dbuser.zhsq_szzg}.zg_school t
+        WHERE t.status = '1'
+        and t.type in
+        <foreach collection="sites" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        <if test="orgCode">
+            AND org_code like concat('%', #{orgCode}, '%')
+        </if>
+    </select>
+
+
+    <select id="findSchoolCount" resultMap="BaseResultMapper">
+        select t.schoolNumber as school_number,t.teachers,t.students, d.grid_name as org_name
+        from (select count(*)as schoolNumber,sum(t.teachers) as teachers,sum(t.students)as students,t.org_code from ${dbuser.zhsq_szzg}.zg_school t group by t.org_code) t
+        left join t_dc_grid d on d.grid_code = t.org_code and d.status='001'
+
+    </select>
+    <select id="getSchoolChartsSchool" resultType="map">
+      select t.shool1,
+       t.shool2,
+       t.shool3,
+       t.shool4,
+       t.shool5,
+       t.shool6,
+       d.grid_name as org_name,
+       d.info_org_code  as org_code
+
+  from (select
+         s.org_code,
+         sum(case
+               when s.type =  'S006001001' then
+                1
+               ELSE
+                0
+             END) as shool1,
+         sum(case
+               when s.type =  'S006001002' then
+                1
+               ELSE
+                0
+             END) as shool2,
+         sum(case
+               when s.type =  'S006001003' then
+                1
+               ELSE
+                0
+             END) as shool3,
+         sum(case
+               when s.type =  'S006001004' then
+                1
+               ELSE
+                0
+             END) as shool4,
+
+         sum(case
+               when s.type =  'S006001005' then
+                1
+               ELSE
+                0
+             END) as shool5,
+
+         sum(case
+               when s.type = 'S006001006' then
+                1
+               ELSE
+                0
+             END) as shool6
+            from ${dbuser.zhsq_szzg}.zg_school s, ${dbuser.zhsq_szzg}.zg_school_stat t
+         where s.seq_id = t.sch_id
+         and t.stat_year = #{year}
+         group by s.org_code) t
+          left join t_dc_grid d
+            on d.info_org_code = t.org_code and d.status='001'
+          where d.info_org_code in(${orgCode})
+
+    </select>
+
+
+    <select id="getSchoolChartsMalesFemales" resultType="map">
+        select
+       t.males1,
+       t.males2,
+       t.males3,
+       t.males4,
+       t.males5,
+       t.males6,
+       t.females1,
+       t.females2,
+       t.females3,
+       t.females4,
+       t.females5,
+       t.females6,
+       d.grid_name     as org_name,
+       d.info_org_code as org_code
+
+  from (select
+
+         s.org_code,
+
+         sum(case
+               when s.type =  'S006001001' then
+               t.males
+               ELSE
+                0
+             END) as males1,
+         sum(case
+               when s.type =  'S006001002' then
+                      t.males
+               ELSE
+                0
+             END) as males2,
+         sum(case
+               when s.type =  'S006001003' then
+                     t.males
+               ELSE
+                0
+             END) as males3,
+         sum(case
+               when s.type =  'S006001004' then
+                       t.males
+               ELSE
+                0
+             END) as males4,
+
+         sum(case
+               when s.type =  'S006001005' then
+                      t.males
+               ELSE
+                0
+             END) as males5,
+
+         sum(case
+               when s.type = 'S006001006' then
+                      t.males
+               ELSE
+                0
+             END) as males6,
+
+         sum(case
+               when s.type =  'S006001001' then
+                    t.females
+               ELSE
+                0
+             END) as females1,
+         sum(case
+               when s.type =  'S006001002' then
+                    t.females
+               ELSE
+                0
+             END) as females2,
+         sum(case
+               when s.type =  'S006001003' then
+                     t.females
+               ELSE
+                0
+             END) as females3,
+         sum(case
+               when s.type =  'S006001004' then
+                     t.females
+               ELSE
+                0
+             END) as females4,
+
+         sum(case
+               when s.type =  'S006001005' then
+                      t.females
+               ELSE
+                0
+             END) as females5,
+
+         sum(case
+               when s.type = 'S006001006' then
+                      t.females
+               ELSE
+                0
+             END) as females6
+                  from ${dbuser.zhsq_szzg}.zg_school s, ${dbuser.zhsq_szzg}.zg_school_stat t
+         where s.seq_id = t.sch_id
+              and t.stat_year = #{year}
+         group by s.org_code) t
+          left join t_dc_grid d
+            on d.info_org_code = t.org_code and d.status='001'
+            where d.info_org_code in(${orgCode})
+    </select>
+
+
+
+    <select id="findSchoolCount1" resultType="map">
+    select t.teachers as teachers, t.students as students, t.year as year
+    from ( select sum(t.teachers) as teachers,
+         sum(t.students) as students,
+         t.stat_year as year
+    from ${dbuser.zhsq_szzg}.zg_school s join ${dbuser.zhsq_szzg}.zg_school_stat t on
+    s.seq_id = t.sch_id
+    left join t_dc_grid d
+    on d.info_org_code = s.org_code and d.status=1
+    where d.info_org_code in(${orgCode})
+    group by t.stat_year
+    order by t.stat_year asc) t
+
+    </select>
+
+    <select  id="findSchoolCount2" resultType="map">
+        select count(1) as school_number,sum(t.males) as males,sum(t.females) as females
+       from ${dbuser.zhsq_szzg}.zg_school s join ${dbuser.zhsq_szzg}.zg_school_stat t on
+          s.seq_id = t.sch_id
+          left join t_dc_grid d
+          on d.info_org_code = s.org_code and d.status='001'
+     where t.stat_year = #{year}
+        and d.info_org_code in (${orgCode})
+        group by t.stat_year
+
+    </select>
+
+    <select id="findCountByCriteria" resultType="int">
+        select count(*) from ${dbuser.zhsq_szzg}.zg_school t
+        <include refid="find_conditions"/>
+    </select>
+
+    <select id="findPageListByCriteria" resultMap="BaseResultMapper">
+        select t.*,d1.dict_name as type_name,d.grid_path  as org_path
+        from ${dbuser.zhsq_szzg}.zg_school t
+        left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+        left join t_dc_grid d on d.info_org_code = t.org_code and d.status='001'
+        <include refid="find_conditions"/>
+        order by t.create_time desc
+    </select>
+    <sql id="find_conditions">
+        where t.status = '1'
+        <if test="@Ognl@isNotEmpty(schoolName)">
+            and (t.school_name LIKE '%' || #{schoolName, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(address)">
+            and (t.address LIKE '%' || #{address, jdbcType=VARCHAR} || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(orgCode)">
+            and ( t.org_code LIKE #{orgCode, jdbcType=VARCHAR}  || '%')
+        </if>
+        <if test="@Ognl@isNotEmpty(type)">
+            and t.type LIKE #{type, jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <select id="findById" resultMap="BaseResultMapper">
+		select t.*,d1.dict_name as type_name from ${dbuser.zhsq_szzg}.zg_school t
+		left join t_bas_datadict d1 on d1.dict_code = t.type and d1.status='001'
+		where t.seq_id = #{id}
+	</select>
+
+    <update id="update">
+        update ${dbuser.zhsq_szzg}.zg_school t
+        <include refid="update_columns"/>
+        where t.seq_id = #{seqid}
+    </update>
+    <sql id="update_columns">
+        <set>
+            t.update_time = sysdate
+            <if test="@Ognl@isNotEmpty(schoolName)">
+                ,t.school_name = #{schoolName}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgCode)">
+                ,t.org_code = #{orgCode}
+            </if>
+            <if test="@Ognl@isNotEmpty(orgName)">
+                ,t.org_Name = #{orgName}
+            </if>
+            <if test="type != null">
+                ,t.type = #{type}
+            </if>
+            <if test="teachers != null">
+                ,t.teachers = #{teachers}
+            </if>
+            <if test="students != null">
+                ,t.students = #{students}
+            </if>
+            <if test="males != null">
+                ,t.males = #{males}
+            </if>
+            <if test="females != null">
+                ,t.females = #{females}
+            </if>
+
+            <if test="address != null">
+                ,t.address = #{address}
+            </if>
+            <if test="url != null">
+                ,t.url = #{url}
+            </if>
+
+            <if test="x != null">
+                ,t.x = #{x}
+            </if>
+            <if test="y != null">
+                ,t.y = #{y}
+            </if>
+            <if test="area != null">
+                ,t.area = #{area}
+            </if>
+
+            <if test="status != null">
+                ,t.status = #{status}
+            </if>
+
+        </set>
+    </sql>
+
+    <delete id="del">
+		UPDATE ${dbuser.zhsq_szzg}.zg_school t
+		SET t.status = '0',
+		t.update_time=sysdate
+		WHERE t.seq_id = #{seqid}
+	</delete>
+
+    <insert id="insert">
+        <selectKey keyProperty="seqid" resultType="long" order="BEFORE">
+            select ${dbuser.zhsq_szzg}.seq_zg_school_id.NEXTVAL from DUAL
+        </selectKey>
+        insert into ${dbuser.zhsq_szzg}.zg_school(
+        seq_id,org_code,org_name,type,school_name,address,x,y,url,area,create_time,update_time,status)
+        values(#{seqid, jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR},
+        #{type,jdbcType=VARCHAR}, #{schoolName,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+        #{x,jdbcType=VARCHAR},#{y,jdbcType=VARCHAR},#{url,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR},
+        sysdate,sysdate,'1'
+       )
+    </insert>
+    
+    <select id="isExit" resultType="java.lang.Integer">
+    	SELECT COUNT(1) FROM ${dbuser.zhsq_szzg}.zg_school T WHERE T.STATUS = '1' AND T.SCHOOL_NAME = #{schoolName,jdbcType=VARCHAR} 
+    	<if test="@Ognl@isNotEmpty(seqid)">
+            AND T.SEQ_ID &lt;&gt; #{seqid, jdbcType=DECIMAL}
+        </if>
+    </select>
+
+    <select id="findTreeTable" resultMap="BaseResultMapper" parameterType="map">
+        SELECT d.grid_name as org_name,d.grid_level as org_level, t.*
+        FROM ${dbuser.zhsq_szzg}.zg_school t
+        right join  t_dc_grid d  on  d.info_org_code =t.org_code and d.status='001'
+        where d.grid_level =3
+        and d.grid_code like '3202%'
+        ORDER BY t.org_code
+    </select>
+</mapper>

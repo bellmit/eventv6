@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.handlerCfg.EventHandlerWfActorCfgMapper" >
+
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfActorCfgPO" >
+		<result column="RAC_ID" property="racId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_ID" property="transactorId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_ORG_ID" property="transactorOrgId" jdbcType="DECIMAL" />
+		<result column="TRANSACTOR_TYPE" property="transactorType" jdbcType="VARCHAR" />
+		<result column="WFPC_ID" property="wfpcId" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<!-- 查询列 -->
+	<sql id="viewCol">
+		T.RAC_ID,
+       	T.TRANSACTOR_ID,
+       	T.TRANSACTOR_ORG_ID,
+       	T.TRANSACTOR_TYPE,
+       	T.WFPC_ID
+	</sql>
+	
+	<!-- 新增环节人员配置 -->
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.handlerCfg.EventHandlerWfActorCfgPO">
+	  	<selectKey keyProperty="racId" resultType="long" order="BEFORE">
+			SELECT SEQ_RAC_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_BIZ_REGION_ACTOR_CFG (
+			RAC_ID, TRANSACTOR_ID, TRANSACTOR_ORG_ID,
+			TRANSACTOR_TYPE, WFPC_ID
+		)
+		VALUES (
+		  	#{racId,jdbcType=DECIMAL},#{transactorId,jdbcType=DECIMAL},#{transactorOrgId,jdbcType=DECIMAL},
+		  	#{transactorType,jdbcType=VARCHAR}, #{wfpcId,jdbcType=DECIMAL}
+		)
+	</insert>
+	
+	<!-- 依据主键删除环节人员配置记录 -->
+	<delete id="delete">
+		DELETE FROM T_BIZ_REGION_ACTOR_CFG T 
+		WHERE T.RAC_ID = #{id, jdbcType=DECIMAL}
+	</delete>
+	
+	<!-- 依据流程环节配置删除环节人员配置记录 -->
+	<delete id="deleteByWfpcId">
+		DELETE FROM T_BIZ_REGION_ACTOR_CFG T 
+		WHERE T.WFPC_ID = #{wfpcId, jdbcType=DECIMAL}
+		<if test="list != null and list.size > 0">
+			AND T.RAC_ID NOT IN
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		    		#{item}
+		    </foreach>
+		</if>
+	</delete>
+	
+	<!-- 依据业务配置id删除环节人员配置记录 -->
+	<delete id="deleteByWfcId">
+		DELETE FROM T_BIZ_REGION_ACTOR_CFG T 
+		WHERE T.WFPC_ID IN (
+			SELECT T1.WFPC_ID 
+			FROM T_BIZ_WF_PROC_CFG T1 
+			WHERE T1.WFC_ID = #{wfcId, jdbcType=DECIMAL}
+		)
+	</delete>
+	
+	<!-- 判重验证统计 -->
+	<select id="findCount4Duplicate" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_REGION_ACTOR_CFG T
+		WHERE 1 = 1
+		<include refid="find_where"/>
+		<if test="racId != null ">
+			AND T.RAC_ID = #{racId, jdbcType=DECIMAL}
+		</if>
+	</select>
+	
+	<!-- 统计环节人员配置记录数量 -->
+	<select id="findCountByCriteria" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM T_BIZ_REGION_ACTOR_CFG T
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 获取环节人员配置记录 -->
+	<select id="findPageListByCriteria" resultMap="BaseResultMap">
+		SELECT 
+			<include refid="viewCol"/> 
+		FROM T_BIZ_REGION_ACTOR_CFG T 
+		WHERE 1 = 1
+		<include refid="find_where"/>
+	</select>
+	
+	<!-- 查询条件 -->
+	<sql id="find_where">
+		<if test="wfpcId != null ">
+			AND T.WFPC_ID = #{wfpcId,jdbcType=DECIMAL}
+		</if>
+		<if test="transactorId != null ">
+			AND T.TRANSACTOR_ID = #{transactorId,jdbcType=DECIMAL}
+		</if>
+		<if test="transactorOrgId != null ">
+			AND T.TRANSACTOR_ORG_ID = #{transactorOrgId,jdbcType=DECIMAL}
+		</if>
+		<if test="transactorType != null and transactorType != '' ">
+			AND T.TRANSACTOR_TYPE = #{transactorType,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+</mapper>

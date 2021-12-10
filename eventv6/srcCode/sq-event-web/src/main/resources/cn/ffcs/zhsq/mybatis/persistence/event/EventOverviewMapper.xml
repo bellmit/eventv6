@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventOverviewMapper" >
+
+	<select id="findEventCountA" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT (SELECT COUNT(A.EVENT_ID)
+		          FROM T_EVENT A LEFT JOIN T_DC_GRID G ON A.GRID_ID = G.GRID_ID
+		         WHERE G.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		           AND A.STATUS IN ('00','01','02')
+		           <if test="bigTypes != null and bigTypes != ''" >
+		           AND SUBSTR(A.TYPE_, 0, 2) IN (${bigTypes})
+		           </if>) SYWBJ,
+		       TT.*
+		  FROM (SELECT COUNT(0) CJ,
+		               SUM(DECODE(T.STATUS, '00', 1, '01', 1, '02', 1, 0)) WBJ,
+		               SUM(DECODE(T.STATUS, '03', 1, '04', 1, 0)) BJ,
+		               SUM(DECODE(T.HANDLE_DATE_FLAG, '3', 1, 0)) GQ
+		          FROM T_EVENT T LEFT JOIN T_DC_GRID G ON T.GRID_ID = G.GRID_ID
+		         WHERE G.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		           <if test="bigTypes != null and bigTypes != ''" >
+		           AND SUBSTR(T.TYPE_, 0, 2) IN (${bigTypes})
+		           </if>
+		           AND T.STATUS IN ('00', '01', '02', '03', '04')
+			<if test="startTime != null" >
+		           AND T.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+			</if>
+			<if test="endTime != null" >
+				   AND T.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+			</if>
+			) TT
+	</select>
+	
+	<select id="findEventCountB" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT SUBSTR(T.TYPE_, 0, 2) TYPE_,
+		       COUNT(0) CJ,
+		       SUM(DECODE(T.STATUS, '03', 1, '04', 1, 0)) BJ
+		  FROM T_EVENT T LEFT JOIN T_DC_GRID G ON T.GRID_ID = G.GRID_ID AND G.STATUS = '001'
+		 WHERE G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		<if test="startTime != null" >
+		   AND T.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		</if>
+		<if test="endTime != null" >
+		   AND T.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		</if>
+		   AND T.STATUS IN ('00', '01', '02', '03', '04')
+		 GROUP BY SUBSTR(T.TYPE_, 0, 2)
+	</select>
+	
+	<select id="findEventCountForMyL" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT S.*
+		  FROM (SELECT '00' TYPE_SATISFY,
+		               COUNT(0) TOTAL_SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '01', 1, 0)) NO_SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '02', 1, 0)) SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '03', 1, 0)) VERY_SATISFY
+		          FROM T_SJ_EVA_RESULT T
+		          LEFT JOIN T_EVENT E
+		            ON T.OBJECT_ID = E.EVENT_ID
+		          LEFT JOIN T_DC_GRID G
+		            ON E.GRID_ID = G.GRID_ID
+		         WHERE T.EVA_OBJ = '03'
+		           AND E.STATUS = '04'
+		           AND G.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+				   <if test="startTime != null" >
+				   AND E.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+				   </if>
+				   <if test="endTime != null" >
+				   AND E.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+				   </if>
+				   <if test="bigTypes != null and bigTypes != ''" >
+				   AND SUBSTR(E.TYPE_, 0, 2) IN (${bigTypes})
+				   </if>
+		        UNION ALL
+		        SELECT SUBSTR(E.TYPE_, 0, 2) TYPE_SATISFY,
+		               COUNT(0) TOTAL_SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '01', 1, 0)) NO_SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '02', 1, 0)) SATISFY,
+		               SUM(DECODE(T.EVA_LEVEL, '03', 1, 0)) VERY_SATISFY
+		          FROM T_SJ_EVA_RESULT T
+		          LEFT JOIN T_EVENT E
+		            ON T.OBJECT_ID = E.EVENT_ID
+		          LEFT JOIN T_DC_GRID G
+		            ON E.GRID_ID = G.GRID_ID
+		         WHERE T.EVA_OBJ = '03'
+		           AND E.STATUS = '04'
+		           AND G.STATUS = '001'
+		           AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+				   <if test="startTime != null" >
+				   AND E.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+				   </if>
+				   <if test="endTime != null" >
+				   AND E.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+				   </if>
+				   <if test="bigTypes != null and bigTypes != ''" >
+				   AND SUBSTR(E.TYPE_, 0, 2) IN (${bigTypes})
+				   </if>
+		         GROUP BY SUBSTR(E.TYPE_, 0, 2)) S
+		 ORDER BY S.TYPE_SATISFY
+	</select>
+	
+	<select id="findEventCountC" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		WITH EVENT_COUNT AS
+		 (SELECT G.INFO_ORG_CODE,
+		         COUNT(E.EVENT_ID) CJ,
+		         SUM(DECODE(E.STATUS, '03', 1, '04', 1, 0)) BJ
+		    FROM T_EVENT E
+		    LEFT JOIN T_DC_GRID G
+		      ON G.GRID_ID = E.GRID_ID
+		   WHERE G.STATUS = '001'
+		     AND E.STATUS IN ('00', '01', '02', '03', '04')
+		    <if test="startTime != null" >
+		     AND E.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		    </if>
+		    <if test="endTime != null" >
+		     AND E.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		    </if>
+			<if test="type != null" >
+			 AND E.TYPE_ LIKE #{type,jdbcType=VARCHAR} || '%'
+			</if>
+		     AND G.GRID_ID IN
+		         (SELECT G.GRID_ID
+		            FROM T_DC_GRID G
+		           WHERE G.STATUS = '001'
+		           START WITH G.GRID_ID = #{gridId,jdbcType=DECIMAL}
+		          CONNECT BY PRIOR G.GRID_ID = G.PARENT_GRID_ID)
+		   GROUP BY G.INFO_ORG_CODE)
+		SELECT G.GRID_ID,
+		       G.INFO_ORG_CODE,
+		       G.GRID_NAME,
+		       (SELECT NVL(SUM(E.CJ), 0)
+		          FROM EVENT_COUNT E
+		         WHERE E.INFO_ORG_CODE LIKE G.INFO_ORG_CODE || '%') CJ,
+		       (SELECT NVL(SUM(E.BJ), 0)
+		          FROM EVENT_COUNT E
+		         WHERE E.INFO_ORG_CODE LIKE G.INFO_ORG_CODE || '%') BJ
+		  FROM T_DC_GRID G
+		  LEFT JOIN T_DC_ORG_ENTITY_INFO O
+		    ON G.INFO_ORG_ID = O.ORG_ID
+		   AND O.STATUS = '001'
+		 WHERE G.STATUS = '001'
+		   AND O.ORG_TYPE = '1'
+		   AND G.GRID_MODEL = '001'
+		   AND (G.GRID_ID = #{gridId,jdbcType=DECIMAL} OR G.PARENT_GRID_ID = #{gridId,jdbcType=DECIMAL})
+		 ORDER BY G.INFO_ORG_CODE
+	</select>
+	
+	<select id="findEventCountD" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT E.SOURCE, COUNT(E.EVENT_ID) CJ
+		  FROM T_EVENT E
+		  LEFT JOIN T_DC_GRID G
+		    ON E.GRID_ID = G.GRID_ID
+		 WHERE G.STATUS = '001'
+		   AND G.GRID_ID IN
+		       (SELECT G.GRID_ID
+		          FROM T_DC_GRID G
+		         WHERE G.STATUS = '001'
+		         START WITH G.GRID_ID = #{gridId,jdbcType=DECIMAL}
+		        CONNECT BY PRIOR G.GRID_ID = G.PARENT_GRID_ID)
+		<if test="type != null" >
+		   AND E.TYPE_ LIKE #{type,jdbcType=VARCHAR} || '%'
+		</if>
+		   AND E.STATUS IN ('00', '01', '02', '03', '04')
+		<if test="startTime != null" >
+		   AND E.CREATE_TIME >= TO_DATE(#{startTime,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+		</if>
+		<if test="endTime != null" >
+		   AND E.CREATE_TIME &lt; TO_DATE(#{endTime,jdbcType=VARCHAR}, 'YYYY-MM-DD') + 1
+		</if>
+		 GROUP BY E.SOURCE
+	</select>
+
+</mapper>

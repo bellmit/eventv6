@@ -1,0 +1,186 @@
+/*--------------SystemTop begin-----------------*/
+.MainTop{position:relative; z-index:1;}
+/*--------------UserInformation begin-----------------*/
+.MainTop .title{background:url(../images/tj_wg_01.png) repeat-x; height:60px;}
+.user{color:#626262; font-size:14px; line-height:60px; padding-left:10px;}
+.user span{font-weight:bold; color:#0067a1;}
+.user a{color:#626262;}
+.user a:hover{text-decoration:underline; color:#000;}
+.logo{width:593px; height:44px; margin:0 auto;}
+.SystemBtn{padding:17px 10px 0 0;}
+.SystemBtn a{display:block; width:102px; height:29px; line-height:27px; background:url(../images/tj_wg_06.png); text-align:center; color:#fff;}
+.SystemBtn a:hover{background:url(../images/tj_wg_08.png); text-decoration:none; color:#fff;}
+/*--------------UserInformation end-----------------*/
+/*--------------TopMenu begin-----------------*/
+.TopMenu{height:137px; background:url(../images/tj_wg_09.png) repeat-x;}
+.TopMenu ul li{float:left; width:14%; height:137px;}
+.TopMenu ul li a{display:block; width:100%; margin:12px auto 0; font-size:20px; padding-top:90px; color:#fff; font-family:"微软雅黑"; text-align:center; background-position:top center; background-repeat:no-repeat;}
+.TopMenu ul li a:hover{color:#fff45c; text-decoration:none;}
+.TM_1 a{background-image:url(../images/tj_wg_15.png);}
+.TM_1 a:hover{background-image:url(../images/tj_wg_16.png);}
+.TM_2 a{background-image:url(../images/tj_wg_17.png);}
+.TM_2 a:hover{background-image:url(../images/tj_wg_18.png);}
+.TM_3 a{background-image:url(../images/tj_wg_13.png);}
+.TM_3 a:hover{background-image:url(../images/tj_wg_14.png);}
+.TM_4 a{background-image:url(../images/tj_wg_19.png);}
+.TM_4 a:hover{background-image:url(../images/tj_wg_20.png);}
+.TM_5 a{background-image:url(../images/tj_wg_11.png);}
+.TM_5 a:hover{background-image:url(../images/tj_wg_12.png);}
+.TM_6 a{background-image:url(../images/tj_wg_21.png);}
+.TM_6 a:hover{background-image:url(../images/tj_wg_22.png);}
+.TM_7 a{background-image:url(../images/tj_wg_23.png);}
+.TM_7 a:hover{background-image:url(../images/tj_wg_24.png);}
+.TopMenu ul li.line{background:url(../images/tj_wg_10.png); width:2px; height:137px;}
+/*--------------TopMenu end-----------------*/
+/*--------------SystemTop end-----------------*/
+
+/*--------------SystemLeftNav begin-----------------*/
+.middle{position: relative; width: 100%;}
+.MainLeft{width:210px; position: absolute; background:url(../images/tj_wg_73.png) repeat-y top right #e7e7e7;}
+.MainLeft .title{background:url(../images/tj_wg_25.png) repeat-x; height:36px; font-size:18px; color:#0067a1; line-height:36px; font-family:"微软雅黑"; width:200px; padding-left:10px;}
+.toggle-slide{background:url(../images/tj_wg_38.png) no-repeat center; width:36px; height:36px; display:block;}
+.full-con .toggle-slide{background:url(../images/tj_wg_40.png) no-repeat center; width:36px; height:36px; display:block;}
+.full-con .slide{display:none;}
+.full-con .containerbox{margin-left:20px;}
+.full-con .MainLeft{left:-182px;}
+.nav-loading{position:absolute; width:25px; height:25px; background:url(../images/loading.gif) no-repeat center center; top:50px; left:50%; margin-left:-25px; display:none;}
+.NavBox{overflow-y:auto; overflow-x:hidden; width:210px;}
+.nav-list{width:209px; background:url(../images/oa_39.png) repeat-x bottom;  padding-bottom:2px; font-family:"微软雅黑"; font-size:16px; color:#535353; line-height:33px;}
+.tabbj{height:33px; cursor:pointer; color:#333;}
+.tabbj:hover{color:#CA0000;}
+.tabbj li{float:left;}
+.tabtu{width:16px; height:16px; margin:9px 10px 0 10px; line-height:16px;}
+.tabtu img{width:16px; height:16px;}
+.tabzi a:hover{text-decoration:none;}
+.leveltow{display:none; background:url(../images/oa_91.png) repeat-x top #56789a; padding:7px 0;}
+.leveltow li a{display:block; width:170px; background:url(../images/oa_95.png) no-repeat 15px 11px; padding-left:40px; line-height:32px; height:32px; overflow:hidden; color:#fff; cursor:pointer;}
+.leveltow li a:hover{background:url(../images/oa_98.png) no-repeat 15px 11px #d3dfe5; color:#164c64; transition:all 0; -moz-transition:all 0; -webkit-transition:all 0; text-decoration:none;}
+/*--------------SystemLeftNav end-----------------*/
+
+/*--------------SystemRightNav begin-----------------*/
+.containerbox{position: relative;margin-left: 210px;}
+.label{height:36px; background:url(../images/tj_wg_25.png) repeat-x;}
+.label ul{padding-top:6px; height:30px;}
+.label li{background:url(../images/oa_46.png) no-repeat; height:30px; line-height:30px; padding-left:10px; font-size:14px; float:left; margin-right:5px; cursor:pointer; color:#fff;}
+.label li span{background:url(../images/oa_47.png); display:block; width:15px; height:30px; float:right; margin-left:10px;}
+.label li.nav-tab-now{background:url(../images/tj_wg_34.png); color:#0067a1; font-weight:bold;}
+.label li.nav-tab-now span{background:url(../images/tj_wg_35.png);}
+.label span a{display:block; width:15px; height:30px; background:url(../images/oa_55.png) no-repeat 0 11px;}
+.label span a:hover{display:block; width:15px; height:30px; background:url(../images/oa_56.png) no-repeat 0 11px;}
+/*--------------SystemRightNav end-----------------*/
+
+/*-----------------------------------------------MapTools begin----------------------------------------------------*/
+.map{width:100%; height:100%; position:relative;}
+.location{position:absolute; z-index:2; font-size:14px; font-weight:bold; color:#0067a1; line-height:43px; top:10px; left:70px;}
+.location .pic{width:43px; height:43px; background:url(../images/tj_wg_49.png);}
+.location .info{height:43px; background:url(../images/tj_wg_50.png) no-repeat right; padding:0 10px 0 5px;}
+.location .info a{color:#0067a1;}
+.location .info a:hover{color:#CA0000; text-decoration:none;}
+.location .SecMenu{position:absolute; left:5px; top:42px; width:240px; z-index:2; background:#fff; border-radius:5px; border:1px solid #cdcdcd; padding:10px;}
+.MS{background:url(../images/tj_wg_56.png) no-repeat; width:42px; height:18px; line-height:18px; font-weight:bold; color:#0067a1; padding-left:12px; position:absolute; z-index:4; left:50px;}
+.MS a{color:#0067a1;}
+.MS a:hover{color:#CA0000; text-decoration:none;}
+.MS_1{top:75px;}
+.MS_2{top:105px;}
+.MS_3{top:135px;}
+.MS_4{top:165px;}
+
+.TwoThree{position:absolute; z-index:2; left:-5px; top:-250px;}
+.TwoThree a{display:block; background:url(../images/tj_wg_51.png); width:51px; height:51px; position:relative; z-index:2;}
+.TwoThree a:hover{background:url(../images/tj_wg_52.png);}
+.MapStyle2{padding-left: 35px;width: 140px; height:51px; line-height:51px; background:url(../images/mapstyle.png) no-repeat right; position:absolute; top:0; left: 25px; z-index:1;}
+.MapStyle2 span{font-size:14px; font-weight:bold; color:#5e5e5e; cursor:pointer; margin-right:20px;}
+.MapStyle2 span:hover{color:#00469d;}
+.MapStyle2 span.current{color:#00469d;}
+.MapClear{position:absolute; z-index:1; left:-5px; top:-185px;}
+.MapClear a{display:block; background:url(../images/tj_wg_53.png); width:51px; height:51px;}
+.MapClear a:hover{background:url(../images/tj_wg_54.png);}
+.MapPointEvent{position:absolute; z-index:1; left:-5px; top:-55px;}
+.MapPointEvent a{display:block; background:url(../images/alarm.png); width:49px; height:49px;}
+.IconList{position:absolute; z-index:1; left:-5px; top:-120px;}
+.IconList a{display:block; background:url(../images/tj_wg_45.png); width:51px; height:51px;}
+.IconList a:hover{background:url(../images/tj_wg_46.png);}
+.IconList .SecMenu{position:absolute; left:0; top:50px; z-index:2; background:#fff; border-radius:5px; border:1px solid #cdcdcd; padding:10px;}
+.zttc .pic a{background:url(../images/tj_wg_55.png); width:71px; height:78px; display:table; position:absolute; right:10px; top:95px; cursor:pointer; z-index:5;}
+.zttc .pic a:hover{background:url(../images/tj_wg_62.png);}
+.zttc .SecMenu{position:absolute; right:14px; top:169px; width:300px; z-index:5;}
+.NorTable{background:#cdcdcd; width:100%; border-spacing:1px; border-collapse:separate; margin-bottom:10px;}
+.NorTable tr td{background:#fff; font-size:14px; line-height:32px; text-align:center; width:33%;}
+.NorTable tr td:hover{background:#e12a2b;}
+.NorTable tr td:hover a{color:#fff; font-weight:bold; text-decoration:none;}
+.FontRed{color:#e12a2b; font-weight:bold;}
+.SecMenu .con{width:300px; background:#fff; box-shadow:0 0 5px;}
+/*-----------------------------------------------Search begin----------------------------------------------------*/
+.SelectKind{height:24px; background:#747474; padding:4px; position:relative;}
+.inp1{height:22px; line-height:20px; padding-left:3px; width:197px; margin-right:5px; border-radius:3px; border:1px solid #fff;}
+.btn1{background:url(../images/tj_wg_63.png); width:55px; height:24px; cursor:pointer; border:none 0; margin-right:5px;}
+.btn3{background:url(../images/tj_wg_64.png); width:24px; height:24px; cursor:pointer; border:none 0;}
+.btn4{background:url(../images/tj_wg_66.png); width:24px; height:24px; cursor:pointer; border:none 0;}
+.SecMenu .con .list1 ul li{background:url(../images/tj_wg_65.png) no-repeat 15px 12px; line-height:32px; font-size:14px; padding-left:30px;}
+.SecMenu .con .list1 ul li.back{background:url(../images/tj_wg_65.png) no-repeat 15px 12px #e5e5e5;}
+.SecMenu .con .list1 ul li:hover{background:url(../images/tj_wg_65.png) no-repeat 15px 12px #e12a2b;}
+.SecMenu .con .list1 ul li:hover a{color:#fff; font-weight:bold; text-decoration:none;}
+.SecMenu .con .list3 ul li{background:url(../images/tj_wg_65.png) no-repeat 15px 12px; line-height:32px; font-size:14px; padding-left:30px;}
+.SecMenu .con .list3 ul li.back{background:url(../images/tj_wg_65.png) no-repeat 15px 12px #e5e5e5;}
+.SecMenu .con .list3 ul li:hover{background:url(../images/tj_wg_65.png) no-repeat 15px 12px #e12a2b;}
+.SecMenu .con .list3 ul li:hover a{color:#fff; font-weight:bold; text-decoration:none;}
+.SecMenu .con .list2 ul{clear:both; padding:4px; display:inline-block;}
+.SecMenu .con .list2 ul.back{background:#e5e5e5;}
+.SecMenu .con .list2 ul li{float:left;}
+.ListIcon{width:30px;}
+.ListInfo{width:240px; line-height:22px;}
+.page{height:24px; background:#747474; padding:4px; line-height:24px;}
+.yjzhpage{height:24px; background:#747474; padding:4px; line-height:24px;}
+.page a{color:#fff;}
+.AdvanceSearch{background:#747474; position:absolute; top:32px; left:0; z-index:1; width:300px;}
+.AdvanceSearch ul li{height:24px; line-height:24px; color:#fff; padding:4px;}
+.AdvanceSearch ul li select{height:24px; width:230px;}
+/*-----------------------------------------------Search end----------------------------------------------------*/
+.DayWork .pic a{background:url(../images/tj_wg_58.png); width:71px; height:78px; display:table; position:absolute; right:10px; top:10px; cursor:pointer; z-index:4;}
+.DayWork .SecMenu{position:absolute; right:14px; top:84px; width:300px; z-index:6;}
+.bb {background:url(../images/tj_wg_81.png); width:71px; height:78px; display:table; position:absolute; right:10px; top:265px; cursor:pointer; z-index:4;}
+.yjzh .pic a{background:url(../images/tj_wg_75.png); width:71px; height:78px; display:table; position:absolute; right:10px; top:180px; cursor:pointer; z-index:4;}
+.yjzh .pic a:hover{background:url(../images/tj_wg_76.png);}
+.yjzh .SecMenu{position:absolute; right:14px; top:255px; width:330px; z-index:5; background:#transition;}
+.yjzh .SecMenu .con{float:right;}
+.event{background:url(../images/tj_wg_61.png); width:119px; height:45px; position:absolute; z-index:1; font-weight:bold; color:#e12a2b; line-height:16px; padding-top:4px;}
+.event span{display:block; width:24px; height:24px; background-repeat:no-repeat; margin:4px 10px 0 10px; float:left;}
+.fire{top: 203px;left: 806px;}
+.wind{top: 88px;left: 437px;}
+.mail{top: 190px;left: 311px;}
+.save{top: 151px;left: 618px;}
+.fire span{background-image: url(../images/icon_fire.png);}
+.wind span{background-image: url(../images/icon_wind.png);}
+.mail span{background-image: url(../images/icon_mail.png);}
+.save span{background-image: url(../images/icon_save.png);}
+
+.IconNote{position:absolute; bottom:20px; left:10px; border:1px solid #b8d4ea; border-radius:5px; background:#e2ecfd; z-index:9999999999;}
+.IconNote .con{padding:0 15px; line-height:32px; font-size:14px;}
+.IconNote .icon{background:url(../images/tj_wg_68.png) no-repeat 0 9px; font-weight:bold; color:#00469d; padding-left:30px; margin-right:10px; width:95px;}
+.IconNote .fr{padding-top:9px;}
+.IconNote .list ul li{line-height:16px; padding-top:8px; margin-right:10px; float:left;width:124px;}
+.IconNote .list ul li img{width:16px; vertical-align: middle;height:16px; margin-right:7px;margin-top: -5px;}
+
+.warning{position:absolute; bottom:10px; left:10px; border:1px solid #e6db55; border-radius:5px; background:#fffbcc; height:32px;}
+.warning .con{padding:0 15px; line-height:32px; font-size:14px;}
+.warning .icon{background:url(../images/tj_wg_69.png) no-repeat 0 9px; font-weight:bold; color:#e12a2b; padding-left:30px; margin-right:10px; width:95px;}
+.warning .fr{padding-top:9px;}
+/*-----------------------------------------------MapTools end----------------------------------------------------*/
+/*--------------------------------Login style begin----------------------------------------------*/
+.login_back{width:100%; height:100%; background:url(../images/login_back1.jpg) no-repeat top center;}
+.login_space1{width:100%; height:279px;}
+.login_space2{width:100%; height:110px;}
+.login_back .box{width:100%; height:370px; background:url(../images/login_02.png) repeat-x;}
+.login_back .con{width:844px; height:370px; background:url(../images/login_05.png) no-repeat; margin:0 auto;}
+.login_back .con ul{width:380px; height:31px; margin:0 auto 17px;}
+.login_back .con ul li{float:left; height:31px; line-height:31px;}
+.icon{width:31px; margin-right:5px; display:inline;}
+.forms{width:243px;}
+.inp2{width:233px; height:25px; background:url(../images/login_07.png); padding:3px 5px; border:none 0; color:#fff; font-size:14px; line-height:25px;}
+.guid{width:85px; padding-left:7px; color:#F00;}
+.guid a{color:#fff100;}
+.guid a:hover{color:#fff100;}
+.btn2{width:103px; height:36px; background:url(../images/login_14.png); cursor:pointer; border:0;}
+.btn2:hover{background:url(../images/login_15.png);}
+.LoginBtn{text-align:center;}
+/*--------------------------------Login style end----------------------------------------------*/

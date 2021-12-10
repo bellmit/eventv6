@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.dispute.DisputeMediationPTMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationPT" >
+    <result column="STAT_TIME" property="statTime" jdbcType="DATE" />
+    <result column="STAT_MONTH" property="statMonth" jdbcType="VARCHAR" />
+    <result column="GRID_ID" property="gridId" jdbcType="DECIMAL" />
+    <result column="REGION_CODE" property="regionCode" jdbcType="VARCHAR" />
+    <result column="REGION_NAME" property="regionName" jdbcType="VARCHAR" />
+    <result column="REGION_LEVEL" property="regionLevel" jdbcType="DECIMAL" />
+    <result column="ALL_NUM" property="allNum" jdbcType="DECIMAL" />
+    <result column="AVG_NUM_LEVEL" property="avgNumLevel" jdbcType="DECIMAL" />
+    <result column="MEDIATION_RATE" property="mediationRate" jdbcType="DECIMAL" />
+    <result column="AVG_MEDIATION_RATE" property="avgMediationRate" jdbcType="DECIMAL" />
+    <result column="THISMONTH_2_LASTDAY" property="thismonth2Lastday" jdbcType="DECIMAL" />
+    <result column="LASTMONTH_INTERVAL" property="lastmonthInterval" jdbcType="DECIMAL" />
+    <result column="THISYEAR_2_LASTDAY" property="thisyear2Lastday" jdbcType="DECIMAL" />
+    <result column="LASTYEAR_INTERVAL" property="lastyearInterval" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <sql id="find_where">
+  	<if test="regionCode != null">
+		AND T.REGION_CODE LIKE #{regionCode,jdbcType=VARCHAR}||'%'
+	</if>
+  	<if test="regionLevel != null">
+		AND T.REGION_LEVEL = #{regionLevel,jdbcType=VARCHAR}
+	</if>
+  	<if test="rCode != null">
+		AND T.REGION_CODE = #{rCode,jdbcType=VARCHAR}
+	</if>
+	<if test="gridId != null">
+		AND T.GRID_ID = #{gridId,jdbcType=DECIMAL}
+	</if>
+	<if test="gridPid != null">
+		AND T.GRID_PID = #{gridPid,jdbcType=DECIMAL}
+	</if>
+  </sql>
+  
+  <select id="findDisputeMediationPT" resultMap="BaseResultMap">
+  	SELECT * FROM ${BI_DB_NAME}T_BI_DISPUTE_MEDIATION_PT T
+	WHERE 1=1
+	AND T.ALL_NUM !=0 
+	AND T.STAT_MONTH = (select max(t.stat_month) from ${BI_DB_NAME}T_BI_DISPUTE_MEDIATION_PT t)
+  	<include refid="find_where"/>
+  </select>
+  
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationPT" >
+    insert into T_BI_DISPUTE_MEDIATION_PT (STAT_TIME, STAT_MONTH, GRID_ID, 
+      REGION_CODE, REGION_NAME, REGION_LEVEL, 
+      ALL_NUM, AVG_NUM_LEVEL, MEDIATION_RATE, 
+      AVG_MEDIATION_RATE, THISMONTH_2_LASTDAY, LASTMONTH_INTERVAL, 
+      THISYEAR_2_LASTDAY, LASTYEAR_INTERVAL)
+    values (#{statTime,jdbcType=DATE}, #{statMonth,jdbcType=VARCHAR}, #{gridId,jdbcType=DECIMAL}, 
+      #{regionCode,jdbcType=VARCHAR}, #{regionName,jdbcType=VARCHAR}, #{regionLevel,jdbcType=DECIMAL}, 
+      #{allNum,jdbcType=DECIMAL}, #{avgNumLevel,jdbcType=DECIMAL}, #{mediationRate,jdbcType=DECIMAL}, 
+      #{avgMediationRate,jdbcType=DECIMAL}, #{thismonth2Lastday,jdbcType=DECIMAL}, #{lastmonthInterval,jdbcType=DECIMAL}, 
+      #{thisyear2Lastday,jdbcType=DECIMAL}, #{lastyearInterval,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.dispute.DisputeMediationPT" >
+    insert into T_BI_DISPUTE_MEDIATION_PT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="statTime != null" >
+        STAT_TIME,
+      </if>
+      <if test="statMonth != null" >
+        STAT_MONTH,
+      </if>
+      <if test="gridId != null" >
+        GRID_ID,
+      </if>
+      <if test="regionCode != null" >
+        REGION_CODE,
+      </if>
+      <if test="regionName != null" >
+        REGION_NAME,
+      </if>
+      <if test="regionLevel != null" >
+        REGION_LEVEL,
+      </if>
+      <if test="allNum != null" >
+        ALL_NUM,
+      </if>
+      <if test="avgNumLevel != null" >
+        AVG_NUM_LEVEL,
+      </if>
+      <if test="mediationRate != null" >
+        MEDIATION_RATE,
+      </if>
+      <if test="avgMediationRate != null" >
+        AVG_MEDIATION_RATE,
+      </if>
+      <if test="thismonth2Lastday != null" >
+        THISMONTH_2_LASTDAY,
+      </if>
+      <if test="lastmonthInterval != null" >
+        LASTMONTH_INTERVAL,
+      </if>
+      <if test="thisyear2Lastday != null" >
+        THISYEAR_2_LASTDAY,
+      </if>
+      <if test="lastyearInterval != null" >
+        LASTYEAR_INTERVAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="statTime != null" >
+        #{statTime,jdbcType=DATE},
+      </if>
+      <if test="statMonth != null" >
+        #{statMonth,jdbcType=VARCHAR},
+      </if>
+      <if test="gridId != null" >
+        #{gridId,jdbcType=DECIMAL},
+      </if>
+      <if test="regionCode != null" >
+        #{regionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="regionName != null" >
+        #{regionName,jdbcType=VARCHAR},
+      </if>
+      <if test="regionLevel != null" >
+        #{regionLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="allNum != null" >
+        #{allNum,jdbcType=DECIMAL},
+      </if>
+      <if test="avgNumLevel != null" >
+        #{avgNumLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="mediationRate != null" >
+        #{mediationRate,jdbcType=DECIMAL},
+      </if>
+      <if test="avgMediationRate != null" >
+        #{avgMediationRate,jdbcType=DECIMAL},
+      </if>
+      <if test="thismonth2Lastday != null" >
+        #{thismonth2Lastday,jdbcType=DECIMAL},
+      </if>
+      <if test="lastmonthInterval != null" >
+        #{lastmonthInterval,jdbcType=DECIMAL},
+      </if>
+      <if test="thisyear2Lastday != null" >
+        #{thisyear2Lastday,jdbcType=DECIMAL},
+      </if>
+      <if test="lastyearInterval != null" >
+        #{lastyearInterval,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

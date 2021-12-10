@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.triadRelatedCases.CaseFillingMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.triadRelatedCases.CaseFilling">
+		<id column="UND_CASE_ID" property="undCaseId" jdbcType="DECIMAL" /> <!--涉黑案件ID-->
+		<result column="UND_CASE_UUID" property="undCaseUuid" jdbcType="VARCHAR" /> <!--涉黑案件逻辑主键-->
+		<result column="GRID_CODE" property="gridCode" jdbcType="VARCHAR" /> <!--案件所属区域CODE-->
+		<result column="INVOLVED_NATURE" property="involvedNature" jdbcType="VARCHAR" /> <!--涉案性质-->
+		<result column="CASE_NAME" property="caseName" jdbcType="VARCHAR" /> <!--案件名称-->
+		<result column="FILING_TIME" property="filingTime" jdbcType="TIMESTAMP" /> <!--立案时间-->
+		<result column="IS_FINISHDE" property="isFinishde" jdbcType="VARCHAR" /> <!--案件是否办结-->
+		<result column="IS_DISPOSED" property="isDisposed" jdbcType="VARCHAR" /> <!--财产是否处置到位-->
+		<result column="INVESTIGATION_UNIT" property="investigationUnit" jdbcType="VARCHAR" /> <!--侦查单位-->
+		<result column="FREEZE_ASSETS" property="freezeAssets" jdbcType="DECIMAL" /> <!--查封扣押冻结财产数-->
+		<result column="REFERRAL_PROSECUTION_TIME" property="referralProsecutionTime" jdbcType="TIMESTAMP" /> <!--移送起诉时间-->
+		<result column="PUBLIC_PROSECUTION_UNIT" property="publicProsecutionUnit" jdbcType="VARCHAR" /> <!--公诉单位-->
+		<result column="COMPLAINT_TIME" property="complaintTime" jdbcType="TIMESTAMP" /> <!--诉出时间-->
+		<result column="PROSECUTIONS_NUMBER" property="prosecutionsNumber" jdbcType="DECIMAL" /> <!--起诉人数-->
+		<result column="JUDGEMENTS_NUMBER" property="judgementsNumber" jdbcType="DECIMAL" /> <!--判决人数-->
+		<result column="EXECUTIONS_NUMBER" property="executionsNumber" jdbcType="DECIMAL" /> <!--死刑人数-->
+		<result column="STAY_EXECUTION_NUMBER" property="stayExecutionNumber" jdbcType="DECIMAL" /> <!--死缓人数-->
+		<result column="INDEFINITE_NUMBER" property="indefiniteNumber" jdbcType="DECIMAL" /> <!--无期人数-->
+		<result column="OTHER_SENTENCES_NUMBER" property="otherSentencesNumber" jdbcType="DECIMAL" /> <!--其他重刑人数-->
+		<result column="FILL_STATUS" property="fillStatus" jdbcType="VARCHAR" /> <!--填报状态-->
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" /> <!--组织编码-->
+		<result column="CREATOR" property="creator" jdbcType="DECIMAL" /> <!--创建人-->
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" /> <!--创建时间-->
+		<result column="UPDATOR" property="updator" jdbcType="DECIMAL" /> <!--修改人-->
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" /> <!--修改时间-->
+		<result column="IS_VALID" property="isValid" jdbcType="VARCHAR" /> <!--有效状态(1有效0无效)-->
+		<result column="REMARK" property="remark" jdbcType="VARCHAR" /> <!--备注-->
+		<result column="GRID_NAME" property="gridCodeStr" jdbcType="VARCHAR" /> <!--案件所属区域名称-->
+		<result column="IS_SUPERVISE" property="isSupervise" jdbcType="VARCHAR" /> <!--是否督办案件(1有效0无效)-->
+	</resultMap>
+	<sql id="sameCol">
+	   		T.UND_CASE_ID,
+			T.UND_CASE_UUID,
+			T.GRID_CODE,
+			T.INVOLVED_NATURE,
+			T.CASE_NAME,
+			T.FILING_TIME,
+			T.IS_FINISHDE,
+			T.IS_DISPOSED,
+			T.INVESTIGATION_UNIT,
+			T.FREEZE_ASSETS,
+			T.REFERRAL_PROSECUTION_TIME,
+			T.PUBLIC_PROSECUTION_UNIT,
+			T.COMPLAINT_TIME,
+			T.PROSECUTIONS_NUMBER,
+			T.JUDGEMENTS_NUMBER,
+			T.EXECUTIONS_NUMBER,
+			T.STAY_EXECUTION_NUMBER,
+			T.INDEFINITE_NUMBER,
+			T.OTHER_SENTENCES_NUMBER,
+			T.FILL_STATUS,
+			T.ORG_CODE,
+			T.CREATOR,
+			T.CREATE_TIME,
+			T.UPDATOR,
+			T.UPDATE_TIME,
+			T.IS_VALID,
+			T.GRID_NAME,
+			T.REMARK
+  	</sql>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_UNDERWORLD_CASE_FILLING T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="sameCol"/>
+		FROM
+			T_UNDERWORLD_CASE_FILLING T
+		<include refid="find_where" />
+		ORDER BY T.FILING_TIME DESC
+	</select>
+	
+	<!-- 列表（条件） -->
+	<sql id="find_where">
+		<where>
+			T.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(filingTime)">
+				AND T.FILING_TIME = #{filingTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="@Ognl@isNotEmpty(beginTime)">
+				<![CDATA[ AND T.FILING_TIME >= #{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(endTime)">
+				<![CDATA[ AND T.FILING_TIME < #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(caseName)">
+				AND T.CASE_NAME LIKE '%' || #{caseName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(fillStatus)">
+				AND T.FILL_STATUS = #{fillStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(involvedNature)">
+				AND T.INVOLVED_NATURE = #{involvedNature,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(gridCode)">
+				AND T.GRID_CODE LIKE #{gridCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(orgCode)">
+				AND T.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(creator)">
+				AND T.CREATOR = #{creator,jdbcType=DECIMAL}
+			</if>
+			<if test="@Ognl@isNotEmpty(isSupervise)">
+				AND T.IS_SUPERVISE = #{isSupervise,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.triadRelatedCases.CaseFilling">
+		<selectKey keyProperty="undCaseUuid" resultType="string" order="BEFORE">
+			SELECT SYS_GUID() FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_UNDERWORLD_CASE_FILLING
+		(
+			UND_CASE_ID,
+			UND_CASE_UUID,
+			GRID_CODE,
+			INVOLVED_NATURE,
+			CASE_NAME,
+			FILING_TIME,
+			IS_FINISHDE,
+			IS_DISPOSED,
+			INVESTIGATION_UNIT,
+			FREEZE_ASSETS,
+			REFERRAL_PROSECUTION_TIME,
+			PUBLIC_PROSECUTION_UNIT,
+			COMPLAINT_TIME,
+			PROSECUTIONS_NUMBER,
+			JUDGEMENTS_NUMBER,
+			EXECUTIONS_NUMBER,
+			STAY_EXECUTION_NUMBER,
+			INDEFINITE_NUMBER,
+			OTHER_SENTENCES_NUMBER,
+			FILL_STATUS,
+			ORG_CODE,
+			CREATOR,
+			CREATE_TIME,
+			UPDATOR,
+			UPDATE_TIME,
+			IS_VALID,
+			GRID_NAME,
+			REMARK
+		) VALUES (
+			SEQ_UNDERWORLD_CASE_FILLING.NEXTVAL,
+			#{undCaseUuid,jdbcType=VARCHAR},
+			#{gridCode,jdbcType=VARCHAR},
+			#{involvedNature,jdbcType=VARCHAR},
+			#{caseName,jdbcType=VARCHAR},
+			#{filingTime,jdbcType=TIMESTAMP},
+			#{isFinishde,jdbcType=VARCHAR},
+			#{isDisposed,jdbcType=VARCHAR},
+			#{investigationUnit,jdbcType=VARCHAR},
+			#{freezeAssets,jdbcType=DECIMAL},
+			#{referralProsecutionTime,jdbcType=TIMESTAMP},
+			#{publicProsecutionUnit,jdbcType=VARCHAR},
+			#{complaintTime,jdbcType=TIMESTAMP},
+			#{prosecutionsNumber,jdbcType=DECIMAL},
+			#{judgementsNumber,jdbcType=DECIMAL},
+			#{executionsNumber,jdbcType=DECIMAL},
+			#{stayExecutionNumber,jdbcType=DECIMAL},
+			#{indefiniteNumber,jdbcType=DECIMAL},
+			#{otherSentencesNumber,jdbcType=DECIMAL},
+			#{fillStatus,jdbcType=VARCHAR},
+			#{orgCode,jdbcType=VARCHAR},
+			#{creator,jdbcType=DECIMAL},
+			sysdate,
+			#{updator,jdbcType=DECIMAL},
+			sysdate,
+			'1',
+			#{gridCodeStr,jdbcType=VARCHAR},
+			#{remark,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.triadRelatedCases.CaseFilling">
+		UPDATE
+			T_UNDERWORLD_CASE_FILLING
+		<set> 
+			<if test="undCaseUuid != null " >
+				UND_CASE_UUID=#{undCaseUuid,jdbcType=VARCHAR},
+			</if>
+			<if test="gridCode != null " >
+				GRID_CODE=#{gridCode,jdbcType=VARCHAR},
+			</if>
+			<if test="involvedNature != null " >
+				INVOLVED_NATURE=#{involvedNature,jdbcType=VARCHAR},
+			</if>
+			<if test="caseName != null " >
+				CASE_NAME=#{caseName,jdbcType=VARCHAR},
+			</if>
+			<if test="filingTime != null " >
+				FILING_TIME=#{filingTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isFinishde != null " >
+				IS_FINISHDE=#{isFinishde,jdbcType=VARCHAR},
+			</if>
+			<if test="isDisposed != null " >
+				IS_DISPOSED=#{isDisposed,jdbcType=VARCHAR},
+			</if>
+			<if test="investigationUnit != null " >
+				INVESTIGATION_UNIT=#{investigationUnit,jdbcType=VARCHAR},
+			</if>
+			<if test="freezeAssets != null " >
+				FREEZE_ASSETS=#{freezeAssets,jdbcType=DECIMAL},
+			</if>
+			<if test="referralProsecutionTime != null " >
+				REFERRAL_PROSECUTION_TIME=#{referralProsecutionTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="publicProsecutionUnit != null " >
+				PUBLIC_PROSECUTION_UNIT=#{publicProsecutionUnit,jdbcType=VARCHAR},
+			</if>
+			<if test="complaintTime != null " >
+				COMPLAINT_TIME=#{complaintTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="prosecutionsNumber != null " >
+				PROSECUTIONS_NUMBER=#{prosecutionsNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="judgementsNumber != null " >
+				JUDGEMENTS_NUMBER=#{judgementsNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="executionsNumber != null " >
+				EXECUTIONS_NUMBER=#{executionsNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="stayExecutionNumber != null " >
+				STAY_EXECUTION_NUMBER=#{stayExecutionNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="indefiniteNumber != null " >
+				INDEFINITE_NUMBER=#{indefiniteNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="otherSentencesNumber != null " >
+				OTHER_SENTENCES_NUMBER=#{otherSentencesNumber,jdbcType=DECIMAL},
+			</if>
+			<if test="fillStatus != null " >
+				FILL_STATUS=#{fillStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="orgCode != null " >
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="creator != null " >
+				CREATOR=#{creator,jdbcType=DECIMAL},
+			</if>
+			<if test="createTime != null " >
+				CREATE_TIME=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updator != null " >
+				UPDATOR=#{updator,jdbcType=DECIMAL},
+			</if>
+			<if test="updateTime != null " >
+				UPDATE_TIME=#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null " >
+				IS_VALID=#{isValid,jdbcType=VARCHAR},
+			</if>
+			<if test="gridCodeStr != null " >
+				GRID_NAME=#{gridCodeStr,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null " >
+				REMARK=#{remark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			UND_CASE_ID= #{undCaseId,jdbcType=DECIMAL} 
+	</update>
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="String"  resultMap="BaseResultMap">
+		SELECT
+		<include refid="sameCol"/>
+		FROM
+			T_UNDERWORLD_CASE_FILLING T
+		WHERE
+			UND_CASE_UUID= #{undCaseUuid,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 批量删除 -->
+	<update id="delete">
+		UPDATE T_UNDERWORLD_CASE_FILLING T1
+		<set>
+			T1.IS_VALID = '0',
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		WHERE T1.UND_CASE_UUID IN
+		<foreach collection="undCaseUuidList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</update>
+
+
+
+	<!-- 案件类型数量向上汇总-->
+	<select id="countByRegionList" parameterType="String" resultType="java.util.Map">
+		select  T.ORG_CODE,T.ORG_NAME  FROM  ZHSQ.T_DC_ORG_ENTITY_INFO T WHERE T.STATUS='001' and t.parent_org_id=(
+		SELECT a.org_id FROM  ZHSQ.T_DC_ORG_ENTITY_INFO a
+		WHERE a.STATUS='001'
+		and a.org_code = #{orgCode,jdbcType=VARCHAR}
+ 		)
+	</select>
+
+	<select id="countTotal"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_UNDERWORLD_CASE_FILLING T
+		<include refid="find_where_count" />
+	</select>
+
+	<!-- 查询总数条件列表（条件） -->
+	<sql id="find_where_count">
+		<where>
+			T.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(beginTime)">
+				<![CDATA[ AND T.FILING_TIME >= #{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(endTime)">
+				<![CDATA[ AND T.FILING_TIME < #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(fillStatus)" >
+				AND T.FILL_STATUS=#{fillStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(isDisposed)" >
+				AND T.IS_DISPOSED=#{isDisposed,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(involvedNature)">
+				AND T.INVOLVED_NATURE = #{involvedNature,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(isFinishde)">
+				AND T.IS_FINISHDE=#{isFinishde,jdbcType=VARCHAR}
+			</if>
+			<if test="@Ognl@isNotEmpty(gridCode)">
+				AND T.GRID_CODE LIKE #{gridCode,jdbcType=VARCHAR} || '%'
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 列表（总数） 在侦-->
+	<select id="countzzList"  resultType="java.lang.Long">
+		select count(1)  from T_UNDERWORLD_CASE_FILLING  t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is null
+		and k.is_valid='1'
+		and k.trial_level=1
+		and t.complaint_time is  null
+		and k.judgment_time is  null
+	</select>
+	<!-- 列表（分页） 在侦-->
+	<select id="searchzzList"  resultMap="BaseResultMap">
+		select * from T_UNDERWORLD_CASE_FILLING  t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is null
+		and k.is_valid='1'
+		and k.trial_level=1
+		and t.complaint_time is  null
+		and k.judgment_time is  null
+		ORDER BY T.FILING_TIME DESC
+	</select>
+
+	<!-- 列表（总数） 在诉-->
+	<select id="countzsList"  resultType="java.lang.Long">
+		select count(1)  from T_UNDERWORLD_CASE_FILLING  t
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is not null and t.complaint_time is null
+	</select>
+	<!-- 列表（分页） 在诉-->
+	<select id="searchzsList"  resultMap="BaseResultMap">
+		select * from T_UNDERWORLD_CASE_FILLING  t
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is not null and t.complaint_time is null
+		ORDER BY T.FILING_TIME DESC
+	</select>
+
+	<!-- 列表（总数） 一审-->
+	<select id="countysList"  resultType="java.lang.Long">
+		select count(1) from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1 and t.complaint_time is not null and k.judgment_time is null
+	</select>
+	<!-- 列表（分页） 一审-->
+	<select id="searchysList"  resultMap="BaseResultMap">
+		select * from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1 and t.complaint_time is not null and k.judgment_time is null
+		ORDER BY T.FILING_TIME DESC
+	</select>
+
+	<!-- 列表（总数） 二审-->
+	<select id="countesList"  resultType="java.lang.Long">
+		select count(1)  from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1  and k.judgment_time is not  null and t.IS_FINISHDE ='0'
+	</select>
+		<!-- 列表（分页） 二审-->
+	<select id="searchesList"  resultMap="BaseResultMap">
+		select * from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1  and k.judgment_time is not  null and t.IS_FINISHDE ='0'
+		ORDER BY T.FILING_TIME DESC
+	</select>
+
+	<!-- 列表（总数） 审结-->
+	<select id="countsjList"  resultType="java.lang.Long">
+		select count(1)  from  T_UNDERWORLD_CASE_FILLING t
+		<include refid="find_where_count" />
+		and t.IS_FINISHDE ='1'
+	</select>
+	<!-- 列表（分页） 审结-->
+	<select id="searchsjList"  resultMap="BaseResultMap">
+		select * from  T_UNDERWORLD_CASE_FILLING t
+		<include refid="find_where_count" />
+		and t.IS_FINISHDE ='1'
+		ORDER BY T.FILING_TIME DESC
+	</select>
+	<sql id="selectSql">
+		WITH a AS(
+		select count(1) as zzs from T_UNDERWORLD_CASE_FILLING  t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is null
+		and k.is_valid='1'
+		and  k.trial_level=1
+		and t.complaint_time is  null
+		and k.judgment_time is  null
+		),
+		b as (
+		select count(1) as zss from T_UNDERWORLD_CASE_FILLING  t
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is not null and t.complaint_time is null
+		),
+		d as (
+		select count(1) as  yss from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1 and t.complaint_time is not null and k.judgment_time is null
+		),
+		e as (
+		select count(1) as ess from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1  and k.judgment_time is not  null and t.IS_FINISHDE ='0'
+		),
+		f as (
+		select count(1) as sjs from  T_UNDERWORLD_CASE_FILLING t
+		<include refid="find_where_count" />
+		and t.IS_FINISHDE ='1'
+		)
+	</sql>
+	<sql id="sqlDetail">
+		WITH a AS(
+		select <include refid="sameCol"/> from T_UNDERWORLD_CASE_FILLING  t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is null
+		and k.is_valid='1'
+		and  k.trial_level=1
+		and t.complaint_time is  null
+		and k.judgment_time is  null
+		),
+		b as (
+		select <include refid="sameCol"/> from T_UNDERWORLD_CASE_FILLING  t
+		<include refid="find_where_count" />
+		and t.referral_prosecution_time is not null and t.complaint_time is null
+		),
+		d as (
+		select <include refid="sameCol"/> from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1 and t.complaint_time is not null and k.judgment_time is null
+		),
+		e as (
+		select <include refid="sameCol"/> from T_UNDERWORLD_CASE_FILLING t inner join T_TRIAL_RECORD k on  t.und_case_uuid=k.und_case_uuid
+		<include refid="find_where_count" />
+		and k.is_valid='1'   and  k.trial_level=1  and k.judgment_time is not  null and t.IS_FINISHDE ='0'
+
+		),
+		f as (
+		select <include refid="sameCol"/> from  T_UNDERWORLD_CASE_FILLING t
+		<include refid="find_where_count" />
+		and t.IS_FINISHDE ='1'
+		)
+	</sql>
+
+
+
+
+
+	<!-- 列表（总数） 所有类型综合(在侦,在诉,一审,二审,审结)-->
+	<select id="countallList"  resultType="java.lang.Long">
+		<include refid="selectSql"/>
+		select (zzs+zss+yss+ess+sjs) as total from a,b,d,e,f
+	</select>
+	<!-- 列表（分页） 所有类型综合(在侦,在诉,一审,二审,审结)-->
+	<select id="searchallList"  resultMap="BaseResultMap">
+		<include refid="sqlDetail"/>
+	select * from (select * from a union all select * from b union all select * from d union all select * from e union all select * from f ) t ORDER BY T.FILING_TIME DESC
+	</select>
+
+	<!-- 案件类型数量统计-->
+	<select id="countBytypeList"  resultType="java.util.Map">
+		<include refid="selectSql"/>
+		select zzs,zss,yss,ess,sjs from a,b,d,e,f
+	</select>
+	<!-- 查询总数条件列表（条件） -->
+	<sql id="find_total">
+		<where>
+			T.IS_VALID = '1'
+			<if test="@Ognl@isNotEmpty(beginTime)">
+				<![CDATA[ AND T.FILING_TIME >= #{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(endTime)">
+				<![CDATA[ AND T.FILING_TIME < #{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="@Ognl@isNotEmpty(gridCode)">
+				AND T.GRID_CODE LIKE #{gridCode,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(caseName)">
+				AND T.CASE_NAME LIKE '%' || #{caseName,jdbcType=VARCHAR} || '%'
+			</if>
+			<if test="@Ognl@isNotEmpty(creator)">
+				AND T.CREATOR = #{creator,jdbcType=DECIMAL}
+			</if>
+			<if test="@Ognl@isNotEmpty(filingTime)">
+				AND T.FILING_TIME = #{filingTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="@Ognl@isNotEmpty(involvedNature)" >
+				AND T.INVOLVED_NATURE=#{involvedNature,jdbcType=VARCHAR},
+			</if>
+		</where>
+	</sql>
+</mapper>

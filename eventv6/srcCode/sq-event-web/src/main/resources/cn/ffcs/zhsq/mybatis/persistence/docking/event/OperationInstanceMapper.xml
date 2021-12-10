@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.docking.event.OperationInstanceMapper">
+
+	<update id="update">
+	
+		UPDATE ${dbuser.workflow}.WF_PROCESS_INSTANCE T1
+		<set>
+		
+			<if test="startTime != null">
+				T1.START_TIME = to_date(#{startTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+				T1.END_TIME = NULL,
+			</if>
+			<if test="endTime != null">
+				T1.END_TIME = to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss'),
+			</if>
+			
+			T1.UPDATE_TIME = SYSDATE
+
+		</set>
+		WHERE T1.INSTANCE_ID = #{instanceId,jdbcType=DECIMAL}
+		
+	</update>
+	
+	<update id="updateWfTask">
+
+		UPDATE ${dbuser.workflow}.WF_TASK T1
+		SET T1.INSTANCE_ID = #{oldInstanceId,jdbcType=DECIMAL}
+		WHERE T1.INSTANCE_ID = #{instanceId,jdbcType=DECIMAL}
+	
+	</update>
+	
+
+
+	<update id="updateIsTimeOut">
+	
+		UPDATE ${dbuser.workflow}.WF_TASK T1 SET T1.ISTIMEOUT = #{isTimeOut,jdbcType=VARCHAR}
+		WHERE T1.TASK_ID = #{taskId,jdbcType=DECIMAL}
+ 
+	</update>
+
+
+</mapper>

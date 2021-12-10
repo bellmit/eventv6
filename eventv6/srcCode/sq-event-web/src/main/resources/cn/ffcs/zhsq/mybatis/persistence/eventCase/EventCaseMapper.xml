@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.eventCase.EventCaseMapper" >
+  	
+  	<!-- 列表查询列 -->
+  	<sql id="listCol">
+  		<include refid="listBaseCol"></include>
+	    <if test="isAddExtendCol == true ">
+	    	,<include refid="listExtendCol"></include>
+	    </if>
+  	</sql>
+  	
+  	<!-- 列表基本查询列 -->
+  	<sql id="listBaseCol">
+  		T1.CASE_ID 				"caseId",
+	    T1.CASE_NAME			"caseName",
+	    T1.TYPE_				"type",
+	    T1.HAPPEN_TIME			"happenTime",
+	    T2.GRID_PATH			"gridPath",
+	    T1.URGENCY_DEGREE		"urgencyDegree",
+	    T1.STATUS				"status",
+	    T1.CREATE_TIME			"createTime"
+  	</sql>
+  	
+  	<!-- 列表扩展查询列 -->
+  	<sql id="listExtendCol">
+  		T1.CONTENT_				"content"
+  	</sql>
+  	
+  	<!-- 详情查询列 -->
+  	<sql id="detailCol">
+  		<include refid="listBaseCol"></include>,
+  		<include refid="listExtendCol"></include>,
+  		T1.CODE_				"code",
+  		T1.OCCURRED				"occurred",
+  		T1.GRID_ID				"gridId",
+  		T2.GRID_NAME			"gridName",
+  		T1.INFO_ORG_CODE		"infoOrgCode",
+  		T1.SOURCE				"source",
+  		T1.COLLECT_WAY			"collectWay",
+  		T1.INVOLVED_NUM			"involvedNum",
+  		T1.INVOLVED_PERSON_NAME	"involvedPersonName",
+  		T1.INFLUENCE_DEGREE		"influenceDegree",
+  		T1.TEL					"tel",
+  		T1.CONTACT_USER			"contactUser",
+  		T1.HANDLE_DATE			"handleDate"
+  	</sql>
+  	
+  	<!-- 新增案件信息 -->
+  	<insert id="insert">
+  		<selectKey keyProperty="caseId" resultType="long" order="BEFORE">
+			select SEQ_EVENT_CASE_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO T_EVENT_CASE
+		  (CASE_ID, CODE_, CASE_NAME, TYPE_, 
+		   CONTENT_, OCCURRED,  HAPPEN_TIME, GRID_ID, 
+		   INFO_ORG_CODE, SOURCE, INVOLVED_NUM, INFLUENCE_DEGREE,
+		   URGENCY_DEGREE, TEL, CONTACT_USER, STATUS,
+		   CREATOR_ID, CREATE_TIME,COLLECT_WAY, INVOLVED_PERSON_NAME)
+		VALUES
+		  (
+		  	#{caseId,jdbcType=DECIMAL},#{code,jdbcType=VARCHAR},#{caseName,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},
+		  	#{content,jdbcType=VARCHAR},#{occurred,jdbcType=VARCHAR},#{happenTime,jdbcType=TIMESTAMP},#{gridId,jdbcType=DECIMAL},
+		  	#{infoOrgCode,jdbcType=VARCHAR},#{source,jdbcType=VARCHAR},#{involvedNum,jdbcType=VARCHAR},#{influenceDegree,jdbcType=VARCHAR},
+		  	#{urgencyDegree,jdbcType=VARCHAR},#{tel,jdbcType=VARCHAR},#{contactUser,jdbcType=DECIMAL},#{status,jdbcType=VARCHAR},
+		  	#{creatorId,jdbcType=DECIMAL},SYSDATE,#{collectWay,jdbcType=VARCHAR},#{involvedPersonName,jdbcType=VARCHAR}
+		  )
+  	</insert>
+  	
+  	<!-- 依据案件id更新案件信息 -->
+  	<update id="update">
+  		UPDATE T_EVENT_CASE T1 
+		<set>
+			<if test="caseName != null">
+				T1.CASE_NAME = #{caseName,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				T1.TYPE_ = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				T1.CONTENT_ = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="occurred != null">
+				T1.OCCURRED = #{occurred,jdbcType=VARCHAR},
+			</if>
+			<if test="happenTime != null">
+				T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gridId != null">
+				T1.GRID_ID = #{gridId,jdbcType=DECIMAL},
+			</if>
+			<if test="infoOrgCode != null">
+				T1.INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="source != null">
+				T1.SOURCE = #{source,jdbcType=VARCHAR},
+			</if>
+			<if test="involvedNum != null">
+				T1.INVOLVED_NUM = #{involvedNum,jdbcType=VARCHAR},
+			</if>
+			<if test="involvedPersonName != null">
+				T1.INVOLVED_PERSON_NAME = #{involvedPersonName,jdbcType=VARCHAR},
+			</if>
+			<if test="influenceDegree != null">
+				T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR},
+			</if>
+			<if test="urgencyDegree != null">
+				T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				T1.TEL = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="contactUser != null">
+				T1.CONTACT_USER = #{contactUser,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				T1.STATUS = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="collectWay != null">
+				T1.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR},
+			</if>
+			<if test="handleDate != null ">
+				T1.HANDLE_DATE = #{handleDate,jdbcType=TIMESTAMP},
+			</if>
+			<choose>
+				<when test="endTime != null ">
+					T1.END_TIME = #{endTime,jdbcType=TIMESTAMP},
+				</when>
+				<when test="endTimeStr == '' and endTime == null ">
+					T1.END_TIME = NULL,
+				</when>
+			</choose>
+			<if test="updaterId != null ">
+				T1.UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+			</if>
+		  	
+			T1.UPDATE_TIME = SYSDATE
+		</set>
+		
+		WHERE T1.CASE_ID = #{caseId,jdbcType=DECIMAL}
+  	</update>
+  	
+  	<!-- 依据案件id删除案件信息 -->
+  	<delete id="delete">
+  		UPDATE T_EVENT_CASE T1
+	  	<set>
+	  		<if test="delUserId != null ">
+	  			T1.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+	  		</if>
+	  		T1.STATUS = '06', 
+	  		T1.UPDATE_TIME = SYSDATE
+	  	</set>
+	  	WHERE T1.CASE_ID = #{caseId,jdbcType=DECIMAL}
+  	</delete>
+  	
+  	<!-- 依据案件id获取案件信息 -->
+  	<select id="findById" resultType="java.util.Map" parameterType="java.lang.Long">
+  		SELECT
+	  		<include refid="detailCol"/>
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2
+	  	WHERE T1.CASE_ID = #{caseId,jdbcType=DECIMAL} AND T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001' AND T1.STATUS != '06'
+  	</select>
+  	
+  	<!-- 草稿列表统计 -->
+  	<select id="findCountByCriteria" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+	  	<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 草稿列表数据 -->
+  	<select id="findPageList4Draft" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="listCol"/>
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T2.STATUS = '001'
+	  	<include refid="find_where"/>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 待办列表统计 -->
+  	<select id="findCount4Todo" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3, ${dbuser.workflow}.JBPM4_TASK T4, ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T3.INSTANCE_ID = T4.PROCINST_ AND T4.DBID_ = T5.TASK_
+		AND ((T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '3') OR (T5.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1'))
+		AND T2.STATUS = '001'
+		<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 待办列表数据 -->
+  	<select id="findPageList4Todo" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="listCol"/>,
+	  		T8.REMIND_MARK 		"remindMark",
+	  		T8.SUPERVISE_MARK	"superviseMark"
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.JBPM4_TASK T4, ${dbuser.workflow}.JBPM4_PARTICIPATION T5, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	  	LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T8
+	  		ON T3.INSTANCE_ID = T8.INSTANCE_ID
+		WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T3.INSTANCE_ID = T4.PROCINST_ AND T4.DBID_ = T5.TASK_
+		AND ((T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '3') OR (T5.USERID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '1'))
+		AND T2.STATUS = '001'
+	  	<include refid="find_where"/>
+	  	<choose>
+	  		<when test="orderByField != null and orderByField != '' ">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.URGENCY_DEGREE DESC, T1.STATUS ASC, T1.CASE_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</select>
+  	
+  	<!-- 经办列表统计 -->
+  	<select id="findCount4Handled" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	    WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T2.STATUS = '001'
+	    AND EXISTS(
+	        SELECT 1
+	        FROM ${dbuser.workflow}.WF_TASK T6, ${dbuser.workflow}.WF_TASK_PARTICIPATION T7
+	        WHERE T6.INSTANCE_ID = T3.INSTANCE_ID AND T6.TASK_ID = T7.TASK_ID AND T7.USER_ID = #{handledUserId,jdbcType=VARCHAR} AND T7.ORG_ID = #{handledOrgId,jdbcType=VARCHAR} AND T7.USER_TYPE = '3'
+	    )
+		<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 经办列表数据 -->
+  	<select id="findPageList4Handled" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="listCol"/>
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	    WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T2.STATUS = '001'
+	    AND EXISTS(
+	        SELECT 1
+	        FROM ${dbuser.workflow}.WF_TASK T6, ${dbuser.workflow}.WF_TASK_PARTICIPATION T7
+	        WHERE T6.INSTANCE_ID = T3.INSTANCE_ID AND T6.TASK_ID = T7.TASK_ID AND T7.USER_ID = #{handledUserId,jdbcType=VARCHAR} AND T7.ORG_ID = #{handledOrgId,jdbcType=VARCHAR} AND T7.USER_TYPE = '3'
+	    )
+	  	<include refid="find_where"/>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 我发起的列表统计 -->
+  	<select id="findCount4Initiator" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+		FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	    WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T2.STATUS = '001'
+	    AND T3.USER_ID = #{initiatorId,jdbcType=VARCHAR} AND T3.ORG_ID = #{initiatorOrgId,jdbcType=VARCHAR}
+		<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 我发起的列表数据 -->
+  	<select id="findPageList4Initiator" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="listCol"/>
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	    WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.FORM_TYPE_ID = '400' AND T2.STATUS = '001'
+	    AND T3.USER_ID = #{initiatorId,jdbcType=VARCHAR} AND T3.ORG_ID = #{initiatorOrgId,jdbcType=VARCHAR}
+	  	<include refid="find_where"/>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 辖区所有列表统计 -->
+  	<select id="findCount4Jurisdiction" resultType="java.lang.Integer" >
+  		SELECT COUNT(1)
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T1.CASE_ID = T3.FORM_ID AND T2.STATUS = '001' AND T3.FORM_TYPE_ID = '400'
+	  	<include refid="find_where"/>
+  	</select>
+  	
+  	<!-- 辖区所有列表数据 -->
+  	<select id="findPageList4Jurisdiction" resultType="java.util.Map">
+  		SELECT
+	  		<include refid="listCol"/>,
+	  		T8.REMIND_MARK 		"remindMark",
+	  		T8.SUPERVISE_MARK	"superviseMark"
+	  	FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+	  	LEFT JOIN ${dbuser.workflow}.WF_INSTANCE_STATUS T8
+	  		ON T3.INSTANCE_ID = T8.INSTANCE_ID
+	  	WHERE T1.GRID_ID = T2.GRID_ID AND T1.CASE_ID = T3.FORM_ID AND T2.STATUS = '001' AND T3.FORM_TYPE_ID = '400' 
+	  	<include refid="find_where"/>
+	  	<include refid="order_by"></include>
+  	</select>
+  	
+  	<!-- 依据案件id获取督办记录 -->
+  	<select id="findRemindListByCaseId" resultType="java.util.Map">
+  		SELECT T9.REMARKS			"remarks", 
+	  		   T9.REMIND_USER_NAME	"remindUserName", 
+	  		   T9.REMIND_DATE		"remindDate"
+		FROM T_EVENT_CASE T1, T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3, ${dbuser.workflow}.WF_REMIND T9
+		WHERE T1.CASE_ID = T3.FORM_ID AND T1.GRID_ID = T2.GRID_ID AND T3.INSTANCE_ID = T9.INSTANCE_ID 
+		AND T1.STATUS != '06' AND T2.STATUS = '001' AND T3.FORM_TYPE_ID = '400' AND T9.STATUS = '2'
+		AND T1.CASE_ID = #{caseId,jdbcType=DECIMAL}
+		ORDER BY T9.REMIND_ID DESC
+  	</select>
+  	
+  	<!-- 案件查询条件 -->
+  	<sql id="find_where">
+  		<if test="code != null and code != '' ">
+			AND T1.CODE_ = #{code,jdbcType=VARCHAR}
+		</if>
+		<if test="caseName != null and caseName != '' ">
+			AND T1.CASE_NAME LIKE '%'||#{caseName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="type != null and type != '' ">
+			AND T1.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="content != null and content != '' ">
+			AND T1.CONTENT_ LIKE '%'||#{content,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="occurred != null and occurred != '' ">
+			AND T1.OCCURRED LIKE '%'||#{occurred,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="happenTime != null">
+			AND T1.HAPPEN_TIME = #{happenTime,jdbcType=TIMESTAMP}
+		</if>
+		<choose>
+			<when test="infoOrgCode != null and infoOrgCode != '' ">
+				AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+			</when>
+			<when test="gridId != null ">
+				AND T1.GRID_ID IN 
+				(SELECT G.GRID_ID FROM T_DC_GRID G WHERE G.STATUS = '001' START WITH G.GRID_ID = #{gridId,jdbcType=DECIMAL} CONNECT BY PRIOR G.GRID_ID = G.PARENT_GRID_ID)
+			</when>
+		</choose>
+		<if test="source != null and SOURCE != '' ">
+			AND T1.SOURCE IN (${source})
+		</if>
+		<if test="involvedNum != null and involvedNum != '' ">
+			AND T1.INVOLVED_NUM = #{involvedNum,jdbcType=VARCHAR}
+		</if>
+		<if test="influenceDegree != null and influenceDegree != '' ">
+			AND T1.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="urgencyDegreeArray != null ">
+				AND T1.URGENCY_DEGREE IN
+				<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="urgencyDegree != null and urgencyDegree != '' ">
+				AND T1.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="tel != null and tel != '' ">
+			AND T1.TEL = #{tel,jdbcType=VARCHAR}
+		</if>
+		<if test="contactUser != null">
+			AND T1.CONTACT_USER = #{contactUser,jdbcType=DECIMAL}
+		</if>
+		<if test="creatorId != null">
+			AND T1.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+		</if>
+		<choose>
+			<when test="statusList != null">
+				<choose>
+					<when test="statusList.size > 0 ">
+						AND T1.STATUS IN
+						<foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+						</foreach>
+					</when>
+					<!-- 为了防止传入无效状态，从而导致查询出更多的数据 -->
+					<otherwise>
+						AND 1 = 2
+					</otherwise>
+				</choose>
+			</when>
+			<when test="status!=null and status!=''">
+				AND T1.STATUS = #{status,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND T1.STATUS != '06'
+			</otherwise>
+		</choose>
+		<if test="collectWay != null and collectWay != '' ">
+			AND T1.COLLECT_WAY #{collectWay,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="involvedPersonName != null and involvedPersonName != '' ">
+			AND T1.INVOLVED_PERSON_NAME LIKE '%'||#{involvedPersonName,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="keyWord != null and keyWord != '' ">
+			AND (
+				T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			  	OR
+			  	T1.CASE_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			   	OR
+			  	T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+		  	)
+	  	</if>
+		<if test="happenTimeStart != null and happenTimeStart != '' ">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="happenTimeEnd != null and happenTimeEnd != '' ">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   	</if>
+	  	<if test="createTimeStart != null and createTimeStart != '' ">
+	  		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="createTimeEnd != null and createTimeEnd != '' ">
+	   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   	</if>
+	  	<if test="endTimeStart != null and endTimeStart != '' ">
+	  		AND T1.END_TIME <![CDATA[>=]]>TO_DATE(#{endTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  	</if>
+	   	<if test="endTimeEnd != null and endTimeEnd != '' ">
+	   		AND T1.END_TIME <![CDATA[<]]>TO_DATE(#{endTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	   	</if>
+	   	<if test="handleDateFlag != null and handleDateFlag != '' ">
+	   		<choose>
+	   			<when test="handleDateFlag == '03' ">
+	   				<![CDATA[
+					AND T1.HANDLE_DATE IS NOT NULL AND (
+						(T1.END_TIME IS NOT NULL AND T1.END_TIME > T1.HANDLE_DATE)
+						OR
+						(T1.END_TIME IS NULL AND T1.HANDLE_DATE < SYSDATE)
+					)
+					]]>
+	   			</when>
+	   		</choose>
+	   	</if>
+  	</sql>
+  	
+  	<!-- 列表排序字段 -->
+  	<sql id="order_by">
+  		<choose>
+	  		<when test="orderByField != null and orderByField != '' ">
+	  			ORDER BY ${orderByField}
+	  		</when>
+	  		<otherwise>
+	  			ORDER BY T1.CASE_ID DESC
+	  		</otherwise>
+	  	</choose>
+  	</sql>
+</mapper>

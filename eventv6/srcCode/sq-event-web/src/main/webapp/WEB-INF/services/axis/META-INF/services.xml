@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service name="eventDisposalServImpl">
+	<parameter name="ServiceObjectSupplier">
+		org.apache.axis2.extensions.spring.receivers.SpringAppContextAwareObjectSupplier
+	</parameter>
+	<parameter name="load-on-startup">true</parameter>
+	<parameter name="SpringBeanName">eventDisposalServImpl</parameter>
+    <!-- 
+    在这里最值得注意的是<messageReceivers>元素，该元素用于设置处理WebService方法的处理器。
+    例如，getGreeting方法有一个返回值，因此，需要使用可处理输入输出的RPCMessageReceiver类，
+    而update方法没有返回值，因此，需要使用只能处理输入的RPCInOnlyMessageReceiver类。
+     -->
+    <messageReceivers>
+        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+            class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+            class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+    </messageReceivers>
+</service>

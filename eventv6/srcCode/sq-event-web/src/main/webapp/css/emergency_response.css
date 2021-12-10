@@ -1,0 +1,37 @@
+
+.h_38{height:38px; font-size:0; line-height:0; overflow:hidden;}
+.MetterSearch{background:#f5f5f5; border-bottom:1px solid #cfcfcf; height:30px; padding:10px;}
+.MetterSearch ul li{float:left; margin-right:10px;}
+/*.sel1{width:100px; height:30px; font-size:14px; color:#11337a; border-radius:5px; border:1px solid #cfcfcf; padding-left:5px;}*/
+.btn1{background:url(../images/emergencyResponse/yjya_03.png); width:100px; height:30px; cursor:pointer; border:none; text-align:center; line-height:30px; color:#fff; font-size:16px; font-family:"微软雅黑";}
+.box{padding:20px; color:#4a5662; position:relative;}
+.MetterList .title{height:18px; line-height:18px;}
+.MetterList .title .fl{font-size:18px; font-family:"微软雅黑"; height:18px;}
+.MetterList .title .fr{font-size:14px; background:url(../images/emergencyResponse/yjya_07.png) no-repeat 0 1px; height:18px; padding-left:20px;}
+.MetterList .list table{background:#d0d0d0;}
+.MetterList .list table tr td{background:#fff; text-align:center; font-size:14px; padding:0 1px; line-height:30px;}
+.MetterList .list table tr.TabHeader td{background:url(../images/emergencyResponse/yjya_11.png) repeat-x;}
+.MetterList .list table tr.HightLight td{background:#ed4c59; color:#fff;}
+.MetterStart{display:block; width:70px; height:24px; background:url(../images/emergencyResponse/yjya_15.png); text-align:center; color:#fff; line-height:24px; margin:0 auto; font-size:12px;}
+.MetterStart:hover{background:url(../images/emergencyResponse/yjya_13.png); color:#fff; text-decoration:none;}
+.MetterCon{text-align:center; font-family:"微软雅黑"; border-bottom:1px solid #cfcfcf; padding-bottom:10px;}
+.MetterCon h1{font-size:24px; color:#e60012; font-weight:normal; line-height:24px; padding-bottom:10px;}
+.inp2{width:100%; font-size:18px; text-align:center; border:none; font-family:"微软雅黑";}
+.area1{width:97%; font-size:12px; padding:0 5px; border:1px solid #ccc; line-height:18px; height:40px; margin:7px 0 7px 4px;}
+.area2{width:88%; height:56px; font-size:18px; padding:0 2px; border:1px solid #ccc; line-height:28px;}
+.SendMessage{background:#eaeaea; border-top:1px solid #cfcfcf; height:28px; padding-top:6px; position:absolute; bottom:0; left:0; z-index:2; width:100%;}
+.SendMessage a{display:block; background:url(../images/emergencyResponse/yjya_17.png); width:53px; height:22px; line-height:22px; text-align:center; color:#fff; margin:0 auto;}
+.SendMessage a:hover{color:#865b00; text-decoration:none; background:url(../images/emergencyResponse/yjya_18.png);}
+.HideWinodw{display:none;}
+.mask{background:#000; width:100%; height:100%; position:absolute; z-index:11; filter:alpha(opacity=20); opacity:0.2; top:0; left:0;}
+.mask1{background:#fff; width:100%; height:100%; position:absolute; z-index:11; top:0; left:0;}
+.NorWindow{background:#fff; border:1px solid #b4b4b4; width:400px; height:300px; position:absolute; z-index:12;  top:50%; left:50%; margin-top:-150px; margin-left:-200px;}
+.NorWindow .title{background:url(../images/emergencyResponse/yjya_19.png) repeat-x; height:33px; font-size:16px; font-family:"微软雅黑"; color:#fff; line-height:28px; padding-left:10px;}
+.NorWindow .title a{display:block; width:33px; height:33px; background:url(../images/emergencyResponse/yjya_21.png);}
+.yjyaBtns{margin-top:70px;}
+.yjyaBtns ul li{float:left; margin:0 12px; text-align:center; font-size:18px; font-family:"微软雅黑";}
+.yjyaBtns ul li img{margin-bottom:5px;}
+.password{width:200px; margin:50px auto 0; text-align:center; font-size:18px; font-family:"微软雅黑";}
+.password p{margin-bottom:20px;}
+.inp3{width:100%; font-size:18px; text-align:center; border:1px solid #cfcfcf; font-family:"微软雅黑"; border-radius:10px;}
+.che1{vertical-align:middle;}

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="cn.ffcs.zhsq.mybatis.persistence.map.arcgis.NanpingVideoDataMapper">
+		
+	
+	<select id="findGridByParams" resultType="java.util.Map">
+		select count(1) levelCount,grid_level from T_DC_GRID t 
+		where t.info_org_code like  #{orgCode,jdbcType=VARCHAR} ||'%' 
+		and t.status = '001' 
+		group by t.grid_level
+	</select><!-- 获取框选统计内容信息 -->
+	
+	
+	<select id="findGlobalByParams" resultType="java.lang.Integer">
+		SELECT count(1) FROM CMS.CI_MONITOR t where 
+		 t.ORG_CODE like #{orgCode,jdbcType=VARCHAR} ||'%' 
+		 AND t.GLOBAL_TYPE = '001' 
+	</select><!-- 获取框选统计内容信息 -->
+	
+	<select id="findPoliceByParams" resultType="java.lang.Integer">
+		SELECT count(1) FROM T_ZY_RES_INFO T1 JOIN T_DC_GRID T2 ON T1.GRID_ID=T2.GRID_ID AND T2.STATUS='001'
+		WHERE T1.STATUS='001' AND T1.RES_TYPE_ID=25 
+		AND T2.INFO_ORG_CODE LIKE CONCAT(#{orgCode,jdbcType=VARCHAR}, '%')
+	</select><!-- 获取框选统计内容信息 -->
+	
+	
+	<select id="findFireByParams" resultType="java.lang.Integer">
+	SELECT count(1) FROM T_ZY_RES_INFO T1 JOIN T_DC_GRID T2 ON T1.GRID_ID=T2.GRID_ID AND T2.STATUS='001'
+		WHERE T1.STATUS='001' AND T1.RES_TYPE_ID=247 
+		AND T2.INFO_ORG_CODE LIKE CONCAT(#{orgCode,jdbcType=VARCHAR}, '%')
+	</select><!-- 获取框选统计内容信息 -->
+	
+	
+	<select id="finGridMemberByParams" resultType="java.lang.Integer">
+		select count(*)
+		  from T_DC_GRID_ADMIN T1
+		  join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+		      inner join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name
+		      from T_DC_PARTY_USER_CERTIFY T4, T_DC_USER_ENTITY T5
+		      where T4.USER_ID = T5.USER_ID
+		      and T4.status = '001' AND t5.status = '001' ) UT on UT.User_Id=T1.User_Id
+		  where T1.STATUS='001' AND T2.STATUS = '001'
+		  AND T2.INFO_ORG_CODE LIKE (SELECT G.INFO_ORG_CODE FROM T_DC_GRID G WHERE G.GRID_ID= #{gridId,jdbcType=VARCHAR})|| '%'
+	</select><!-- 获取框选统计内容信息 -->
+	
+	<select id="findHospitalByParams" resultType="java.lang.Integer">
+			SELECT count(1) FROM T_ZY_RES_INFO T1 JOIN T_DC_GRID T2 ON T1.GRID_ID=T2.GRID_ID AND T2.STATUS='001'
+		WHERE T1.STATUS='001' AND T1.RES_TYPE_ID=245 
+		AND T2.INFO_ORG_CODE LIKE CONCAT(#{orgCode,jdbcType=VARCHAR}, '%')
+	</select><!-- 获取框选统计内容信息 -->
+	
+	<select id="findSumEventByParams" resultType="java.lang.Integer">
+		select count(1) from T_EVENT t inner join t_dc_grid g on t.grid_id = g.grid_id
+		where g.info_org_code like #{orgCode,jdbcType=VARCHAR} ||'%' 
+		and t.status in('00','01','02','03','04')
+		and g.status = '001' 
+	</select>
+	<!-- 获取框选统计内容信息 -->
+	<!--待办统计  -->
+	<select id="findBacklogByParams" resultType="java.lang.Integer">
+	 	<include refid="commonBacklogGrid"></include>
+				SELECT 
+		        count(distinct t1.event_id)   backlog		               
+	      <include refid="commonBacklogSql"></include>
+		     <if test="urgencyDegrees != null ">  
+		   	 and t1.urgency_degree in(${urgencyDegrees})
+		    </if>
+	</select> 
+	<!--紧急待办事件列表 不分页  -->
+    <select id="findListByUrgencyDegree" resultType="java.util.Map">
+    	 <include refid="listByUrgencyDegree"></include>
+    	 order by  t1.happen_time desc  
+	</select>
+	<!-- 紧急待办事件列表 分页 -->
+	 <select id="findPagListByUrgencyDegree" resultType="java.util.Map">
+    	 <include refid="listByUrgencyDegree"></include>
+    	 order by  t1.happen_time desc  
+	</select>
+	<sql id="listByUrgencyDegree">
+		<include refid="commonBacklogGrid"></include>
+		SELECT 
+		          t1.event_id "eventId",t1.event_name "eventName",t1.happen_time "happenTime",
+		          t1.occurred "occurred",t1.content_ "content"
+		          ,t1.create_time "createTime",t3.workflow_id,t3.instance_id,t3.task_id              
+	    <include refid="commonBacklogSql"></include>
+	    
+	    <if test="urgencyDegrees != null ">  
+	   	 and t1.urgency_degree in(${urgencyDegrees})
+	    </if>
+	    <if test="keyWord != null and keyWord != '' ">
+			AND (
+				T1.CONTENT_ LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+				OR
+				T1.EVENT_NAME LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+				OR
+				T1.OCCURRED LIKE '%'||#{keyWord ,jdbcType=VARCHAR}|| '%'
+			)
+	  </if>
+	 <if test="happenTimeStart != null and happenTimeStart != ''">
+			AND T1.HAPPEN_TIME <![CDATA[>=]]>TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="happenTimeEnd != null and happenTimeEnd != '' ">
+	   		AND T1.HAPPEN_TIME <![CDATA[<]]>TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+	  <if test="createTimeStart != null and createTimeStart != '' ">
+	  		AND T1.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+	  </if>
+	   <if test="createTimeEnd != null and createTimeEnd != '' ">
+	   		AND T1.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   </if>
+		group by   t1.event_id,t1.event_name,t1.happen_time,t1.occurred,t1.content_ 
+		          ,t1.create_time,t3.workflow_id,t3.instance_id,t3.task_id    
+		
+	</sql>
+	<sql id="commonBacklogGrid">
+		with grid_ as (select t.org_id from t_dc_org_social_info t where  t.status = '001'              
+                start with t.org_id = #{orgId,jdbcType=DECIMAL}
+                connect by prior t.org_id = t.PARENT_ORG_ID)
+	</sql>
+	<sql id="commonBacklogSql">
+		  FROM T_EVENT T1
+		 INNER JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		 INNER JOIN workflow.WF_PROCESS_INSTANCE T3
+		    ON T1.EVENT_ID = T3.FORM_ID
+		 INNER JOIN workflow.JBPM4_TASK T4
+		    ON T3.INSTANCE_ID = T4.PROCINST_
+		 INNER JOIN workflow.JBPM4_PARTICIPATION T5
+		    ON T4.DBID_ = T5.TASK_
+		
+		 WHERE ((T5.USERID_ in (select org_id from grid_ )  AND T5.TYPE_ = '1') OR
+		       (T5.GROUPID_ in (select org_id from grid_)  AND
+		       T5.TYPE_ = '3'))
+		   AND T3.FORM_TYPE_ID IN (300, 301)
+		   AND T3.STATUS = '1'
+		   AND T2.STATUS = '001'
+		   AND T1.STATUS IN ('00', '01', '02') 
+	</sql>
+	
+	
+
+	<select id="findSocialListByOrgCode" resultType="java.util.Map">
+	    select s.org_id "orgId"  from t_dc_grid g join t_dc_org_entity_info e on g.info_org_id=e.org_id 
+		join t_dc_org_social_info s on e.org_id=s.location_org_id  
+		where  s.org_code=#{orgCode,jdbcType=VARCHAR}
+		and g.status='001' and s.org_type='1' 
+		and s.status='001' and e.status='001'  
+	</select>
+	
+	
+	
+	
+	
+	
+	<select id="findEndByParams" resultType="java.lang.Integer">
+		select count(1) from T_EVENT t inner join t_dc_grid g on t.grid_id = g.grid_id
+		where g.info_org_code like #{orgCode,jdbcType=VARCHAR} ||'%'  
+		and t.status in('04','03')
+		and g.status = '001' 
+	</select><!-- 获取框选统计内容信息 -->
+	
+	<select id="findTimeoutByParams" resultType="java.lang.Integer">
+		select count(1) from T_EVENT t inner join t_dc_grid g on t.grid_id = g.grid_id
+		where g.info_org_code like #{orgCode,jdbcType=VARCHAR} ||'%'   
+		and t.handle_date_flag = '3' 
+		and t.status in('00','01','02','03','04')
+		and g.status = '001' 
+	</select><!-- 获取框选统计内容信息 -->
+	
+	
+	<select id="getGridListData" resultType="java.util.Map">
+		select * from (
+			select 
+			  t1.duty,
+			  t1.grid_admin_id,
+			  t1.user_id,
+			  t2.grid_name,
+			  UT.PARTY_NAME,
+			  t1.mobile_telephone,
+			  ROUND(SDO_GEOM.SDO_DISTANCE(t.sdo,
+			                              MDSYS.SDO_GEOMETRY(2001,
+			                                                 8192,
+			                                                 MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR},#{y,jdbcType=VARCHAR},0),
+			                                                 NULL,
+			                                                 NULL),
+			                               0.005),
+			               0) distance
+			  from bus_last_locate t
+			  left join t_dc_grid_admin t1 on  t.user_id = t1.user_id
+			  left join T_DC_GRID T2 on T1.GRID_ID=T2.GRID_ID
+			  left join (select T4.USER_ID, T4.REGIS_VALUE, T5.Party_Name from T_DC_PARTY_USER_CERTIFY T4,T_DC_USER_ENTITY T5 where T4.PARTY_ID=T5.PARTY_ID  and t5.status='001') UT on T1.User_Id=UT.User_Id
+			  where t.mapt = 5
+			  and t.LOCATE_TIME <![CDATA[>]]> SYSDATE -(#{time,jdbcType=VARCHAR}/24)
+			  and t1.status = '001'
+			  and t2.status = '001'
+ 
+  
+     		  and t2.info_org_code like #{orgCode,jdbcType=VARCHAR} ||'%'        
+ 
+ 				order by distance
+  	) a where a.distance &lt;= #{distance,jdbcType=VARCHAR}
+	</select><!-- 获取框选统计内容信息 -->
+	
+	
+	<select id="getGlobalsEyeList" resultType="java.util.Map">
+		SELECT C.*, T.MAP_TYPE, T.X, T.Y,
+         ROUND(SDO_GEOM.SDO_DISTANCE(T.SDO,
+                                MDSYS.SDO_GEOMETRY(2001,
+                                                   8192,
+                                                   MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR},#{y,jdbcType=VARCHAR},0),
+                                                   NULL,
+                                                   NULL),
+                                 0.005), 0) DISTANCE
+     FROM CMS.CI_MONITOR C, T_ZY_RES_MARKER T
+     WHERE C.MONITOR_ID = T.RESOURCES_ID
+     AND C.GLOBAL_TYPE = '001'
+     AND T.MARKER_TYPE = '02020501'
+  	<if test="infoOrgCode != null and infoOrgCode != ''">
+	   AND C.ORG_CODE LIKE '%' || #{infoOrgCode, jdbcType=VARCHAR} || '%'
+	</if>
+     AND T.MAP_TYPE = 5
+     AND SDO_WITHIN_DISTANCE(T.SDO,
+                            MDSYS.SDO_GEOMETRY(2001,
+                                               8192,
+                                             MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR},#{y,jdbcType=VARCHAR},0),
+                                             NULL,
+                                             NULL),
+                            'DISTANCE=${distance}') = 'TRUE'
+                            
+       order by  ROUND(SDO_GEOM.SDO_DISTANCE(T.SDO,
+                                MDSYS.SDO_GEOMETRY(2001,
+                                                   8192,
+                                                   MDSYS.SDO_POINT_TYPE(#{x,jdbcType=VARCHAR},#{y,jdbcType=VARCHAR},0),
+                                                   NULL,
+                                                   NULL),
+                                 0.005), 0)                  
+                            
+	</select><!-- 获取框选统计内容信息 -->
+	
+</mapper><!-- 框选周边内容可配置xml  -->

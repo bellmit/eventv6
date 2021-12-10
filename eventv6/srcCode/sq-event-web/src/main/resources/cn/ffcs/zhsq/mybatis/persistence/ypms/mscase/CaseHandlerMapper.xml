@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.ypms.mscase.CaseHandlerMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.CaseHandler">
+		<id column="CH_ID" property="chId" jdbcType="DECIMAL" /> <!--主键ID-->
+		<result column="HANDLER_ID" property="handlerId" jdbcType="DECIMAL" /> <!--操作员ID-->
+		<result column="HANDLER_NAME" property="handlerName" jdbcType="VARCHAR" /> <!--操作员姓名-->
+		<result column="HANDLER_ORG_ID" property="handlerOrgId" jdbcType="DECIMAL" /> <!--操作员单位ID-->
+		<result column="HANDLER_ORG_CODE" property="handlerOrgCode" jdbcType="VARCHAR" /> <!--操作员单位CODE-->
+		<result column="HANDLER_TEL" property="handlerTel" jdbcType="VARCHAR" /> <!--操作员联系方式-->
+		<result column="HANDLE_TIME" property="handleTime" jdbcType="TIMESTAMP" /> <!--操作时间-->
+		<result column="HANDLE_CONTENT" property="handleContent" jdbcType="VARCHAR" /> <!--操作意见-->
+		<result column="HANDLE_TYPE" property="handleType" jdbcType="VARCHAR" /> <!--操作员操作类型-->
+		<result column="RELA_CASE_ID" property="relaCaseId" jdbcType="DECIMAL" /> <!--关联案件ID-->
+		<result column="DEL_FLAG" property="delFlag" jdbcType="VARCHAR" /> <!--伪删列-->
+		
+		<result column="handlerOrgCN" property="handlerOrgCN" jdbcType="VARCHAR" /> <!--单位名称-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) 
+		FROM 
+			T_YP_MS_CASE_HANDLER T,
+			T_DC_ORG_SOCIAL_INFO S
+		WHERE 
+			T.HANDLER_ORG_CODE = S.ORG_CODE
+			and S.STATUS = '001'
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.CH_ID,
+			T.HANDLER_ID,
+			T.HANDLER_NAME,
+			T.HANDLER_ORG_ID,
+			T.HANDLER_ORG_CODE,
+			T.HANDLER_TEL,
+			T.HANDLE_TIME,
+			T.HANDLE_CONTENT,
+			T.HANDLE_TYPE,
+			T.RELA_CASE_ID,
+			T.DEL_FLAG,
+			S.ORG_NAME handlerOrgCN
+		FROM
+			T_YP_MS_CASE_HANDLER T,
+			T_DC_ORG_SOCIAL_INFO S
+		WHERE 
+			T.HANDLER_ORG_CODE = S.ORG_CODE
+			and S.STATUS = '001'
+		<include refid="find_where" />
+		ORDER BY 
+			T.CH_ID DESC ,
+			T.HANDLE_TIME DESC ,
+			T.RELA_CASE_ID DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+			<if test="chId != null and chId != ''" >
+				<![CDATA[ AND T.CH_ID = #{chId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="handlerId != null and handlerId != ''" >
+				<![CDATA[ AND T.HANDLER_ID = #{handlerId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="handlerOrgId != null and handlerOrgId != ''" >
+				<![CDATA[ AND T.HANDLER_ORG_ID = #{handlerOrgId,jdbcType=DECIMAL} ]]>
+			</if> 
+			<if test="handlerOrgCode != null and handlerOrgCode != ''" >
+				<![CDATA[ AND T.HANDLER_ORG_CODE LIKE #{handlerOrgCode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="handlerTel != null and handlerTel != ''" >
+				<![CDATA[ AND T.HANDLER_TEL LIKE #{handlerTel,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="handleTime != null and handleTime != ''" >
+				<![CDATA[ AND T.HANDLE_TIME = #{handleTime,jdbcType=TIMESTAMP} ]]>
+			</if> 
+			<if test="handleType != null and handleType != ''" >
+				<![CDATA[ AND T.HANDLE_TYPE = #{handleType,jdbcType=VARCHAR} ]]>
+			</if> 
+			<if test="relaCaseId != null and relaCaseId != ''" >
+				<![CDATA[ AND T.RELA_CASE_ID = #{relaCaseId,jdbcType=DECIMAL} ]]>
+			</if> 
+	</sql>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.CaseHandler">
+		<selectKey keyProperty="chId" resultType="long" order="BEFORE"> 
+			SELECT SEQ_YP_MS_CASE_HANDLER.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_YP_MS_CASE_HANDLER
+		(
+			CH_ID,
+			HANDLER_ID,
+			HANDLER_NAME,
+			HANDLER_ORG_ID,
+			HANDLER_ORG_CODE,
+			HANDLER_TEL,
+			HANDLE_TIME,
+			HANDLE_CONTENT,
+			HANDLE_TYPE,
+			RELA_CASE_ID,
+			DEL_FLAG
+		) VALUES (
+			#{chId,jdbcType=DECIMAL},
+			#{handlerId,jdbcType=DECIMAL},
+			#{handlerName,jdbcType=VARCHAR},
+			#{handlerOrgId,jdbcType=DECIMAL},
+			#{handlerOrgCode,jdbcType=VARCHAR},
+			#{handlerTel,jdbcType=VARCHAR},
+			#{handleTime,jdbcType=TIMESTAMP},
+			#{handleContent,jdbcType=VARCHAR},
+			#{handleType,jdbcType=VARCHAR},
+			#{relaCaseId,jdbcType=DECIMAL},
+			'1'
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.CaseHandler">
+		UPDATE
+			T_YP_MS_CASE_HANDLER
+		<set> 
+			<if test="handlerId != null " >
+				HANDLER_ID=#{handlerId,jdbcType=DECIMAL},
+			</if>
+			<if test="handlerName != null " >
+				HANDLER_NAME=#{handlerName,jdbcType=VARCHAR},
+			</if>
+			<if test="handlerOrgId != null " >
+				HANDLER_ORG_ID=#{handlerOrgId,jdbcType=DECIMAL},
+			</if>
+			<if test="handlerOrgCode != null " >
+				HANDLER_ORG_CODE=#{handlerOrgCode,jdbcType=VARCHAR},
+			</if>
+			<if test="handlerTel != null " >
+				HANDLER_TEL=#{handlerTel,jdbcType=VARCHAR},
+			</if>
+			<if test="handleTime != null " >
+				HANDLE_TIME=#{handleTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="handleContent != null " >
+				HANDLE_CONTENT=#{handleContent,jdbcType=VARCHAR},
+			</if>
+			<if test="handleType != null " >
+				HANDLE_TYPE=#{handleType,jdbcType=VARCHAR},
+			</if>
+			<if test="relaCaseId != null " >
+				RELA_CASE_ID=#{relaCaseId,jdbcType=DECIMAL},
+			</if>
+			<if test="delFlag != null " >
+				DEL_FLAG=#{delFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			CH_ID= #{chId,jdbcType=DECIMAL} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="long"  resultMap="BaseResultMap">
+		SELECT
+			T.CH_ID,
+			T.HANDLER_ID,
+			T.HANDLER_NAME,
+			T.HANDLER_ORG_ID,
+			T.HANDLER_ORG_CODE,
+			T.HANDLER_TEL,
+			T.HANDLE_TIME,
+			T.HANDLE_CONTENT,
+			T.HANDLE_TYPE,
+			T.RELA_CASE_ID,
+			T.DEL_FLAG
+		FROM
+			T_YP_MS_CASE_HANDLER T
+		WHERE
+			CH_ID= #{chId,jdbcType=DECIMAL} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.ypms.mscase.CaseHandler">
+		UPDATE
+			T_YP_MS_CASE_HANDLER
+		SET
+			DEL_FLAG='0'
+		WHERE
+			CH_ID= #{chId,jdbcType=DECIMAL} 
+	</delete>
+</mapper>

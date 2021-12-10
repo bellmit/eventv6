@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.event.EventProcessMapper" >
+  <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.event.EventProcess" >
+    <id column="EVENT_PROCESS_ID" property="eventProcessId" jdbcType="DECIMAL" />
+    <result column="EVENT_ID" property="eventId" jdbcType="DECIMAL" />
+    <result column="STATUS" property="status" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="DATE" />
+    <result column="HANDLE_DATE" property="handleDate" jdbcType="DATE" />
+    <result column="USER_ID" property="userId" jdbcType="DECIMAL" />
+    <result column="ORG_ID" property="orgId" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    EVENT_PROCESS_ID, EVENT_ID, STATUS, CREATE_TIME, HANDLE_DATE, USER_ID, ORG_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_EVENT_PROCESS
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_EVENT_PROCESS
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventProcess" >
+  	<selectKey keyProperty="eventProcessId" resultType="int" order="BEFORE">
+		select SEQ_EVENT_PROCESS_ID.NEXTVAL FROM DUAL
+	</selectKey>
+    insert into T_EVENT_PROCESS (EVENT_PROCESS_ID, EVENT_ID, STATUS, 
+      CREATE_TIME, HANDLE_DATE, USER_ID, ORG_ID)
+    values (#{eventProcessId,jdbcType=DECIMAL}, #{eventId,jdbcType=DECIMAL}, #{status,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{handleDate,jdbcType=TIMESTAMP}, #{userId,jdbcType=DECIMAL}, #{orgId,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventProcess" >
+    insert into T_EVENT_PROCESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="eventProcessId != null" >
+        EVENT_PROCESS_ID,
+      </if>
+      <if test="eventId != null" >
+        EVENT_ID,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="handleDate != null" >
+        HANDLE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="eventProcessId != null" >
+        #{eventProcessId,jdbcType=DECIMAL},
+      </if>
+      <if test="eventId != null" >
+        #{eventId,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleDate != null" >
+        #{handleDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventProcess" >
+    update T_EVENT_PROCESS
+    <set >
+      <if test="eventId != null" >
+        EVENT_ID = #{eventId,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="handleDate != null" >
+        HANDLE_DATE = #{handleDate,jdbcType=DATE},
+      </if>
+    </set>
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.ffcs.zhsq.mybatis.domain.event.EventProcess" >
+    update T_EVENT_PROCESS
+    set EVENT_ID = #{eventId,jdbcType=DECIMAL},
+      STATUS = #{status,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=DATE},
+      HANDLE_DATE = #{handleDate,jdbcType=DATE}
+    where EVENT_PROCESS_ID = #{eventProcessId,jdbcType=DECIMAL}
+  </update>
+  
+  <select id="findEventProcessByCondition" resultMap="BaseResultMap">
+  	SELECT
+  		<include refid="Base_Column_List" />
+  	FROM T_EVENT_PROCESS T1
+  	WHERE 1 = 1
+  	<include refid="find_where" />
+	ORDER BY T1.EVENT_PROCESS_ID DESC
+  </select>
+  
+  <sql id="find_where">
+  	<if test="eventId != null ">
+  		AND T1.EVENT_ID = #{eventId,jdbcType=DECIMAL}
+  	</if>
+  	<if test="status != null and status != '' ">
+  		AND T1.STATUS = #{status,jdbcType=VARCHAR}
+  	</if>
+  </sql>
+</mapper>

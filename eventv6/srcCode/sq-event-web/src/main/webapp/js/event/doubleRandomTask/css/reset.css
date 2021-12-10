@@ -1,0 +1,37 @@
+﻿@charset "utf-8";
+/* CSS Document */
+/* css reset -样式重置 */
+html, body, h1, h2, h3, h4, h5, h6, div, dl, dt, dd, ol, ul, li, p, blockquote, pre, hr, figure, table, caption, th, td, form, fieldset, legend, input, button, textarea, menu { 
+    margin: 0; padding: 0; border: none; outline: 0;
+}
+header, footer, section, article, aside, nav, hgroup, address, figure, figcaption, menu, details { 
+    display: block; 
+}
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th { text-align: left; font-weight: normal; }
+html, body, form, fieldset, img, iframe, abbr { border: 0; }
+i, cite, em, var, address, dfn { font-style: normal; }
+ol, ul, li { list-style: none; }
+h1, h2, h3, h4, h5, h6, small { font-size: 100%; }
+h1, h2, h3, h4, h5, h6, em, strong, b { font-weight: normal; }
+sup, sub { font-size: 83%; }
+pre, code, kbd, samp { font-family: inherit; }
+q:before, q:after { content: none; }
+textarea { overflow: auto; resize: none; }
+label, summary, a, button { cursor: pointer; }
+del, ins, u, s, a, a:hover { text-decoration: none; }
+body, textarea, input, button, select, keyen, legend { font: 1em/1.5 "Microsoft YaHei","微软雅黑", sans-serif,Helvetica,arial; color: #333; outline: 0; }
+/* css reset -end*/
+
+/*公共布局*/
+.fl_l { float: left !important; display: inline; }
+.fl_r { float: right !important;; display: inline; }
+.cle_b { clear: both; }
+.cle_l { clear: left; }
+.cle_r { clear: right; }
+
+/*clearfix清除浮动*/
+.clearfix:after, .clearfix:before { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/*公共布局-end*/
+

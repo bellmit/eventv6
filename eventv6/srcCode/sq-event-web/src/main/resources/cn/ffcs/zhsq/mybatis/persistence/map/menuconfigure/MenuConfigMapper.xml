@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.menuconfigure.MenuConfigMapper" >
+<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.GisDataCfg" >
+	<id column="GDC_ID" jdbcType="DECIMAL" property="gdcId" />
+    <result column="CALL_BACK" jdbcType="VARCHAR" property="callBack" />
+    <result column="CLASS_NAME" jdbcType="VARCHAR" property="className" />
+    <result column="LARGE_ICO" jdbcType="VARCHAR" property="largeIco" />
+    <result column="SMALL_ICO" jdbcType="VARCHAR" property="smallIco" />
+    <result column="GDC_PID" jdbcType="DECIMAL" property="gdcPid" />
+    <result column="IS_LEAF" jdbcType="VARCHAR" property="isLeaf" />
+    <result column="LEVEL_" jdbcType="VARCHAR" property="level" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="MENU_CODE" jdbcType="VARCHAR" property="menuCode" />
+    <result column="MENU_NAME" jdbcType="VARCHAR" property="menuName" />
+    <result column="SMALL_ICO_SELECTED" jdbcType="VARCHAR" property="smallIcoSelected" />
+    <result column="SORT_" jdbcType="INTEGER" property="sort" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    <result column="KUANGXUAN_NAME" jdbcType="VARCHAR" property="kuangxuanName" />
+    <result column="ZHOUBIAN_NAME" jdbcType="VARCHAR" property="zhoubianName" />
+    <result column="ZHOUBIAN_IS_SHOW_LIST" jdbcType="VARCHAR" property="zhoubianIsShowList" />
+    <result column="MENU_LIST_URL" jdbcType="VARCHAR" property="menuListUrl" />
+    <result column="MENU_SUMMARY_URL" jdbcType="VARCHAR" property="menuSummaryUrl" />
+    <result column="MENU_LAYER_NAME" jdbcType="VARCHAR" property="menuLayerName" />
+    <result column="MENU_DETAIL_URL" jdbcType="VARCHAR" property="menuDetailUrl" />
+    <result column="MENU_DETAIL_WIDTH" jdbcType="VARCHAR" property="menuDetailWidth" />
+    <result column="MENU_DETAIL_HEIGHT" jdbcType="VARCHAR" property="menuDetailHeight" />
+    <result column="MENU_SUMMARY_WIDTH" jdbcType="VARCHAR" property="menuSummaryWidth" />
+    <result column="MENU_SUMMARY_HEIGHT" jdbcType="VARCHAR" property="menuSummaryHeight" />
+    <result column="MENU_DETAIL_NAME" jdbcType="VARCHAR" property="menuDetailName" />
+    <result column="TREE_ICON" jdbcType="VARCHAR" property="treeIcon" />
+    <result column="CONVERGE_URL" jdbcType="VARCHAR" property="convergeUrl" />
+    <result column="SCATTER_POINT_URL" jdbcType="VARCHAR" property="scatterPointUrl" />
+</resultMap>
+<resultMap id="GisOrgAccMap" type="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.GisOrgAcc" >
+	<id column="GDC_ID" jdbcType="DECIMAL" property="gdcId" />
+    <result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    <result column="IS_NEW_CONFIG" jdbcType="VARCHAR" property="isNewConfig" />
+    <result column="HOME_PAGE_TYPE" jdbcType="VARCHAR" property="homePageType" />
+</resultMap>
+	<select id="getGisDataCfgByCode" resultMap="BaseResultMap">
+ 		<!--SELECT *
+ 		  FROM (select *
+ 		          from T_GIS_DATA_CFG t
+ 		         where t.menu_code = #{menuCode,jdbcType=VARCHAR}
+ 		           and t.status = '001')
+ 		 WHERE ROWNUM = 1-->
+		SELECT T.*
+		FROM T_GIS_DATA_CFG T
+		   LEFT JOIN T_GIS_DATA_CFG T2
+		   ON T.GDC_PID = T2.GDC_ID
+		   AND T2.STATUS = '001'
+		   LEFT JOIN T_GIS_DATA_CFG T3
+		   ON T2.GDC_PID = T3.GDC_ID
+		   AND T3.STATUS = '001'
+		WHERE T.STATUS = '001'
+		AND T3.MENU_NAME = '专题图层(新)'
+		AND T.MENU_CODE = #{menuCode,jdbcType=VARCHAR}
+	</select>
+	<!-- 根据gdcId获取菜单根节点  -->
+	<select id="getRootGisDataCfgById" resultMap="BaseResultMap">
+		SELECT *
+		  FROM (SELECT *
+		          FROM T_GIS_DATA_CFG T
+		         START WITH T.GDC_ID = #{gdcPid,jdbcType=DECIMAL}
+		        CONNECT BY PRIOR T.GDC_PID = T.GDC_ID
+		         ORDER BY T.GDC_ID)
+		 WHERE ROWNUM = 1
+	</select>
+	<!-- 2014-10-10 liushi add 根据pid查询子节点列表 -->
+	<select id="getGisDataCfgListByPid" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_DATA_CFG T
+		WHERE 1=1
+		AND T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+		AND T.STATUS = '001'
+		ORDER BY T.SORT_
+	</select>
+	<select id="getAllGisDataCfgsByPid" resultMap="BaseResultMap">
+		SELECT *
+		  FROM T_GIS_DATA_CFG T
+		 WHERE T.STATUS = '001'
+		 START WITH T.GDC_ID = #{gdcPid,jdbcType=DECIMAL}
+		CONNECT BY PRIOR T.GDC_ID = T.GDC_PID
+		 ORDER BY T.GDC_ID
+	</select>
+	<select id="getAllGisDataCfgListByPid" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_DATA_CFG T
+		WHERE 1=1
+		AND T.STATUS = '001'
+		ORDER BY T.SORT_
+	</select>
+	<select id="getGisDataCfgListByPidAndKeywords" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_DATA_CFG T
+		WHERE 1=1
+		AND T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+		<if test="keywords != null and keywords != ''">
+   			AND (T.MENU_CODE LIKE '%'||#{keywords,jdbcType=VARCHAR}||'%'
+   				OR T.MENU_NAME LIKE '%'||#{keywords,jdbcType=VARCHAR}||'%'
+   				OR T.MENU_DETAIL_NAME LIKE '%'||#{keywords,jdbcType=VARCHAR}||'%')
+   		</if>
+		ORDER BY T.SORT_
+	</select><!-- 菜单名称、菜单显示名称、菜单编码 -->
+	<select id="getGisDataCfgCountByPid"  resultType="java.lang.Integer">
+		SELECT count(*) FROM T_GIS_DATA_CFG T
+		WHERE 1=1
+		AND T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+	</select>
+	<!-- 2014-10-10 liushi add 根据id查询图层菜单列表信息 -->
+	<select id="getGisDataCfgById" resultMap="BaseResultMap">
+		SELECT * FROM T_GIS_DATA_CFG T
+		WHERE 1=1
+		AND T.GDC_ID = #{gdcId,jdbcType=DECIMAL}
+		ORDER BY T.SORT_
+	</select>
+	<!-- 2014-10-10 liushi add 根据pid查询子节点列表 -->
+	<insert id="insertGisDataCfg" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.GisDataCfg">
+		<selectKey keyProperty="gdcId" resultType="long" order="BEFORE">
+			select GIS_DATA_CFG_SEQ.NEXTVAL from DUAL
+		</selectKey>
+		INSERT INTO T_GIS_DATA_CFG 
+			(GDC_ID,CALL_BACK,LARGE_ICO,SMALL_ICO,CLASS_NAME
+			,GDC_PID,IS_LEAF,LEVEL_,STATUS
+			,MENU_CODE,MENU_NAME,SMALL_ICO_SELECTED,SORT_
+			,REMARK,KUANGXUAN_NAME,ZHOUBIAN_NAME,ZHOUBIAN_IS_SHOW_LIST
+			,MENU_LIST_URL,MENU_SUMMARY_URL,MENU_LAYER_NAME,MENU_DETAIL_URL,MENU_DETAIL_WIDTH,MENU_DETAIL_HEIGHT,MENU_SUMMARY_WIDTH,MENU_SUMMARY_HEIGHT,MENU_DETAIL_NAME
+			,TREE_ICON,CONVERGE_URL,SCATTER_POINT_URL)
+		VALUES(#{gdcId,jdbcType=DECIMAL},#{callBack,jdbcType=VARCHAR},#{largeIco,jdbcType=VARCHAR},#{smallIco,jdbcType=VARCHAR},#{className,jdbcType=VARCHAR}
+			,#{gdcPid,jdbcType=DECIMAL},#{isLeaf,jdbcType=VARCHAR},#{level,jdbcType=VARCHAR},#{status,jdbcType=DECIMAL}
+			,#{menuCode,jdbcType=DECIMAL},#{menuName,jdbcType=VARCHAR},#{smallIcoSelected,jdbcType=VARCHAR},#{sort,jdbcType=DECIMAL}
+			,#{remark,jdbcType=VARCHAR},#{kuangxuanName,jdbcType=VARCHAR},#{zhoubianName,jdbcType=VARCHAR},#{zhoubianIsShowList,jdbcType=VARCHAR}
+			,#{menuListUrl,jdbcType=VARCHAR},#{menuSummaryUrl,jdbcType=VARCHAR},#{menuLayerName,jdbcType=VARCHAR},#{menuDetailUrl,jdbcType=VARCHAR}
+			,#{menuDetailWidth,jdbcType=VARCHAR},#{menuDetailHeight,jdbcType=VARCHAR},#{menuSummaryWidth,jdbcType=VARCHAR},#{menuSummaryHeight,jdbcType=VARCHAR},#{menuDetailName,jdbcType=VARCHAR}
+			,#{treeIcon,jdbcType=VARCHAR},#{convergeUrl,jdbcType=VARCHAR},#{scatterPointUrl,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="checkMenuName" parameterType="java.util.HashMap" resultType="java.lang.Integer" >
+    	SELECT COUNT(*) FROM T_GIS_DATA_CFG T
+     	WHERE 1 = 1
+   		<if test="gdcPid != null and gdcPid != ''">
+   			AND T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+   		</if>
+   		<if test="menuName != null and menuName != ''">
+   			AND T.MENU_NAME = #{menuName,jdbcType=VARCHAR}
+   		</if>
+     	AND T.STATUS = 1
+	</select><!-- 同一节点下菜单名称是否唯一  -->
+	
+	<update id="updateGisDataCfg" parameterType="cn.ffcs.zhsq.mybatis.domain.map.menuconfigure.GisDataCfg">
+		UPDATE T_GIS_DATA_CFG T
+		SET 
+			T.CALL_BACK = #{callBack,jdbcType=VARCHAR}
+			,T.CLASS_NAME = #{className,jdbcType=VARCHAR}
+			,T.LARGE_ICO = #{largeIco,jdbcType=VARCHAR}
+			,T.SMALL_ICO = #{smallIco,jdbcType=VARCHAR}
+			,T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+			,T.IS_LEAF = #{isLeaf,jdbcType=VARCHAR}
+			,T.LEVEL_ = #{level,jdbcType=VARCHAR}
+			,T.STATUS = #{status,jdbcType=DECIMAL}
+			,T.MENU_CODE = #{menuCode,jdbcType=DECIMAL}
+			,T.MENU_NAME = #{menuName,jdbcType=VARCHAR}
+			,T.SMALL_ICO_SELECTED = #{smallIcoSelected,jdbcType=VARCHAR}
+			,T.SORT_ = #{sort,jdbcType=DECIMAL}
+			,T.REMARK = #{remark,jdbcType=VARCHAR}
+			,T.KUANGXUAN_NAME = #{kuangxuanName,jdbcType=VARCHAR}
+			,T.ZHOUBIAN_NAME = #{zhoubianName,jdbcType=VARCHAR}
+			,T.ZHOUBIAN_IS_SHOW_LIST = #{zhoubianIsShowList,jdbcType=VARCHAR}
+			,T.MENU_LIST_URL = #{menuListUrl,jdbcType=VARCHAR}
+			,T.MENU_SUMMARY_URL = #{menuSummaryUrl,jdbcType=VARCHAR}
+			,T.MENU_LAYER_NAME = #{menuLayerName,jdbcType=VARCHAR}
+			,T.MENU_DETAIL_URL = #{menuDetailUrl,jdbcType=VARCHAR}
+			,T.MENU_DETAIL_WIDTH = #{menuDetailWidth,jdbcType=VARCHAR}
+			,T.MENU_DETAIL_HEIGHT = #{menuDetailHeight,jdbcType=VARCHAR}
+			,T.MENU_SUMMARY_WIDTH = #{menuSummaryWidth,jdbcType=VARCHAR}
+			,T.MENU_SUMMARY_HEIGHT = #{menuSummaryHeight,jdbcType=VARCHAR}
+			,T.MENU_DETAIL_NAME = #{menuDetailName,jdbcType=VARCHAR}
+			,T.TREE_ICON = #{treeIcon,jdbcType=VARCHAR}
+			,T.CONVERGE_URL = #{convergeUrl,jdbcType=VARCHAR}
+			,T.SCATTER_POINT_URL = #{scatterPointUrl,jdbcType=VARCHAR}
+		WHERE T.GDC_ID = #{gdcId,jdbcType=DECIMAL}
+	</update>
+	<delete id="deleteGisDataCfg">
+		DELETE FROM T_GIS_DATA_CFG WHERE GDC_ID = #{gdcId,jdbcType=DECIMAL}
+	</delete>
+	<delete id="deleteGisOrgAcc">
+		DELETE FROM T_GIS_ORG_ACC WHERE GDC_ID = #{gdcId,jdbcType=DECIMAL} AND ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteGisOrgAccVersionNoe">
+		DELETE FROM T_GIS_ORG_ACC WHERE GDC_ID = #{gdcId,jdbcType=DECIMAL} AND ORG_CODE = #{orgCode,jdbcType=VARCHAR} AND HOME_PAGE_TYPE = #{homePageType,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertGisOrgAcc">
+		INSERT INTO T_GIS_ORG_ACC
+			(GDC_ID,ORG_CODE,IS_NEW_CONFIG)
+		VALUES(#{gdcId,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'0')
+	</insert>
+	<insert id="insertGisOrgAccVersionNoe">
+		INSERT INTO T_GIS_ORG_ACC
+			(GDC_ID,ORG_CODE,IS_NEW_CONFIG,HOME_PAGE_TYPE)
+		VALUES(#{gdcId,jdbcType=DECIMAL},#{orgCode,jdbcType=VARCHAR},'1',#{homePageType,jdbcType=VARCHAR})
+	</insert>
+	<select id="getGisOrgAccList" resultMap="GisOrgAccMap">
+		SELECT * FROM T_GIS_ORG_ACC T 
+		WHERE T.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			and T.IS_NEW_CONFIG ='0'
+	</select>
+	<select id="getGisOrgAccListVersionNoe" resultMap="GisOrgAccMap">
+		SELECT * FROM T_GIS_ORG_ACC T 
+		WHERE T.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			and T.IS_NEW_CONFIG ='1'
+      		and T.HOME_PAGE_TYPE = #{homePageType,jdbcType=VARCHAR}
+	</select>
+	<select id="getGisOrgAccListByOrgCodeAndGdcPid" resultMap="BaseResultMap">
+		SELECT T.* FROM 
+			T_GIS_DATA_CFG T
+		LEFT JOIN T_GIS_ORG_ACC T1 ON T.GDC_ID = T1.GDC_ID
+		WHERE T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+			AND T1.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			and T1.IS_NEW_CONFIG ='0'
+	</select>
+	<select id="getGisDataCfgRelationRootList" resultMap="BaseResultMap">
+		SELECT T.*,T1.ORG_CODE FROM 
+			T_GIS_DATA_CFG T
+		LEFT JOIN T_GIS_ORG_ACC T1 ON T.GDC_ID = T1.GDC_ID
+		WHERE T.GDC_ID = #{gdcId,jdbcType=DECIMAL}
+			AND #{orgCode,jdbcType=VARCHAR} LIKE T1.ORG_CODE||'%'
+			<!-- and T1.IS_NEW_CONFIG ='0' --><!-- 干嘛用的不知道 -->
+			ORDER BY T1.ORG_CODE DESC
+	</select>
+	<select id="getGisDataCfgRelationRootListVersionNoe" resultMap="BaseResultMap">
+		SELECT T.*,T1.ORG_CODE FROM 
+			T_GIS_DATA_CFG T
+		LEFT JOIN T_GIS_ORG_ACC T1 ON T.GDC_ID = T1.GDC_ID
+		WHERE T.GDC_ID = #{gdcId,jdbcType=DECIMAL}
+			AND #{orgCode,jdbcType=VARCHAR} LIKE T1.ORG_CODE||'%'
+			AND T1.HOME_PAGE_TYPE = #{homePageType,jdbcType=VARCHAR}
+			and T1.IS_NEW_CONFIG ='1'
+			ORDER BY T1.ORG_CODE DESC
+	</select>
+	<select id="getGisDataCfgRelationListByPid" resultMap="BaseResultMap">
+		SELECT T.*,T1.ORG_CODE FROM 
+			T_GIS_DATA_CFG T
+		LEFT JOIN T_GIS_ORG_ACC T1 ON T.GDC_ID = T1.GDC_ID
+		WHERE T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+			<!-- and T1.IS_NEW_CONFIG ='0' --><!-- 不知道做什么用 -->
+			<if test="orgCode == null">
+				AND T1.ORG_CODE is null
+			</if>
+			<if test="orgCode != null">
+				AND T1.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+		ORDER BY T.SORT_	
+	</select>
+	<select id="getGisDataCfgRelationListByPidVersionNoe" resultMap="BaseResultMap">
+		SELECT T.*,T1.ORG_CODE FROM 
+			T_GIS_DATA_CFG T
+		LEFT JOIN T_GIS_ORG_ACC T1 ON T.GDC_ID = T1.GDC_ID
+		WHERE T.GDC_PID = #{gdcPid,jdbcType=DECIMAL}
+			AND T1.HOME_PAGE_TYPE = #{homePageType,jdbcType=VARCHAR}
+			and T1.IS_NEW_CONFIG ='1'
+			<if test="orgCode == null">
+				AND T1.ORG_CODE is null
+			</if>
+			<if test="orgCode != null">
+				AND T1.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+		ORDER BY T.SORT_	
+	</select>
+	
+	<select id="getGisDataLayerNameVersionNoe" resultMap="BaseResultMap">
+		WITH T_GIS_PAGE_INDEX_CFG_TEMP AS
+	     (SELECT * FROM (SELECT T.*
+	        FROM T_GIS_PAGE_INDEX_CFG T
+	       WHERE #{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%'
+	         AND T.PG_IDX_TYPE = #{homePageType,jdbcType=VARCHAR}
+	         AND T.STATUS_ = '1'
+	       ORDER BY T.REGION_CODE DESC NULLS LAST) WHERE ROWNUM = 1)
+	    SELECT A.CONT_ITEM_ID          GDC_ID,
+	           A.P_CONT_ITEM_ID        GDC_PID,
+	           A.NAME_                 MENU_NAME,
+	           C.CALL_BACK,
+	           C.LARGE_ICO,
+	           C.TREE_ICON,
+	           C.SMALL_ICO,
+	           C.IS_LEAF,
+	           C.LEVEL_,
+	           C.STATUS,
+	           C.MENU_CODE,
+	           C.SMALL_ICO_SELECTED,
+	           C.SORT_,
+	           C.REMARK,
+	           C.CLASS_NAME,
+	           C.KUANGXUAN_NAME,
+	           C.ZHOUBIAN_NAME,
+	           C.ZHOUBIAN_IS_SHOW_LIST,
+	           C.ZHOUBIAN_LIST_URL,
+	           C.MENU_LIST_URL,
+	           C.MENU_SUMMARY_URL,
+	           C.MENU_LAYER_NAME,
+	           C.MENU_DETAIL_URL,
+	           C.MENU_DETAIL_WIDTH,
+	           C.MENU_DETAIL_HEIGHT,
+	           C.MENU_SUMMARY_WIDTH,
+	           C.MENU_SUMMARY_HEIGHT,
+	           C.MENU_DETAIL_NAME,
+	           C.CONVERGE_URL,
+	           C.SCATTER_POINT_URL
+	      FROM T_GIS_PAGE_CONT_ITEM_CFG A
+	      LEFT JOIN T_GIS_PAGE_INDEX_CFG_TEMP B
+	        ON A.PG_IDX_ID = B.PG_IDX_CFG_ID
+	      LEFT JOIN T_GIS_DATA_CFG C
+	        ON A.LAY_CFG_ID = C.GDC_ID
+	     WHERE B.STATUS_ = '1'
+	       AND A.STATUS_ = '1'
+	       AND C.STATUS = '001'
+	</select>
+	<select id="getGisDataCfgByKXServiceName" resultMap="BaseResultMap">
+		WITH T_GIS_STAT_CFG_TEMP AS
+		 (SELECT *
+		    FROM (SELECT T.*
+		            FROM T_GIS_STAT_CFG T
+		           WHERE (#{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%' OR
+		                 T.REGION_CODE = '-1')
+		             AND T.BIZ_TYPE = #{homePageType,jdbcType=VARCHAR}
+		             AND T.STATUS_ = '1'
+		             AND T.STAT_TYPE = '0'
+		           ORDER BY T.REGION_CODE DESC)
+		   WHERE ROWNUM = 1)
+		SELECT C.*
+		  FROM T_GIS_STAT_CFG_TEMP A
+		  LEFT JOIN T_GIS_STAT_CONT_CFG B
+		    ON A.STAT_CFG_ID = B.STAT_CFG_ID
+		  LEFT JOIN T_GIS_DATA_CFG C
+		    ON B.LAY_CFG_ID = C.GDC_ID
+		 WHERE B.STATUS_ = '1'
+		   AND C.STATUS = '001'
+		   AND C.KUANGXUAN_NAME = #{serviceName,jdbcType=VARCHAR}
+	</select>
+	<select id="getGisDataCfgByZBServiceName" resultMap="BaseResultMap">
+		WITH T_GIS_STAT_CFG_TEMP AS
+		 (SELECT *
+		    FROM (SELECT T.*
+		            FROM T_GIS_STAT_CFG T
+		           WHERE (#{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%' OR
+		                 T.REGION_CODE = '-1')
+		             AND T.BIZ_TYPE = #{homePageType,jdbcType=VARCHAR}
+		             AND T.STATUS_ = '1'
+		             AND T.STAT_TYPE = '1'
+		           ORDER BY T.REGION_CODE DESC)
+		   WHERE ROWNUM = 1)
+		SELECT C.*
+		  FROM T_GIS_STAT_CFG_TEMP A
+		  LEFT JOIN T_GIS_STAT_CONT_CFG B
+		    ON A.STAT_CFG_ID = B.STAT_CFG_ID
+		  LEFT JOIN T_GIS_DATA_CFG C
+		    ON B.LAY_CFG_ID = C.GDC_ID
+		 WHERE B.STATUS_ = '1'
+		   AND C.STATUS = '001'
+		   AND C.ZHOUBIAN_NAME = #{serviceName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getNewGisDataCfgListForRoot" resultMap="BaseResultMap">
+		WITH T_GIS_PAGE_INDEX_CFG_TEMP AS
+		 (SELECT * FROM (SELECT T.*
+		    FROM T_GIS_PAGE_INDEX_CFG T
+		   WHERE #{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%'
+		     AND T.PG_IDX_TYPE = #{homePageType,jdbcType=VARCHAR}
+		     AND T.STATUS_ = '1'
+		   ORDER BY T.REGION_CODE DESC NULLS LAST) WHERE ROWNUM = 1)
+		SELECT A.CONT_ITEM_ID          GDC_ID,
+		       A.P_CONT_ITEM_ID        GDC_PID,
+		       A.NAME_                 MENU_NAME,
+		       C.CALL_BACK,
+		       C.LARGE_ICO,
+		       C.TREE_ICON,
+		       C.SMALL_ICO,
+		       C.IS_LEAF,
+		       C.LEVEL_,
+		       C.STATUS,
+		       C.MENU_CODE,
+		       C.SMALL_ICO_SELECTED,
+		       C.SORT_,
+		       C.REMARK,
+		       C.CLASS_NAME,
+		       C.KUANGXUAN_NAME,
+		       C.ZHOUBIAN_NAME,
+		       C.ZHOUBIAN_IS_SHOW_LIST,
+		       C.ZHOUBIAN_LIST_URL,
+		       C.MENU_LIST_URL,
+		       C.MENU_SUMMARY_URL,
+		       C.MENU_LAYER_NAME,
+		       C.MENU_DETAIL_URL,
+		       C.MENU_DETAIL_WIDTH,
+		       C.MENU_DETAIL_HEIGHT,
+		       C.MENU_SUMMARY_WIDTH,
+		       C.MENU_SUMMARY_HEIGHT,
+		       C.MENU_DETAIL_NAME,
+	           C.CONVERGE_URL,
+	           C.SCATTER_POINT_URL
+		  FROM T_GIS_PAGE_CONT_ITEM_CFG A
+		  LEFT JOIN T_GIS_PAGE_INDEX_CFG_TEMP B
+		    ON A.PG_IDX_ID = B.PG_IDX_CFG_ID
+		  LEFT JOIN T_GIS_DATA_CFG C
+		    ON A.LAY_CFG_ID = C.GDC_ID
+		 WHERE B.STATUS_ = '1'
+		   AND A.STATUS_ = '1'
+		   AND C.STATUS = '001'
+		   AND A.P_CONT_ITEM_ID IN (SELECT TT.CONT_ITEM_ID FROM T_GIS_PAGE_CONT_ITEM_CFG TT WHERE TT.P_CONT_ITEM_ID = '-1')
+		   ORDER BY A.DISPLAY_ORDER
+	</select>
+	
+	<select id="getNewGisDataCfgListByPid" resultMap="BaseResultMap">
+		SELECT A.CONT_ITEM_ID          GDC_ID,
+		       A.P_CONT_ITEM_ID        GDC_PID,
+		       A.NAME_                 MENU_NAME,
+		       C.CALL_BACK,
+		       C.LARGE_ICO,
+		       C.TREE_ICON,
+		       C.SMALL_ICO,
+		       C.IS_LEAF,
+		       C.LEVEL_,
+		       C.STATUS,
+		       C.MENU_CODE,
+		       C.SMALL_ICO_SELECTED,
+		       C.SORT_,
+		       C.REMARK,
+		       C.CLASS_NAME,
+		       C.KUANGXUAN_NAME,
+		       C.ZHOUBIAN_NAME,
+		       C.ZHOUBIAN_IS_SHOW_LIST,
+		       C.ZHOUBIAN_LIST_URL,
+		       C.MENU_LIST_URL,
+		       C.MENU_SUMMARY_URL,
+		       C.MENU_LAYER_NAME,
+		       C.MENU_DETAIL_URL,
+		       C.MENU_DETAIL_WIDTH,
+		       C.MENU_DETAIL_HEIGHT,
+		       C.MENU_SUMMARY_WIDTH,
+		       C.MENU_SUMMARY_HEIGHT,
+		       C.MENU_DETAIL_NAME,
+	           C.CONVERGE_URL,
+	           C.SCATTER_POINT_URL
+		  FROM T_GIS_PAGE_CONT_ITEM_CFG A
+		  LEFT JOIN T_GIS_PAGE_INDEX_CFG B
+		    ON A.PG_IDX_ID = B.PG_IDX_CFG_ID
+		  LEFT JOIN T_GIS_DATA_CFG C
+		    ON A.LAY_CFG_ID = C.GDC_ID
+		 WHERE B.STATUS_ = '1'
+		   AND A.STATUS_ = '1'
+		   AND C.STATUS = '001'
+		   AND A.P_CONT_ITEM_ID = #{gdcPid,jdbcType=DECIMAL}
+		   ORDER BY A.DISPLAY_ORDER
+	</select>
+	
+	<select id="getGisDataCfgTree" resultMap="BaseResultMap">
+		WITH T_GIS_PAGE_INDEX_CFG_TEMP AS
+		 (SELECT * FROM (SELECT T.*
+		    FROM T_GIS_PAGE_INDEX_CFG T
+		   WHERE #{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%'
+		     AND T.PG_IDX_TYPE = #{homePageType,jdbcType=VARCHAR}
+		     AND T.STATUS_ = '1'
+		   ORDER BY T.REGION_CODE DESC NULLS LAST) WHERE ROWNUM = 1)
+		SELECT A.CONT_ITEM_ID          GDC_ID,
+		       A.P_CONT_ITEM_ID        GDC_PID,
+		       A.NAME_                 MENU_NAME,
+		       C.CALL_BACK,
+		       C.LARGE_ICO,
+		       C.TREE_ICON,
+		       C.SMALL_ICO,
+		       C.IS_LEAF,
+		       C.LEVEL_,
+		       C.STATUS,
+		       C.MENU_CODE,
+		       C.SMALL_ICO_SELECTED,
+		       C.SORT_,
+		       C.REMARK,
+		       C.CLASS_NAME,
+		       C.KUANGXUAN_NAME,
+		       C.ZHOUBIAN_NAME,
+		       C.ZHOUBIAN_IS_SHOW_LIST,
+		       C.ZHOUBIAN_LIST_URL,
+		       C.MENU_LIST_URL,
+		       C.MENU_SUMMARY_URL,
+		       C.MENU_LAYER_NAME,
+		       C.MENU_DETAIL_URL,
+		       C.MENU_DETAIL_WIDTH,
+		       C.MENU_DETAIL_HEIGHT,
+		       C.MENU_SUMMARY_WIDTH,
+		       C.MENU_SUMMARY_HEIGHT,
+		       C.MENU_DETAIL_NAME,
+	           C.CONVERGE_URL,
+	           C.SCATTER_POINT_URL
+		  FROM T_GIS_PAGE_CONT_ITEM_CFG A
+		  LEFT JOIN T_GIS_PAGE_INDEX_CFG_TEMP B
+		    ON A.PG_IDX_ID = B.PG_IDX_CFG_ID
+		  LEFT JOIN T_GIS_DATA_CFG C
+		    ON A.LAY_CFG_ID = C.GDC_ID
+		 WHERE B.STATUS_ = '1'
+		   AND A.STATUS_ = '1'
+		   AND C.STATUS = '001'
+		   ORDER BY A.DISPLAY_ORDER
+	</select>
+	
+	<select id="getDisplayStyle" resultType="java.lang.String" >
+		SELECT DISPLAY_STYLE
+		  FROM (SELECT T.*
+		          FROM T_GIS_PAGE_INDEX_CFG T
+		         WHERE #{orgCode,jdbcType=VARCHAR} LIKE T.REGION_CODE || '%'
+		           AND T.PG_IDX_TYPE = #{homePageType,jdbcType=VARCHAR}
+		           AND T.STATUS_ = '1'
+		         ORDER BY T.REGION_CODE DESC NULLS LAST)
+		 WHERE ROWNUM = 1
+	</select>
+	
+	<select id="getLadderDiagrmData" resultType="java.util.HashMap" >
+		SELECT T.ARCGIS_CONFIG_INFO_ID,
+		       T.GRID_CODE,
+		       G.GRID_PATH,
+		       T.MAP_TYPE_NAME,
+		       T.MAP_CENTER_X,
+		       T.MAP_CENTER_Y,
+		       T.ZOOM,
+		       T.ORDER_INDEX
+		  FROM ARCGIS_CONFIG_INFO T
+		 INNER JOIN T_DC_GRID G
+		    ON T.GRID_CODE = G.INFO_ORG_CODE
+		 WHERE G.STATUS = '001'
+		   AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		   AND T.MAP_KEY = '430e560edfec2bfa8a428938725b2c39'
+		  ORDER BY T.GRID_CODE,T.ORDER_INDEX
+	</select>
+	
+	<insert id="saveLadderDiagrmAcoi">
+		INSERT INTO ARCGIS_CONFIG_INFO
+		  (ARCGIS_CONFIG_INFO_ID,
+		   GRID_CODE,
+		   MAP_TYPE,
+		   MAP_TYPE_NAME,
+		   MAP_ROWS,
+		   MAP_COLS,
+		   MAP_ORGIGIN_X,
+		   MAP_ORGIGIN_Y,
+		   WKID,
+		   MAP_CENTER_X,
+		   MAP_CENTER_Y,
+		   ZOOM,
+		   ORDER_INDEX,
+		   MAP_TYPE_CODE,
+		   REMARK,
+		   COORDINATE_SERVICE_NAME,
+		   MAP_KEY)
+		SELECT (SELECT NVL(MAX(T.ARCGIS_CONFIG_INFO_ID), 0) + 1
+		     FROM ARCGIS_CONFIG_INFO T),
+		   #{infoOrgCode,jdbcType=VARCHAR},
+		   5,
+		   #{mapName,jdbcType=VARCHAR},
+		   256,
+		   256,
+		   -180,
+		   90,
+		   4326,
+		   #{x,jdbcType=DECIMAL},
+		   #{y,jdbcType=DECIMAL},
+		   #{zoom,jdbcType=DECIMAL},
+		   #{order,jdbcType=DECIMAL},
+		   5,
+		   '',
+		   '',
+		   '430e560edfec2bfa8a428938725b2c39' FROM DUAL
+	</insert>
+	
+	<insert id="saveLadderDiagrmAsei">
+		INSERT INTO ARCGIS_SERVICE_INFO
+		  (ARCGIS_SERVICE_INFO_ID,
+		   ARCGIS_CONFIG_INFO_ID,
+		   SERVICE_URL,
+		   SERVICE_LOAD_TYPE,
+		   SERVICE_XMIN,
+		   SERVICE_YMIN,
+		   SERVICE_XMAX,
+		   SERVICE_YMAX,
+		   SERVICE_IMAGE_FORMAT,
+		   SERVICE_SERVICE_MODE,
+		   SERVICE_LAYER_ID,
+		   SERVICE_TILE_MATRIX_SET_ID,
+		   SERVICE_TILE_MATRIX)
+	  SELECT (SELECT NVL(MAX(T.ARCGIS_SERVICE_INFO_ID), 0) + 1 FROM ARCGIS_SERVICE_INFO T),
+	         (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T),
+	         #{url,jdbcType=VARCHAR},'wmts',-180,-90,180,90,'tiles','KVP',#{layerId_a,jdbcType=VARCHAR},'c',
+	         0
+	  FROM DUAL
+  	  UNION ALL
+	  SELECT (SELECT NVL(MAX(T.ARCGIS_SERVICE_INFO_ID), 0) + 2 FROM ARCGIS_SERVICE_INFO T),
+	         (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T),
+	         #{url,jdbcType=VARCHAR},'wmts',-180,-90,180,90,'tiles','KVP',#{layerId_b,jdbcType=VARCHAR},'c',
+	         0
+      FROM DUAL
+	</insert>
+	<insert id="saveLadderDiagrmAsci">
+		INSERT INTO ARCGIS_SCALE_INFO
+		  (ARCGIS_SCALE_INFO_ID,
+		   ARCGIS_CONFIG_INFO_ID,
+		   SCALE_LEVEL,
+		   SCALE_RESOLUTION,
+		   SCALE_SCALE)
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 1 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 0, 0.703125, 295829355.454566 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 2 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 1, 0.3515625, 147914677.727283 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 3 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 2, 0.17578125, 73957338.8636414 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 4 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 3, 0.087890625, 36978669.4318207 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 5 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 4, 0.0439453125, 18489334.7159103 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 6 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 5, 0.02197265625, 9244667.35795517 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 7 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 6, 0.010986328125, 4622333.67897759 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 8 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 7, 0.0054931640625, 2311166.83948879 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 9 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 8, 0.00274658203125, 1155583.4197444 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 10 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 9, 0.001373291015625, 577791.709872199 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 11 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 10, 0.0006866455078125, 288895.854936099 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 12 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 11, 0.00034332275390625, 144447.92746805 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 13 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 12, 0.000171661376953125, 72223.9637340248 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 14 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 13, 8.58306884765625E-5, 36111.9818670124 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 15 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 14, 4.29153442382813E-5, 18055.9909335062 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 16 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 15, 2.14576721191406E-5, 9027.9954667531 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 17 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 16, 1.07288360595703E-5, 4513.99773337655 FROM DUAL
+		 UNION ALL
+		SELECT (SELECT NVL(MAX(T.ARCGIS_SCALE_INFO_ID), 0) + 18 FROM ARCGIS_SCALE_INFO T), (SELECT MAX(T.ARCGIS_CONFIG_INFO_ID) FROM ARCGIS_CONFIG_INFO T), 17, 5.36441802978516E-6, 2256.99886668828 FROM DUAL
+				   
+	</insert>
+	
+	<delete id="deleteLadderDiagrmAcoi">
+		DELETE FROM ARCGIS_CONFIG_INFO WHERE ARCGIS_CONFIG_INFO_ID = #{id,jdbcType=DECIMAL}
+	</delete>
+	
+	<delete id="deleteLadderDiagrmAsei">
+		DELETE FROM ARCGIS_SERVICE_INFO WHERE ARCGIS_CONFIG_INFO_ID = #{id,jdbcType=DECIMAL}
+	</delete>
+	
+	<delete id="deleteLadderDiagrmAAsci">
+		DELETE FROM ARCGIS_SCALE_INFO WHERE ARCGIS_CONFIG_INFO_ID = #{id,jdbcType=DECIMAL}
+	</delete>
+</mapper>

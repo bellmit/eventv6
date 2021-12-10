@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.sanitationtrunck.SanitationTrunckMapper">
+	<resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.map.sanitationtrunck.SanitationTrunck">
+		<id column="ID" property="id" jdbcType="VARCHAR" /> <!--编码-->
+		<result column="CAR_CODE" property="carcode" jdbcType="VARCHAR" /> <!--车牌号码-->
+		<result column="CAR_NUMBER" property="carnumber" jdbcType="VARCHAR" /> <!--车辆编号-->
+		<result column="CREATE_TIME" property="createtime" jdbcType="VARCHAR" /> <!--增加时间-->
+		<result column="GPSX" property="gpsx" jdbcType="VARCHAR" /> <!--X坐标-->
+		<result column="GPSY" property="gpsy" jdbcType="VARCHAR" /> <!--Y坐标-->
+		<result column="IDENTIFIER" property="identifier" jdbcType="VARCHAR" /> <!--车辆标识-->
+		<result column="LAST_REPORT_TIME" property="lastreporttime" jdbcType="VARCHAR" /> <!--最后上报时间-->
+		<result column="PLACE_CODE" property="placecode" jdbcType="VARCHAR" /> <!--所属区域编码-->
+		<result column="TELE_PHONE" property="telephone" jdbcType="VARCHAR" /> <!--车载上报卡号-->
+		<result column="UNIT" property="unit" jdbcType="VARCHAR" /> <!--车辆所属单位-->
+		<result column="VALIDITY" property="validity" jdbcType="VARCHAR" /> <!--是否有效：0有效1无效-->
+		<result column="SYN_DATE" property="synDate" jdbcType="VARCHAR" /> <!--接口同步时间-->
+	</resultMap>
+		
+	<!-- 列表（总数） -->	
+	<select id="countList"  resultType="java.lang.Long">
+		SELECT COUNT(1) FROM T_NP_SANITATION_TRUNCK T
+		<include refid="find_where" />
+	</select>
+	
+	<!-- 列表（分页） -->	
+	<select id="searchList"  resultMap="BaseResultMap">
+		SELECT
+			T.CAR_CODE,
+			T.CAR_NUMBER,
+			T.CREATE_TIME,
+			T.GPSX,
+			T.GPSY,
+			T.ID,
+			T.IDENTIFIER,
+			T.LAST_REPORT_TIME,
+			T.PLACE_CODE,
+			T.TELE_PHONE,
+			T.UNIT,
+			T.VALIDITY,
+			T.SYN_DATE
+		FROM
+			T_NP_SANITATION_TRUNCK T
+		<include refid="find_where" />
+		ORDER BY 
+			T.SYN_DATE DESC ,
+			T.CREATE_TIME DESC 
+	</select>
+	
+	<!-- 列表（条件） -->	
+	<sql id="find_where">
+		<where>
+			<if test="validity != null and validity != ''" >
+				<![CDATA[ AND T.VALIDITY = #{validity,jdbcType=VARCHAR}  ]]>
+			</if>
+			<if test="unitCode != null and unitCode != ''" >
+				<choose>
+					<when test="unitCode == 'huanwei'">
+						<![CDATA[ AND REPLACE(T.UNIT,' ','') = '环卫车辆' ]]>
+					</when>
+					<when test="unitCode == 'zhatu'">
+						<![CDATA[ AND REPLACE(T.UNIT,' ','') = '渣土车' ]]>
+					</when>
+					<otherwise>
+						<![CDATA[ AND REPLACE(T.UNIT,' ','') = '执法车' ]]>
+					</otherwise>
+				</choose>
+			</if>
+			<if test="carcode != null and carcode != ''" >
+				<![CDATA[ AND T.CAR_CODE LIKE '%'||#{carcode,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="carnumber != null and carnumber != ''" >
+				<![CDATA[ AND T.CAR_NUMBER LIKE '%'||#{carnumber,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="identifier != null and identifier != ''" >
+				<![CDATA[ AND T.IDENTIFIER LIKE '%'||#{identifier,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="telephone != null and telephone != ''" >
+				<![CDATA[ AND T.TELE_PHONE LIKE '%'||#{telephone,jdbcType=VARCHAR}||'%' ]]>
+			</if>
+			<if test="id != null and id != ''" >
+				<![CDATA[ AND T.ID = #{id,jdbcType=VARCHAR} ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<insert id="batchSave" parameterType="cn.ffcs.zhsq.mybatis.domain.map.sanitationtrunck.SanitationTrunck">
+		INSERT INTO
+			T_NP_SANITATION_TRUNCK
+		(
+			CAR_CODE,
+			CAR_NUMBER,
+			CREATE_TIME,
+			GPSX,
+			GPSY,
+			ID,
+			IDENTIFIER,
+			LAST_REPORT_TIME,
+			PLACE_CODE,
+			TELE_PHONE,
+			UNIT,
+			VALIDITY,
+			SYN_DATE
+		) 
+		SELECT T.* 
+		FROM (
+   		    <foreach collection="list" item="item" index="index" separator="union all">
+			   	SELECT 
+			    	#{item.carcode,jdbcType=VARCHAR},
+					#{item.carnumber,jdbcType=VARCHAR},
+					#{item.createtime,jdbcType=VARCHAR},
+					#{item.gpsx,jdbcType=VARCHAR},
+					#{item.gpsy,jdbcType=VARCHAR},
+					#{item.id,jdbcType=VARCHAR},
+					#{item.identifier,jdbcType=VARCHAR},
+					#{item.lastreporttime,jdbcType=VARCHAR},
+					#{item.placecode,jdbcType=VARCHAR},
+					#{item.telephone,jdbcType=VARCHAR},
+					#{item.unit,jdbcType=VARCHAR},
+					'0',
+					SYSDATE
+				FROM DUAL 
+		   </foreach>
+   		) T
+	</insert>
+	
+	<!-- 新增 -->	
+	<insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.map.sanitationtrunck.SanitationTrunck">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE"> 
+			SELECT SEQ_NP_SANITATION_TRUNCK.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO
+			T_NP_SANITATION_TRUNCK
+		(
+			CAR_CODE,
+			CAR_NUMBER,
+			CREATE_TIME,
+			GPSX,
+			GPSY,
+			ID,
+			IDENTIFIER,
+			LAST_REPORT_TIME,
+			PLACE_CODE,
+			TELE_PHONE,
+			UNIT,
+			VALIDITY,
+			SYN_DATE
+		) VALUES (
+			#{carcode,jdbcType=VARCHAR},
+			#{carnumber,jdbcType=VARCHAR},
+			#{createtime,jdbcType=VARCHAR},
+			#{gpsx,jdbcType=VARCHAR},
+			#{gpsy,jdbcType=VARCHAR},
+			#{id,jdbcType=VARCHAR},
+			#{identifier,jdbcType=VARCHAR},
+			#{lastreporttime,jdbcType=VARCHAR},
+			#{placecode,jdbcType=VARCHAR},
+			#{telephone,jdbcType=VARCHAR},
+			#{unit,jdbcType=VARCHAR},
+			'0',
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 修改 -->	
+	<update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.map.sanitationtrunck.SanitationTrunck">
+		UPDATE
+			T_NP_SANITATION_TRUNCK
+		<set> 
+			<if test="carcode != null " >
+				CAR_CODE=#{carcode,jdbcType=VARCHAR},
+			</if>
+			<if test="carnumber != null " >
+				CAR_NUMBER=#{carnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null " >
+				CREATE_TIME=#{createtime,jdbcType=VARCHAR},
+			</if>
+			<if test="gpsx != null " >
+				GPSX=#{gpsx,jdbcType=VARCHAR},
+			</if>
+			<if test="gpsy != null " >
+				GPSY=#{gpsy,jdbcType=VARCHAR},
+			</if>
+			<if test="identifier != null " >
+				IDENTIFIER=#{identifier,jdbcType=VARCHAR},
+			</if>
+			<if test="lastreporttime != null " >
+				LAST_REPORT_TIME=#{lastreporttime,jdbcType=VARCHAR},
+			</if>
+			<if test="placeCode != null " >
+				PLACE_CODE=#{placeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null " >
+				TELE_PHONE=#{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null " >
+				UNIT=#{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="validity != null " >
+				VALIDITY=#{validity,jdbcType=VARCHAR},
+			</if>
+			<if test="synDate != null " >
+				SYN_DATE=#{synDate,jdbcType=VARCHAR},
+			</if>
+		</set>
+		WHERE
+			ID= #{id,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 详情 -->	
+	<select id="searchById" parameterType="java.lang.String"  resultMap="BaseResultMap">
+		SELECT
+			T.CAR_CODE,
+			T.CAR_NUMBER,
+			T.CREATE_TIME,
+			T.GPSX,
+			T.GPSY,
+			T.ID,
+			T.IDENTIFIER,
+			T.LAST_REPORT_TIME,
+			T.PLACE_CODE,
+			T.TELE_PHONE,
+			T.UNIT,
+			T.VALIDITY,
+			T.SYN_DATE
+		FROM
+			T_NP_SANITATION_TRUNCK T
+		WHERE
+			ID= #{id,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 删除 -->	
+	<delete id="delete" parameterType="cn.ffcs.zhsq.mybatis.domain.map.sanitationtrunck.SanitationTrunck">
+		UPDATE
+			T_NP_SANITATION_TRUNCK
+		SET
+			VALIDITY='1'
+		WHERE
+			ID= #{id,jdbcType=VARCHAR} 
+	</delete>
+	
+	<delete id="delAll">
+		DELETE FROM T_NP_SANITATION_TRUNCK
+	</delete>
+</mapper>

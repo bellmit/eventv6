@@ -1,0 +1,1336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.event.EventDisposal4JsonpMapper" >
+  
+  
+  	<!-- 事件总量type分组查询 -->
+	<select id="getEventTotalTypeByCondition" resultType="java.util.Map">
+		WITH DICT_ AS
+ (SELECT DATA_DICT.DICT_CODE,
+         DATA_DICT.DICT_PCODE,
+         DATA_DICT.DICT_NAME,
+         DATA_DICT.DICT_LEVEL,
+         DATA_DICT.DICT_GENERAL_CODE,
+         DATA_DICT.IS_LEAF
+    FROM (SELECT *
+            FROM (SELECT B.DICT_CODE,
+                         B.DICT_PCODE,
+                         B.DICT_NAME,
+                         B.DICT_LEVEL,
+                         B.DICT_GENERAL_CODE,
+                         B.IS_COMMON,
+                         B.STATUS,
+                         B.DICT_ID,
+                         B.DICT_PID,
+                         B.IS_LEAF
+                    FROM T_BAS_DATADICT B
+                   WHERE B.STATUS = '001') T1_1
+           START WITH T1_1.DICT_CODE = 'A001093199'
+          CONNECT BY T1_1.DICT_PID = PRIOR T1_1.DICT_ID) DATA_DICT
+   WHERE DATA_DICT.STATUS = '001'
+    <choose>
+         <when test="@Ognl@isNotEmpty(typeLevel)">
+              AND LENGTH(DATA_DICT.DICT_CODE)=16 AND DATA_DICT.DICT_PCODE LIKE 'A001093199%'
+         </when >
+        <otherwise>
+              AND DATA_DICT.DICT_PCODE = 'A001093199'
+       	</otherwise>
+   	</choose>
+     AND ((DATA_DICT.IS_COMMON = '1' AND NOT EXISTS
+          (SELECT 1
+              FROM T_BAS_DATADICT_ORG T3
+             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%')) OR
+         (DATA_DICT.IS_COMMON = '0' AND EXISTS
+          (SELECT 1
+              FROM T_BAS_DATADICT_ORG T3
+             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%'))))
+
+SELECT *
+  FROM (SELECT DT.DICT_GENERAL_CODE AS "TYPE_",
+               DT.DICT_NAME,
+               SUM(NVL(DA.TOTAL_, 0)) AS "TOTAL"
+          FROM DICT_ DT
+          LEFT JOIN (SELECT T.TYPE_, T.TOTAL_
+                      FROM T_BI_EVENT_STAT_DAY T
+                     INNER JOIN T_DC_GRID G
+                        ON T.ORG_CODE = G.INFO_ORG_CODE
+                       AND G.INFO_ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+                       AND G.STATUS = '001'
+                       AND T.EVENT_DATE <![CDATA[>=]]>
+                           TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+                       AND T.EVENT_DATE <![CDATA[<]]>
+                           TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+                       <choose>
+          					<when test="@Ognl@isNotEmpty(typeLevel)">
+              					and t.type_level = #{typeLevel,jdbcType=VARCHAR} 
+         					</when >
+        					<otherwise>
+               					and t.type_level='2' 
+       						</otherwise>
+   						</choose>
+   						<if test="@Ognl@isNotEmpty(urgencyDegree)">
+							AND T.urgency_degree = #{urgencyDegree,jdbcType=VARCHAR} 
+	   					</if>
+						<if test="@Ognl@isNotEmpty(type)">
+     						AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+						</if>
+						<if test="@Ognl@isNotEmpty(ptype)">
+     						AND T.TYPE_ like #{ptype,jdbcType=VARCHAR}||'%'
+						</if>
+                       AND T.TYPE_ IS NOT NULL) DA
+            ON DT.DICT_GENERAL_CODE = DA.TYPE_
+            WHERE 1=1
+            <if test="@Ognl@isNotEmpty(ptype)">
+     			AND DT.DICT_GENERAL_CODE like #{ptype,jdbcType=VARCHAR}||'%'
+			</if>
+         GROUP BY DT.DICT_GENERAL_CODE, DT.DICT_NAME) TT
+ ORDER BY TT.TOTAL DESC, TT.TYPE_
+
+ 		
+	</select>
+	
+	<!-- 事件总量type分组(当天)查询 -->
+	<select id="getEventTotalTypeByConditionToday" resultType="java.util.Map">
+	
+		WITH DICT_ AS
+ (SELECT DATA_DICT.DICT_CODE,
+         DATA_DICT.DICT_PCODE,
+         DATA_DICT.DICT_NAME,
+         DATA_DICT.DICT_LEVEL,
+         DATA_DICT.DICT_GENERAL_CODE,
+         DATA_DICT.IS_LEAF
+    FROM (SELECT *
+            FROM (SELECT B.DICT_CODE,
+                         B.DICT_PCODE,
+                         B.DICT_NAME,
+                         B.DICT_LEVEL,
+                         B.DICT_GENERAL_CODE,
+                         B.IS_COMMON,
+                         B.STATUS,
+                         B.DICT_ID,
+                         B.DICT_PID,
+                         B.IS_LEAF
+                    FROM T_BAS_DATADICT B
+                   WHERE B.STATUS = '001') T1_1
+           START WITH T1_1.DICT_CODE = 'A001093199'
+          CONNECT BY T1_1.DICT_PID = PRIOR T1_1.DICT_ID) DATA_DICT
+   WHERE DATA_DICT.STATUS = '001'
+     AND DATA_DICT.DICT_PCODE LIKE 'A001093199%'
+     AND ((DATA_DICT.IS_COMMON = '1' AND NOT EXISTS
+          (SELECT 1
+              FROM T_BAS_DATADICT_ORG T3
+             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%')) OR
+         (DATA_DICT.IS_COMMON = '0' AND EXISTS
+          (SELECT 1
+              FROM T_BAS_DATADICT_ORG T3
+             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%'))))
+
+SELECT *
+  FROM (SELECT DT.DICT_GENERAL_CODE AS "TYPE_",
+               DT.DICT_NAME,
+               
+               COUNT(DA.TYPE_) AS "TOTAL"
+          FROM DICT_ DT
+          LEFT JOIN (SELECT T.TYPE_
+                      FROM T_EVENT T
+                     INNER JOIN T_DC_GRID G
+                        ON T.GRID_ID = G.GRID_ID
+                       AND G.INFO_ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} || '%'
+                     INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+                        ON T.EVENT_ID = P.FORM_ID
+                       AND P.FORM_TYPE_ID = 300
+                     WHERE T.CREATE_TIME <![CDATA[>=]]>
+                           TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+                       AND T.CREATE_TIME <![CDATA[<]]>
+                           TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+                       AND T.STATUS IN ('00', '01', '02', '03', '04')
+                       AND T.TYPE_ IS NOT NULL) DA
+            ON DT.DICT_GENERAL_CODE = SUBSTR(DA.TYPE_,0,2)
+         GROUP BY DT.DICT_GENERAL_CODE, DT.DICT_NAME) TT
+ ORDER BY TT.TOTAL DESC, TT.TYPE_
+	</select>
+	
+	<!-- 事件总量source分组查询 -->
+	<select id="getEventTotalSourceByCondition" resultType="java.util.Map">
+		SELECT T4.SOURCE_ SOURCE, SUM(T4.TOTAL_) TOTAL
+		FROM T_BI_EVENT_STAT_DAY T4
+		INNER JOIN T_DC_GRID T2
+			ON T4.ORG_CODE = T2.INFO_ORG_CODE
+		WHERE T2.STATUS = '001'
+	   <if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T2.INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="createTimeStart != null ">
+			AND T4.EVENT_DATE <![CDATA[>=]]> #{createTimeStart,jdbcType=DATE}
+		</if>
+		<if test="createTimeEnd != null ">
+			AND T4.EVENT_DATE <![CDATA[<=]]> #{createTimeEnd,jdbcType=DATE}
+		</if>
+		AND T4.TYPE_LEVEL = '2'
+		GROUP BY T4.SOURCE_
+		ORDER BY SUM(T4.TOTAL_) DESC, T4.SOURCE_
+	</select>
+	
+	<!-- 事件总量source实时统计查询 -->
+	<select id="getEventTotalSourceByConditionToday" resultType="java.util.Map">
+		SELECT T1.SOURCE, COUNT(T1.EVENT_ID) TOTAL
+		FROM T_EVENT T1
+		INNER JOIN T_DC_GRID T2
+			ON T1.GRID_ID = T2.GRID_ID
+		INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE T3
+			ON T1.EVENT_ID = T3.FORM_ID AND T3.FORM_TYPE_ID = 300
+		WHERE T2.STATUS = '001'
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T2.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="createTimeStart != null ">
+			AND T1.CREATE_TIME <![CDATA[>=]]> #{createTimeStart,jdbcType=DATE}
+		</if>
+		<if test="createTimeEnd != null ">
+			AND T1.CREATE_TIME <![CDATA[<=]]> #{createTimeEnd,jdbcType=DATE}
+		</if>
+		AND T1.STATUS IN ('00', '01', '02', '03', '04')
+		GROUP BY T1.SOURCE
+		ORDER BY COUNT(T1.EVENT_ID) DESC, T1.SOURCE
+	</select>
+	
+	<!-- 部件总数查询接口 -->
+	<select id="getMapComponentListCount" resultType="java.lang.Long">
+		SELECT COUNT(1) "total"
+		  FROM T_URBAN_OBJ T1
+		  LEFT JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		  LEFT JOIN T_ZY_RES_MARKER R1
+		    ON T1.OBJ_ID = R1.RESOURCES_ID
+		   AND R1.MARKER_TYPE = '020130'
+		<choose>
+			<when test="@Ognl@isNotEmpty(mapType)">
+				AND R1.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND R1.MAP_TYPE = '5'
+			</otherwise>
+		</choose>
+		 WHERE T1.STATUS = '1'
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(classCodeArray)">
+				AND T1.CLASS_CODE IN
+				<foreach collection="classCodeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(classCode)">
+				AND T1.CLASS_CODE = #{classCode,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="xmin != null">
+			AND R1.X <![CDATA[>=]]> #{xmin ,jdbcType=DECIMAL}
+		</if>
+		<if test="xmax != null">
+			AND R1.X <![CDATA[<=]]> #{xmax ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymin != null">
+			AND R1.Y <![CDATA[>=]]> #{ymin ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymax != null">
+			AND R1.Y <![CDATA[<=]]> #{ymax ,jdbcType=DECIMAL}
+		</if>
+	</select>
+	
+	
+	<!-- 部件列表查询接口 -->
+	<select id="getMapComponentList"  resultType="map">
+		SELECT 
+			T1.OBJ_ID 				"objId",
+       		T1.INFO_ORG_CODE 		"infoOrgCode",
+       		T1.CODE					"code",
+       		T1.CLASS_CODE			"classCode",
+       		T1.NAME					"name",
+       		T1.POSITION				"position",
+       		T1.OBJ_STATUS			"objStatus",
+       		T2.GRID_NAME			"gridName",
+       		T1.REMARK				"remark",
+       		R1.X					"x",
+       		R1.Y					"y"
+		  FROM T_URBAN_OBJ T1
+		  LEFT JOIN T_DC_GRID T2
+		    ON T1.GRID_ID = T2.GRID_ID
+		   AND T2.STATUS = '001'
+		  LEFT JOIN T_ZY_RES_MARKER R1
+		    ON T1.OBJ_ID = R1.RESOURCES_ID
+		   AND R1.MARKER_TYPE = '020130'
+		<choose>
+			<when test="@Ognl@isNotEmpty(mapType)">
+				AND R1.MAP_TYPE = #{mapType,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				AND R1.MAP_TYPE = '5'
+			</otherwise>
+		</choose>
+		 WHERE T1.STATUS = '1'
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   AND T1.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(classCodeArray)">
+				AND T1.CLASS_CODE IN
+				<foreach collection="classCodeArray" index="index" item="item" open="(" separator="," close=")">
+			    	#{item}
+			    </foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(classCode)">
+				AND T1.CLASS_CODE = #{classCode,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="xmin != null">
+			AND R1.X <![CDATA[>=]]> #{xmin ,jdbcType=DECIMAL}
+		</if>
+		<if test="xmax != null">
+			AND R1.X <![CDATA[<=]]> #{xmax ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymin != null">
+			AND R1.Y <![CDATA[>=]]> #{ymin ,jdbcType=DECIMAL}
+		</if>
+		<if test="ymax != null">
+			AND R1.Y <![CDATA[<=]]> #{ymax ,jdbcType=DECIMAL}
+		</if>
+	</select>
+	
+	
+	
+	<!-- 事件总量相关数据清洗查询jsonp接口 -->
+	<select id="getEventTotalByStatistics" resultType="java.util.Map">
+		SELECT
+		<choose>
+			<when test="@Ognl@isNotEmpty(fieldArray)">
+				<foreach collection="fieldArray" index="index" item="item" open=" " separator="," close=" ">
+			    	NVL(SUM(T.${item.fieldName}),0) "${item.exportName}"
+			    </foreach>
+			</when>
+			<otherwise>
+				NVL(SUM(T.TOTAL_),0) "eventTotal"
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(searchDay)">
+				FROM T_BI_EVENT_STAT_DAY T
+			</when>
+			<otherwise>
+				FROM T_BI_EVENT_STAT T
+			</otherwise>
+		</choose>
+		 WHERE
+		<choose>
+			<when test="@Ognl@isNotEmpty(pType)">
+				T.TYPE_LEVEL = '1'
+			</when>
+			<otherwise>
+				T.TYPE_LEVEL = '2'
+			</otherwise>
+		</choose> 
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   	AND T.ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(typeArray)">
+				AND T.TYPE_ IN
+				<foreach collection="typeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(type)">
+				AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(pTypeArray)">
+				AND T.TYPE_ IN
+				<foreach collection="pTypeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(pType)">
+				AND T.TYPE_ = #{pType,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(sourceArray)">
+				AND T.SOURCE_ IN
+				<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(source)">
+				AND T.SOURCE_ = #{source,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<choose>
+			<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+				AND T.URGENCY_DEGREE IN
+				<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(urgencyDegree)">
+				AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		<if test="@Ognl@isNotEmpty(createTimeStart)">
+			<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[>=]]>
+				</when>
+				<otherwise>
+					AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[>=]]>
+				</otherwise>
+			</choose>
+            TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		<if test="@Ognl@isNotEmpty(createTimeEnd)">
+            <choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[<]]>
+				</when>
+				<otherwise>
+					AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[<]]>
+				</otherwise>
+			</choose>
+            TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+        </if>
+        
+        <if test="@Ognl@isNotEmpty(dateStart)">
+			<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[>=]]> TO_DATE(#{dateStart,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[>=]]> #{dateStart,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+            
+		</if>
+		<if test="@Ognl@isNotEmpty(dateEnd)">
+            <choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[<]]>  TO_DATE(#{dateEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[<=]]> #{dateEnd,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+          
+        </if>
+	</select>
+	
+	
+	
+	<!-- 事件区域分布数据清洗查询jsonp接口 -->
+	<select id="getEventAreaDistributionByStatistics" resultType="java.util.Map">
+		WITH GRID AS
+		 (SELECT G1.INFO_ORG_CODE, G1.GRID_NAME, G1.ORDER_ID, G1.GRID_LEVEL
+		    FROM T_DC_GRID G1
+		   WHERE G1.STATUS = '001'
+		     AND (
+		     G1.PARENT_GRID_ID = #{gridId,jdbcType=DECIMAL}
+		   	 <if test="@Ognl@isNotEmpty(includeSuperior)">
+	      		OR G1.GRID_ID = #{gridId,jdbcType=DECIMAL}
+	 	     </if>
+	 	     )
+		  )
+		
+		SELECT G.INFO_ORG_CODE "infoOrgCode", G.GRID_NAME "gridName", 
+			<choose>
+				<when test="@Ognl@isNotEmpty(fieldArray)">
+					<foreach collection="fieldArray" index="index" item="item" open=" " separator="," close=" ">
+				    	NVL(SUM(T.${item.fieldName}),0) "${item.exportName}"
+				    </foreach>
+				</when>
+				<otherwise>
+					NVL(SUM(T.TOTAL_),0) "eventTotal"
+				</otherwise>
+			</choose>
+		  FROM GRID G
+		  	<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+		  			LEFT JOIN T_BI_EVENT_STAT_DAY T
+				</when>
+				<otherwise>
+		  			LEFT JOIN T_BI_EVENT_STAT T
+				</otherwise>
+		  	</choose>
+		    ON T.ORG_CODE = G.INFO_ORG_CODE
+		   	<choose>
+				<when test="@Ognl@isNotEmpty(pType)">
+					AND T.TYPE_LEVEL = '1'
+				</when>
+				<otherwise>
+					AND T.TYPE_LEVEL = '2'
+				</otherwise>
+			</choose> 
+			<choose>
+				<when test="@Ognl@isNotEmpty(typeArray)">
+					AND T.TYPE_ IN
+					<foreach collection="typeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(type)">
+					AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(pTypeArray)">
+					AND T.TYPE_ IN
+					<foreach collection="pTypeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(pType)">
+					AND T.TYPE_ = #{pType,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(sourceArray)">
+					AND T.SOURCE_ IN
+					<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(source)">
+					AND T.SOURCE_ = #{source,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+					AND T.URGENCY_DEGREE IN
+					<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(urgencyDegree)">
+					AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<if test="@Ognl@isNotEmpty(createTimeStart)">
+				<choose>
+					<when test="@Ognl@isNotEmpty(searchDay)">
+						AND T.EVENT_DATE <![CDATA[>=]]>
+					</when>
+					<otherwise>
+						AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[>=]]>
+					</otherwise>
+				</choose>
+	            TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+			</if>
+			<if test="@Ognl@isNotEmpty(createTimeEnd)">
+	            <choose>
+					<when test="@Ognl@isNotEmpty(searchDay)">
+						AND T.EVENT_DATE <![CDATA[<]]>
+					</when>
+					<otherwise>
+						AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[<]]>
+					</otherwise>
+				</choose>
+	            TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+	        </if>
+			 <if test="@Ognl@isNotEmpty(dateStart)">
+			<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[>=]]> TO_DATE(#{dateStart,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[>=]]> #{dateStart,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+            
+		</if>
+		<if test="@Ognl@isNotEmpty(dateEnd)">
+            <choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[<]]>  TO_DATE(#{dateEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[<=]]> #{dateEnd,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+          
+        </if>
+		 GROUP BY G.INFO_ORG_CODE, G.GRID_NAME, G.ORDER_ID, G.GRID_LEVEL
+		 ORDER BY G.GRID_LEVEL, 
+	     <if test="@Ognl@isNotEmpty(sortFieldArray)">
+			 <foreach collection="sortFieldArray" index="index" item="item" open=" " separator="," close=",">
+		    	 NVL(SUM(T.${item.sortFieldName}),0) ${item.sortType}
+		     </foreach>
+		 </if>
+		 G.ORDER_ID, G.INFO_ORG_CODE
+	</select>
+	
+	
+	
+	
+	
+	<!-- 事件区域分布实时查询jsonp接口 -->
+	<select id="getEventAreaDistributionByActual" resultType="java.util.Map">
+		WITH GRID AS
+		 (SELECT G1.INFO_ORG_CODE, G1.GRID_NAME, G1.ORDER_ID, G1.GRID_LEVEL
+		    FROM T_DC_GRID G1
+		   WHERE G1.STATUS = '001'
+		     AND (
+		     G1.PARENT_GRID_ID = #{gridId,jdbcType=DECIMAL}
+		   	 <if test="@Ognl@isNotEmpty(includeSuperior)">
+	      		OR G1.GRID_ID = #{gridId,jdbcType=DECIMAL}
+	 	     </if>
+	 	     )
+		  ),
+		EVENT AS
+		 (SELECT G.INFO_ORG_CODE, COUNT(T.EVENT_ID) "TOTAL_"
+		    FROM T_EVENT T
+		   INNER JOIN T_DC_GRID G
+		      ON T.GRID_ID = G.GRID_ID
+		     AND G.STATUS = '001'
+		   INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		      ON T.EVENT_ID = P.FORM_ID
+		     AND P.FORM_TYPE_ID = 300
+		    LEFT JOIN T_EVENT_EXTEND EX
+		      ON T.EVENT_ID = EX.EVENT_ID
+		     AND EX.STATUS = '1'
+		   WHERE G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		   	<choose>
+				<when test="isEntry != null and isEntry == 1 ">
+					AND EX.ENTRY_MATTER_CODE <![CDATA[>]]> 0
+				</when>
+				<when test="isEntry != null and isEntry == 0 ">
+					AND NVL(EX.ENTRY_MATTER_CODE, 0) = 0
+				</when>
+			</choose>
+		    <if test="@Ognl@isNotEmpty(createTimeStart)">
+  				AND T.CREATE_TIME <![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+		  	</if>
+	   		<if test="@Ognl@isNotEmpty(createTimeEnd)">
+	   			AND T.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+	   		</if>
+	   		<if test="@Ognl@isNotEmpty(handleDateFlag)">
+	   			AND T.HANDLE_DATE_FLAG = #{handleDateFlag ,jdbcType=VARCHAR}
+	   		</if>
+	   		<choose>
+				<when test="@Ognl@isNotEmpty(bizPlatformArray)">
+					AND T.BIZ_PLATFORM IN
+					<foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(bizPlatform)">
+					AND T.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(collectWayArray)">
+					AND T.COLLECT_WAY IN
+					<foreach collection="collectWayArray" index="index" item="item" open="(" separator="," close=")">
+				    	#{item}
+				    </foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(collectWay)">
+					AND T.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(influenceDegreeArray)">
+					AND T.INFLUENCE_DEGREE IN
+					<foreach collection="influenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+				    	#{item}
+				    </foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(influenceDegree)">
+					AND T.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+					AND T.URGENCY_DEGREE IN
+					<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+				    	#{item}
+				    </foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(urgencyDegree)">
+					AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(sourceArray)">
+					AND T.SOURCE IN
+					<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(source)">
+					AND T.SOURCE = #{source,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<if test="@Ognl@isNotEmpty(type)">
+				AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+			</if>
+	   		<choose>
+				<when test="@Ognl@isNotEmpty(statusArray)">
+					AND T.STATUS IN
+					<foreach collection="statusArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<otherwise>
+					AND T.STATUS IN ('00', '01', '02', '03', '04')
+				</otherwise>
+			</choose>
+			GROUP BY G.INFO_ORG_CODE
+		)
+		
+		SELECT GD.INFO_ORG_CODE "infoOrgCode", GD.GRID_NAME "gridName", NVL(SUM(NVL(ET.TOTAL_,0)),0) "eventTotal"
+		  FROM GRID GD
+		  LEFT JOIN EVENT ET
+		    ON ET.INFO_ORG_CODE LIKE GD.INFO_ORG_CODE || '%'
+		 GROUP BY GD.INFO_ORG_CODE, GD.GRID_NAME, GD.GRID_LEVEL, GD.ORDER_ID
+		 ORDER BY GD.GRID_LEVEL,
+		 		  <if test="@Ognl@isNotEmpty(enableSorting)">
+		          		NVL(SUM(NVL(ET.TOTAL_,0)),0) DESC,
+		          </if>
+		          GD.ORDER_ID,
+		          GD.INFO_ORG_CODE
+	
+	</select>
+	
+	
+	
+	<!-- 事件类型占比实时查询 -->
+	<select id="getEventTypeProportionByActual" resultType="java.util.Map">
+		WITH DICT_ AS
+		 (SELECT DATA_DICT.DICT_CODE,
+		         DATA_DICT.DICT_PCODE,
+		         DATA_DICT.DICT_NAME,
+		         DATA_DICT.DICT_LEVEL,
+		         DATA_DICT.DICT_GENERAL_CODE,
+		         DATA_DICT.IS_LEAF
+		    FROM (SELECT *
+		            FROM (SELECT B.DICT_CODE,
+		                         B.DICT_PCODE,
+		                         B.DICT_NAME,
+		                         B.DICT_LEVEL,
+		                         B.DICT_GENERAL_CODE,
+		                         B.IS_COMMON,
+		                         B.STATUS,
+		                         B.DICT_ID,
+		                         B.DICT_PID,
+		                         B.IS_LEAF
+		                    FROM T_BAS_DATADICT B
+		                   WHERE B.STATUS = '001') T1_1
+		           START WITH T1_1.DICT_CODE = 'A001093199'
+		          CONNECT BY T1_1.DICT_PID = PRIOR T1_1.DICT_ID) DATA_DICT
+		   WHERE DATA_DICT.STATUS = '001'
+		   	 AND DATA_DICT.DICT_PCODE LIKE 'A001093199'||'%'
+		     <if test="@Ognl@isNotEmpty(type)">
+			     AND DATA_DICT.DICT_GENERAL_CODE LIKE #{type,jdbcType=VARCHAR}||'%'
+		     </if>
+			 AND LENGTH(DATA_DICT.DICT_GENERAL_CODE) = #{typeBit,jdbcType=DECIMAL}
+		     AND ((DATA_DICT.IS_COMMON = '1' AND NOT EXISTS
+		          (SELECT 1
+		              FROM T_BAS_DATADICT_ORG T3
+		             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+		               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%')) OR
+		         (DATA_DICT.IS_COMMON = '0' AND EXISTS
+		          (SELECT 1
+		              FROM T_BAS_DATADICT_ORG T3
+		             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+		               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%'))))
+		
+		SELECT *
+		  FROM (SELECT DT.DICT_GENERAL_CODE AS "TYPE_",
+		               DT.DICT_NAME,
+		               
+		               COUNT(DA.TYPE_) AS "TOTAL"
+		          FROM DICT_ DT
+		          LEFT JOIN (SELECT T.TYPE_
+		                      FROM T_EVENT T
+		                     INNER JOIN T_DC_GRID G
+		                        ON T.GRID_ID = G.GRID_ID
+		                       AND G.STATUS='001'
+		                        <if test="@Ognl@isNotEmpty(infoOrgCode)">
+		                       	    AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR} || '%'
+		                        </if>
+		                     INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		                        ON T.EVENT_ID = P.FORM_ID
+		                       AND P.FORM_TYPE_ID = 300
+		                     WHERE 1=1
+		                       <if test="@Ognl@isNotEmpty(createTimeStart)">
+		                       	   AND T.CREATE_TIME <![CDATA[>=]]>
+		                           TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+		                       </if>
+		                       <if test="@Ognl@isNotEmpty(createTimeStart)">
+		                           AND T.CREATE_TIME <![CDATA[<]]>
+		                           TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+		                       </if>
+		                       <if test="@Ognl@isNotEmpty(happenTimeStart)">
+		                           AND T.HAPPEN_TIME <![CDATA[>=]]>
+		                           TO_DATE(#{happenTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+		                       </if>
+		                       <if test="@Ognl@isNotEmpty(happenTimeStart)">
+		                           AND T.HAPPEN_TIME <![CDATA[<]]>
+		                           TO_DATE(#{happenTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+		                       </if>
+		                       <choose>
+									<when test="@Ognl@isNotEmpty(bizPlatformArray)">
+										AND T.BIZ_PLATFORM IN
+										<foreach collection="bizPlatformArray" index="index" item="item" open="(" separator="," close=")">
+											#{item}
+										</foreach>
+									</when>
+									<when test="@Ognl@isNotEmpty(bizPlatform)">
+										AND T.BIZ_PLATFORM = #{bizPlatform,jdbcType=VARCHAR}
+									</when>
+								</choose>
+								<choose>
+									<when test="@Ognl@isNotEmpty(collectWayArray)">
+										AND T.COLLECT_WAY IN
+										<foreach collection="collectWayArray" index="index" item="item" open="(" separator="," close=")">
+									    	#{item}
+									    </foreach>
+									</when>
+									<when test="@Ognl@isNotEmpty(collectWay)">
+										AND T.COLLECT_WAY = #{collectWay,jdbcType=VARCHAR}
+									</when>
+								</choose>
+								<choose>
+									<when test="@Ognl@isNotEmpty(influenceDegreeArray)">
+										AND T.INFLUENCE_DEGREE IN
+										<foreach collection="influenceDegreeArray" index="index" item="item" open="(" separator="," close=")">
+									    	#{item}
+									    </foreach>
+									</when>
+									<when test="@Ognl@isNotEmpty(influenceDegree)">
+										AND T.INFLUENCE_DEGREE = #{influenceDegree,jdbcType=VARCHAR}
+									</when>
+								</choose>
+								<choose>
+									<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+										AND T.URGENCY_DEGREE IN
+										<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+									    	#{item}
+									    </foreach>
+									</when>
+									<when test="@Ognl@isNotEmpty(urgencyDegree)">
+										AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+									</when>
+								</choose>
+								<choose>
+									<when test="@Ognl@isNotEmpty(sourceArray)">
+										AND T.SOURCE IN
+										<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+											#{item}
+										</foreach>
+									</when>
+									<when test="@Ognl@isNotEmpty(source)">
+										AND T.SOURCE = #{source,jdbcType=VARCHAR}
+									</when>
+								</choose>
+		                        <choose>
+								    <when test="@Ognl@isNotEmpty(statusArray)">
+									    AND T.STATUS IN
+									    <foreach collection="statusArray" index="index" item="item" open="(" separator="," close=")">
+										    #{item}
+									    </foreach>
+								    </when>
+								    <otherwise>
+									    AND T.STATUS IN ('00', '01', '02', '03', '04')
+								    </otherwise>
+							    </choose>
+							    <if test="@Ognl@isNotEmpty(type)">
+								    AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+							    </if>
+		                        AND T.TYPE_ IS NOT NULL) DA
+					            ON DT.DICT_GENERAL_CODE = SUBSTR(DA.TYPE_,0,#{typeBit,jdbcType=DECIMAL})
+		          GROUP BY DT.DICT_GENERAL_CODE, DT.DICT_NAME) TT
+		  ORDER BY TT.TOTAL DESC, TT.TYPE_
+	</select>
+	
+	
+	
+	<!-- 事件类型占比清洗查询 -->
+	<select id="getEventTypeProportionByStatistics" resultType="java.util.Map">
+		WITH DICT_ AS
+		 (SELECT DATA_DICT.DICT_CODE,
+		         DATA_DICT.DICT_PCODE,
+		         DATA_DICT.DICT_NAME,
+		         DATA_DICT.DICT_LEVEL,
+		         DATA_DICT.DICT_GENERAL_CODE,
+		         DATA_DICT.IS_LEAF
+		    FROM (SELECT *
+		            FROM (SELECT B.DICT_CODE,
+		                         B.DICT_PCODE,
+		                         B.DICT_NAME,
+		                         B.DICT_LEVEL,
+		                         B.DICT_GENERAL_CODE,
+		                         B.IS_COMMON,
+		                         B.STATUS,
+		                         B.DICT_ID,
+		                         B.DICT_PID,
+		                         B.IS_LEAF
+		                    FROM T_BAS_DATADICT B
+		                   WHERE B.STATUS = '001') T1_1
+		           START WITH T1_1.DICT_CODE = 'A001093199'
+		          CONNECT BY T1_1.DICT_PID = PRIOR T1_1.DICT_ID) DATA_DICT
+		   WHERE DATA_DICT.STATUS = '001'
+		   	 AND DATA_DICT.DICT_PCODE LIKE 'A001093199%'
+		   	 <choose>
+		   	 	<when test="@Ognl@isNotEmpty(pType) or @Ognl@isNotEmpty(pTypeArray)">
+		   	 		<choose>
+						<when test="@Ognl@isNotEmpty(pTypeArray)">
+							<!-- 不可随意换行或者增添空格，都有可能导致语句执行失败 -->
+							AND REGEXP_LIKE(DATA_DICT.DICT_GENERAL_CODE, REPLACE(<foreach collection="pTypeArray" index="index" item="item" open="'^(" separator="|" close=")'">${item}</foreach>,' ', ''))
+						</when>
+						<when test="@Ognl@isNotEmpty(pType)">
+							AND DATA_DICT.DICT_GENERAL_CODE LIKE #{pType,jdbcType=VARCHAR}||'%'
+						</when>
+					</choose>
+		   	 	</when>
+		   	 	<when test="@Ognl@isNotEmpty(type) or @Ognl@isNotEmpty(typeArray)">
+		   	 		<choose>
+						<when test="@Ognl@isNotEmpty(typeArray)">
+							<!-- 不可随意换行或者增添空格，都有可能导致语句执行失败 -->
+							AND REGEXP_LIKE(DATA_DICT.DICT_GENERAL_CODE, REPLACE(<foreach collection="typeArray" index="index" item="item" open="'^(" separator="|" close=")'">${item}</foreach>,' ', ''))
+						</when>
+						<when test="@Ognl@isNotEmpty(type)">
+							AND DATA_DICT.DICT_GENERAL_CODE LIKE #{type,jdbcType=VARCHAR}||'%'
+						</when>
+					</choose>
+		   	 	</when>
+		   	 </choose>
+			 AND LENGTH(DATA_DICT.DICT_GENERAL_CODE) = #{typeBit,jdbcType=DECIMAL}
+		     AND ((DATA_DICT.IS_COMMON = '1' AND NOT EXISTS
+		          (SELECT 1
+		              FROM T_BAS_DATADICT_ORG T3
+		             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+		               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%')) OR
+		         (DATA_DICT.IS_COMMON = '0' AND EXISTS
+		          (SELECT 1
+		              FROM T_BAS_DATADICT_ORG T3
+		             WHERE DATA_DICT.DICT_ID = T3.DICT_ID
+		               AND #{orgCode,jdbcType=VARCHAR} LIKE T3.ORG_CODE || '%'))))
+		               
+		SELECT CT.DICT_GENERAL_CODE "dictGeneralCode", CT.DICT_NAME "dictName", 
+			<choose>
+				<when test="@Ognl@isNotEmpty(fieldArray)">
+					<foreach collection="fieldArray" index="index" item="item" open=" " separator="," close=" ">
+				    	NVL(SUM(T.${item.fieldName}),0) "${item.exportName}"
+				    </foreach>
+				</when>
+				<otherwise>
+					NVL(SUM(T.TOTAL_),0) "eventTotal"
+				</otherwise>
+			</choose>
+		  FROM DICT_ CT
+		  	<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+		  			LEFT JOIN T_BI_EVENT_STAT_DAY T
+				</when>
+				<otherwise>
+		  			LEFT JOIN T_BI_EVENT_STAT T
+				</otherwise>
+		  	</choose>
+		    ON T.TYPE_ = CT.DICT_GENERAL_CODE
+		   	<choose>
+				<when test="@Ognl@isNotEmpty(pType) or @Ognl@isNotEmpty(pTypeArray)">
+					AND T.TYPE_LEVEL = '1'
+				</when>
+				<otherwise>
+					AND T.TYPE_LEVEL = '2'
+				</otherwise>
+			</choose>
+			<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   		AND T.ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+			</if> 
+			<choose>
+				<when test="@Ognl@isNotEmpty(sourceArray)">
+					AND T.SOURCE_ IN
+					<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(source)">
+					AND T.SOURCE_ = #{source,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+					AND T.URGENCY_DEGREE IN
+					<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(urgencyDegree)">
+					AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<if test="@Ognl@isNotEmpty(createTimeStart)">
+				<choose>
+					<when test="@Ognl@isNotEmpty(searchDay)">
+						AND T.EVENT_DATE <![CDATA[>=]]>
+					</when>
+					<otherwise>
+						AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[>=]]>
+					</otherwise>
+				</choose>
+				TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+			</if>
+			<if test="@Ognl@isNotEmpty(createTimeEnd)">
+	            <choose>
+					<when test="@Ognl@isNotEmpty(searchDay)">
+						AND T.EVENT_DATE <![CDATA[<]]>
+					</when>
+					<otherwise>
+						AND TO_DATE(T.EVENT_DATE,'YYYY-MM') <![CDATA[<]]>
+					</otherwise>
+				</choose>
+	            TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+	        </if>
+			 <if test="@Ognl@isNotEmpty(dateStart)">
+			<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[>=]]> TO_DATE(#{dateStart,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[>=]]> #{dateStart,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+            
+		</if>
+		<if test="@Ognl@isNotEmpty(dateEnd)">
+			<choose>
+				<when test="@Ognl@isNotEmpty(searchDay)">
+					AND T.EVENT_DATE <![CDATA[<]]>  TO_DATE(#{dateEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+				</when>
+				<otherwise>
+					AND T.EVENT_DATE <![CDATA[<=]]> #{dateEnd,jdbcType=VARCHAR}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="isEmtTypeEvent != null and isEmtTypeEvent == true ">
+			AND T.EMT_TOTAL_ <![CDATA[>]]> 0
+		</if>
+		GROUP BY CT.DICT_GENERAL_CODE, CT.DICT_NAME
+		ORDER BY
+		<if test="@Ognl@isNotEmpty(sortFieldArray)">
+			<foreach collection="sortFieldArray" index="index" item="item" open=" " separator="," close=",">
+				NVL(SUM(T.${item.sortFieldName}),0) ${item.sortType}
+			</foreach>
+		</if>
+		CT.DICT_GENERAL_CODE
+	</select>
+	
+	
+	<!-- 事件趋势实时查询 -->
+	<select id="getEventTrendByActual" resultType="java.util.Map">
+		SELECT 
+		<choose>
+			 <when test="trendType != null and trendType=='day' ">
+	  			 TO_CHAR(T.CREATE_TIME,'YYYY-MM-DD') "trendDate",
+			 </when>
+			 <when test="trendType != null and trendType=='year' ">
+	  			 TO_CHAR(T.CREATE_TIME,'YYYY') "trendDate",
+			 </when>
+			 <otherwise>
+	  			 TO_CHAR(T.CREATE_TIME,'YYYY-MM') "trendDate",
+			 </otherwise>
+	  	</choose>
+		COUNT(T.EVENT_ID) "eventTotal"
+		  FROM T_EVENT T
+		 INNER JOIN T_DC_GRID G
+		    ON T.GRID_ID = G.GRID_ID
+		   AND G.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		    ON T.EVENT_ID = P.FORM_ID
+		   AND P.FORM_TYPE_ID = 300
+		 WHERE 
+		 <choose>
+			 <when test="@Ognl@isNotEmpty(status)">
+				 T.STATUS IN
+	   		  <foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+			 </when>
+			 <otherwise>
+	  			 T.STATUS IN ('00', '01', '02', '03', '04')
+			 </otherwise>
+	  	 </choose>
+		 <if test="@Ognl@isNotEmpty(infoOrgCode)">
+	   		 AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		 </if>
+		
+		 <if test="@Ognl@isNotEmpty(createTimeStart)">
+		 	AND T.CREATE_TIME<![CDATA[>=]]>TO_DATE(#{createTimeStart,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')
+		 </if>
+		 <if test="@Ognl@isNotEmpty(createTimeEnd)">
+		 	AND T.CREATE_TIME<![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS')+1
+		 </if>
+		 <choose>
+			 <when test="@Ognl@isNotEmpty(types)">
+				AND REGEXP_LIKE(T.TYPE_,'^('||#{types,jdbcType=VARCHAR}||')')
+			 </when>
+			 <when test="@Ognl@isNotEmpty(type)">
+				 AND T.TYPE_ LIKE #{type,jdbcType=VARCHAR}||'%'
+			 </when>
+		 </choose>
+		 <choose>
+			 <when test="trendType != null and trendType=='day' ">
+	  			 GROUP BY TO_CHAR(T.CREATE_TIME,'YYYY-MM-DD')
+			 </when>
+			 <when test="trendType != null and trendType=='year' ">
+	  			 GROUP BY TO_CHAR(T.CREATE_TIME,'YYYY')
+			 </when>
+			 <otherwise>
+	  			 GROUP BY TO_CHAR(T.CREATE_TIME,'YYYY-MM')
+			 </otherwise>
+	  	 </choose>
+	</select>
+	
+	
+	<!-- 事件趋势清洗查询 -->
+	<select id="getEventTrendByStatistics" resultType="java.util.Map">
+		WITH DATE_TEMP AS
+		 (<if test="@Ognl@isNotEmpty(trendTimeArray)">
+				<foreach collection="trendTimeArray" index="index" item="item" open=" " separator=" UNION " close=" ">
+			    	SELECT #{item} AS "TRENDDATE" FROM DUAL
+			    </foreach>
+			</if>)
+		               
+		SELECT DT.TRENDDATE "trendDate",
+			<choose>
+				<when test="@Ognl@isNotEmpty(fieldArray)">
+					<foreach collection="fieldArray" index="index" item="item" open=" " separator="," close=" ">
+				    	NVL(SUM(T.${item.fieldName}),0) "${item.exportName}"
+				    </foreach>
+				</when>
+				<otherwise>
+					NVL(SUM(T.TOTAL_),0) "eventTotal"
+				</otherwise>
+			</choose>
+		  FROM DATE_TEMP DT
+		  	<choose>
+				<when test="trendType != null and trendType=='day' ">
+		  			LEFT JOIN T_BI_EVENT_STAT_DAY T
+		  			ON TO_CHAR(T.EVENT_DATE,'YYYY-MM-DD') = DT.TRENDDATE
+				</when>
+				<when test="trendType != null and trendType=='year' ">
+		  			LEFT JOIN T_BI_EVENT_STAT T
+		  			ON SUBSTR(T.EVENT_DATE,0,4) = DT.TRENDDATE
+				</when>
+				<otherwise>
+		  			LEFT JOIN T_BI_EVENT_STAT T
+		  			ON T.EVENT_DATE = DT.TRENDDATE
+				</otherwise>
+		  	</choose>
+		   	<choose>
+				<when test="@Ognl@isNotEmpty(pType)">
+					AND T.TYPE_LEVEL = '1'
+				</when>
+				<otherwise>
+					AND T.TYPE_LEVEL = '2'
+				</otherwise>
+			</choose>
+			<if test="@Ognl@isNotEmpty(infoOrgCode)">
+		   		AND T.ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+			</if> 
+			<choose>
+				<when test="@Ognl@isNotEmpty(typeArray)">
+					AND T.TYPE_ IN
+					<foreach collection="typeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(type)">
+					AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(pTypeArray)">
+					AND T.TYPE_ IN
+					<foreach collection="pTypeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(pType)">
+					AND T.TYPE_ = #{pType,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(sourceArray)">
+					AND T.SOURCE_ IN
+					<foreach collection="sourceArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(source)">
+					AND T.SOURCE_ = #{source,jdbcType=VARCHAR}
+				</when>
+			</choose>
+			<choose>
+				<when test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+					AND T.URGENCY_DEGREE IN
+					<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<when test="@Ognl@isNotEmpty(urgencyDegree)">
+					AND T.URGENCY_DEGREE = #{urgencyDegree,jdbcType=VARCHAR}
+				</when>
+			</choose>
+		 GROUP BY DT.TRENDDATE
+		 ORDER BY DT.TRENDDATE
+	     <if test="@Ognl@isNotEmpty(sortFieldArray)">
+			 <foreach collection="sortFieldArray" index="index" item="item" open="," separator="," close="">
+		    	 NVL(SUM(T.${item.sortFieldName}),0) ${item.sortType}
+		     </foreach>
+		 </if>
+	</select>
+	
+	
+	
+	
+	<!-- 获取特定事件类型数量（实时） -->
+	<select id="getSpecialEventTypeProportionByActual" resultType="java.util.Map">
+		SELECT SUBSTR(T.TYPE_,0,2) as "eventType",COUNT(1) as "eventTotal"
+		<if test="@Ognl@isNotEmpty(settlesTotalSearch)">
+	   		 ,SUM(
+	   		 	CASE WHEN T.STATUS IN ('03','04')
+	   		 	THEN 1
+	   		 	ELSE 0
+	   		 	END
+	   		 ) "settlesTotal"
+		</if>
+		<if test="@Ognl@isNotEmpty(doingTotalSearch)">
+	   		 ,SUM(
+	   		 	CASE WHEN T.STATUS IN ('00','01','02')
+	   		 	THEN 1
+	   		 	ELSE 0
+	   		 	END
+	   		 ) "doingTotal"
+		</if>
+		  FROM T_EVENT T
+		 INNER JOIN T_DC_GRID G
+		    ON T.GRID_ID = G.GRID_ID
+		   AND G.STATUS = '001'
+		 INNER JOIN ${dbuser.workflow}.WF_PROCESS_INSTANCE P
+		    ON T.EVENT_ID = P.FORM_ID
+		   AND P.FORM_TYPE_ID = 300
+		 WHERE T.STATUS IN ('00', '01', '02', '03', '04')
+		 <if test="@Ognl@isNotEmpty(infoOrgCode)">
+	   		 AND G.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType=VARCHAR}||'%'
+		 </if>
+		 <if test="@Ognl@isNotEmpty(types)">
+		 	 AND REGEXP_LIKE(T.TYPE_,'^('||#{types,jdbcType=VARCHAR}||')')
+		 </if>
+		 <if test="@Ognl@isNotEmpty(createTimeStart)">
+             AND T.CREATE_TIME <![CDATA[>=]]> TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS')
+		 </if>
+		 <if test="@Ognl@isNotEmpty(createTimeEnd)">
+             AND T.CREATE_TIME <![CDATA[<]]>TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1
+         </if>
+		 GROUP BY SUBSTR(T.TYPE_,0,2)
+	</select>
+	
+	<!-- 获取职位相关的事件统计信息 -->
+	<select id="findPositionEventByStatistics" resultType="java.util.Map">
+		SELECT
+			T.POSITION_NAME	"positionName", 
+			T.REGION_CODE	"regionCode",
+			<choose>
+				<when test="@Ognl@isNotEmpty(fieldArray)">
+					<foreach collection="fieldArray" index="index" item="item" open=" " separator="," close=" ">
+						NVL(SUM(T.${item.fieldName}),0) "${item.exportName}"
+					</foreach>
+				</when>
+				<otherwise>
+					NVL(SUM(T.POSITION_NAME),0)		"positionName",
+					NVL(SUM(T.CREATE_EVENTS),0)		"handledEvents",
+					NVL(SUM(T.SETTLES_EVENTS),0)	"settlesEvents"
+				</otherwise>
+			</choose>
+		FROM T_BI_POSI_USERS T
+		WHERE 1 = 1
+		<choose>
+			<when test="@Ognl@isNotEmpty(statMonthStr)"><!-- STAT_DATE存值为：202110 -->
+				AND T.STAT_DATE = #{statMonthStr,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				<if test="@Ognl@isNotEmpty(statStartMonthStr)">
+					AND T.STAT_DATE <![CDATA[>=]]> #{statStartMonthStr,jdbcType=VARCHAR}
+				</if>
+				<if test="@Ognl@isNotEmpty(statEndMonthStr)">
+					AND T.STAT_DATE <![CDATA[<=]]> #{statEndMonthStr,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T.REGION_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+		</if>
+		<choose>
+			<when test="@Ognl@isNotEmpty(positionNameArray)">
+				AND T.POSITION_NAME IN
+				<foreach collection="positionNameArray" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(positionName)">
+				AND T.POSITION_NAME = #{positionName,jdbcType=VARCHAR}
+			</when>
+		</choose>
+		GROUP BY T.POSITION_NAME, T.REGION_CODE
+		<if test="@Ognl@isNotEmpty(sortFieldArray)">
+			ORDER BY 
+			<foreach collection="sortFieldArray" index="index" item="item" open="" separator="," close="">
+				 NVL(SUM(T.${item.sortFieldName}),0) ${item.sortType}
+			</foreach>
+		 </if>
+	</select>
+	
+	<!-- 获取用户事件相关统计 -->
+	<select id="findUserEventByStatistics" resultType="java.util.Map">
+		SELECT
+			T.USER_ID						"userId", 
+			T.PARTY_NAME					"partyName", 
+			T.ORG_ID						"orgId", 
+			T.ORG_NAME						"orgName", 
+			NVL(SUM(T.SETTLES_EVENTS),0)	"settlesEvents"
+		FROM T_BI_USER_ORG_EVENTS T
+		WHERE 1 = 1
+		<choose>
+			<when test="@Ognl@isNotEmpty(statMonthStr)"><!-- STAT_DATE存值为：202111 -->
+				AND T.STAT_DATE = #{statMonthStr,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				<if test="@Ognl@isNotEmpty(statStartMonthStr)">
+					AND T.STAT_DATE <![CDATA[>=]]> #{statStartMonthStr,jdbcType=VARCHAR}
+				</if>
+				<if test="@Ognl@isNotEmpty(statEndMonthStr)">
+					AND T.STAT_DATE <![CDATA[<=]]> #{statEndMonthStr,jdbcType=VARCHAR}
+				</if>
+			</otherwise>
+		</choose>
+		<if test="@Ognl@isNotEmpty(infoOrgCode)">
+			AND T.REGION_CODE = #{infoOrgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="statisticsUserId != null ">
+			AND T.USER_ID = #{statisticsUserId,jdbcType=DECIMAL}
+		</if>
+		<if test="statisticsOrgId != null ">
+			AND T.ORG_ID = #{statisticsOrgId,jdbcType=DECIMAL}
+		</if>
+		GROUP BY T.USER_ID, T.PARTY_NAME, T.ORG_ID, T.ORG_NAME
+		ORDER BY NVL(SUM(T.SETTLES_EVENTS),0) DESC
+	</select>
+</mapper>

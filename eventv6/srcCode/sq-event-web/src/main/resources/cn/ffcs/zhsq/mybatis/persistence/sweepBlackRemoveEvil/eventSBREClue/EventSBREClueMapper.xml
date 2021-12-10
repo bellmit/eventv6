@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.sweepBlackRemoveEvil.eventSBREClue.EventSBREClueMapper">
+    <resultMap id="BaseResultMap" type="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREClue.EventSBREClue">
+        <id column="CLUE_ID" 				property="clueId" 				jdbcType="DECIMAL"/> <!--线索编号，序列为：SEQ_SBRE_CLUE_ID-->
+        <result column="CLUE_TITLE" 		property="clueTitle" 			jdbcType="VARCHAR"/> <!--线索标题-->
+        <result column="INFO_ORG_CODE" 		property="infoOrgCode" 			jdbcType="VARCHAR"/> <!--地域编码-->
+        <result column="CLUE_SOURCE" 		property="clueSource" 			jdbcType="VARCHAR"/> <!--线索来源：字典B591001-->
+        <result column="IMPORTANT_DEGREE" 	property="importantDegree"		jdbcType="VARCHAR"/> <!--重要程度：字典B591002-->
+        <result column="IS_ENCRYPT" 		property="isEncrypt" 			jdbcType="VARCHAR"/> <!--1 加密；0 不加密-->
+        <result column="IS_REAL_NAME" 		property="isRealName" 			jdbcType="VARCHAR"/> <!--1 实名举报；0 不实名举报-->
+        <result column="REPORT_DATE" 		property="reportDate" 			jdbcType="TIMESTAMP"/> <!--举报时间-->
+        <result column="CLUE_CONTENT" 		property="clueContent" 			jdbcType="VARCHAR"/> <!--线索内容-->
+        <result column="DISPOSAL_METHOD" 	property="disposalMethod" 		jdbcType="VARCHAR"/> <!--处置方式：字典B591003-->
+        <result column="HANDLE_DATE" 		property="handleDate" 			jdbcType="TIMESTAMP"/> <!--办理时限-->
+        <result column="HANDLE_DATE_FLAG" 	property="handleDateFlag" 		jdbcType="TIMESTAMP"/> <!--处理时限标识 1：正常；2：将到期；3：已过期-->
+        <result column="END_DATE" 			property="endDate" 				jdbcType="TIMESTAMP"/> <!--办结时间-->
+        <result column="REGISTER_DATE" 		property="registerDate" 		jdbcType="TIMESTAMP"/> <!--立案时间-->
+        <result column="SUSPECTED_CHARGES"	property="suspectedCharges"		jdbcType="VARCHAR"/> <!--涉嫌罪名：字典B591004-->
+        <result column="REGISTER_UNIT" 		property="registerUnit" 		jdbcType="DECIMAL"/> <!--立案单位，对应T_ZZ_PRVETION_TEAM中IS_UNIT为1的记录-->
+        <result column="REGISTER_UNIT_NAME" property="registerUnitName" 	jdbcType="VARCHAR"/> <!--立案单位名称-->
+        <result column="REGISTER_NAME" 		property="registerName" 		jdbcType="VARCHAR"/> <!--立案人员姓名-->
+        <result column="PUNISH_DATE" 		property="punishDate" 			jdbcType="TIMESTAMP"/> <!--处罚时间-->
+        <result column="PUNISH_UNIT" 		property="punishUnit" 			jdbcType="DECIMAL"/> <!--处罚单位，对应T_ZZ_PRVETION_TEAM中IS_UNIT为1的记录-->
+        <result column="PUNISH_UNIT_NAME" 	property="punishUnitName" 		jdbcType="VARCHAR"/> <!--处罚单位名称-->
+        <result column="PUNISHMENTER" 		property="punishmenter" 		jdbcType="VARCHAR"/> <!--处罚办理人员姓名-->
+        <result column="TRANSFER_DATE" 		property="transferDate" 		jdbcType="TIMESTAMP"/> <!--移交时间-->
+        <result column="TRANSFER_UNIT" 		property="transferUnit" 		jdbcType="DECIMAL"/> <!--移交单位，对应T_ZZ_PRVETION_TEAM中IS_UNIT为1的记录-->
+        <result column="TRANSFER_UNIT_NAME" property="transferUnitName" 	jdbcType="VARCHAR"/> <!--移交单位名称-->
+        <result column="TRANSFER_NAME" 		property="transferName" 		jdbcType="VARCHAR"/> <!--移交人员姓名-->
+        <result column="DISPOSAL_SITUATION" property="disposalSituation"	jdbcType="VARCHAR"/> <!--处理情况-->
+        <result column="FEEDBACK_DATE" 		property="feedbackDate" 		jdbcType="TIMESTAMP"/> <!--反馈时间-->
+        <result column="FEEDBACK_NAME" 		property="feedbackName" 		jdbcType="VARCHAR"/> <!--反馈人姓名-->
+        <result column="INFORMANT_ADVICE" 	property="informantAdvice" 		jdbcType="VARCHAR"/> <!--举报人意见-->
+        <result column="CLUE_REMARK" 		property="clueRemark" 			jdbcType="VARCHAR"/> <!--备注-->
+        <result column="CLUE_STATUS" 		property="clueStatus" 			jdbcType="VARCHAR"/> <!--线索状态-->
+        <result column="CREATE_DATE" 		property="createDate" 			jdbcType="TIMESTAMP"/> <!--登记时间-->
+        <result column="CREATOR_ID" 		property="creatorId" 			jdbcType="DECIMAL"/> <!--登记人员-->
+        <result column="CREATOR_ORG_NAME" 	property="creatorOrgName" 		jdbcType="VARCHAR"/> <!--登记人员所属组织名称-->
+        <result column="UPDATE_DATE" 		property="updateDate" 			jdbcType="TIMESTAMP"/> <!--更新时间-->
+        <result column="UPDATER_ID" 		property="updaterId" 			jdbcType="DECIMAL"/> <!--更新人员-->
+        <result column="GRID_PATH" 			property="gridPath" 			jdbcType="VARCHAR"/> <!--所属区域-->
+        <result column="GRID_ID" 			property="gridId" 				jdbcType="DECIMAL"/> <!--所属区域-->
+        <result column="GRID_NAME" 			property="gridName" 			jdbcType="VARCHAR"/> <!--所属区域-->
+        <result column="CUR_ORG" 			property="curOrgName" 			jdbcType="VARCHAR"/> <!--当前办理组织名称-->
+      <result column="INVOLVE_ATTACK_FOCUS" property="involveAttackFocus" 	jdbcType="VARCHAR"/> <!--涉及打击重点-->
+    </resultMap>
+
+    <!-- 查询草稿线索列表（总数） -->
+    <select id="findCountByCriteria" resultType="java.lang.Integer">
+        SELECT COUNT(1) 
+        <include refid="draftSql"></include>
+    </select>
+
+    <!-- 查询草稿线索列表（分页） -->
+    <select id="findPageListByCriteria" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="base_column"></include>
+        <include refid="draftSql"></include>
+        <include refid="order_by"></include>
+    </select>
+    
+     <!-- 查询线索列表（不分页） -->
+    <select id="findEventSBREClueList" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="detail_column"></include>
+        <include refid="draftSql"></include>
+        <include refid="order_by"></include>
+    </select>
+    
+    <!-- 草稿语句 -->
+    <sql id="draftSql">
+    	FROM T_EVENT_SBRE_CLUE T
+        LEFT JOIN T_DC_GRID T2
+        	ON T.INFO_ORG_CODE = T2.INFO_ORG_CODE
+        WHERE T2.status = '001'
+        <include refid="find_where"/>
+    </sql>
+
+    <!--待办列表统计-总数-->
+    <select id="findCount4Todo" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        <include refid="todoSql"></include>
+    </select>
+
+    <!--待办列表数据-分页-->
+    <select id="findPageList4Todo" resultMap="BaseResultMap">
+        SELECT
+        	<include refid="list_column"/>
+        <include refid="todoSql"></include>
+        <include refid="order_by"/>
+    </select>
+	
+	<!-- 待办语句 -->
+	<sql id="todoSql">
+		FROM T_EVENT_SBRE_CLUE T,T_DC_GRID T2,${dbuser.workflow}.WF_PROCESS_INSTANCE T3,${dbuser.workflow}.JBPM4_TASK T4, ${dbuser.workflow}.JBPM4_PARTICIPATION T5
+		WHERE T.CLUE_ID = T3.FORM_ID AND T.INFO_ORG_CODE = T2.INFO_ORG_CODE AND T3.FORM_TYPE_ID = 700
+			AND T3.INSTANCE_ID = T4.PROCINST_ AND T4.DBID_ = T5.TASK_
+			AND (T5.USERID_ = #{curUserId,jdbcType=VARCHAR} AND T5.GROUPID_ = #{curOrgId,jdbcType=VARCHAR} AND T5.TYPE_ = '3')
+			AND T2.STATUS = '001'
+		<include refid="find_where"/>
+		<include refid="find_where_workflow"></include>
+	</sql>
+	
+	<!--经办数据列表-总数-->
+	<select id="findCount4Handled" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		<include refid="handledSql"></include>
+	</select>
+	<!--经办数据列表-分页-->
+	<select id="findPageList4Handled" resultMap="BaseResultMap">
+		SELECT
+			<include refid="list_column"/>
+		<include refid="handledSql"></include>
+		<include refid="order_by"/>
+	</select>
+	
+	<!-- 经办语句 -->
+	<sql id="handledSql">
+		FROM T_EVENT_SBRE_CLUE T,T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3, 
+			 T_DC_ORG_SOCIAL_INFO T8, T_DC_ORG_ENTITY_INFO T9
+		WHERE T.CLUE_ID = T3.FORM_ID AND T.INFO_ORG_CODE = T2.INFO_ORG_CODE AND T3.FORM_TYPE_ID = 700 AND T2.STATUS = '001'
+		AND T3.ORG_ID = T8.ORG_ID AND T8.LOCATION_ORG_ID = T9.ORG_ID AND T8.STATUS = '001' AND T9.STATUS = '001'
+		AND EXISTS (
+			SELECT 1
+			FROM ${dbuser.workflow}.WF_TASK T6, ${dbuser.workflow}.WF_TASK_PARTICIPATION T7
+			WHERE T6.INSTANCE_ID = T3.INSTANCE_ID AND T6.TASK_ID = T7.TASK_ID AND T7.USER_ID = #{handledUserId,jdbcType=DECIMAL}
+				AND T7.ORG_ID = #{handledOrgId,jdbcType=DECIMAL} AND T7.USER_TYPE = '3'
+		)
+		<include refid="find_where"/>
+		<include refid="find_where_workflow"></include>
+	</sql>
+	
+    <!--辖区所有列表数据-总数-->
+    <select id="findCount4Jurisdiction" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        <include refid="jurisdictionSql"></include>
+    </select>
+    <!--辖区所有数据列表-分页-->
+    <select id="findPageList4Jurisdiction" resultMap="BaseResultMap">
+        SELECT
+       		<include refid="list_column"/>,
+       		T3.CUR_ORG
+        <include refid="jurisdictionSql"></include>
+        <include refid="order_by"/>
+    </select>
+	
+	<!-- 辖区所有语句 -->
+	<sql id="jurisdictionSql">
+		FROM T_EVENT_SBRE_CLUE T,T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3,
+			 T_DC_ORG_SOCIAL_INFO T8, T_DC_ORG_ENTITY_INFO T9
+        WHERE T.INFO_ORG_CODE = T2.INFO_ORG_CODE AND T.CLUE_ID = T3.FORM_ID AND T2.STATUS = '001' AND T3.FORM_TYPE_ID = 700
+        AND T3.ORG_ID = T8.ORG_ID AND T8.LOCATION_ORG_ID = T9.ORG_ID AND T8.STATUS = '001' AND T9.STATUS = '001'
+        <include refid="find_where"/>
+        <include refid="find_where_workflow"></include>
+	</sql>
+	
+	<!--我发起的数据列表-总数-->
+	<select id="findCount4Initiator" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		<include refid="initiatorSql"></include>
+	</select>
+	<!--我发起的数据列表-分页-->
+	<select id="findPageList4Initiator" resultMap="BaseResultMap">
+		SELECT
+			<include refid="list_column"/>
+		<include refid="initiatorSql"></include>
+		<include refid="order_by"/>
+	</select>
+	
+	<!-- 我发起的语句 -->
+	<sql id="initiatorSql">
+		FROM T_EVENT_SBRE_CLUE T,T_DC_GRID T2, ${dbuser.workflow}.WF_PROCESS_INSTANCE T3,
+			 T_DC_ORG_SOCIAL_INFO T8, T_DC_ORG_ENTITY_INFO T9
+		WHERE T.CLUE_ID = T3.FORM_ID AND T.INFO_ORG_CODE = T2.INFO_ORG_CODE AND T3.FORM_TYPE_ID = 700 AND T2.STATUS = '001'
+		AND T3.USER_ID = #{initiatorId,jdbcType=DECIMAL} AND T3.ORG_ID = #{initiatorOrgId,jdbcType=DECIMAL}
+		AND T3.ORG_ID = T8.ORG_ID AND T8.LOCATION_ORG_ID = T9.ORG_ID AND T8.STATUS = '001' AND T9.STATUS = '001'
+		<include refid="find_where"/>
+		<include refid="find_where_workflow"></include>
+	</sql>
+	
+    <!-- 新增 -->
+    <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREClue.EventSBREClue">
+        <selectKey keyProperty="clueId" resultType="long" order="BEFORE">
+            SELECT SEQ_SBRE_CLUE_ID.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO
+        T_EVENT_SBRE_CLUE
+        (
+            CLUE_ID,CLUE_TITLE,INFO_ORG_CODE,CLUE_SOURCE,IMPORTANT_DEGREE,
+            IS_ENCRYPT,IS_REAL_NAME,REPORT_DATE,CLUE_CONTENT,DISPOSAL_METHOD,HANDLE_DATE,
+            END_DATE,REGISTER_DATE,SUSPECTED_CHARGES,REGISTER_UNIT,REGISTER_UNIT_NAME,
+            REGISTER_NAME,PUNISH_DATE,PUNISH_UNIT,PUNISH_UNIT_NAME,PUNISHMENTER,
+            TRANSFER_DATE,TRANSFER_UNIT,TRANSFER_UNIT_NAME,TRANSFER_NAME,DISPOSAL_SITUATION,
+            FEEDBACK_DATE,FEEDBACK_NAME,CLUE_REMARK,CLUE_STATUS,
+            CREATE_DATE,CREATOR_ID,UPDATE_DATE,UPDATER_ID,INVOLVE_ATTACK_FOCUS
+        ) VALUES (
+            #{clueId,jdbcType=DECIMAL},#{clueTitle,jdbcType=VARCHAR},#{infoOrgCode,jdbcType=VARCHAR},#{clueSource,jdbcType=VARCHAR},#{importantDegree,jdbcType=VARCHAR},
+            #{isEncrypt,jdbcType=VARCHAR},#{isRealName,jdbcType=VARCHAR},#{reportDate,jdbcType=TIMESTAMP},#{clueContent,jdbcType=VARCHAR},#{disposalMethod,jdbcType=VARCHAR},#{handleDate,jdbcType=TIMESTAMP},
+            #{endDate,jdbcType=TIMESTAMP},#{registerDate,jdbcType=TIMESTAMP},#{suspectedCharges,jdbcType=VARCHAR},#{registerUnit,jdbcType=DECIMAL},#{registerUnitName,jdbcType=VARCHAR},
+            #{registerName,jdbcType=VARCHAR},#{punishDate,jdbcType=TIMESTAMP},#{punishUnit,jdbcType=DECIMAL},#{punishUnitName,jdbcType=VARCHAR},#{punishmenter,jdbcType=VARCHAR},
+            #{transferDate,jdbcType=TIMESTAMP},#{transferUnit,jdbcType=DECIMAL},#{transferUnitName,jdbcType=VARCHAR},#{transferName,jdbcType=VARCHAR},#{disposalSituation,jdbcType=VARCHAR},
+            #{feedbackDate,jdbcType=TIMESTAMP},#{feedbackName,jdbcType=VARCHAR},#{clueRemark,jdbcType=VARCHAR},#{clueStatus,jdbcType=VARCHAR},SYSDATE,
+            #{creatorId,jdbcType=DECIMAL},SYSDATE,#{updaterId,jdbcType=DECIMAL},#{involveAttackFocus,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteByClueId"
+            parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREClue.EventSBREClue">
+        UPDATE T_EVENT_SBRE_CLUE T
+        <set>
+            <if test="delUserId != null ">
+                T.UPDATER_ID = #{delUserId,jdbcType=DECIMAL},
+            </if>
+            T.CLUE_STATUS = '06',
+            T.UPDATE_DATE = SYSDATE
+        </set>
+        WHERE CLUE_ID = #{clueId,jdbcType=DECIMAL}
+    </delete>
+
+    <!-- 详情 -->
+    <select id="findById" parameterType="long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="detail_column"></include>
+        FROM T_EVENT_SBRE_CLUE T
+        LEFT JOIN T_DC_GRID T2
+        ON T.INFO_ORG_CODE = T2.INFO_ORG_CODE
+        WHERE T2.status = '001'
+        AND CLUE_STATUS != '06'
+        AND CLUE_ID = #{clueId,jdbcType=DECIMAL}
+    </select>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.sweepBlackRemoveEvil.eventSBREClue.EventSBREClue">
+        UPDATE T_EVENT_SBRE_CLUE
+        <set>
+            <if test="clueTitle != null and clueTitle != '' ">
+                CLUE_TITLE = #{clueTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="infoOrgCode != null and infoOrgCode != '' ">
+                INFO_ORG_CODE = #{infoOrgCode,jdbcType=VARCHAR},
+            </if>
+            <if test="clueSource != null and clueSource != '' ">
+                CLUE_SOURCE = #{clueSource,jdbcType=VARCHAR},
+            </if>
+            <if test="importantDegree != null  and importantDegree != '' ">
+                IMPORTANT_DEGREE = #{importantDegree,jdbcType=VARCHAR},
+            </if>
+            <if test="isEncrypt != null and isEncrypt != '' ">
+                IS_ENCRYPT = #{isEncrypt,jdbcType=VARCHAR},
+            </if>
+            <if test="isRealName != null and isRealName != '' ">
+                IS_REAL_NAME = #{isRealName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportDate != null ">
+                REPORT_DATE = #{reportDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="clueContent != null and clueContent != '' ">
+                CLUE_CONTENT = #{clueContent,jdbcType=VARCHAR},
+            </if>
+            <if test="disposalMethod != null and disposalMethod != '' ">
+                DISPOSAL_METHOD = #{disposalMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="handleDate != null ">
+                HANDLE_DATE = #{handleDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endDate != null ">
+                END_DATE = #{endDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="registerDate != null ">
+                REGISTER_DATE = #{registerDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="suspectedCharges != null and suspectedCharges != '' ">
+                SUSPECTED_CHARGES = #{suspectedCharges,jdbcType=VARCHAR},
+            </if>
+            <if test="registerUnit != null ">
+                REGISTER_UNIT = #{registerUnit,jdbcType=DECIMAL},
+            </if>
+            <if test="registerUnitName != null and registerUnitName != '' ">
+                REGISTER_UNIT_NAME = #{registerUnitName,jdbcType=VARCHAR},
+            </if>
+            <if test="registerName != null ">
+                REGISTER_NAME = #{registerName,jdbcType=VARCHAR},
+            </if>
+            <if test="punishDate != null ">
+                PUNISH_DATE = #{punishDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="punishUnit != null ">
+                PUNISH_UNIT = #{punishUnit,jdbcType=DECIMAL},
+            </if>
+            <if test="punishUnitName != null and punishUnitName != '' ">
+                PUNISH_UNIT_NAME = #{punishUnitName,jdbcType=VARCHAR},
+            </if>
+            <if test="punishmenter != null ">
+                PUNISHMENTER = #{punishmenter,jdbcType=VARCHAR},
+            </if>
+            <if test="transferDate != null ">
+                TRANSFER_DATE = #{transferDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="transferUnit != null ">
+                TRANSFER_UNIT = #{transferUnit,jdbcType=DECIMAL},
+            </if>
+            <if test="transferUnitName != null and transferUnitName != '' ">
+                TRANSFER_UNIT_NAME = #{transferUnitName,jdbcType=VARCHAR},
+            </if>
+            <if test="transferName != null ">
+                TRANSFER_NAME = #{transferName,jdbcType=VARCHAR},
+            </if>
+            <if test="disposalSituation != null and disposalSituation != '' ">
+                DISPOSAL_SITUATION = #{disposalSituation,jdbcType=VARCHAR},
+            </if>
+            <if test="feedbackDate != null ">
+                FEEDBACK_DATE = #{feedbackDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="feedbackName != null and feedbackName != '' ">
+                FEEDBACK_NAME = #{feedbackName,jdbcType=VARCHAR},
+            </if>
+            <if test="informantAdvice != null ">
+                INFORMANT_ADVICE = #{informantAdvice,jdbcType=VARCHAR},
+            </if>
+            <if test="clueRemark != null ">
+                CLUE_REMARK = #{clueRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="clueStatus != null ">
+                CLUE_STATUS = #{clueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="updaterId != null ">
+                UPDATER_ID = #{updaterId,jdbcType=DECIMAL},
+            </if>
+            <if test="involveAttackFocus != null and involveAttackFocus != '' ">
+                INVOLVE_ATTACK_FOCUS = #{involveAttackFocus,jdbcType=VARCHAR},
+            </if>
+            UPDATE_DATE = SYSDATE
+        </set>
+        WHERE
+        CLUE_ID = #{clueId,jdbcType=DECIMAL}
+    </update>
+
+    <!-- 基础查询列 -->
+    <sql id="base_column">
+        T.CLUE_ID,
+        T.CLUE_TITLE,
+        T.INFO_ORG_CODE,
+        T.CLUE_SOURCE,
+        T.IMPORTANT_DEGREE,
+        T.IS_ENCRYPT,
+        T.HANDLE_DATE,
+        T.HANDLE_DATE_FLAG,
+        T.CREATE_DATE,
+        T.CLUE_STATUS,
+        T2.GRID_PATH,
+        T2.GRID_ID,
+        T2.GRID_NAME
+    </sql>
+    
+    <!-- 列表查询列 -->
+    <sql id="list_column">
+        <include refid="base_column"></include>,
+        T3.ORG_NAME	CREATOR_ORG_NAME
+    </sql>
+
+    <!--详情查询列-->
+    <sql id="detail_column">
+        <include refid="base_column"></include>,
+        T.IS_REAL_NAME,
+        T.REPORT_DATE,
+        T.CLUE_CONTENT,
+        T.DISPOSAL_METHOD,
+        T.END_DATE,
+        T.REGISTER_DATE,
+        T.SUSPECTED_CHARGES,
+        T.REGISTER_UNIT,
+        T.REGISTER_UNIT_NAME,
+        T.REGISTER_NAME,
+        T.PUNISH_DATE,
+        T.PUNISH_UNIT,
+        T.PUNISH_UNIT_NAME,
+        T.PUNISHMENTER,
+        T.TRANSFER_DATE,
+        T.TRANSFER_UNIT,
+        T.TRANSFER_UNIT_NAME,
+        T.TRANSFER_NAME,
+        T.DISPOSAL_SITUATION,
+        T.FEEDBACK_DATE,
+        T.FEEDBACK_NAME,
+        T.INFORMANT_ADVICE,
+        T.CLUE_REMARK,
+        T.CREATOR_ID,
+        T.UPDATE_DATE,
+        T.UPDATER_ID,
+        T.INVOLVE_ATTACK_FOCUS
+    </sql>
+	
+	<!-- 工作流相关查询条件 -->
+	<sql id="find_where_workflow">
+		<if test="regionCode != null and regionCode != '' ">
+			AND T9.ORG_CODE LIKE #{regionCode,jdbcType = VARCHAR} || '%'
+		</if>
+	</sql>
+	
+    <!-- 列表（条件） -->
+    <sql id="find_where">
+        <if test="clueTitle != null and clueTitle != '' ">
+            AND T.CLUE_TITLE LIKE '%' || #{clueTitle,jdbcType = VARCHAR} || '%'
+        </if>
+        <if test="infoOrgCode != null and infoOrgCode != '' ">
+            AND T.INFO_ORG_CODE LIKE #{infoOrgCode,jdbcType = VARCHAR} || '%'
+        </if>
+        <if test="sourceList != null ">
+            AND T.CLUE_SOURCE IN
+            <foreach collection="sourceList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="importantDegree != null and importantDegree != '' ">
+            AND T.IMPORTANT_DEGREE = #{importantDegree,jdbcType=VARCHAR}
+        </if>
+        <choose>
+        	<when test="statusList != null and statusList.size > 0 ">
+        		AND T.CLUE_STATUS IN
+	            <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+	                #{item}
+	            </foreach>
+        	</when>
+        	<!-- 为了防止传入无效状态，从而导致查询出更多的数据 -->
+        	<otherwise>
+        		AND 1 = 2
+        	</otherwise>
+        </choose>
+        <if test="isEncrypt != null and isEncrypt != '' ">
+            AND T.IS_ENCRYPT = #{isEncrypt,jdbcType=VARCHAR}
+        </if>
+        <if test="createdStart != null and createdStart != '' ">
+            AND T.CREATE_DATE <![CDATA[>=]]>TO_DATE(#{createdStart,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')
+        </if>
+        <if test="createdEnd != null and createdEnd != '' ">
+            AND T.CREATE_DATE <![CDATA[<]]>TO_DATE(#{createdEnd,jdbcType=VARCHAR}, 'yyyy-MM-dd HH24:MI:SS')+1
+        </if>
+        <if test="creatorId != null ">
+            AND T.CREATOR_ID = #{creatorId,jdbcType=DECIMAL}
+        </if>
+        <if test="handleDateFlag != null and handleDateFlag != '' ">
+        	AND T.HANDLE_DATE_FLAG = #{handleDateFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="involvedPeopleName != null and involvedPeopleName != '' ">
+            AND EXISTS (
+	            SELECT 1 
+	            FROM T_ZZ_INVOLVED_PEOPLE P
+	            WHERE T.CLUE_ID = P.BIZ_ID AND P.BIZ_TYPE IN ('09','10')
+	            	AND P.NAME LIKE '%'|| #{involvedPeopleName,jdbcType=VARCHAR} ||'%' AND P.STATUS = '1'
+            )
+        </if>
+        <if test="involvedPeopleName4Accurate != null and involvedPeopleName4Accurate != '' ">
+        	AND EXISTS (
+	            SELECT 1 
+	            FROM T_ZZ_INVOLVED_PEOPLE P
+	            WHERE T.CLUE_ID = P.BIZ_ID AND P.BIZ_TYPE = #{involvedPeopleBizType,jdbcType=VARCHAR}
+	            	AND P.NAME = #{involvedPeopleName4Accurate,jdbcType=VARCHAR} AND P.STATUS = '1'
+            )
+        </if>
+        <!--涉及打击重点统计相关字段-->
+        <if test="typeVal != null and typeVal != ''">
+            AND T.INVOLVE_ATTACK_FOCUS LIKE '%,'|| #{typeVal,jdbcType=VARCHAR} ||',%'
+        </if>
+    </sql>
+
+    <!--排序-->
+    <sql id="order_by">
+        ORDER BY T.CLUE_ID DESC
+    </sql>
+</mapper>

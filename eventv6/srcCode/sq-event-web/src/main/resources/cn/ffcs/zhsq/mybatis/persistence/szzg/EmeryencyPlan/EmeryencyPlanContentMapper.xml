@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.szzg.EmeryencyPlan.EmeryencyPlanContentMapper" >
+  <resultMap id="EmeryencyPlanContentMap" type="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanContent" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="CREATEDTIME" property="createdtime" jdbcType="DATE" />
+    <result column="PRIORITY" property="priority" jdbcType="DECIMAL" />
+    <result column="TREE_ID" property="treeId" jdbcType="DECIMAL" />
+    <result column="STATUS" property="status" jdbcType="CHAR" />
+    <result column="TXT" property="txt" jdbcType="BLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, TITLE, CREATEDTIME, PRIORITY, TREE_ID, STATUS,  TXT
+  </sql>
+
+
+  <select id="findById" resultMap="EmeryencyPlanContentMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_content
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+
+
+  <select id="findByTreeId" resultMap="EmeryencyPlanContentMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+    where TREE_ID = #{treeid,jdbcType=DECIMAL} and t.status='1' order by t.PRIORITY
+  </select>
+
+
+  <select id="findByParams" resultMap="EmeryencyPlanContentMap" parameterType="map" >
+    select
+    <include refid="Base_Column_List" />
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+    WHERE  t.status ='1'
+    <if test="title != null" >
+      and (t.title LIKE '%' || #{title, jdbcType=VARCHAR} || '%')
+    </if>
+    <if test="treeId != null" >
+      and t.TREE_ID = #{treeId,jdbcType=VARCHAR}
+    </if>
+    order by t.PRIORITY
+  </select>
+
+  <select id="findCountByCriteria" resultType="int">
+    select count(*) from ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+    <include refid="condition"/>
+  </select>
+
+  <select id="findPageListByCriteria" resultMap="EmeryencyPlanContentMap"  parameterType="map">
+    select
+    t.ID, t.TITLE, t.CREATEDTIME, t.PRIORITY, t.TREE_ID, t.STATUS
+    from ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+    <include refid="condition" /> order by t.PRIORITY
+  </select>
+
+  <sql id="condition">
+   WHERE  t.status in('1','0')
+    <if test="title != null" >
+    and (t.title LIKE '%' || #{title, jdbcType=VARCHAR} || '%')
+  </if>
+    <if test="treeId != null" >
+      and t.TREE_ID = #{treeId,jdbcType=VARCHAR}
+    </if>
+  </sql>
+
+  <insert id="insert" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanContent" >
+    <selectKey keyProperty="id" resultType="long" order="BEFORE">
+      select ${dbuser.zhsq_szzg}.SEQ_ZG_EMERYENCYPLAN_CONTENT.NEXTVAL from DUAL
+    </selectKey>
+
+    insert into ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+	<trim prefix="(" suffix=")" suffixOverrides="," >
+        ID,
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="priority != null" >
+        PRIORITY,
+      </if>
+      <if test="treeId != null" >
+        TREE_ID,
+      </if>
+      <if test="txt != null" >
+        TXT,
+      </if>
+       STATUS,
+        CREATEDTIME
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+     
+      <if test="priority != null" >
+        #{priority,jdbcType=DECIMAL},
+      </if>
+      <if test="treeId != null" >
+        #{treeId,jdbcType=DECIMAL},
+      </if>
+      <if test="txt != null" >
+        #{txt,jdbcType=BLOB},
+      </if>
+      #{status,jdbcType=CHAR},
+       SYSDATE
+    </trim> 
+  </insert>
+ 
+  <update id="update" parameterType="cn.ffcs.zhsq.mybatis.domain.szzg.EmeryencyPlan.EmeryencyPlanContent" >
+    update ${dbuser.zhsq_szzg}.zg_emeryencyplan_content
+    <set >
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="priority != null" >
+        PRIORITY = #{priority,jdbcType=DECIMAL},
+      </if> 
+      <if test="txt != null" >
+        TXT = #{txt,jdbcType=BLOB},
+      </if>
+       STATUS = #{status,jdbcType=CHAR} 
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+
+  <update id="delete">
+    UPDATE ${dbuser.zhsq_szzg}.zg_emeryencyplan_content t
+    SET t.status = '2'
+    WHERE t.id = #{id}
+  </update>
+</mapper>

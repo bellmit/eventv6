@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ffcs.zhsq.mybatis.persistence.map.jiangYinPlatform.JiangYinPlatformMapper">
+    
+	<!--  			吴展杰 start			 -->
+	
+	<sql id="find_date">
+		AND TO_CHAR(T.EVENT_DATE, 'YYYY-MM-DD') &gt;= #{createTimeStart}
+		AND TO_CHAR(T.EVENT_DATE, 'YYYY-MM-DD') &lt;= #{createTimeEnd}
+	</sql>
+	
+	<select id="findAcquisitionTrendData" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH DATE_ AS(
+		    SELECT TO_CHAR(add_months(to_date(to_char(trunc(sysdate, 'mm')+1, 'yyyy-mm'), 'yyyy-mm'), -(ROWNUM )), 'yyyy-mm') as mon 
+		    FROM dual CONNECT BY ROWNUM &lt;= 12 
+		), 
+		DATA_ AS(
+		    SELECT T.EVENT_DATE,NVL(SUM(T.TOTAL_),0) TOTAL_ FROM t_Bi_Event_Stat T 
+		    LEFT JOIN T_DC_GRID G ON T.ORG_CODE = G.INFO_ORG_CODE
+		    WHERE G.PARENT_GRID_ID = (SELECT G1.GRID_ID FROM T_DC_GRID G1 WHERE G1.INFO_ORG_CODE = #{infoOrgCode} AND G1.STATUS = '001') 
+		    AND G.STATUS = '001' AND T.Type_Level = '2'
+		    GROUP BY T.EVENT_DATE
+		)
+		SELECT D.MON,NVL(A.TOTAL_,0) TOTAL_ FROM DATE_ D 
+		LEFT JOIN DATA_ A ON D.MON = A.EVENT_DATE
+		ORDER BY D.MON
+	</select>
+	
+	
+	
+	<select id="findAcquisitionTrendTotalAndCloseData" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH DATE_ AS(
+		    SELECT TO_CHAR(add_months(to_date(to_char(trunc(sysdate, 'mm')+1, 'yyyy-mm'), 'yyyy-mm'), -(ROWNUM )), 'yyyy-mm') as mon 
+		    FROM dual CONNECT BY ROWNUM &lt;= 6 
+		), 
+		DATA_ AS(
+		    SELECT T.EVENT_DATE,NVL(SUM(T.archive_total_),0) archive_total_,NVL(SUM(T.settles_total_),0) settle_TOTAL_,NVL(SUM(T.TOTAL_),0) TOTAL_ FROM t_Bi_Event_Stat T 
+		    LEFT JOIN T_DC_GRID G ON T.ORG_CODE = G.INFO_ORG_CODE
+		    WHERE G.GRID_ID=(SELECT G1.GRID_ID FROM T_DC_GRID G1 WHERE G1.INFO_ORG_CODE = #{infoOrgCode} AND G1.STATUS = '001') 
+		    AND G.STATUS = '001' 
+		    <choose>
+          		<when test="@Ognl@isNotEmpty(typeLevel)">
+              	and t.type_level = #{typeLevel,jdbcType=VARCHAR} 
+         		</when >
+        		<otherwise>
+               	and t.type_level='2' 
+       			</otherwise>
+   			</choose>
+   			<if test="@Ognl@isNotEmpty(urgencyDegree)">
+				AND T.urgency_degree = #{urgencyDegree,jdbcType=VARCHAR} 
+	   		</if>
+			<if test="@Ognl@isNotEmpty(createTimeStart)">
+				AND T.EVENT_DATE <![CDATA[>=]]> TO_DATE(#{createTimeStart,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') 
+	   		</if>
+	   		<if test="@Ognl@isNotEmpty(createTimeEnd)">
+     			AND T.EVENT_DATE <![CDATA[<]]> TO_DATE(#{createTimeEnd,jdbcType=VARCHAR}, 'YYYY-MM-DD HH24:MI:SS') + 1 
+			</if>
+			<if test="@Ognl@isNotEmpty(type)">
+     			AND T.TYPE_ = #{type,jdbcType=VARCHAR}
+			</if>
+		    GROUP BY T.EVENT_DATE
+		)
+		SELECT D.MON,NVL(A.TOTAL_,0) TOTAL_,NVL(A.archive_total_,0) archive_total_,NVL(A.settle_total_,0) settle_TOTAL_ FROM DATE_ D 
+		LEFT JOIN DATA_ A ON D.MON = A.EVENT_DATE
+		ORDER BY D.MON
+	</select>
+	
+	
+	
+	<select id="findCumulativeData" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT 
+			NVL(SUM(T.TOTAL_), 0) TOTAL_,
+       	 	NVL(SUM(T.SETTLES_TOTAL_), 0) SETTLES_TOTAL_,
+       	 	NVL(SUM(T.SATI_SETTLES_TOTAL_), 0) SATI_TOTAL
+  		FROM T_BI_EVENT_STAT_DAY T
+ 		WHERE 
+ 			T.TYPE_LEVEL = '2'
+   			AND T.ORG_CODE = #{infoOrgCode}
+   			<include refid="find_date"></include>
+	</select>
+	
+	
+	<select id="findAreaRankTop5Data" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT 
+			A.GRID_NAME,A.INFO_ORG_CODE,A.TOTAL_CJ,A.TOTAL_BJ,A.TOTAL_MY,A.TOTAL_PJ 
+		FROM (
+		    SELECT G.GRID_NAME, G.INFO_ORG_CODE, NVL(SUM(T.TOTAL_), 0) TOTAL_CJ,NVL(SUM(T.SETTLES_TOTAL_),0) TOTAL_BJ,NVL(SUM(T.SATI_SETTLES_TOTAL_),0) TOTAL_MY , NVL(SUM(T.eva_total_ ), 0) TOTAL_PJ FROM T_DC_GRID G
+		    LEFT JOIN T_BI_EVENT_STAT_DAY T  ON G.INFO_ORG_CODE = T.ORG_CODE 
+		    AND T.TYPE_LEVEL = '2'
+		    <include refid="find_date"></include>
+		    WHERE G.STATUS = '001' 
+		    AND G.PARENT_GRID_ID = (SELECT G1.GRID_ID FROM T_DC_GRID G1 WHERE G1.INFO_ORG_CODE = #{infoOrgCode} AND G1.STATUS = '001')
+		    GROUP BY G.GRID_NAME,G.INFO_ORG_CODE
+		)A 
+	</select>
+	
+	
+	<select id="findHotEventData" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT A.DICT_NAME,A.TYPE_CODE,A.TOTAL_ FROM(
+			SELECT D.DICT_NAME,D.DICT_GENERAL_CODE TYPE_CODE,NVL(SUM(T.TOTAL_),0) TOTAL_ FROM T_BI_EVENT_STAT_DAY T
+			JOIN T_BAS_DATADICT D ON T.TYPE_ = D.DICT_GENERAL_CODE 
+			<include refid="find_date"></include>
+			AND T.TYPE_LEVEL = '1' AND T.ORG_CODE  = #{infoOrgCode}
+			WHERE D.DICT_CODE LIKE 'A001093199%' AND D.STATUS = '001'
+			GROUP BY D.DICT_NAME,D.DICT_GENERAL_CODE
+			ORDER BY TOTAL_ DESC)A 
+		WHERE ROWNUM &lt;= 10
+	</select>
+	
+	<select id="findUrgencyNum" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT G.GRID_ID,G.INFO_ORG_CODE,NVL(SUM(T.URGENCY_COUNT),0) TOTAL_ FROM  T_DC_GRID G
+		LEFT JOIN T_BI_EVENT_URGENCY_OVERSEE_DAY T ON T.REGION_CODE = G.INFO_ORG_CODE  AND T.DATE_ &gt;= #{createTimeStart} AND T.DATE_ &lt;= #{createTimeEnd} 
+		<if test="@Ognl@isNotEmpty(urgencyDegreeArray)">
+					AND T.URGENCY_TYPE IN
+					<foreach collection="urgencyDegreeArray" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>	
+		<include refid="find_where_num"></include>
+		GROUP BY G.GRID_ID,G.INFO_ORG_CODE
+	</select>
+	
+	<select id="findOverseeNum" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT G.GRID_ID,G.INFO_ORG_CODE,NVL(SUM(T.OVERSEE_COUNT),0) TOTAL_ FROM  T_DC_GRID G
+		LEFT JOIN T_BI_EVENT_URGENCY_OVERSEE_DAY T ON T.REGION_CODE = G.INFO_ORG_CODE  AND T.DATE_ &gt;= #{createTimeStart} AND T.DATE_ &lt;= #{createTimeEnd} 
+		<include refid="find_where_num"></include>
+		GROUP BY G.GRID_ID,G.INFO_ORG_CODE
+	</select>
+	
+	<sql id="find_where_num">
+		<where>
+				G.STATUS = '001' 
+				<choose>
+					<when test='own == 0'>
+						AND G.INFO_ORG_CODE = #{infoOrgCode}
+					</when>
+					<otherwise>
+						AND G.PARENT_GRID_ID = 
+						(SELECT G1.GRID_ID FROM T_DC_GRID G1 
+						WHERE G1.INFO_ORG_CODE = #{infoOrgCode}
+						AND G.STATUS = '001')
+					</otherwise>
+				</choose>
+		</where>
+	</sql>
+	<!-- 查询事件 经纬度 -->
+	<select id="findEventXY" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT 
+			E.EVENT_ID,E.EVENT_NAME,P.X,P.Y
+		FROM T_EVENT E 
+ 		JOIN T_ZY_RES_MARKER P ON E.EVENT_ID = P.RESOURCES_ID 
+ 		WHERE E.EVENT_ID IN
+ 		<foreach collection="eventIdArr" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	
+	
+	<!--  			吴展杰 end         	 -->
+	
+	<!--  			start2			 -->
+	
+	<!-- 根据事件类型 获取事件分组数量 -->
+	<select id="getEventNumGroupByType" parameterType="java.util.Map" resultType="java.util.Map">
+		WITH GRID_ AS (
+		select g.info_org_code, g.grid_id, g.grid_name, g.order_id 
+ 		from t_dc_grid g   where (g.grid_id =  #{gridId} or g.parent_grid_id = #{gridId})  and g.status = '001') 
+   		SELECT g.info_org_code, g.grid_id, g.grid_name,nvl(sum(t.total_), 0) total,nvl(sum(t.settles_total_), 0) endTotal, nvl(sum(t.timeout_total_), 0) timeoutTotal,nvl(sum(t.archive_total_), 0) archiveTotal,nvl(sum(t.settles_intime_total_), 0) endInTimeTotal 
+      	FROM GRID_ g  left join t_bi_event_stat_day t on g.info_org_code = t.org_code  and t.type_level = '2' 
+      	<if test="@Ognl@isNotEmpty(parentType)">
+      		and  t.type_ = #{parentType} 
+    	</if>
+      	<if test="@Ognl@isNotEmpty(createTimeStart) and @Ognl@isNotEmpty(createTimeEnd)">
+	  		and  t.event_date between to_date(#{createTimeStart},'yyyy-mm-dd')  and to_date(#{createTimeEnd},'yyyy-mm-dd')
+    	</if>
+     	group by g.info_org_code, g.grid_id, g.grid_name, g.order_id 
+     	order by 
+     	g.order_id,g.info_org_code 
+	</select>
+	
+	<!--  			 end2			 -->
+	
+	<!--  			start3			 -->
+	<!-- 根据组织orgId返回地域编码 -->
+	<select id="findInfoOrgCodesByOrgIds" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+		t1.ORG_ID,
+		t1.ORG_NAME,
+		t1.PARENT_ORG_ID,
+		t1.ORG_CODE,
+		t1.LOCATION_ORG_ID,
+		t1.ORG_SOCIAL_PATH,
+		T2.ORG_ID,
+		T2.ORG_NAME,
+		T2.PARENT_ORG_ID,
+		T2.ORG_CODE ,
+		T2.ORG_TYPE,
+		T2.CHIEF_LEVEL,
+		T2.LOCATION_CODE,
+		T2.ORG_ENTITY_PATH,
+		T2.REGION_TYPE
+		from T_DC_ORG_SOCIAL_INFO t1
+		LEFT JOIN
+		T_DC_ORG_ENTITY_INFO t2 on t1.LOCATION_ORG_ID = t2.ORG_ID
+		where
+		<choose>
+			<when test="@Ognl@isNotEmpty(orgIds)">
+				T1.ORG_ID IN
+				<foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</when>
+			<when test="@Ognl@isNotEmpty(orgId)">
+				T1.ORG_ID = #{orgId,jdbcType=VARCHAR}
+			</when>
+		</choose>
+	</select>
+	<!--  			 end3			 -->
+	
+	<!--  			start4			 -->
+	<!--  			 end4			 -->
+	
+	<!--  			start5			 -->
+	<!--  			 end5			 -->
+
+
+</mapper>

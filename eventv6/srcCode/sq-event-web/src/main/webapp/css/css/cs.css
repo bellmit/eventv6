@@ -1,0 +1,35 @@
+@charset "utf-8";
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre,blockquote,form, fieldset, input, textarea, th, td,font,em{
+	margin: 0;
+	padding: 0;
+	list-style:none;
+	outline:none;
+}
+img{ border:0px;}
+h1, h2, h3, h4, h5, h6,b,strong{ font-weight:600;}
+body {
+	line-height:2em;
+	font-size:14px;
+	font-family:'微软雅黑',Arial,Helvetica;
+	margin:0 auto;
+	text-align:center;
+	padding:0;
+	color:#555;
+	background:#fff;
+}
+input,select{font-family:'微软雅黑',Arial,Helvetica;}
+body#body{background:url(img/bg.gif) left bottom no-repeat #b32a26;}
+html,body{ overflow-y:hidden; height:100%; width:100%;}
+.bg{ background:url(img/top_bg.gif) top repeat-x;}
+
+a{text-decoration:none; color:#d3deee; cursor:pointer;}
+a:hover{ color:#fff;}
+a em,a b,a span{ cursor:pointer;}
+a:hover img{filter:alpha(opacity:90); opacity:.9;}
+
+.cle{ clear:both; font-size:0px; height:0px; line-height:0px; overflow:hidden; display:block;}
+.h_15{height:15px;}
+.h_20{height:20px;}
+.bg_hui{ background:#efefef;}
+.lef{ float:left; display:inline;}
+.rig{ float:right; display:inline;}

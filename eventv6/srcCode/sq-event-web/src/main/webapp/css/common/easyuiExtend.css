@@ -1,0 +1,28 @@
+
+/*--------------------------------------------easyuiExtend----------------------------------------------------*/
+.tabs-wrap{background-color:#ffffff;}
+.tabs-header{border:0px;background-color:#ffffff;}
+.tabs-panels{border:0px;}
+.tabs {height: 36px;font-size:14px;}
+.tabs li {height: 36px;line-height: 36px;}
+.tabs li.tabs-selected a.tabs-inner {background: #fff;}
+.tabs li a.tabs-inner {background: #e6e6e6;}
+.tabs li a.tabs-inner {padding: 0 20px;height: 35px;line-height: 35px;}
+.panel-header, .panel-body {border: none;border-bottom: #ddd solid 1px;}
+.datagrid-cell,.datagrid-cell-group,.datagrid-header-rownumber,.datagrid-cell-rownumber {margin: 0;padding: 0 4px;white-space: nowrap;word-wrap: normal;overflow: hidden;line-height: 40px;font-weight: normal;height: 40px;}
+.datagrid-header td,.datagrid-body td,.datagrid-footer td {border-width: 0 1px 1px 0;border-style: none;margin: 0;padding: 0;}
+.datagrid-row-alt {background: #EEEEEE;}
+.layout-left{position: absolute;left: 15px; }
+.panel-body{background-color: #ffffff; color: #5e5e5e; font-size: 12px;}
+.datagrid-toolbar, .datagrid-pager{background: #FFF;}
+.datagrid-toolbar{padding:20px 0 0 0;}
+.datagrid-header-inner{width:100%;}
+.datagrid-header-row .datagrid-cell{font-weight: bold;}/*表头字体加粗*/
+.datagrid-htable, .datagrid-btable, .datagrid-ftable{color: #5e5e5e; border-collapse: separate;}/*表格字体颜色*/
+.datagrid-btable a{color:#36c; text-decoration:underline;}/*表格链接颜色及下划线*/
+.datagrid-row-over, .datagrid-header td.datagrid-header-over {background: #448aca;color: #fff;cursor: default;}/*单行滑过*/
+.datagrid-row-over a, .datagrid-header td.datagrid-header-over a{color:#fff; text-decoration:underline;}/*单行滑过 a 标签样式*/
+.datagrid-row-selected {background: #448aca;color: #fff;}/*单行选中*/
+.datagrid-row-selected a{color:#fff; text-decoration:none;}/*单行选中 a 标签样式*/
+.datagrid-htable, .datagrid-btable{width:100%;}/*列表宽度，有复选框时会有滚动条*/
+.datagrid-row div.datagrid-cell-check{line-height:18px;}

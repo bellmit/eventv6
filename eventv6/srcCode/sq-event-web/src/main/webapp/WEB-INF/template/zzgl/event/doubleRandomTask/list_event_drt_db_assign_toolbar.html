@@ -1,0 +1,729 @@
+<#include "/component/ComboBox.ftl" />
+<style type="text/css">
+.width65px{width:75px;}
+/*图标选中凹陷效果只有在ie9及其以上才有效果*/
+.icon_select{ background:#ccc;box-shadow:inset 1px 1px 0px 0px #999; border-radius:3px; height:23px; line-height:23px; display:inline-block; padding:0 15px 0 0;text-align:center; margin-left: 10px;}
+</style>
+<script type="text/javascript" src="${rc.getContextPath()}/js/openWin.js"></script>
+<script type="text/javascript" src="${rc.getContextPath()}/js/plugIn/plug_in.js"></script>
+<div id="jqueryToolbar">
+	<div class="ConSearch">
+		<input type="hidden" id="handleDateFlag" name="handleDateFlag" value="${handleDateFlag!}" class="queryParam" />
+		<input type="hidden" id="typesForList" name="typesForList" value="${typesForList!}" class="queryParam" />
+		<input type="hidden" id="eventAttrTrigger" name="eventAttrTrigger" value="${eventAttrTrigger!}" class="queryParam" />
+		<input type="hidden" id="isRemoveTypes" name="isRemoveTypes" value="<#if isRemoveTypes??>${isRemoveTypes?c}<#else>false</#if>" class="queryParam" />
+        <div class="fl">
+        	<ul>
+        		<li>所属网格：</li>
+                <li>
+                	<input id="infoOrgCode" name="infoOrgCode" type="hidden"/>
+                	<input id="gridId" name="gridId" type="hidden"/>
+                	<input id="gridName" name="gridName" type="text" class="inp1 InpDisable" style="width:100px;"/>
+                </li>
+            	<li>事件分类：</li>
+                <li>
+                	<input id="type" name="type" type="hidden" value=""/>
+                	<input id="typeName" name="typeName" type="text" class="inp1 InpDisable" style="width:100px;"/>
+                </li>
+            	<li>关键字：</li>
+                <li><input name="keyWord" type="text" class="inp1" id="keyWord" value="<#if keyWord??>${keyWord}<#else>事件描述/标题/事发详址</#if>" style="<#if keyWord??><#else>color:gray;</#if> width:150px;" onfocus="if(this.value=='事件描述/标题/事发详址'){this.value='';}$(this).attr('style','width:150px;');" onblur="if(this.value==''){$(this).attr('style','color:gray;width:150px;');this.value='事件描述/标题/事发详址';}" onkeydown="_onkeydown();" /></li>
+                <li class="query4todo">是否接收：</li>
+                <li class="query4todo">
+                	<input id="taskReceivedStaus" name="taskReceivedStaus" type="hidden"/>
+                	<input id="taskReceivedStausName" name="taskReceivedStausName" type="text" class="inp1 InpDisable" style="width:80px;"/>
+                </li>
+            	<li style="position:relative;">
+            		<a href="javascript:void(0)" class="AdvanceSearchBtn FontDarkBlue">高级查询</a>
+            		<div class="AdvanceSearch DropDownList hide" style="width:375px; top: 42px; left: -130px;">
+                        <div class="LeftShadow">
+                            <div class="RightShadow">
+                                <div class="list NorForm" style="position:relative;">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                      <tr>
+                                        <td><label class="LabName width65px"><span>事件编号：</span></label><input class="inp1" type="text" id="code" name="code" style="width:135px;"></input></td>
+                                      </tr>
+                                      <#if eventType=="all" || eventType=="attention">
+					                  <tr style="display:none;">
+					                  	<td><label class="LabName width65px"><span>事件状态：</span></label>
+					                    	<select name="statuss" id="statuss" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id);},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if statusDC??>
+								    				<option value="">不限</option>
+													<#list statusDC as l>
+														<#if l.dictGeneralCode != "06" && l.dictGeneralCode != "99" && l.dictGeneralCode != "05">
+															<option value="${l.dictGeneralCode}">${l.dictName}</option>
+														</#if>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+					                  </#if>
+                                      <tr>
+                                        <td>
+                                        	<label class="LabName width65px"><span>发生时间：</span></label><input class="inp1 Wdate fl" type="text" id="happenTimeStart" name="happenTimeStart" value="${happenTimeStart!''}" style="width:110px; *width:100px; cursor:pointer;" onclick="WdatePicker({readOnly:true})" readonly="readonly"></input><span class="Check_Radio" style="padding:0 5px;">至</span><input class="inp1 Wdate fl" type="text" id="happenTimeEnd" name="happenTimeEnd" value="${happenTimeEnd!''}" style="width:110px; *width:100px; cursor:pointer;" onclick="WdatePicker({readOnly:true})" readonly="readonly"></input>
+                                        </td>
+                                      </tr>
+                                      <tr>
+					                    <td><label class="LabName width65px"><span>采集时间：</span></label><input class="inp1 Wdate fl" type="text" id="createTimeStart" name="createTimeStart" style="width:110px; *width:100px; cursor:pointer;" onclick="WdatePicker({readOnly:true})" readonly="readonly"></input><span class="Check_Radio" style="padding:0 5px;">至</span><input class="inp1 Wdate fl" type="text" id="createTimeEnd" name="createTimeEnd" style="width:110px; *width:100px; cursor:pointer;" onclick="WdatePicker({readOnly:true})" readonly="readonly"></input></td>
+					                  </tr>
+					                  <tr>
+					                    <td><label class="LabName width65px"><span>采集人：</span></label><input class="inp1" type="text" id="contactUser" name="contactUser" style="width:135px;"></input></td>
+					                  </tr>
+                                      <tr>
+					                    <td><label class="LabName width65px"><span>采集渠道：</span></label>
+					                    	<select name="collectWays" id="collectWays" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id);},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if collectWayDC??>
+								    				<option value="">不限</option>
+													<#list collectWayDC as l>
+														<option value="${l.dictGeneralCode}">${l.dictName}</option>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+					                  <tr>
+					                    <td><label class="LabName width65px"><span>信息来源：</span></label>
+					                    	<select name="sources" id="sources" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id);},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if sourceDC??>
+								    				<option value="">不限</option>
+													<#list sourceDC as l>
+														<option value="${l.dictGeneralCode}">${l.dictName}</option>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+					                  <tr>
+					                    <td>
+					                    	<label class="LabName width65px"><span>影响范围：</span></label>
+					                        <select name="influenceDegrees" id="influenceDegree" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id);},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if influenceDegreeDC??>
+								    				<option value="">不限</option>
+													<#list influenceDegreeDC as l>
+														<option value="${l.dictGeneralCode}">${l.dictName}</option>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+					                  <tr>
+					                    <td><label class="LabName width65px"><span>紧急程度：</span></label>
+					                        <select name="urgencyDegrees" id="urgencyDegree" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id);},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if urgencyDegreeDC??>
+								    				<option value="">不限</option>
+													<#list urgencyDegreeDC as l>
+														<option value="${l.dictGeneralCode}">${l.dictName}</option>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+					                  <tr id="attrFlagTr" <#if eventType=="all" || eventType=="history"><#else>style="display:none;"</#if>>
+					                    <td><label class="LabName width65px"><span>附件类型：</span></label>
+					                        <select name="attrFlag" id="attrFlag" class="easyui-combobox" style="width:135px; height:26px; *height:28px;" data-options="panelHeight:100,multiple:true,onSelect:function(record){comboboxSelect(record, this.id, ',0');},onUnselect:function(record){comboboxUnselect(record, this.id)}">
+								    			<#if attrFlagDC??>
+								    				<option value="">不限</option>
+													<#list attrFlagDC as l>
+														<option value="${l.dictGeneralCode}">${l.dictName}</option>
+													</#list>
+												</#if>
+								    		</select>
+					                    </td>
+					                  </tr>
+                                    </table>
+                                </div>
+                                <div class="BottomShadow"></div>
+                            </div>
+                        </div>
+                    </div>
+            	</li>
+            </ul>
+        </div>
+        <div class="btns">
+        	<ul>            	
+            	<li><a href="###" class="chaxun" title="查询按钮" onclick="conditionSearch()">查询</a></li>
+            	<li><a href="###" class="chongzhi" title="重置查询条件" onclick="resetCondition()">重置</a></li>
+            </ul>
+        </div>
+        <div class="clear"></div>‍
+        
+	</div>
+	<div class="h_10 clear"></div>
+	<div class="ToolBar" id="ToolBar">
+    	<div class="blind"></div><!-- 文字提示 -->
+    	<script type="text/javascript">
+			function DivHide(){
+				$(".blind").slideUp();//窗帘效果展开
+			}
+			function DivShow(msg){
+				$(".blind").html(msg);
+				$(".blind").slideDown();//窗帘效果展开
+				setTimeout("this.DivHide()",800);
+			}
+		</script>	
+        <div class="tool fr">
+            	<a id="examine" href="javascript:void(0)" class="NorToolBtn EditBtn" onclick="assignEvent();">选定事件</a>
+            </div>
+    </div>
+	
+</div>
+
+<script type="text/javascript">
+    var startInfoOrgCode = '${infoOrgCode}',
+    	taskReceivedStausComboBox = null;
+
+	function comboboxSelect(record, id, exceptValue){
+		var exceptAttr = [];
+		
+		if(exceptValue==undefined || exceptValue==null){
+			exceptValue = "";
+			exceptAttr[0] = "";
+		}else if(typeof exceptValue == 'string'){
+			exceptAttr = exceptValue.split(',');
+		}
+		
+		if(exceptValue.indexOf(record.value) != -1){
+			$('#'+id).combobox("setValue", record.value);
+		}else{
+			for(var index = 0, len = exceptAttr.length; index < len; index++){
+				$('#'+id).combobox("unselect", exceptAttr[index]);
+			}
+		}
+	}
+	
+	function onGridTreeSelected(gridId, items){
+		if(items!=undefined && items!=null && items.length>0){
+			var grid = items[0];
+			$("#infoOrgCode").val(grid.orgCode);
+		} 
+	}
+	
+	function comboboxUnselect(record, id){
+		var values = $('#'+id).combobox("getValues");
+		if(values.length == 0){
+			$('#'+id).combobox("setValue", "");
+		}
+	}
+	
+	function comboboxSetSelect(id, selectStr){//点击下拉列表对应图标
+		if(id!=undefined && id!=null && id!="" && selectStr!=undefined && selectStr!=null && selectStr!=""){
+	    	var comboboxItems = $('#'+id).combobox('getData');
+	    	for(var index = 0, len = comboboxItems.length; index < len; index++){
+	    		var itemValue = comboboxItems[index].value;
+	    		if(itemValue!="" && selectStr.indexOf(itemValue)!=-1){
+	    			$('#'+id).combobox('select', itemValue);
+	    		}
+	    	}
+    	}
+    }
+    
+	function sendMsg(type,table) {
+		var nameAndPhones = "";
+		//判断是否显示了列表
+		if($('#drugRecordContentDiv').length==0 || document.getElementById('drugRecordContentDiv').style.display != 'none'){
+			var rows = $('#' + table).datagrid('getSelections');
+			for ( var i = 0; i < rows.length; i++) {
+				if (type == "TXT" || type == "M_VOX") {
+					if (rows[i].residentMobile != null && nameAndPhones.indexOf(rows[i].residentMobile)<0){
+						nameAndPhones += rows[i].name + "(" + rows[i].residentMobile + ");";
+						continue;
+					}
+				}else{
+					if (rows[i].phone != null && nameAndPhones.indexOf(rows[i].phone)<0){
+						nameAndPhones += rows[i].name + "(" + rows[i].phone + ");";
+					}
+				}
+			}
+			if("TXT"==type||"M_VOX"==type){
+				$('#commonMsgForm').attr("commonMsgType","sms");
+			}else{
+				$('#commonMsgForm').attr("commonMsgType","vox");
+			}
+			$('#commonNameAndPhones').val(nameAndPhones);
+			$('#commonMsgForm').submit();
+		}
+	}
+	$(function(){
+		var typesDictCode = "${typesDictCode!}";
+		if(typesDictCode!=null && typesDictCode!="null" && typesDictCode!="") {
+			AnoleApi.initTreeComboBox("typeName", "type", { 
+				"A001093199" : [${typesDictCode!}] 
+				}, null, null, {//0 展示指定的字典；1 去除指定的字典；
+					FilterType : "<#if isRemoveTypes?? && isRemoveTypes>1<#else>0</#if>",
+					ChooseType : "1" 
+				});
+		} else {
+			AnoleApi.initTreeComboBox("typeName", "type", "A001093199", null, null, { 
+					ChooseType : "1" 
+				});
+		}
+		
+		AnoleApi.initGridZtreeComboBox("gridName", "gridId", function(gridId, items){
+			if(items!=undefined && items!=null && items.length>0){
+				var grid = items[0];
+				$("#infoOrgCode").val(grid.orgCode);
+			} 
+		});
+		
+		taskReceivedStausComboBox = AnoleApi.initListComboBox("taskReceivedStausName", "taskReceivedStaus", null, null, ["-1"], {
+        	DataSrc: [{"name":"不限", "value":"-1"},{"name":"已接收", "value":"1"},{"name":"未接收", "value":"0"}]
+        });
+        
+        <#if eventType!="todo">
+        	$("#jqueryToolbar li.query4todo").hide();
+        </#if>
+	});
+	
+	function add() {
+		var url = '${rc.getContextPath()}/zhsq/event/eventDisposalController/toAddEventByType.jhtml?typesForList=${typesForList!}&trigger=${trigger!}';
+		<#if isRemoveTypes??>
+			url += '&isRemoveTypes=${isRemoveTypes?c}';
+		</#if>
+		showMaxJqueryWindow("新增事件信息", url, 800, 400, true);
+	}
+	
+	function edit() {
+		if(idStr==null || idStr=="") {
+			$.messager.alert('提示','请选中要编辑的数据再执行此操作!','warning');
+			return;
+		}
+		//var url = '${rc.getContextPath()}/zhsq/event/eventDisposalController/toEditEvent.jhtml?eventId='+idStr+'&type='+typeVal;
+		var url = '${rc.getContextPath()}/zhsq/event/eventDisposalController/toAddEventByType.jhtml?eventId='+idStr+'&typesForList=${typesForList!}&trigger=${trigger!}';
+		<#if isRemoveTypes??>
+			url += '&isRemoveTypes=${isRemoveTypes?c}';
+		</#if>
+		showMaxJqueryWindow("编辑事件信息", url, 800, 400, true);
+	}
+	
+	function assignEvent(){
+		//dId:双随机事件主键,idStr:事件主键
+		var rec = $('#list').datagrid('getSelected');
+		if(!rec){
+			$.messager.alert('提示','请选择一条数据再执行此操作!','warning');
+		}else{
+			parent.assignRet(rec);
+			parent.closeMaxJqueryWindow();
+		}
+	}
+	
+	function print() {
+		if(idStr==null || idStr=="") {
+			$.messager.alert('提示','请选中要打印的数据再执行此操作!','warning');
+			return;
+		}
+	    if(_bizPlatform == "001"){
+	        $.messager.alert('提示','旧平台事件暂不支持打印!','warning');
+			return;
+	    }else{
+			var url = '${rc.getContextPath()}/zhsq/event/eventDisposalController/print.jhtml?eventId='+idStr;
+			winOpenFullScreen(url, "打印事件详情");
+	    }
+	}
+	
+	function del() {
+		if(idStr==null || idStr=="") {
+			$.messager.alert('提示','请选中要删除的数据再执行此操作!','warning');
+			return;
+		}
+		$.messager.confirm('提示', '您确定删除选中的事件吗？', function(r){
+			if(_bizPlatform == "001"){
+				$.ajax({
+					type: "POST",
+					url: '${rc.getContextPath()}/zhsq/event/eventDisposalController/delOldEvent.jhtml',
+					data: 'oldidStr='+idStr,
+					dataType:"json",
+					success: function(data){
+						modleclose();
+						$.messager.alert('提示', '事件删除成功！', 'info');
+						<#if model?? && model == 'l'>
+							loadMessage(1,$('#pageSize').val());
+						<#else>
+							$("#list").datagrid('load');
+						</#if>
+						
+					},
+					error:function(data){
+						$.messager.alert('错误','连接超时！','error');
+					}
+				});
+			}else{
+				if (r){
+					modleopen();
+					$.ajax({
+						type: "POST",
+						url: '${rc.getContextPath()}/zhsq/event/eventDisposalController/delEvent.jhtml',
+						data: 'idStr='+idStr,
+						dataType:"json",
+						success: function(data){
+							modleclose();
+							$.messager.alert('提示', '事件删除成功！', 'info');
+							<#if model?? && model == 'l'>
+								loadMessage(1,$('#pageSize').val());
+							<#else>
+								$("#list").datagrid('load');
+							</#if>
+						},
+						error:function(data){
+							$.messager.alert('错误','连接超时！','error');
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	function reportToDs(){
+		if(idStr==null || idStr=="") {
+			$.messager.alert('提示','请选中要上报的数据再执行此操作!','warning');
+			return;
+		}else{
+			$.messager.confirm('提示', '您确定上报选中的事件吗？', function(r){
+				if(r){
+					modleopen();
+					$.ajax({
+						type: "POST",
+			    		url : '${rc.getContextPath()}/zhsq/event/eventDisposalDocking/toAddEventInter.jhtml?destPlatform=004&eventId='+idStr,
+						data: '',
+						dataType:"json",
+						success: function(data){
+							var result = data.result;
+							if(result > 0){
+								$.messager.alert('提示','事件上报成功！','info');
+							}else if(result == 0){
+								$.messager.alert('提示','事件已上报！','info');
+							}else{
+								$.messager.alert('提示','事件上报失败！','info');
+							}
+							searchData();
+							modleclose();
+						},
+						error:function(data){
+							$.messager.alert('错误','连接错误！','error');
+							modleclose();
+						}
+			    	});
+				}
+			});
+		}
+		
+	}
+	
+	function changeEventList() {
+		var urlSearch = window.location.search;//获取当前连接携带的参数
+		var extraParams = '${extraParams!}';
+		var url = '${rc.getContextPath()}/zhsq/event/eventDisposalController/listEvent.jhtml?t=${eventType}&model=${model}&trigger=${trigger!}&eventAttrTrigger=${eventAttrTrigger!}';
+		
+		if(extraParams != ''){
+			url += '&extraParams='+encodeURIComponent(extraParams);
+		}
+		
+		if(isNotBlankStringTrim(urlSearch)) {
+			var codeKey = "system_privilege_code",
+				actionKey = "system_privilege_action",
+				codeIndex = urlSearch.indexOf(codeKey),
+				actionIndex = urlSearch.indexOf(actionKey),
+				nameKey = "";
+			
+			if(codeIndex > 0 || actionIndex > 0) {
+				urlSearch = urlSearch.substring(1);//去除起始的问号
+			
+				var paramsArray = urlSearch.split('&'),//分离各个参数
+					paramArray = null,		//[0]key [1]value
+					paramItem = null,		//paramsArray的组员
+					paramObj = {},			//转换后的参数对象
+					paramArrayKey = null,	//参数key
+					paramArrayVal = null;	//参数value
+				
+				for(var index = 0, len = paramsArray.length; index < len; index++) {//将url参数转换为对象
+					paramItem = paramsArray[index];
+					
+					if(isNotBlankStringTrim(paramItem) && paramItem.indexOf("=") > 0) {
+						paramArray = paramItem.split("=");//分离参数的key和value，但是如果参数值中含有等号，则会导致使用有误
+						
+						if(paramArray.length == 2) {
+							paramArrayKey = paramArray[0];
+							paramArrayVal = paramArray[1];
+							
+							if(isNotBlankStringTrim(paramArrayKey)) {//参数Key有效时，才添加参数
+								paramArrayKey = $.trim(paramArrayKey);//去除收尾空格
+								
+								if(isBlankStringTrim(paramArrayVal)) {//防止添加了undefined
+									paramArrayVal = "";
+								}
+								
+								paramObj[paramArrayKey] = paramArrayVal;
+							}
+						}
+					}
+				}
+				
+				if(codeIndex > 0) {
+					nameKey = codeKey;
+				} else if(actionIndex > 0) {
+					nameKey = actionKey;
+				}
+				
+				if(isNotBlankStringTrim(nameKey)) {
+					url += '&' + nameKey + '=' + paramObj[nameKey];//增添权限参数
+				}
+			}
+			
+			
+		}
+		
+		$("#changeEventList").attr("href", url);
+	}
+	
+	function resetCondition() {//重置
+		gridFlag="0";
+		$("#keyWord").val("事件描述/标题/事发详址");
+		$("#keyWord").attr('style','font-size:12px;color:gray; width:150px;');
+		$("#type").val("");
+		$("#typeName").val("");
+		$('#gridName').val("");
+		$('#infoOrgCode').val("");
+		$('#gridId').val("");
+		taskReceivedStausComboBox.setSelectedNodes(["-1"]);
+		$('#code').val("");
+		$('#happenTimeStart').val("");
+		$('#happenTimeEnd').val("");
+		$('#createTimeStart').val("");
+		$('#createTimeEnd').val("");
+		$('#contactUser').val("");
+		$('#collectWays').combobox('setValue', "");
+		<#if eventType=="all" || eventType=="attention">
+			$('#statuss').combobox('setValue', "");
+		</#if>
+		$('#sources').combobox('setValue', "");
+		$('#influenceDegree').combobox('setValue', "");
+		$('#urgencyDegree').combobox('setValue', "");
+		$('#attrFlag').combobox('setValue', "");
+		
+		allSearchData($("#_allSearchAnchor"));
+	}
+	
+	function conditionSearch(){//查询
+		var iconDiv = $("#iconDiv > a[class='icon_select']");
+		if(iconDiv.length > 0) {
+			iconDiv.each(function(){
+				$(this).click();
+			});
+		} else {
+			searchData();
+		}
+		
+	}
+	
+	function _onkeydown(){
+		var keyCode = event.keyCode;
+		if(keyCode == 13){
+			conditionSearch();
+		}
+	}
+	
+	function allSearchData(obj) {//点击所有图标
+		iconSelect(obj);
+		searchData();
+    }
+    
+	function urgencySearchData(obj){//点击紧急图标
+		var searchArray = {};
+    	iconSelect(obj);
+    	
+    	searchArray["urgencyDegrees"] = ["02,03,04"];
+    	searchData(null, searchArray);
+    }
+    
+    function handleSearchData(handleStatus, obj){//点击超时、即将超时图标
+    	var searchObj = {};
+    	iconSelect(obj);
+    	searchObj["outOfDateFlag"] = handleStatus;
+    	searchData(null, searchObj);
+    }
+    
+    function remindSearchData(remindStatus, obj){//点击催办图标
+    	var searchArray = {};
+    	iconSelect(obj);
+    	
+    	searchArray["remindStatus"] = remindStatus;
+    	searchData(null, searchArray);
+    }
+    
+    function addIcons(){//id在column_event.ftl中使用
+    	return;
+    	var iconDivLength = $("#iconDiv").length;
+    	if(iconDivLength == 0){
+    		var handleDateFlag = $("#handleDateFlag").val();
+    		var iconObj = {'handleDateFlag_1': 'ToolBarNormal', 'handleDateFlag_2': 'ToolBarDue', 'handleDateFlag_3': 'ToolBarOverDue'};
+	    	var icons = '<div id="iconDiv" class="fl">'+
+		    	'<a href="javascript:" id="_allSearchAnchor" class="icon_select" onclick="allSearchData(this);"><i class="ToolBarAll"></i>所有</a>'+
+				'<a href="javascript:" id="_overDueSearchAnchor" onclick="handleSearchData(\'2\', this);"><i class="ToolBarOverDue"></i>已过期</a>'+
+		    	'<a href="javascript:" id="_normalSearchAnchor" onclick="handleSearchData(\'1\', this);"><i class="ToolBarNormal"></i>正常</a>'+
+	    	'</div>';
+	    	$('.ToolBar').append(icons);
+	    	var iconClass = iconObj["handleDateFlag_" + handleDateFlag];
+	    	if(iconClass) {
+	    		$("#iconDiv > a").hide();
+	    		$("#iconDiv > a > i." + iconClass).parent().addClass("icon_select icon_select_pre").css("display", "inline-block");
+	    		$("#iconDiv > a:hidden").remove();
+	    	}
+    	}
+    }
+    
+    function iconSelect(obj){//为选择的图标增添凹陷效果
+    	if($("#iconDiv > a > i.icon_select_pre").length == 0) {
+	    	if(isNotBlankParam(obj)){
+	    		iconUnSelect();
+	    		$(obj).addClass('icon_select');
+	    	}
+    	}
+    }
+    
+    function iconUnSelect(){//去除图片的凹陷效果
+    	$("#iconDiv > a[class='icon_select']").each(function(){
+			$(this).removeClass('icon_select');
+		});
+    }
+    
+    function queryData(searchArray){
+    	var postData = {};
+		if(searchArray!=undefined && searchArray!=null){
+			postData = searchArray;
+		}
+		var judgeResule = $("#judgeResule").val();
+		if(judgeResule!=null && judgeResule!="") {
+			postData["judgeResule"]=judgeResule;
+		}
+		var type = $("#type").val();
+		if(type!=null && type!="") {
+			postData["type"]=type;
+		}
+		var taskReceivedStaus = $("#taskReceivedStaus").val();
+		if(taskReceivedStaus >= 0) {
+			postData["taskReceivedStaus"] = taskReceivedStaus;
+		}
+		var keyWord = $("#keyWord").val();
+		if(keyWord!=null && keyWord!="" && keyWord!="事件描述/标题/事发详址") {
+			postData["keyWord"]=keyWord;
+		}
+		var gridId = $("#gridId").val();
+		if(gridId!=null && gridId!=""){
+			postData['gridId']=gridId;
+		}
+		var infoOrgCode = $("#infoOrgCode").val();
+		if(infoOrgCode!=null && infoOrgCode!=""){
+			postData['infoOrgCode']=infoOrgCode;
+		}
+		postData["eventType"]=eventType;
+		//高级查询
+		var code = $("#code").val();
+		if(code!=null && code!="") {
+			postData["code"]=code;
+		}
+		var contactUser = $("#contactUser").val();
+		if(contactUser!=null && contactUser!="") {
+			postData["contactUser"]=contactUser;
+		}
+		var happenTimeStart = $('#happenTimeStart').val();
+		if(happenTimeStart!=null && happenTimeStart!="") {
+			postData["happenTimeStart"]=happenTimeStart;
+		}
+		var happenTimeEnd = $('#happenTimeEnd').val();
+		if(happenTimeEnd!=null && happenTimeEnd!="") {
+			postData["happenTimeEnd"]=happenTimeEnd;
+		}
+		var createTimeStart = $('#createTimeStart').val();
+		if(createTimeStart!=null && createTimeStart!="") {
+			postData["createTimeStart"]=createTimeStart;
+		}
+		var createTimeEnd = $('#createTimeEnd').val();
+		if(createTimeEnd!=null && createTimeEnd!="") {
+			postData["createTimeEnd"]=createTimeEnd;
+		}
+		
+		var collectWays = $('#collectWays').combobox('getValues');
+		if(collectWays!=null && collectWays!="") {
+			postData["collectWays"]=collectWays;
+		}
+		var sources = $('#sources').combobox('getValues');
+		if(sources!=null && sources!="") {
+			postData["sources"]=sources;
+		}
+		<#if eventType=="all" || eventType=="attention">
+			var eventStatus = "";
+			var statuss = $('#statuss').combobox('getValues');
+			
+			if(statuss.length > 0){
+				var status = "";
+				
+				for(var i=0;i<statuss.length;i++){
+					status = statuss[i];
+					
+					if(status == 'do'){
+						eventStatus += ',00,01,02,03';
+					} else if(status == 'end'){
+						eventStatus += ',04';
+					} else {
+						eventStatus += "," + status;
+					}
+				}
+				
+				if(eventStatus && eventStatus.length > 0) {
+					eventStatus = eventStatus.substring(1);
+				}
+			}
+			if(eventStatus!=null && eventStatus!="") {
+				postData["eventStatus"]=eventStatus;
+			}
+		</#if>
+		var influenceDegrees = $('#influenceDegree').combobox('getValues');
+		if(influenceDegrees!=null && influenceDegrees!="") {
+			postData["influenceDegrees"]=influenceDegrees;
+		}
+		var urgencyDegrees = $('#urgencyDegree').combobox('getValues');
+		if(urgencyDegrees!=null && urgencyDegrees!="") {
+			postData["urgencyDegrees"]=urgencyDegrees;
+		}
+		
+		var attrFlags = $('#attrFlag').combobox('getValues');
+		if(attrFlags!=null && attrFlags!="") {
+			postData["attrFlags"]=attrFlags;
+		}
+		
+		$('#jqueryToolbar .queryParam').each(function() {
+			var queryObj = $(this),
+				value = queryObj.val(),
+				name = queryObj.attr("name");
+			
+			if(value) {
+				postData[name] = value;
+			}
+			
+		});
+		
+		return postData;
+    }
+    
+    var isEditFlag;
+	function locationTagging(gridId,x,y,mapt,isEdit){
+		var callBackUrl = '${SQ_ZHSQ_EVENT_URL}/zhsq/map/arcgis/arcgis/toArcgisCrossDomain.jhtml'
+		var width = 480;
+		var height = 380;
+		var mapType = 'EVENT_V1';
+		isEditFlag = isEdit;
+		initMapMarkerInfoSelector(gridId,callBackUrl,x,y,mapt,width,height,isEdit,mapType)
+	}
+	function mapMarkerSelectorCallback(mapt, x, y){//将标注信息传递到新增、编辑页面
+		var childIframeContents = $("#"+maxJqueryWindowId).find("iframe").contents();
+		childIframeContents.find("#mapt").val(mapt);
+		childIframeContents.find("#x").val(x);
+		childIframeContents.find("#y").val(y);
+		var showName = "修改地理位置";
+		if(isEditFlag == false) {
+			showName = "查看地理位置";
+		}
+		childIframeContents.find("#mapTab").html(showName);
+		childIframeContents.find(".mapTab").addClass("mapTab2");
+		closeMaxJqueryWindowForCross();
+	}
+</script>
